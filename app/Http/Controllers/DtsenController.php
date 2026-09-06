@@ -769,16 +769,17 @@ class DtsenController extends Controller
         $originalName = $file->getClientOriginalName();
         $fileSize = $file->getSize();
 
-        if (in_array($extension, ['csv', 'txt'])) {
+        $pyBin = $this->getPythonBinary();
+        if (in_array($extension, ['csv', 'txt']) && $pyBin) {
             $pyScript = base_path('scratch/fast_import.py');
             $dbPath = database_path('database.sqlite');
             if (file_exists($pyScript)) {
-                $cmd = "python " . escapeshellarg($pyScript) . " " . escapeshellarg($file->getRealPath()) . " " . escapeshellarg($dbPath) . " 2>&1";
+                $cmd = "{$pyBin} " . escapeshellarg($pyScript) . " " . escapeshellarg($file->getRealPath()) . " " . escapeshellarg($dbPath) . " 2>&1";
                 $startT = microtime(true);
                 $output = shell_exec($cmd);
                 $elapsedT = round(microtime(true) - $startT, 2);
 
-                if (str_contains($output, '[SUCCESS]')) {
+                if ($output && str_contains($output, '[SUCCESS]')) {
                     if (preg_match('/\[SUMMARY_STATS\]\s*(\{.*\})/', $output, $sm)) {
                         $parsedStats = json_decode($sm[1], true);
                         if (is_array($parsedStats)) {
@@ -829,17 +830,18 @@ class DtsenController extends Controller
         if ($chunkIndex >= $totalChunks - 1) {
             $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION)) ?: 'csv';
             try {
-                if (in_array($extension, ['csv', 'txt'])) {
+                $pyBin = $this->getPythonBinary();
+                if (in_array($extension, ['csv', 'txt']) && $pyBin) {
                     $pyScript = base_path('scratch/fast_import.py');
                     $dbPath = database_path('database.sqlite');
                     if (file_exists($pyScript)) {
-                        $cmd = "python " . escapeshellarg($pyScript) . " " . escapeshellarg($tempPath) . " " . escapeshellarg($dbPath) . " 2>&1";
+                        $cmd = "{$pyBin} " . escapeshellarg($pyScript) . " " . escapeshellarg($tempPath) . " " . escapeshellarg($dbPath) . " 2>&1";
                         $startT = microtime(true);
                         $output = shell_exec($cmd);
                         $elapsedT = round(microtime(true) - $startT, 2);
                         @unlink($tempPath);
 
-                        if (str_contains($output, '[SUCCESS]')) {
+                        if ($output && str_contains($output, '[SUCCESS]')) {
                             if (preg_match('/\[SUMMARY_STATS\]\s*(\{.*\})/', $output, $sm)) {
                                 $parsedStats = json_decode($sm[1], true);
                                 if (is_array($parsedStats)) {
@@ -910,17 +912,18 @@ class DtsenController extends Controller
         $fileName = basename($fullPath);
         $fileSize = filesize($fullPath);
 
-        // Jika file CSV/TXT, gunakan High-Speed Python Engine (28.000+ baris/detik)
-        if (in_array($extension, ['csv', 'txt'])) {
+        // Jika file CSV/TXT, gunakan High-Speed Python Engine jika ada, atau fallback ke PHP
+        $pyBin = $this->getPythonBinary();
+        if (in_array($extension, ['csv', 'txt']) && $pyBin) {
             $pyScript = base_path('scratch/fast_import.py');
             $dbPath = database_path('database.sqlite');
             if (file_exists($pyScript)) {
-                $cmd = "python " . escapeshellarg($pyScript) . " " . escapeshellarg($fullPath) . " " . escapeshellarg($dbPath) . " 2>&1";
+                $cmd = "{$pyBin} " . escapeshellarg($pyScript) . " " . escapeshellarg($fullPath) . " " . escapeshellarg($dbPath) . " 2>&1";
                 $startT = microtime(true);
                 $output = shell_exec($cmd);
                 $elapsedT = round(microtime(true) - $startT, 2);
 
-                if (str_contains($output, '[SUCCESS]')) {
+                if ($output && str_contains($output, '[SUCCESS]')) {
                     $uploadedHeaders = [
                         'nomor_induk_kependudukan' => 'NIK',
                         'nomor_kartu_keluarga' => 'Nomor KK',
@@ -981,12 +984,6 @@ class DtsenController extends Controller
                     }
 
                     return redirect()->route('dtsen.index')->with('success', $successMsg);
-                } else {
-                    $errorMsg = "Gagal memproses berkas via Python Engine: " . substr($output, 0, 300);
-                    if ($request->ajax() || $request->wantsJson()) {
-                        return response()->json(['success' => false, 'message' => $errorMsg], 500);
-                    }
-                    return redirect()->route('dtsen.index')->with('error', $errorMsg);
                 }
             }
         }
@@ -1042,8 +1039,9 @@ class DtsenController extends Controller
             @mkdir($exportDir, 0777, true);
         }
 
-        if (file_exists($pyScript)) {
-            $cmd = "python " . escapeshellarg($pyScript) . " " . escapeshellarg($dbPath) . " " . escapeshellarg($exportDir) . " " . escapeshellarg($mode) . " " . escapeshellarg($paramsJson) . " 2>&1";
+        $pyBin = $this->getPythonBinary();
+        if (file_exists($pyScript) && $pyBin) {
+            $cmd = "{$pyBin} " . escapeshellarg($pyScript) . " " . escapeshellarg($dbPath) . " " . escapeshellarg($exportDir) . " " . escapeshellarg($mode) . " " . escapeshellarg($paramsJson) . " 2>&1";
             $startT = microtime(true);
             $output = shell_exec($cmd);
             $elapsedT = round(microtime(true) - $startT, 2);
@@ -1205,8 +1203,9 @@ class DtsenController extends Controller
         $pyScript = base_path('scratch/fast_delete.py');
         $dbPath = database_path('database.sqlite');
 
-        if (file_exists($pyScript)) {
-            $cmd = "python " . escapeshellarg($pyScript) . " " . escapeshellarg($dbPath) . " 2>&1";
+        $pyBin = $this->getPythonBinary();
+        if (file_exists($pyScript) && $pyBin) {
+            $cmd = "{$pyBin} " . escapeshellarg($pyScript) . " " . escapeshellarg($dbPath) . " 2>&1";
             shell_exec($cmd);
         } else {
             Individu::query()->delete();
@@ -1238,4 +1237,38 @@ class DtsenController extends Controller
             'eta_seconds' => 0
         ]);
     }
+
+    /**
+     * Cari perintah/path Python yang valid di sistem (support Windows, Linux, Mac).
+     */
+    private function getPythonBinary(): ?string
+    {
+        if ($envPy = env('PYTHON_BINARY')) {
+            return $envPy;
+        }
+
+        $candidates = ['python', 'py', 'python3'];
+
+        // Path populer Python di Windows jika tidak ada di System PATH
+        $userProfile = getenv('USERPROFILE') ?: getenv('HOME');
+        if ($userProfile) {
+            foreach (range(12, 8, -1) as $ver) {
+                $candidates[] = "{$userProfile}\\AppData\\Local\\Programs\\Python\\Python3{$ver}\\python.exe";
+            }
+        }
+        foreach (range(12, 8, -1) as $ver) {
+            $candidates[] = "C:\\Python3{$ver}\\python.exe";
+        }
+
+        foreach ($candidates as $bin) {
+            $escaped = (str_contains($bin, ' ') || str_contains($bin, '\\')) ? '"' . $bin . '"' : $bin;
+            $out = @shell_exec("{$escaped} --version 2>&1");
+            if ($out && preg_match('/Python\s+3\./i', $out)) {
+                return $escaped;
+            }
+        }
+
+        return null;
+    }
 }
+
