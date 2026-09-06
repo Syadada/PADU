@@ -76,6 +76,20 @@ pause
 goto END
 
 :LAUNCH_SERVER
+rem Cek & buat file .env jika belum ada
+if not exist "%PROJECT_DIR%.env" (
+    if exist "%PROJECT_DIR%.env.example" (
+        copy "%PROJECT_DIR%.env.example" "%PROJECT_DIR%.env" >nul
+    )
+)
+
+rem Generate APP_KEY jika belum terisi
+findstr /C:"APP_KEY=base64:" "%PROJECT_DIR%.env" >nul 2>&1
+if %errorlevel% neq 0 (
+    echo [CONFIG] Menggenerasi Application Key...
+    "%PHP_BIN%" artisan key:generate --force >nul 2>&1
+)
+
 echo.
 echo [STARTING] Menjalankan server lokal PADU di http://127.0.0.1:8000/ ...
 start "" /b "%PHP_BIN%" artisan serve --host=127.0.0.1 --port=8000
