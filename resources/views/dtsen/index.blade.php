@@ -1415,10 +1415,22 @@ function dtsenApp() {
 
                     const response = await fetch('/dtsen/import-chunk', {
                         method: 'POST',
-                        body: formData
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        }
                     });
 
-                    const resData = await response.json();
+                    const resText = await response.text();
+                    let resData;
+                    try {
+                        resData = JSON.parse(resText);
+                    } catch (e) {
+                        const cleanErrText = resText.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim();
+                        throw new Error('Respon server (Status ' + response.status + '): ' + cleanErrText.substring(0, 200));
+                    }
+
                     if (!response.ok || !resData.success) {
                         throw new Error(resData.message || 'Gagal mengunggah chunk ' + (chunkIndex + 1));
                     }

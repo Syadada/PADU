@@ -804,77 +804,81 @@ class DtsenController extends Controller
      */
     public function importChunk(Request $request)
     {
-        $fileId = $request->input('file_id');
-        $chunkIndex = (int)$request->input('chunk_index');
-        $totalChunks = (int)$request->input('total_chunks');
-        $fileName = $request->input('file_name');
-        $fileSize = (int)$request->input('file_size');
-        $chunkFile = $request->file('chunk');
+        try {
+            $fileId = $request->input('file_id');
+            $chunkIndex = (int)$request->input('chunk_index');
+            $totalChunks = (int)$request->input('total_chunks');
+            $fileName = $request->input('file_name');
+            $fileSize = (int)$request->input('file_size');
+            $chunkFile = $request->file('chunk');
 
-        if (empty($fileId) || !$chunkFile) {
-            return response()->json(['success' => false, 'message' => 'Chunk data tidak valid.'], 400);
-        }
+            if (empty($fileId) || !$chunkFile) {
+                return response()->json(['success' => false, 'message' => 'Chunk data tidak valid.'], 400);
+            }
 
-        $tempDir = storage_path('app/temp_imports');
-        if (!file_exists($tempDir)) {
-            mkdir($tempDir, 0777, true);
-        }
+            $tempDir = storage_path('app/temp_imports');
+            if (!file_exists($tempDir)) {
+                @mkdir($tempDir, 0777, true);
+            }
 
-        $tempPath = $tempDir . '/' . preg_replace('/[^a-zA-Z0-9_\-]/', '_', $fileId) . '.tmp';
-        
-        // Append chunk stream
-        $chunkContent = file_get_contents($chunkFile->getRealPath());
-        file_put_contents($tempPath, $chunkContent, FILE_APPEND);
+            $tempPath = $tempDir . '/' . preg_replace('/[^a-zA-Z0-9_\-]/', '_', $fileId) . '.tmp';
+            
+            // Append chunk stream
+            $chunkContent = file_get_contents($chunkFile->getRealPath());
+            file_put_contents($tempPath, $chunkContent, FILE_APPEND);
 
-        // Jika ini chunk terakhir, proses impor file utuh via Python Engine
-        if ($chunkIndex >= $totalChunks - 1) {
-            $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION)) ?: 'csv';
-            try {
-                $pyBin = $this->getPythonBinary();
-                if (in_array($extension, ['csv', 'txt']) && $pyBin) {
-                    $pyScript = base_path('scratch/fast_import.py');
-                    $dbPath = database_path('database.sqlite');
-                    if (file_exists($pyScript)) {
-                        $cmd = "{$pyBin} " . escapeshellarg($pyScript) . " " . escapeshellarg($tempPath) . " " . escapeshellarg($dbPath) . " 2>&1";
-                        $startT = microtime(true);
-                        $output = shell_exec($cmd);
-                        $elapsedT = round(microtime(true) - $startT, 2);
-                        @unlink($tempPath);
+            // Jika ini chunk terakhir, proses impor file utuh
+            if ($chunkIndex >= $totalChunks - 1) {
+                $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION)) ?: 'csv';
+                try {
+                    $pyBin = $this->getPythonBinary();
+                    if (in_array($extension, ['csv', 'txt']) && $pyBin) {
+                        $pyScript = base_path('scratch/fast_import.py');
+                        $dbPath = database_path('database.sqlite');
+                        if (file_exists($pyScript)) {
+                            $cmd = "{$pyBin} " . escapeshellarg($pyScript) . " " . escapeshellarg($tempPath) . " " . escapeshellarg($dbPath) . " 2>&1";
+                            $startT = microtime(true);
+                            $output = shell_exec($cmd);
+                            $elapsedT = round(microtime(true) - $startT, 2);
+                            @unlink($tempPath);
 
-                        if ($output && str_contains($output, '[SUCCESS]')) {
-                            if (preg_match('/\[SUMMARY_STATS\]\s*(\{.*\})/', $output, $sm)) {
-                                $parsedStats = json_decode($sm[1], true);
-                                if (is_array($parsedStats)) {
-                                    session(['dataset_summary_stats' => $parsedStats]);
+                            if ($output && str_contains($output, '[SUCCESS]')) {
+                                if (preg_match('/\[SUMMARY_STATS\]\s*(\{.*\})/', $output, $sm)) {
+                                    $parsedStats = json_decode($sm[1], true);
+                                    if (is_array($parsedStats)) {
+                                        session(['dataset_summary_stats' => $parsedStats]);
+                                    }
                                 }
+                                return response()->json([
+                                    'success' => true,
+                                    'is_complete' => true,
+                                    'message' => "Berhasil mengimpor data dalam {$elapsedT} detik."
+                                ]);
                             }
-                            return response()->json([
-                                'success' => true,
-                                'is_complete' => true,
-                                'message' => "Berhasil mengimpor data dalam {$elapsedT} detik."
-                            ]);
                         }
                     }
+
+                    $result = DtsenImportService::parseAndImportFile($tempPath, $extension, $fileName, $fileSize);
+                    @unlink($tempPath);
+                    return response()->json([
+                        'success' => true,
+                        'is_complete' => true,
+                        'message' => "Berhasil mengimpor & kalkulasi " . number_format($result['total_rows']) . " baris data! ({$result['invalid']} temuan warning/critical)."
+                    ]);
+                } catch (\Throwable $e) {
+                    @unlink($tempPath);
+                    return response()->json(['success' => false, 'message' => "Gagal mengimpor file: " . $e->getMessage()], 500);
                 }
-
-                $result = DtsenImportService::parseAndImportFile($tempPath, $extension, $fileName, $fileSize);
-                @unlink($tempPath);
-                return response()->json([
-                    'success' => true,
-                    'is_complete' => true,
-                    'message' => "Berhasil mengimpor & kalkulasi " . number_format($result['total_rows']) . " baris data! ({$result['invalid']} temuan warning/critical)."
-                ]);
-            } catch (\Exception $e) {
-                @unlink($tempPath);
-                return response()->json(['success' => false, 'message' => "Gagal mengimpor file: " . $e->getMessage()], 500);
             }
-        }
 
-        return response()->json([
-            'success' => true,
-            'is_complete' => false,
-            'progress' => round((($chunkIndex + 1) / $totalChunks) * 100, 1)
-        ]);
+            return response()->json([
+                'success' => true,
+                'is_complete' => false,
+                'progress' => round((($chunkIndex + 1) / $totalChunks) * 100, 1)
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json(['success' => false, 'message' => "Gagal memproses chunk upload: " . $e->getMessage()], 500);
+        }
     }
 
     /**
