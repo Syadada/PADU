@@ -95,7 +95,7 @@ if not exist "%PROJECT_DIR%python\python.exe" (
     where python >nul 2>&1
     if %errorlevel% neq 0 (
         echo [INFO] Python belum terdeteksi di laptop ini.
-        echo [DOWNLOAD] Menyiapkan Portable Python otomatis (10MB)...
+        echo [DOWNLOAD] Menyiapkan Portable Python otomatis 10MB...
         powershell -ExecutionPolicy Bypass -File "%PROJECT_DIR%setup_python.ps1"
     )
 )
