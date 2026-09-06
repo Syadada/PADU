@@ -1,0 +1,184 @@
+/* ==========================================================================
+   PADU v1.02 - Main Application Custom Stylesheet (Clean High Contrast)
+   Lokasi: public/css/app.css
+   ========================================================================== */
+
+/* 1. Base Reset & Typography Reset */
+*, ::before, ::after {
+    box-sizing: border-box;
+    border-width: 0;
+    border-style: solid;
+    border-color: #cbd5e1;
+}
+
+html, body {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: #f8fafc;
+    color: #0f172a;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* 2. Global Link Reset */
+a, a:hover, a:focus, a:visited {
+    color: inherit;
+    text-decoration: none !important;
+}
+
+/* 3. Alpine.js Cloak Directive */
+[x-cloak] {
+    display: none !important;
+}
+
+/* 4. Select Option Colors */
+select option {
+    background-color: #ffffff;
+    color: #0f172a;
+    font-weight: 600;
+    padding: 6px 12px;
+}
+
+/* 5. Button Base Weight */
+button, .btn {
+    font-weight: 700;
+}
+
+/* 6. Card & Table Legibility Rules */
+.card-simple {
+    background-color: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+}
+
+table th {
+    color: #1e293b;
+    font-weight: 800;
+    background-color: #f1f5f9;
+}
+
+table td {
+    color: #0f172a;
+}
+
+/* 7. Branding Header Helpers */
+.brand-logo-link {
+    text-decoration: none !important;
+}
+
+.brand-title {
+    margin: 0;
+}
+
+.brand-subtitle {
+    margin-top: 2px;
+    margin-bottom: 0;
+}
+
+.nav-link-clean {
+    text-decoration: none !important;
+}
+
+/* 8. Scrollbar Polish */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* 9. High-Contrast Card & File Selector Helpers (Guaranteed Legibility) */
+.card-dark-slate {
+    background-color: #0f172a !important; /* Dark Slate 900 */
+    border: 1px solid #1e293b !important;
+    color: #ffffff !important;
+}
+
+.card-dark-slate h3, 
+.card-dark-slate h4 {
+    color: #ffffff !important;
+}
+
+.card-dark-slate p,
+.card-dark-slate label {
+    color: #cbd5e1 !important;
+}
+
+.file-option-card {
+    background-color: #1e293b !important;
+    border: 1px solid #334155 !important;
+    color: #ffffff !important;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.file-option-card:hover {
+    background-color: #334155 !important;
+    border-color: #3b82f6 !important;
+}
+
+.file-option-card.selected-card {
+    background-color: #172554 !important; /* Blue 950 */
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5) !important;
+}
+
+.file-option-card strong {
+    color: #ffffff !important;
+}
+
+.file-size-badge {
+    background-color: #020617 !important;
+    color: #f59e0b !important;
+    border: 1px solid #334155 !important;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-family: monospace;
+    font-weight: 700;
+}
+
+.btn-process-data {
+    background-color: #059669 !important; /* Emerald 600 */
+    color: #ffffff !important;
+    font-weight: 900 !important;
+    border: none !important;
+    padding: 0.75rem 2rem !important;
+    border-radius: 0.75rem !important;
+    box-shadow: 0 4px 10px rgba(5, 150, 105, 0.4) !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+.btn-process-data:hover {
+    background-color: #10b981 !important;
+    box-shadow: 0 6px 15px rgba(16, 185, 129, 0.5) !important;
+}
+
+.btn-refresh-folder {
+    background-color: #0284c7 !important; /* Sky 600 */
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 0.75rem !important;
+    border: 1px solid #0369a1 !important;
+    cursor: pointer !important;
+}
+
+.btn-refresh-folder:hover {
+    background-color: #0ea5e9 !important;
+}
+
