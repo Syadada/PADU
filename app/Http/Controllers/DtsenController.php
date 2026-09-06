@@ -892,7 +892,11 @@ class DtsenController extends Controller
         $targetFile = !empty($selectedFile) ? $selectedFile : $localPath;
 
         if (empty($targetFile)) {
-            return redirect()->route('dtsen.index')->with('error', 'Harap pilih berkas data dari folder src-dtsen.');
+            $msg = 'Harap pilih berkas data dari folder src-dtsen.';
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => $msg], 400);
+            }
+            return redirect()->route('dtsen.index')->with('error', $msg);
         }
 
         // Resolusi jalur file ke folder src-dtsen atau base_path
@@ -909,7 +913,11 @@ class DtsenController extends Controller
         }
 
         if (!$fullPath || !file_exists($fullPath)) {
-            return redirect()->route('dtsen.index')->with('error', "Berkas '{$targetFile}' tidak ditemukan di folder src-dtsen. Pastikan berkas sudah dipindahkan ke folder src-dtsen/.");
+            $msg = "Berkas '{$targetFile}' tidak ditemukan di folder src-dtsen. Pastikan berkas sudah dipindahkan ke folder src-dtsen/.";
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => $msg], 404);
+            }
+            return redirect()->route('dtsen.index')->with('error', $msg);
         }
 
         $extension = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION)) ?: 'csv';
@@ -994,9 +1002,17 @@ class DtsenController extends Controller
 
         try {
             $result = DtsenImportService::parseAndImportFile($fullPath, $extension, $fileName, $fileSize);
-            return redirect()->route('dtsen.index')->with('success', "Berhasil mengimpor & kalkulasi " . number_format($result['total_rows']) . " baris data dari folder 'src-dtsen/{$fileName}'! ({$result['invalid']} temuan warning/critical).");
-        } catch (\Exception $e) {
-            return redirect()->route('dtsen.index')->with('error', "Gagal mengimpor berkas dari folder src-dtsen: " . $e->getMessage());
+            $msg = "Berhasil mengimpor & kalkulasi " . number_format($result['total_rows']) . " baris data dari folder 'src-dtsen/{$fileName}'! ({$result['invalid']} temuan warning/critical).";
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['success' => true, 'message' => $msg]);
+            }
+            return redirect()->route('dtsen.index')->with('success', $msg);
+        } catch (\Throwable $e) {
+            $msg = "Gagal mengimpor berkas dari folder src-dtsen: " . $e->getMessage();
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => $msg], 500);
+            }
+            return redirect()->route('dtsen.index')->with('error', $msg);
         }
     }
 
