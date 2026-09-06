@@ -26,3 +26,5 @@ __pycache__/
 *.pyc
 src-dtsen/sample_1_juta_data.csv
 src-export/*.zip
+python/
+python_portable.zip

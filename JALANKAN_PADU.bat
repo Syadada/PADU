@@ -90,6 +90,16 @@ if %errorlevel% neq 0 (
     "%PHP_BIN%" artisan key:generate --force >nul 2>&1
 )
 
+rem Cek & siapkan Portable Python otomatis jika belum ada
+if not exist "%PROJECT_DIR%python\python.exe" (
+    where python >nul 2>&1
+    if %errorlevel% neq 0 (
+        echo [INFO] Python belum terdeteksi di laptop ini.
+        echo [DOWNLOAD] Menyiapkan Portable Python otomatis (10MB)...
+        powershell -ExecutionPolicy Bypass -File "%PROJECT_DIR%setup_python.ps1"
+    )
+)
+
 echo.
 echo [STARTING] Menjalankan server lokal PADU di http://127.0.0.1:8000/ ...
 start "" /b "%PHP_BIN%" artisan serve --host=127.0.0.1 --port=8000

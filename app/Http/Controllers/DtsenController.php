@@ -1239,7 +1239,7 @@ class DtsenController extends Controller
     }
 
     /**
-     * Cari perintah/path Python yang valid di sistem (support Windows, Linux, Mac).
+     * Cari perintah/path Python yang valid di sistem (support Portable Python, Windows, Linux, Mac).
      */
     private function getPythonBinary(): ?string
     {
@@ -1247,9 +1247,18 @@ class DtsenController extends Controller
             return $envPy;
         }
 
-        $candidates = ['python', 'py', 'python3'];
+        $candidates = [];
 
-        // Path populer Python di Windows jika tidak ada di System PATH
+        // 1. Cek Portable Python lokal di folder proyek
+        $localPy = base_path('python/python.exe');
+        if (file_exists($localPy)) {
+            $candidates[] = '"' . $localPy . '"';
+        }
+
+        // 2. Command standar
+        $candidates = array_merge($candidates, ['python', 'py', 'python3']);
+
+        // 3. Path populer Python di Windows jika tidak ada di System PATH
         $userProfile = getenv('USERPROFILE') ?: getenv('HOME');
         if ($userProfile) {
             foreach (range(12, 8, -1) as $ver) {
@@ -1261,7 +1270,7 @@ class DtsenController extends Controller
         }
 
         foreach ($candidates as $bin) {
-            $escaped = (str_contains($bin, ' ') || str_contains($bin, '\\')) ? '"' . $bin . '"' : $bin;
+            $escaped = (str_starts_with($bin, '"') || (!str_contains($bin, ' ') && !str_contains($bin, '\\'))) ? $bin : '"' . $bin . '"';
             $out = @shell_exec("{$escaped} --version 2>&1");
             if ($out && preg_match('/Python\s+3\./i', $out)) {
                 return $escaped;
@@ -1271,4 +1280,5 @@ class DtsenController extends Controller
         return null;
     }
 }
+
 
