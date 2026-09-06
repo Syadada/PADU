@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call(DemographicSeeder::class);
+        // Default: Kosong tanpa data sampel (0 data)
+        // $this->call(DemographicSeeder::class);
     }
 }
