@@ -264,6 +264,8 @@ class DtsenImportService
      */
     public static function parseAndImportFile(string $filePath, string $extension, ?string $originalName = null, ?int $fileSize = null): array
     {
+        set_time_limit(0);
+        ini_set('memory_limit', '1024M');
         DB::disableQueryLog();
         try {
             DB::statement('PRAGMA journal_mode = WAL;');

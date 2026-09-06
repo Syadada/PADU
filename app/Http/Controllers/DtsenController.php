@@ -760,6 +760,8 @@ class DtsenController extends Controller
      */
     public function importFile(Request $request)
     {
+        set_time_limit(0);
+        ini_set('memory_limit', '1024M');
         $request->validate([
             'file' => 'required|file'
         ]);
@@ -804,6 +806,8 @@ class DtsenController extends Controller
      */
     public function importChunk(Request $request)
     {
+        set_time_limit(0);
+        ini_set('memory_limit', '1024M');
         try {
             $fileId = $request->input('file_id');
             $chunkIndex = (int)$request->input('chunk_index');
@@ -886,6 +890,8 @@ class DtsenController extends Controller
      */
     public function importLocalPath(Request $request)
     {
+        set_time_limit(0);
+        ini_set('memory_limit', '1024M');
         $selectedFile = trim($request->input('selected_file'));
         $localPath = trim($request->input('local_path'));
         

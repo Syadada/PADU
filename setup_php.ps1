@@ -42,7 +42,7 @@ if ($downloaded) {
 
     if (Test-Path "$phpDir\php.ini-development") {
         Copy-Item "$phpDir\php.ini-development" "$phpDir\php.ini" -Force
-        Add-Content -Path "$phpDir\php.ini" -Value "`nextension_dir = `"ext`"`nextension=pdo_sqlite`nextension=mbstring`nextension=fileinfo`nextension=openssl`nextension=sqlite3"
+        Add-Content -Path "$phpDir\php.ini" -Value "`nextension_dir = `"ext`"`nextension=pdo_sqlite`nextension=mbstring`nextension=fileinfo`nextension=openssl`nextension=sqlite3`nmax_execution_time = 0`nmemory_limit = 1024M"
     }
     Write-Host "[SUKSES] Portable PHP berhasil disiapkan di: $phpDir"
 } else {
