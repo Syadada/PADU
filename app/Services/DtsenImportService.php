@@ -366,6 +366,7 @@ class DtsenImportService
     {
         DB::transaction(function () use ($batchRows, $normalizedHeaders, $tableColumns, &$insertedCount, &$invalidCount) {
             $batchIndividuInserts = [];
+            $batchKeluargaInserts = [];
             $nowStr = date('Y-m-d H:i:s');
 
             foreach ($batchRows as $rowValues) {
@@ -404,10 +405,9 @@ class DtsenImportService
                     $nik = '3201' . rand(10, 99) . rand(1000000000, 9999999999);
                 }
 
-                // Cari atau buat record Keluarga
-                Keluarga::firstOrCreate(
-                    ['nomor_kartu_keluarga' => $kk],
-                    [
+                if (!isset($batchKeluargaInserts[$kk])) {
+                    $batchKeluargaInserts[$kk] = [
+                        'nomor_kartu_keluarga' => $kk,
                         'kode_provinsi' => '32',
                         'provinsi' => $prov,
                         'kode_kabupaten_kota' => '3201',
@@ -422,8 +422,10 @@ class DtsenImportService
                         'jenis_lantai_terluas' => $jenisLantai,
                         'jenis_atap_terluas' => $jenisAtap,
                         'sumber_air_minum_utama' => $sumberAir,
-                    ]
-                );
+                        'created_at' => $nowStr,
+                        'updated_at' => $nowStr,
+                    ];
+                }
 
                 $gaji = $rowMap['gaji'] ?? ($rowMap['gaji_bulanan'] ?? ($rowMap['pendapatan'] ?? null));
                 $usia = $rowMap['usia'] ?? ($rowMap['umur'] ?? null);
@@ -472,6 +474,10 @@ class DtsenImportService
 
                 $batchIndividuInserts[] = $rowInsert;
                 $insertedCount++;
+            }
+
+            if (!empty($batchKeluargaInserts)) {
+                DB::table('keluargas')->insertOrIgnore(array_values($batchKeluargaInserts));
             }
 
             if (!empty($batchIndividuInserts)) {

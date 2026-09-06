@@ -1319,6 +1319,7 @@ function dtsenApp() {
 
             // Smooth Client Progress Animation (Ticks every 400ms for realistic ETA countdown)
             let elapsedSteps = 0;
+            let isPollingActive = false;
             const totalEstimatedSteps = 22; // ~9 seconds total
             this.progressPollTimer = setInterval(() => {
                 elapsedSteps++;
@@ -1338,9 +1339,11 @@ function dtsenApp() {
                     this.importProgressMessage = 'Membangun indeks pencarian database...';
                 }
 
-                // Polling attempt in case backend server is multi-threaded
-                fetch('/dtsen/import-progress')
-                    .then(res => res.json())
+                // Safe polling (cegah request menumpuk & browser hang)
+                if (isPollingActive) return;
+                isPollingActive = true;
+                fetch('/dtsen/import-progress', { headers: { 'Accept': 'application/json' } })
+                    .then(res => res.ok ? res.json() : null)
                     .then(data => {
                         if (data && data.percent > 0 && data.percent > this.importProgressPercent) {
                             this.importProgressPercent = data.percent;
@@ -1348,8 +1351,9 @@ function dtsenApp() {
                             this.importEtaSeconds = data.eta_seconds;
                         }
                     })
-                    .catch(() => {});
-            }, 400);
+                    .catch(() => {})
+                    .finally(() => { isPollingActive = false; });
+            }, 1200);
 
             try {
                 const formData = new FormData(e.target);
