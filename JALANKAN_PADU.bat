@@ -46,11 +46,13 @@ if exist "C:\php\php.exe" (
 )
 
 :: Cek Laragon
-for /d %%d in ("C:\laragon\bin\php\php-*") do (
-    if exist "%%d\php.exe" (
-        set "PHP_BIN=%%d\php.exe"
-        echo [OK] Menggunakan PHP dari Laragon: %%d\php.exe
-        goto LAUNCH_SERVER
+if exist "C:\laragon\bin\php" (
+    for /d %%d in ("C:\laragon\bin\php\php-*") do (
+        if exist "%%d\php.exe" (
+            set "PHP_BIN=%%d\php.exe"
+            echo [OK] Menggunakan PHP dari Laragon: %%d\php.exe
+            goto LAUNCH_SERVER
+        )
     )
 )
 
