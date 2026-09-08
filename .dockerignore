@@ -1,0 +1,31 @@
+# =====================================================================
+# .dockerignore - ABAIKAN BERKAS RAKSASA & TEMPORARY SAAT DOCKER BUILD
+# =====================================================================
+
+# 1. Dataset Raksasa & Database Storage (Cegah transfer Gigabytes ke Docker)
+src-dtsen/sample_13_juta_data.csv
+src-dtsen/sample_1_juta_data.csv
+database/*.sqlite
+database/*.duckdb
+database/*.sqlite-journal
+database/*.sqlite-wal
+
+# 2. Dependency Folder & Git History
+vendor/
+node_modules/
+.git/
+.github/
+
+# 3. Environment & Temporary Files
+.env
+.env.backup
+*.log
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/app/temp_imports/*
+python/
+python_portable.zip
+src-export/*.zip
+~$*
