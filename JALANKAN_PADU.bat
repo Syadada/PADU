@@ -90,6 +90,9 @@ if %errorlevel% neq 0 (
     "%PHP_BIN%" artisan key:generate --force >nul 2>&1
 )
 
+rem Jalankan migrasi database otomatis untuk menyiapkan struktur tabel dasar
+"%PHP_BIN%" artisan migrate --force >nul 2>&1
+
 rem Cek & siapkan Python serta pustaka DuckDB otomatis jika belum ada di laptop ini
 set "NEED_PY_SETUP=0"
 if not exist "%PROJECT_DIR%python\python.exe" (
