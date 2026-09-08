@@ -115,15 +115,14 @@ if "%NEED_PY_SETUP%"=="1" (
 )
 
 echo.
-echo [STARTING] Menjalankan server lokal PADU di http://127.0.0.1:8000/ ...
-start "" /b "%PHP_BIN%" artisan serve --host=127.0.0.1 --port=8000
-
-
-
 echo [BROWSER] Membuka browser otomatis ke http://127.0.0.1:8000/ ...
 powershell -Command "Start-Process 'http://127.0.0.1:8000/'"
 
-:END
 echo.
-echo [SUKSES] Aplikasi PADU aktif di browser Anda (http://127.0.0.1:8000/).
 echo =======================================================================
+echo [SERVER] Server PADU Aktif di http://127.0.0.1:8000/
+echo [INFO] Tekan CTRL+C di jendela ini untuk menghentikan server kapan saja.
+echo =======================================================================
+echo.
+
+"%PHP_BIN%" artisan serve --host=127.0.0.1 --port=8000
