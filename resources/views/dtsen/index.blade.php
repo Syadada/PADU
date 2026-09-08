@@ -59,19 +59,23 @@
             </p>
         </div>
 
-        <div class="flex items-center gap-2.5 shrink-0" x-data="{ showExportModal: false, showTemplateModal: false, showClearModal: false }">
+        <div class="flex flex-wrap items-center gap-2.5 shrink-0" x-data="{ showExportModal: false, showTemplateModal: false, showClearModal: false }">
+            <button type="button" @click="openLogConsole()" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-black font-bold text-xs shadow-md transition-all flex items-center gap-2 border border-slate-700 whitespace-nowrap shrink-0 cursor-pointer">
+                <span>📋</span> Log Aktivitas System <span x-show="logCount > 0" class="px-2 py-0.5 rounded-full bg-blue-600 text-white text-[10px] font-bold" x-text="logCount"></span>
+            </button>
+
             @if($totalRows > 0)
-                <button @click="showExportModal = true" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all flex items-center gap-1.5 cursor-pointer">
+                <button @click="showExportModal = true" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer">
                     <span>📤</span> Ekspor Data Paket (.ZIP)
                 </button>
-                <button @click="showClearModal = true" class="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-sm transition-all flex items-center gap-1.5 cursor-pointer">
+                <button @click="showClearModal = true" class="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-sm transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer">
                     <span>🗑️</span> Kosongkan Data
                 </button>
             @endif
 
             <!-- Dropdown Format Template Data -->
-            <div class="relative">
-                <button @click="showTemplateModal = !showTemplateModal" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all flex items-center gap-1.5 border border-slate-200 cursor-pointer">
+            <div class="relative shrink-0">
+                <button @click="showTemplateModal = !showTemplateModal" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all flex items-center gap-1.5 border border-slate-200 whitespace-nowrap cursor-pointer">
                     <span>⬇️</span> Template Data ▾
                 </button>
                 <div x-show="showTemplateModal" 
@@ -885,10 +889,10 @@
                     <button type="button" @click="showColumnModal = true" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl border border-slate-300 shadow-xs transition-all flex items-center gap-1.5 cursor-pointer">
                         <span>⚙️</span> Atur Kolom Tabel (<span x-text="visibleCols.length"></span>/{{ count($activeColumnsMap) }})
                     </button>
-                    <!-- Tombol Cetak / Print Tabel Data -->
-                    <button type="button" onclick="window.print()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-xl border border-slate-700 shadow-xs transition-all flex items-center gap-1.5 cursor-pointer">
-                        <span>🖨️</span> Cetak Tabel Data
-                    </button>
+                    <!-- Tombol Reset Filter Data -->
+                    <a href="{{ route('dtsen.index') }}#tabel-data" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl border border-slate-300 shadow-xs transition-all flex items-center gap-1.5 cursor-pointer">
+                        <span>🔄</span> Reset Filter
+                    </a>
                     <span class="text-xs font-bold text-slate-500 bg-slate-50 px-3 py-2 rounded-xl border border-slate-200">Halaman {{ $records->currentPage() }} dari {{ $records->lastPage() }}</span>
                 </div>
             </div>
@@ -1502,6 +1506,109 @@
                 <span>Status Pemrosesan:</span>
                 <span class="text-slate-900 font-bold" x-text="importProgressMessage"></span>
             </div>
+
+            <!-- Tombol Opsi Batalkan Injeksi jika Hang / Stuck -->
+            <div class="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                <button type="button" @click="openLogConsole()" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1.5 border border-slate-300 cursor-pointer">
+                    <span>📋</span> Buka Log Monitor
+                </button>
+                <button type="button" @click="cancelCurrentImport()" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer">
+                    <span>🚫</span> Batalkan Injeksi Data
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Console Log System Realtime & Activity Monitor -->
+    <div x-show="showLogModal" 
+         x-transition 
+         class="fixed inset-0 z-[99999] flex items-center justify-center p-4" 
+         style="background-color: rgba(2, 6, 23, 0.88) !important; backdrop-filter: blur(8px); display: none;">
+        <div @click.away="showLogModal = false" 
+             class="rounded-2xl shadow-2xl border w-full max-w-4xl p-6 space-y-4 font-sans text-white relative z-[100000]" 
+             style="background-color: #0b1329 !important; border: 1px solid #334155 !important;">
+            <div class="flex items-center justify-between border-b pb-3" style="border-color: #1e293b !important;">
+                <div class="flex items-center gap-3">
+                    <span class="w-9 h-9 rounded-xl text-blue-400 flex items-center justify-center font-bold text-base border" style="background-color: rgba(59, 130, 246, 0.15) !important; border-color: rgba(59, 130, 246, 0.3) !important;">📋</span>
+                    <div>
+                        <h3 class="font-extrabold text-white text-sm flex items-center gap-2">
+                            Console Log Aktivitas & Monitor System (100% Realtime)
+                        </h3>
+                        <p class="text-[11px] font-medium" style="color: #94a3b8 !important;">Pantau proses injeksi data, agregasi DuckDB, ekspor berkas, dan log pembatalan.</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="button" @click="fetchLogs()" class="px-3.5 py-1.5 hover:bg-blue-600 font-bold text-xs rounded-xl border flex items-center gap-1.5 transition-colors cursor-pointer" style="background-color: rgba(59, 130, 246, 0.2) !important; color: #93c5fd !important; border-color: rgba(59, 130, 246, 0.4) !important;">
+                        <span>🔄</span> Refresh
+                    </button>
+                    <button type="button" @click="showLogModal = false" class="w-8 h-8 rounded-xl font-bold text-sm flex items-center justify-center border transition-all cursor-pointer" style="background-color: #1e293b !important; color: #cbd5e1 !important; border-color: #334155 !important;">✕</button>
+                </div>
+            </div>
+
+            <!-- Toolbar Control Log Console -->
+            <div class="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-xl border text-xs" style="background-color: #020617 !important; border-color: #1e293b !important;">
+                <div class="flex items-center gap-2">
+                    <span class="font-bold" style="color: #cbd5e1 !important;">Filter Level:</span>
+                    <select x-model="logFilter" class="border rounded-xl px-3 py-1.5 text-xs font-bold outline-none cursor-pointer" style="background-color: #0f172a !important; color: #ffffff !important; border-color: #334155 !important;">
+                        <option value="ALL">Semua Level</option>
+                        <option value="INFO">INFO</option>
+                        <option value="SUCCESS">SUCCESS (Sukses)</option>
+                        <option value="WARNING">WARNING (Peringatan)</option>
+                        <option value="CANCEL">CANCEL (Batal)</option>
+                        <option value="ERROR">ERROR (Gagal)</option>
+                    </select>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button type="button" @click="cancelCurrentImport()" class="px-3.5 py-1.5 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 shadow-md cursor-pointer border" style="background-color: #dc2626 !important; color: #ffffff !important; border-color: #ef4444 !important;">
+                        <span>🚫</span> Batalkan Injeksi Aktif
+                    </button>
+                    <button type="button" @click="copySystemLogs()" class="px-3.5 py-1.5 font-bold text-xs rounded-xl border flex items-center gap-1.5 transition-all cursor-pointer" style="background-color: #1e293b !important; color: #f1f5f9 !important; border-color: #475569 !important;">
+                        <span>📋</span> Salin Log
+                    </button>
+                    <button type="button" @click="clearSystemLogs()" class="px-3.5 py-1.5 font-bold text-xs rounded-xl border flex items-center gap-1.5 transition-all cursor-pointer" style="background-color: #7f1d1d !important; color: #fecdd3 !important; border-color: #991b1b !important;">
+                        <span>🗑️</span> Bersihkan Log
+                    </button>
+                </div>
+            </div>
+
+            <!-- Box Console Display Log Lines -->
+            <div class="rounded-xl border p-4 font-mono text-xs max-h-[50vh] overflow-y-auto space-y-1.5 scrollbar-thin" style="background-color: #020617 !important; border-color: #1e293b !important;">
+                <template x-for="item in filteredLogs" :key="item.id">
+                    <div class="flex items-start gap-2 leading-relaxed border-b pb-1" style="border-color: #0f172a !important;">
+                        <span class="text-[11px] shrink-0 font-bold" style="color: #94a3b8 !important;" x-text="'[' + item.timestamp + ']'"></span>
+                        
+                        <span class="px-1.5 py-0.5 rounded text-[10px] font-bold tracking-wide shrink-0" 
+                              :class="{
+                                  'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30': item.level === 'SUCCESS',
+                                  'bg-blue-500/20 text-blue-400 border border-blue-500/30': item.level === 'INFO',
+                                  'bg-amber-500/20 text-amber-400 border border-amber-500/30': item.level === 'WARNING' || item.level === 'CANCEL',
+                                  'bg-rose-500/20 text-rose-400 border border-rose-500/30': item.level === 'ERROR'
+                              }" 
+                              x-text="item.level"></span>
+                              
+                        <span class="break-all" 
+                              :class="{
+                                  'text-emerald-300': item.level === 'SUCCESS',
+                                  'text-blue-200': item.level === 'INFO',
+                                  'text-amber-300': item.level === 'WARNING' || item.level === 'CANCEL',
+                                  'text-rose-300': item.level === 'ERROR'
+                              }" 
+                              x-text="item.message"></span>
+                    </div>
+                </template>
+
+                <div x-show="filteredLogs.length === 0" class="py-8 text-center font-sans text-xs font-bold" style="color: #64748b !important;">
+                    Belum ada log aktivitas yang tercatat.
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between text-xs border-t pt-3 font-bold" style="border-color: #1e293b !important; color: #94a3b8 !important;">
+                <span x-text="'Total ' + logList.length + ' entri log tercatat'"></span>
+                <span class="text-emerald-400 font-bold flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Monitor Log Online
+                </span>
+            </div>
         </div>
     </div>
 
@@ -1733,6 +1840,94 @@ function dtsenApp() {
             } catch (err) {
                 alert('Gagal mengunggah berkas: ' + err.message);
                 this.isUploading = false;
+            }
+        },
+
+        showLogModal: false,
+        logList: [],
+        logFilter: 'ALL',
+        logPollTimer: null,
+        logCount: 0,
+
+        get filteredLogs() {
+            if (this.logFilter === 'ALL') return this.logList;
+            return this.logList.filter(l => l.level === this.logFilter);
+        },
+
+        openLogConsole() {
+            this.showLogModal = true;
+            this.fetchLogs();
+            if (this.logPollTimer) clearInterval(this.logPollTimer);
+            this.logPollTimer = setInterval(() => {
+                if (this.showLogModal || this.showImportProgressModal) {
+                    this.fetchLogs();
+                }
+            }, 3000);
+        },
+
+        async fetchLogs() {
+            try {
+                const res = await fetch('/dtsen/logs', { headers: { 'Accept': 'application/json' } });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.logs) {
+                        this.logList = data.logs;
+                        this.logCount = data.total || 0;
+                    }
+                }
+            } catch (e) {}
+        },
+
+        async clearSystemLogs() {
+            if (!confirm('Apakah Anda yakin ingin mengosongkan berkas log aktivitas sistem?')) return;
+            try {
+                const res = await fetch('/dtsen/logs/clear', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    }
+                });
+                if (res.ok) {
+                    this.fetchLogs();
+                }
+            } catch (e) {}
+        },
+
+        copySystemLogs() {
+            const text = this.filteredLogs.map(l => `[${l.timestamp}] [${l.level}] ${l.message}`).join('\n');
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Berhasil menyalin log aktivitas ke clipboard!');
+            });
+        },
+
+        async cancelCurrentImport() {
+            if (!confirm('⚠️ Batalkan proses injeksi dataset ke database?\n\nSemua proses impor yang sedang berjalan akan dihentikan dan memori temporary akan dibersihkan.')) {
+                return;
+            }
+
+            try {
+                const res = await fetch('/dtsen/cancel-import', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const data = await res.json();
+                if (this.progressPollTimer) clearInterval(this.progressPollTimer);
+                this.showImportProgressModal = false;
+                this.isProcessing = false;
+
+                alert(data.message || 'Proses injeksi data berhasil dibatalkan.');
+                this.fetchLogs();
+                setTimeout(() => {
+                    window.location.reload();
+                }, 500);
+            } catch (err) {
+                alert('Gagal membatalkan impor: ' + err.message);
             }
         },
 

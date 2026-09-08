@@ -172,6 +172,24 @@ class DtsenController extends Controller
         $filterCol = $request->input('filter_col', '');
         $filterVal = $request->input('filter_val', '');
 
+        // Catat Log Aktivitas jika ada Filter / Pencarian Aktif yang Diterapkan Pengguna
+        $activeFilterSummaries = [];
+        if (!empty($search)) $activeFilterSummaries[] = "Pencarian NIK/Nama: '{$search}'";
+        if ($qualityStatus !== 'semua') $activeFilterSummaries[] = "Status QC: {$qualityStatus}";
+        if ($desil !== 'semua') $activeFilterSummaries[] = "Desil: {$desil}";
+        if ($jenisKelamin !== 'semua') $activeFilterSummaries[] = "Jenis Kelamin: {$jenisKelamin}";
+        if ($pendidikan !== 'semua') $activeFilterSummaries[] = "Pendidikan: {$pendidikan}";
+        if ($statusBekerja !== 'semua') $activeFilterSummaries[] = "Status Bekerja: {$statusBekerja}";
+        if ($statusKawin !== 'semua') $activeFilterSummaries[] = "Status Kawin: {$statusKawin}";
+        if ($request->input('salary_search')) $activeFilterSummaries[] = "Filter Gaji Nama: '" . $request->input('salary_search') . "'";
+        if ($request->input('kpi_var') && $request->input('kpi_var') !== 'gaji_bulanan') {
+            $activeFilterSummaries[] = "Target Variabel KPI: " . $request->input('kpi_var');
+        }
+
+        if (!empty($activeFilterSummaries)) {
+            self::logActivity('INFO', 'Penerapan Filter & Filter Tabel: ' . implode(' | ', $activeFilterSummaries));
+        }
+
         // Scan folder src-dtsen di root folder project
         $srcDtsenDir = base_path('src-dtsen');
         if (!file_exists($srcDtsenDir)) {
@@ -693,6 +711,8 @@ class DtsenController extends Controller
         $fileName = basename($fullPath);
         $fileSize = filesize($fullPath);
 
+        self::logActivity('INFO', "Memulai pemrosesan & injeksi dataset 'src-dtsen/{$fileName}' (" . DtsenImportService::formatBytes($fileSize) . ")...");
+
         // Jika file CSV/TXT, gunakan High-Speed Python Engine jika ada, atau fallback ke PHP
         $pyBin = $this->getPythonBinary();
         if (in_array($extension, ['csv', 'txt']) && $pyBin) {
@@ -714,6 +734,7 @@ class DtsenController extends Controller
 
                     $rowMsg = !empty($rowCountStr) ? "{$rowCountStr} baris data" : "data";
                     $successMsg = "Berhasil mengimpor {$rowMsg} dari 'src-dtsen/{$fileName}' dalam {$elapsedT} detik.";
+                    self::logActivity('SUCCESS', $successMsg);
 
                     if ($request->ajax() || $request->wantsJson()) {
                         return response()->json([
@@ -730,12 +751,14 @@ class DtsenController extends Controller
         try {
             $result = DtsenImportService::parseAndImportFile($fullPath, $extension, $fileName, $fileSize);
             $msg = "Berhasil mengimpor & kalkulasi " . number_format($result['total_rows']) . " baris data dari folder 'src-dtsen/{$fileName}'! ({$result['invalid']} temuan warning/critical).";
+            self::logActivity('SUCCESS', $msg);
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json(['success' => true, 'message' => $msg]);
             }
             return redirect()->route('dtsen.index')->with('success', $msg);
         } catch (\Throwable $e) {
             $msg = "Gagal mengimpor berkas dari folder src-dtsen: " . $e->getMessage();
+            self::logActivity('ERROR', $msg);
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json(['success' => false, 'message' => $msg], 500);
             }
@@ -780,6 +803,8 @@ class DtsenController extends Controller
         ];
         $paramsJson = json_encode($filters);
 
+        self::logActivity('INFO', "Memulai ekspor berkas paket (.ZIP) mode '{$mode}' ke folder src-export/...");
+
         $pyScript = base_path('scratch/fast_export.py');
         $dbPath = database_path('database.sqlite');
         $exportDir = base_path('src-export');
@@ -807,12 +832,17 @@ class DtsenController extends Controller
                 }
 
                 $zipInfo = !empty($zipName) ? " ke 'src-export/{$zipName}' ({$sizeStr})" : "";
-                return redirect()->route('dtsen.index')->with('success', "🟢 Data ({$rowCountStr} baris) selesai diekspor{$zipInfo} dalam {$elapsedT} detik.");
+                $succMsg = "🟢 Data ({$rowCountStr} baris) selesai diekspor{$zipInfo} dalam {$elapsedT} detik.";
+                self::logActivity('SUCCESS', $succMsg);
+                return redirect()->route('dtsen.index')->with('success', $succMsg);
             } else {
-                return redirect()->route('dtsen.index')->with('error', "Gagal mengekspor data via Python Engine: " . substr($output, 0, 300));
+                $errMsg = "Gagal mengekspor data via Python Engine: " . substr($output, 0, 200);
+                self::logActivity('ERROR', $errMsg);
+                return redirect()->route('dtsen.index')->with('error', $errMsg);
             }
         }
 
+        self::logActivity('ERROR', "Script Python fast_export.py tidak ditemukan.");
         return redirect()->route('dtsen.index')->with('error', "Script Python fast_export.py tidak ditemukan.");
     }
 
@@ -823,6 +853,8 @@ class DtsenController extends Controller
     {
         set_time_limit(0);
         ini_set('memory_limit', '1024M');
+
+        self::logActivity('INFO', "Memulai ekspor Laporan Audit Kualitas Data (Baris Critical Error)...");
 
         $pyScript = base_path('scratch/fast_export.py');
         $dbPath = database_path('database.sqlite');
@@ -850,12 +882,17 @@ class DtsenController extends Controller
                     $sizeStr = trim($matches[3]);
                 }
                 
-                return redirect()->route('dtsen.index')->with('success', "🟢 Laporan Audit Kualitas Data ({$rowCountStr} baris) berhasil diekspor ke 'src-export/{$fileName}' ({$sizeStr}) dalam {$elapsedT} detik.");
+                $succMsg = "🟢 Laporan Audit Kualitas Data ({$rowCountStr} baris) berhasil diekspor ke 'src-export/{$fileName}' ({$sizeStr}) dalam {$elapsedT} detik.";
+                self::logActivity('SUCCESS', $succMsg);
+                return redirect()->route('dtsen.index')->with('success', $succMsg);
             } else {
-                return redirect()->route('dtsen.index')->with('error', "Gagal mengekspor Laporan Audit Data: " . substr($output, 0, 300));
+                $errMsg = "Gagal mengekspor Laporan Audit Data: " . substr($output, 0, 200);
+                self::logActivity('ERROR', $errMsg);
+                return redirect()->route('dtsen.index')->with('error', $errMsg);
             }
         }
 
+        self::logActivity('ERROR', "Script Python fast_export.py tidak ditemukan.");
         return redirect()->route('dtsen.index')->with('error', "Script Python fast_export.py tidak ditemukan.");
     }
 
@@ -926,6 +963,8 @@ class DtsenController extends Controller
      */
     public function clearData()
     {
+        self::logActivity('WARNING', 'Aksi KOSONGKAN DATA dijalankan oleh pengguna. Seluruh dataset pada database dibersihkan.');
+
         $pyScript = base_path('scratch/fast_delete.py');
         $dbPath = database_path('database.sqlite');
 
@@ -940,8 +979,135 @@ class DtsenController extends Controller
         }
 
         session(['uploaded_headers' => null, 'uploaded_file_metrics' => null, 'dataset_summary_stats' => null, 'import_distinct_values' => null]);
+        self::logActivity('SUCCESS', 'Seluruh data dataset di sistem berhasil dikosongkan.');
 
         return redirect()->route('dtsen.index')->with('success', 'Seluruh data dataset berhasil dikosongkan.');
+    }
+
+    /**
+     * Catat log aktivitas sistem ke file storage/logs/dtsen_activity.log
+     */
+    public static function logActivity(string $level, string $message, array $context = []): void
+    {
+        try {
+            $logDir = storage_path('logs');
+            if (!file_exists($logDir)) {
+                @mkdir($logDir, 0777, true);
+            }
+            $logFile = $logDir . '/dtsen_activity.log';
+            $timestamp = date('Y-m-d H:i:s');
+            $ctxStr = !empty($context) ? ' ' . json_encode($context, JSON_UNESCAPED_SLASHES) : '';
+            $line = "[{$timestamp}] [" . strtoupper($level) . "] {$message}{$ctxStr}" . PHP_EOL;
+            file_put_contents($logFile, $line, FILE_APPEND);
+            \Illuminate\Support\Facades\Log::info("[DTSEN_ACTIVITY] {$message}", $context);
+        } catch (\Throwable $e) {}
+    }
+
+    /**
+     * Batalkan proses injeksi / impor data ke database jika mengalami hang atau ingin dihentikan pengguna.
+     */
+    public function cancelImport(Request $request)
+    {
+        try {
+            self::logActivity('CANCEL', 'Permintaan pembatalan injeksi data diterima dari antarmuka web.');
+
+            // 1. Matikan proses Python fast_import jika sedang berjalan di OS
+            if (strncasecmp(PHP_OS, 'WIN', 3) === 0) {
+                @exec('taskkill /F /FI "COMMANDLINE eq *fast_import*" 2>&1');
+                @exec('taskkill /F /IM python.exe /FI "WINDOWTITLE eq *fast_import*" 2>&1');
+            } else {
+                @exec('pkill -f fast_import.py 2>&1');
+            }
+
+            // 2. Hapus file temporary impor & reset status progress
+            $tempDir = storage_path('app/temp_imports');
+            if (file_exists($tempDir)) {
+                $tmpFiles = glob($tempDir . '/*.tmp');
+                foreach ($tmpFiles as $tFile) {
+                    @unlink($tFile);
+                }
+            }
+
+            $progFile = base_path('scratch/import_progress.json');
+            $cancelData = [
+                'percent' => 0,
+                'message' => 'Proses injeksi data telah dibatalkan oleh pengguna.',
+                'status' => 'cancelled',
+                'updated_at' => time()
+            ];
+            @file_put_contents($progFile, json_encode($cancelData));
+
+            self::logActivity('WARNING', 'Proses injeksi data berhasil dibatalkan dan memori/file temporer dibersihkan.');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Proses injeksi data ke database berhasil dibatalkan.'
+            ]);
+        } catch (\Throwable $e) {
+            self::logActivity('ERROR', 'Gagal membatalkan proses injeksi: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal membatalkan impor: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Ambil daftar log aktivitas sistem realtime untuk ditampilkan di UI Web
+     */
+    public function getLogs(Request $request)
+    {
+        $logFile = storage_path('logs/dtsen_activity.log');
+        $logs = [];
+
+        if (file_exists($logFile)) {
+            $lines = file($logFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            $lines = array_slice($lines, -300);
+
+            foreach ($lines as $idx => $line) {
+                if (preg_match('/^\[(.*?)\]\s*\[(.*?)\]\s*(.*)$/', $line, $m)) {
+                    $logs[] = [
+                        'id' => $idx + 1,
+                        'timestamp' => $m[1],
+                        'level' => strtoupper(trim($m[2])),
+                        'message' => trim($m[3]),
+                    ];
+                } else {
+                    $logs[] = [
+                        'id' => $idx + 1,
+                        'timestamp' => date('Y-m-d H:i:s'),
+                        'level' => 'INFO',
+                        'message' => $line,
+                    ];
+                }
+            }
+        } else {
+            self::logActivity('INFO', 'Sistem PADU Analytics beroperasi dalam mode 100% Offline.');
+            return $this->getLogs($request);
+        }
+
+        return response()->json([
+            'success' => true,
+            'total' => count($logs),
+            'logs' => array_reverse($logs)
+        ]);
+    }
+
+    /**
+     * Kosongkan berkas log aktivitas sistem di web
+     */
+    public function clearLogs(Request $request)
+    {
+        $logFile = storage_path('logs/dtsen_activity.log');
+        if (file_exists($logFile)) {
+            @unlink($logFile);
+        }
+        self::logActivity('INFO', 'Log aktivitas sistem telah dibersihkan oleh pengguna.');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Log aktivitas sistem berhasil dibersihkan.'
+        ]);
     }
 
     /**

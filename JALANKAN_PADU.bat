@@ -103,7 +103,7 @@ if not exist "%PROJECT_DIR%python\python.exe" (
 )
 
 if "%NEED_PY_SETUP%"=="1" (
-    echo [INFO] Menyiapkan lingkungan Python & DuckDB di laptop ini...
+    echo [INFO] Menyiapkan lingkungan Python dan DuckDB di laptop ini...
     powershell -ExecutionPolicy Bypass -File "%PROJECT_DIR%setup_python.ps1"
 ) else (
     rem Pastikan pustaka DuckDB sudah terpasang
