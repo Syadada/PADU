@@ -3,6 +3,9 @@
 # =====================================================================
 FROM php:8.2-cli-bookworm
 
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PIP_ROOT_USER_ACTION=ignore
+
 # 1. Install System Dependencies & Python 3 + Pip
 RUN apt-get update && apt-get install -y \
     python3 \
@@ -19,7 +22,7 @@ RUN apt-get update && apt-get install -y \
 RUN docker-php-ext-install pdo_sqlite zip pcntl
 
 # 3. Pre-install Python High-Speed Data Engine (DuckDB, Pandas, PyArrow, OpenPyXL)
-RUN python3 -m pip install --break-system-packages --no-cache-dir duckdb pandas pyarrow openpyxl
+RUN python3 -m pip install --break-system-packages --no-cache-dir --quiet duckdb pandas pyarrow openpyxl
 
 # 4. Set Working Directory
 WORKDIR /var/www/html
@@ -39,7 +42,5 @@ ENV PYTHON_BINARY=python3
 # 8. Expose Port 8000
 EXPOSE 8000
 
-# 9. Startup Command: Generate Key, Migrasi, & Jalankan Server Artisan
-CMD php artisan key:generate --force && \
-    php artisan migrate --force && \
-    php artisan serve --host=0.0.0.0 --port=8000
+# 9. Startup Command dalam JSON Array Syntax
+CMD ["sh", "-c", "php artisan key:generate --force && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8000"]
