@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  padu-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: padu_analytics_app
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/var/www/html
+      - /var/www/html/vendor
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - SESSION_DRIVER=file
+      - CACHE_STORE=file
+      - QUEUE_CONNECTION=sync
+      - PYTHON_BINARY=python3
