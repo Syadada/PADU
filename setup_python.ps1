@@ -15,7 +15,12 @@ if (Test-Path "$pyDir\python.exe") {
 try {
     $out = & python --version 2>&1
     if ($out -like "*Python 3*") {
-        Write-Host "[OK] Python terdeteksi di System PATH."
+        Write-Host "[OK] Python 3 terdeteksi di System PATH."
+        $duckOut = & python -c "import duckdb" 2>&1
+        if ($duckOut -like "*ModuleNotFoundError*" -or $LASTEXITCODE -ne 0) {
+            Write-Host "[DUCKDB] Memasang modul akselerasi DuckDB di Python Sistem..."
+            & python -m pip install duckdb --quiet 2>$null
+        }
         exit 0
     }
 } catch {}
@@ -56,6 +61,22 @@ if ($downloaded) {
         $content += "`n."
         Set-Content -Path $f.FullName -Value $content
     }
+
+    # Unduh & Pasang get-pip.py untuk Portable Embedded Python
+    $getPipPath = Join-Path $pyDir "get-pip.py"
+    try {
+        Write-Host "[PIP] Mengunduh & Menyiapkan Pip Installer..."
+        Invoke-WebRequest -Uri "https://bootstrap.pypa.io/get-pip.py" -OutFile $getPipPath -UserAgent 'Mozilla/5.0' -UseBasicParsing -TimeoutSec 30
+        if (Test-Path $getPipPath) {
+            & "$pyDir\python.exe" "$getPipPath" --no-warn-script-location --quiet 2>$null
+            Remove-Item $getPipPath -Force -ErrorAction SilentlyContinue
+        }
+    } catch {}
+
+    try {
+        Write-Host "[DUCKDB] Memasang modul akselerasi DuckDB..."
+        & "$pyDir\python.exe" -m pip install duckdb --quiet 2>$null
+    } catch {}
 
     Write-Host "[SUKSES] Portable Python berhasil disiapkan di: $pyDir"
 } else {

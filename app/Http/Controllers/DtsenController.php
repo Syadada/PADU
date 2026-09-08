@@ -154,6 +154,14 @@ class DtsenController extends Controller
      */
     public function index(Request $request)
     {
+        set_time_limit(0);
+        ini_set('memory_limit', '1024M');
+
+        \Illuminate\Support\Facades\Log::info('[DTSEN CONTROLLER] Index loaded', [
+            'url' => $request->fullUrl(),
+            'query_params' => $request->all(),
+        ]);
+
         $search = trim($request->input('search', ''));
         $desil = $request->input('desil', 'semua');
         $qualityStatus = $request->input('quality_status', 'semua');
@@ -191,86 +199,58 @@ class DtsenController extends Controller
             }
         }
 
-        $totalSystemRows = Individu::count();
+        $page = (int)$request->input('page', 1);
+        $perPage = 15;
 
-        // Jika sistem kosong (0 total baris), aktifkan activeColumnsMap sebagai array kosong agar tidak menampilkan tabel/header apapun
+        // Execute Page Query via Pure DuckDB High-Speed Engine
+        $duckPageData = $this->runDuckDbQuery('page_data', [
+            'page' => $page,
+            'per_page' => $perPage,
+            'search' => $search,
+            'quality_status' => $qualityStatus,
+            'filters' => $request->all()
+        ]) ?? [
+            'total_system_rows' => 0,
+            'filtered_total' => 0,
+            'page' => $page,
+            'per_page' => $perPage,
+            'items' => [],
+            'stats' => ['total_rows' => 0, 'total_kk' => 0, 'valid_count' => 0, 'warning_count' => 0, 'critical_count' => 0, 'multi_error_count' => 0, 'error_count' => 0],
+            'issue_items' => []
+        ];
+
+        $totalSystemRows = (int)($duckPageData['total_system_rows'] ?? 0);
+
         if ($totalSystemRows === 0) {
             $activeColumnsMap = [];
         } else {
-            $uploadedHeaders = session('uploaded_headers', null);
-            if (!empty($uploadedHeaders) && is_array($uploadedHeaders)) {
-                $activeColumnsMap = $uploadedHeaders;
-            } else {
-                $activeColumnsMap = [
-                    'nomor_induk_kependudukan' => 'Nomor Induk Kependudukan (NIK)',
-                    'nomor_kartu_keluarga' => 'Nomor Kartu Keluarga (KK)',
-                    'nama' => 'Nama Lengkap',
-                    'gaji_bulanan' => 'Gaji Bulanan (Rp)',
-                    'desil_nasional' => 'Desil Kesejahteraan',
-                    'usia' => 'Usia (Tahun)',
-                    'jenis_kelamin' => 'Jenis Kelamin'
-                ];
+            $masterDict = self::getAllOfficialVariables();
+            $duckDbCols = $duckPageData['db_columns'] ?? session('uploaded_headers', []);
+            if (empty($duckDbCols) && !empty($duckPageData['items'][0])) {
+                $duckDbCols = array_keys((array)$duckPageData['items'][0]);
             }
 
-            // Ekstrak otomatis seluruh Kunci Variabel Custom dari extra_attributes JSON hasil import
-            $extraKeysMap = [];
-            $sampleWithExtra = Individu::whereNotNull('extra_attributes')->take(50)->get();
-            foreach ($sampleWithExtra as $sw) {
-                if (is_array($sw->extra_attributes)) {
-                    foreach ($sw->extra_attributes as $k => $v) {
-                        $extraKeysMap[$k] = ucwords(str_replace('_', ' ', $k));
+            // Exclude system internal / alias columns
+            $systemAliases = ['id', 'created_at', 'updated_at', 'extra_attributes', 'quality_status', 'quality_issues', 'nik', 'no_kk', 'kk', 'nama_lengkap', 'gaji', 'desil', 'umur'];
+            $activeColumnsMap = [];
+
+            if (!empty($duckDbCols)) {
+                foreach ($duckDbCols as $k => $v) {
+                    $colKey = is_int($k) ? strtolower(trim((string)$v)) : strtolower(trim((string)$k));
+                    if (in_array($colKey, $systemAliases)) {
+                        continue;
+                    }
+                    if (isset($masterDict[$colKey])) {
+                        $activeColumnsMap[$colKey] = $masterDict[$colKey];
+                    } else {
+                        $label = (is_string($v) && !is_numeric($k)) ? $v : ucwords(str_replace(['_', '-'], ' ', $colKey));
+                        $activeColumnsMap[$colKey] = $label;
                     }
                 }
             }
-            if (!empty($extraKeysMap)) {
-                $activeColumnsMap = array_merge($activeColumnsMap, $extraKeysMap);
-            }
-        }
 
-        // Query Utama untuk Tabel Data Dataset & Summary Audit Overview
-        $query = Individu::with('keluarga');
-
-        // Filter Smart Search Dinamis (Ultra Fast B-Tree Indexed Search)
-        if (!empty($search)) {
-            $searchClean = trim($search);
-
-            if (strlen($searchClean) === 16 && ctype_digit($searchClean)) {
-                $query->where(function ($q) use ($searchClean) {
-                    $q->where('nomor_induk_kependudukan', $searchClean)
-                      ->orWhere('nomor_kartu_keluarga', $searchClean);
-                });
-            } elseif (is_numeric($searchClean) || preg_match('/^\d+$/', $searchClean)) {
-                $query->where(function ($q) use ($searchClean) {
-                    $q->where('nomor_induk_kependudukan', 'LIKE', $searchClean . '%')
-                      ->orWhere('nomor_kartu_keluarga', 'LIKE', $searchClean . '%');
-                });
-            } else {
-                $likeTerm = '%' . strtolower($searchClean) . '%';
-                $query->where(function ($q) use ($likeTerm) {
-                    $q->whereRaw('LOWER(nama) LIKE ?', [$likeTerm])
-                      ->orWhereRaw('LOWER(nomor_induk_kependudukan) LIKE ?', [$likeTerm])
-                      ->orWhereRaw('LOWER(nomor_kartu_keluarga) LIKE ?', [$likeTerm]);
-                });
-            }
-        }
-
-        // Filter Status Quality Test (Valid, Warning, Critical)
-        if ($qualityStatus !== 'semua') {
-            $query->where('quality_status', $qualityStatus);
-        }
-
-        // Filter Dinamis Berdasarkan Variabel Apapun dari File Upload
-        if (!empty($filterCol) && !empty($filterVal) && $filterVal !== 'semua') {
-            if ($filterCol === 'desil_nasional' || $filterCol === 'desil') {
-                $desilInt = (int)preg_replace('/[^0-9]/', '', $filterVal);
-                if ($desilInt >= 1 && $desilInt <= 10) {
-                    $kkList = DB::table('keluargas')->where('desil_nasional', $desilInt)->pluck('nomor_kartu_keluarga')->toArray();
-                } else {
-                    $kkList = DB::table('keluargas')->whereRaw("LOWER(CAST(desil_nasional AS TEXT)) LIKE ?", ['%' . strtolower(trim($filterVal)) . '%'])->pluck('nomor_kartu_keluarga')->toArray();
-                }
-                $query->whereIn('nomor_kartu_keluarga', $kkList);
-            } else {
-                $query->where($filterCol, $filterVal);
+            if (empty($activeColumnsMap)) {
+                $activeColumnsMap = $masterDict;
             }
         }
 
@@ -301,60 +281,60 @@ class DtsenController extends Controller
             }
         }
 
-        // Disable query log & increase memory limit for heavy aggregate calculations
-        \Illuminate\Support\Facades\DB::disableQueryLog();
-        ini_set('memory_limit', '512M');
+        $totalRows = (int)($duckPageData['stats']['total_rows'] ?? $totalSystemRows);
+        $totalKk = (int)($duckPageData['stats']['total_kk'] ?? 0);
+        $validCount = (int)($duckPageData['stats']['valid_count'] ?? 0);
+        $warningCount = (int)($duckPageData['stats']['warning_count'] ?? 0);
+        $criticalCount = (int)($duckPageData['stats']['critical_count'] ?? 0);
+        $multiErrorCount = (int)($duckPageData['stats']['multi_error_count'] ?? 0);
+        $errorCount = $criticalCount + $warningCount;
 
-        // Reaktif Calculation Metrik KPI Utama (Instant Session Cached or Fast Single SQL Aggregate Query)
-        if (empty($search) && $qualityStatus === 'semua' && empty($filterCol)) {
-            $cachedStats = session('dataset_summary_stats');
-            if (is_array($cachedStats) && !empty($cachedStats)) {
-                $totalRows = (int)($cachedStats['total_rows'] ?? 0);
-                $totalKk = (int)($cachedStats['total_kk'] ?? 0);
-                $validCount = (int)($cachedStats['valid_count'] ?? 0);
-                $warningCount = (int)($cachedStats['warning_count'] ?? 0);
-                $criticalCount = (int)($cachedStats['critical_count'] ?? 0);
-                $multiErrorCount = (int)($cachedStats['multi_error_count'] ?? 0);
-                $errorCount = $criticalCount + $warningCount;
-            } else {
-                $stats = DB::selectOne("
-                    SELECT 
-                        COUNT(*) as total_rows,
-                        COUNT(DISTINCT nomor_kartu_keluarga) as total_kk,
-                        SUM(CASE WHEN quality_status = 'Valid' THEN 1 ELSE 0 END) as valid_count,
-                        SUM(CASE WHEN quality_status = 'Warning' THEN 1 ELSE 0 END) as warning_count,
-                        SUM(CASE WHEN quality_status = 'Critical' THEN 1 ELSE 0 END) as critical_count,
-                        SUM(CASE WHEN json_array_length(quality_issues) >= 3 THEN 1 ELSE 0 END) as multi_error_count
-                    FROM individus
-                ");
-
-                $totalRows = (int)($stats->total_rows ?? 0);
-                $totalKk = (int)($stats->total_kk ?? 0);
-                $validCount = (int)($stats->valid_count ?? 0);
-                $warningCount = (int)($stats->warning_count ?? 0);
-                $criticalCount = (int)($stats->critical_count ?? 0);
-                $multiErrorCount = (int)($stats->multi_error_count ?? 0);
-                $errorCount = $criticalCount + $warningCount;
+        // Map items to stdClass objects with masked NIK & Nama
+        $items = collect($duckPageData['items'] ?? [])->map(function($item) {
+            $obj = (object)$item;
+            $nik = (string)($item['nomor_induk_kependudukan'] ?? $item['nik'] ?? '');
+            $nama = (string)($item['nama'] ?? $item['nama_lengkap'] ?? '');
+            $obj->masked_nik = strlen($nik) >= 8 ? (substr($nik, 0, 4) . '********' . substr($nik, -4)) : '****************';
+            $obj->masked_nama = strlen($nama) >= 2 ? (substr($nama, 0, 2) . str_repeat('*', max(1, strlen($nama) - 2))) : '***';
+            
+            $issues = $item['quality_issues'] ?? [];
+            if (is_string($issues)) {
+                $issues = json_decode($issues, true) ?: [$issues];
             }
-        } else {
-            $stats = (clone $query)->selectRaw("
-                COUNT(*) as total_rows,
-                COUNT(DISTINCT nomor_kartu_keluarga) as total_kk,
-                SUM(CASE WHEN quality_status = 'Valid' THEN 1 ELSE 0 END) as valid_count,
-                SUM(CASE WHEN quality_status = 'Warning' THEN 1 ELSE 0 END) as warning_count,
-                SUM(CASE WHEN quality_status = 'Critical' THEN 1 ELSE 0 END) as critical_count
-            ")->first();
+            $obj->quality_issues = $issues ?: [];
+            return $obj;
+        });
 
-            $totalRows = (int)($stats->total_rows ?? 0);
-            $totalKk = (int)($stats->total_kk ?? 0);
-            $validCount = (int)($stats->valid_count ?? 0);
-            $warningCount = (int)($stats->warning_count ?? 0);
-            $criticalCount = (int)($stats->critical_count ?? 0);
-            $multiErrorCount = 0;
-            $errorCount = $criticalCount + $warningCount;
-        }
+        $filteredTotal = (int)($duckPageData['filtered_total'] ?? 0);
 
-        // Ambil Seluruh Header/Kolom Hasil Import (Filter TANPA NIK, KK, atau ID Pelanggan)
+        $records = new \Illuminate\Pagination\LengthAwarePaginator(
+            $items,
+            $filteredTotal,
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+        $records->fragment('tabel-data');
+
+        // Audit Trail Error List
+        $issueRecords = collect($duckPageData['issue_items'] ?? [])->map(function($item) {
+            $obj = (object)$item;
+            $nik = (string)($item['nomor_induk_kependudukan'] ?? $item['nik'] ?? ($obj->nomor_induk_kependudukan ?? ($obj->nik ?? '')));
+            $nama = (string)($item['nama'] ?? $item['nama_lengkap'] ?? ($obj->nama ?? ($obj->nama_lengkap ?? '')));
+            $obj->nama = $nama;
+            $obj->nomor_induk_kependudukan = $nik;
+            $obj->masked_nik = strlen($nik) >= 8 ? (substr($nik, 0, 4) . '********' . substr($nik, -4)) : ($nik ?: '****************');
+            $obj->masked_nama = strlen($nama) >= 2 ? (substr($nama, 0, 2) . str_repeat('*', max(1, strlen($nama) - 2))) : ($nama ?: '***');
+            $obj->id = $obj->id ?? ($nik ?: rand(1000, 9999));
+            $issues = $item['quality_issues'] ?? [];
+            if (is_string($issues)) {
+                $issues = json_decode($issues, true) ?: [$issues];
+            }
+            $obj->quality_issues = $issues ?: [];
+            return $obj;
+        });
+
+        // Filterable columns
         $importFilterableColumns = collect($activeColumnsMap)->reject(function($label, $key) {
             return in_array($key, [
                 'nomor_induk_kependudukan',
@@ -368,344 +348,79 @@ class DtsenController extends Controller
             ]);
         })->toArray();
 
-        // 1. Dynamic Extraction of Actual Distinct Values directly from Database
-        $tableColsListing = \Illuminate\Support\Facades\Schema::getColumnListing('individus');
-        $keluargaColsListing = \Illuminate\Support\Facades\Schema::getColumnListing('keluargas');
-
-        $getActualDistinctValues = function($colKey) use ($tableColsListing, $keluargaColsListing) {
-            try {
-                // Check on individus table core columns
-                if (in_array($colKey, $tableColsListing)) {
-                    $vals = DB::table('individus')
-                        ->whereNotNull($colKey)
-                        ->where($colKey, '!=', '')
-                        ->distinct()
-                        ->pluck($colKey)
-                        ->map(fn($v) => (string)$v)
-                        ->unique()
-                        ->values()
-                        ->toArray();
-                    if (!empty($vals)) return $vals;
-                }
-
-                // Check on keluargas table core columns
-                if (in_array($colKey, $keluargaColsListing)) {
-                    $vals = DB::table('keluargas')
-                        ->whereNotNull($colKey)
-                        ->where($colKey, '!=', '')
-                        ->distinct()
-                        ->pluck($colKey)
-                        ->map(fn($v) => (string)$v)
-                        ->unique()
-                        ->values()
-                        ->toArray();
-                    if (!empty($vals)) return $vals;
-                }
-
-                // Check inside extra_attributes JSON on individus table
-                $jsonVals = DB::table('individus')
-                    ->whereNotNull('extra_attributes')
-                    ->whereRaw("LOWER(extra_attributes) LIKE ?", ['%' . strtolower($colKey) . '%'])
-                    ->select('extra_attributes')
-                    ->take(300)
-                    ->get()
-                    ->map(function($r) use ($colKey) {
-                        $extra = is_array($r->extra_attributes) 
-                            ? $r->extra_attributes 
-                            : json_decode($r->extra_attributes, true);
-                        if (is_array($extra)) {
-                            if (isset($extra[$colKey]) && $extra[$colKey] !== '' && $extra[$colKey] !== null) {
-                                return (string)$extra[$colKey];
-                            }
-                            $normK = strtolower(str_replace([' ', '.'], '_', trim($colKey)));
-                            if (isset($extra[$normK]) && $extra[$normK] !== '' && $extra[$normK] !== null) {
-                                return (string)$extra[$normK];
-                            }
-                        }
-                        return null;
-                    })
-                    ->filter(fn($v) => $v !== null && $v !== '')
-                    ->unique()
-                    ->values()
-                    ->toArray();
-
-                return $jsonVals;
-            } catch (\Throwable $e) {
-                return [];
-            }
-        };
-
-        // Deteksi Keberadaan Kolom Berdasarkan Skema Tabel Data Active Columns Map
         $hasJenisKelamin = array_key_exists('jenis_kelamin', $activeColumnsMap) || array_key_exists('gender', $activeColumnsMap) || array_key_exists('jk', $activeColumnsMap);
         $hasPendidikan = array_key_exists('pendidikan', $activeColumnsMap) || array_key_exists('ijazah_tertinggi_yang_dimiliki', $activeColumnsMap) || array_key_exists('jenjang_tertinggi_yang_diduduki', $activeColumnsMap) || array_key_exists('pendidikan_terakhir', $activeColumnsMap);
         $hasDesil = array_key_exists('desil_nasional', $activeColumnsMap) || array_key_exists('desil', $activeColumnsMap);
         $hasStatusBekerja = array_key_exists('status_bekerja', $activeColumnsMap) || array_key_exists('pekerjaan', $activeColumnsMap) || array_key_exists('status_kerja', $activeColumnsMap);
         $hasStatusKawin = array_key_exists('status_kawin', $activeColumnsMap) || array_key_exists('status_pernikahan', $activeColumnsMap);
-
-        $importColumnDistinctValues = [];
-        foreach ($activeColumnsMap as $colKey => $colLabel) {
-            $isAgeCol = preg_match('/usia|umur|age/i', $colKey) || preg_match('/usia|umur|age/i', $colLabel);
-            $isSalaryCol = preg_match('/gaji|pendapatan|omzet|upah|salary|income/i', $colKey) || preg_match('/gaji|pendapatan|omzet|upah|salary|income/i', $colLabel);
-
-            if ($isAgeCol) {
-                $importColumnDistinctValues[$colKey] = [
-                    '< 18 Tahun',
-                    '18 - 25 Tahun',
-                    '26 - 35 Tahun',
-                    '36 - 45 Tahun',
-                    '46 - 55 Tahun',
-                    '> 55 Tahun'
-                ];
-            } elseif ($isSalaryCol) {
-                $importColumnDistinctValues[$colKey] = [
-                    '< Rp 3.000.000',
-                    'Rp 3.000.000 - 5.000.000',
-                    'Rp 5.000.000 - 10.000.000',
-                    '> Rp 10.000.000'
-                ];
-            } else {
-                $actualVals = $getActualDistinctValues($colKey);
-                if ($colKey === 'desil_nasional' || $colKey === 'desil') {
-                    $actualVals = array_map(fn($v) => is_numeric($v) ? 'Desil ' . $v : $v, $actualVals);
-                }
-                $importColumnDistinctValues[$colKey] = $actualVals;
-            }
-        }
-
-        // Helper Closure Filter Usia Berdasarkan Kelompok Demografi
-        $applyAgeFilter = function($q, $val, $colKey) {
-            $valClean = str_replace(' ', '', strtolower($val));
-            $minAge = null;
-            $maxAge = null;
-
-            if (is_numeric($valClean)) {
-                $q->where('usia', (int)$valClean);
-                return;
-            }
-
-            if ($valClean === '<18' || str_contains($valClean, '<18') || str_contains($valClean, 'dibawah18')) {
-                $maxAge = 17;
-            } elseif (str_contains($valClean, '18-25') || str_contains($valClean, '18sampai25')) {
-                $minAge = 18; $maxAge = 25;
-            } elseif (str_contains($valClean, '26-35') || str_contains($valClean, '26sampai35')) {
-                $minAge = 26; $maxAge = 35;
-            } elseif (str_contains($valClean, '36-45') || str_contains($valClean, '36sampai45')) {
-                $minAge = 36; $maxAge = 45;
-            } elseif (str_contains($valClean, '46-55') || str_contains($valClean, '46sampai55')) {
-                $minAge = 46; $maxAge = 55;
-            } elseif (str_contains($valClean, '>55') || str_contains($valClean, 'diatas55')) {
-                $minAge = 56;
-            }
-
-            if ($minAge !== null && $maxAge !== null) {
-                $q->whereBetween('usia', [$minAge, $maxAge]);
-            } elseif ($minAge !== null) {
-                $q->where('usia', '>=', $minAge);
-            } elseif ($maxAge !== null) {
-                $q->where('usia', '<=', $maxAge);
-            } else {
-                $q->where('usia', $val);
-            }
-        };
-
-        $tableColsListing = \Illuminate\Support\Facades\Schema::getColumnListing('individus');
-        $keluargaColsListing = \Illuminate\Support\Facades\Schema::getColumnListing('keluargas');
-
-        // Helper Closure Filter Gaji Berdasarkan Kelompok Nominal / Exact Value
-        $applySalaryFilter = function($q, $val, $colKey) use ($tableColsListing) {
-            $valClean = str_replace(['.', ' ', 'rp', 'Rp', 'RP'], '', strtolower($val));
-            $targetCol = in_array($colKey, $tableColsListing) ? $colKey : 'gaji_bulanan';
-            if (!in_array($targetCol, $tableColsListing) && in_array('gaji', $tableColsListing)) {
-                $targetCol = 'gaji';
-            }
-
-            $minSal = null;
-            $maxSal = null;
-
-            if (str_contains($valClean, '<3000000') || str_contains($valClean, '<3m')) {
-                $maxSal = 2999999;
-            } elseif (str_contains($valClean, '3000000-5000000') || str_contains($valClean, '3m-5m')) {
-                $minSal = 3000000; $maxSal = 5000000;
-            } elseif (str_contains($valClean, '5000000-10000000') || str_contains($valClean, '5m-10m')) {
-                $minSal = 5000000; $maxSal = 10000000;
-            } elseif (str_contains($valClean, '>10000000') || str_contains($valClean, '>10m')) {
-                $minSal = 10000001;
-            } else {
-                $digits = preg_replace('/[^0-9.]/', '', $valClean);
-                if (is_numeric($digits) && strlen($digits) > 0) {
-                    $exactVal = (float)$digits;
-                    $q->where(function($sub) use ($targetCol, $exactVal) {
-                        $sub->where($targetCol, $exactVal)
-                            ->orWhereRaw("CAST({$targetCol} AS TEXT) LIKE ?", ['%' . $exactVal . '%']);
-                    });
-                    return;
-                }
-            }
-
-            if ($minSal !== null && $maxSal !== null) {
-                $q->where(function($sub) use ($minSal, $maxSal) {
-                    $sub->whereBetween('gaji_bulanan', [$minSal, $maxSal])
-                        ->orWhereBetween('gaji', [$minSal, $maxSal]);
-                });
-            } elseif ($minSal !== null) {
-                $q->where(function($sub) use ($minSal) {
-                    $sub->where('gaji_bulanan', '>=', $minSal)
-                        ->orWhere('gaji', '>=', $minSal);
-                });
-            } elseif ($maxSal !== null) {
-                $q->where(function($sub) use ($maxSal) {
-                    $sub->where('gaji_bulanan', '<=', $maxSal)
-                        ->orWhere('gaji', '<=', $maxSal);
-                });
-            }
-        };
-
-        // Salary Query Filters
-        $salaryQuery = clone $query;
-
-        $allFilterableColumns = collect($activeColumnsMap)->reject(function($label, $key) {
-            return in_array($key, ['id', 'created_at', 'updated_at']);
-        })->toArray();
-
-        foreach ($allFilterableColumns as $colKey => $colLabel) {
-            $userVal = $request->input($colKey);
-            if (!empty($userVal) && $userVal !== 'semua') {
-                if (is_array($userVal)) {
-                    $valArr = array_values(array_filter(array_map('trim', $userVal), fn($v) => $v !== '' && $v !== 'semua'));
-                } else {
-                    $valArr = array_values(array_filter(array_map('trim', explode(',', (string)$userVal)), fn($v) => $v !== '' && $v !== 'semua'));
-                }
-
-                if (empty($valArr)) {
-                    continue;
-                }
-
-                $filterMultiBlock = function($q) use ($colKey, $colLabel, $valArr, $tableColsListing, $keluargaColsListing, $applyAgeFilter, $applySalaryFilter) {
-                    $q->where(function($subQ) use ($colKey, $colLabel, $valArr, $tableColsListing, $keluargaColsListing, $applyAgeFilter, $applySalaryFilter) {
-                        foreach ($valArr as $valItem) {
-                            $subQ->orWhere(function($itemQ) use ($colKey, $colLabel, $valItem, $tableColsListing, $keluargaColsListing, $applyAgeFilter, $applySalaryFilter) {
-                                $likeVal = '%' . strtolower(trim($valItem)) . '%';
-                                $isAgeField = preg_match('/usia|umur|age/i', $colKey) || preg_match('/usia|umur|age/i', $colLabel);
-                                $isSalaryField = preg_match('/gaji|pendapatan|omzet|upah|salary|income/i', $colKey) || preg_match('/gaji|pendapatan|omzet|upah|salary|income/i', $colLabel);
-
-                                if ($isAgeField) {
-                                    $applyAgeFilter($itemQ, $valItem, $colKey);
-                                } elseif ($isSalaryField) {
-                                    $applySalaryFilter($itemQ, $valItem, $colKey);
-                                } elseif ($colKey === 'desil_nasional' || $colKey === 'desil') {
-                                    $desilInt = (int)preg_replace('/[^0-9]/', '', $valItem);
-                                    if ($desilInt >= 1 && $desilInt <= 10) {
-                                        $kkList = DB::table('keluargas')->where('desil_nasional', $desilInt)->pluck('nomor_kartu_keluarga')->toArray();
-                                    } else {
-                                        $kkList = DB::table('keluargas')->whereRaw("LOWER(CAST(desil_nasional AS TEXT)) LIKE ?", [$likeVal])->pluck('nomor_kartu_keluarga')->toArray();
-                                    }
-                                    $itemQ->whereIn('nomor_kartu_keluarga', $kkList);
-                                } elseif ($colKey === 'jenis_kelamin' || $colKey === 'gender' || $colKey === 'jk') {
-                                    $itemQ->whereRaw("LOWER(jenis_kelamin) LIKE ?", [$likeVal]);
-                                } elseif (in_array($colKey, $tableColsListing)) {
-                                    $itemQ->whereRaw("LOWER({$colKey}) LIKE ?", [$likeVal]);
-                                } elseif (in_array($colKey, $keluargaColsListing)) {
-                                    $kkList = DB::table('keluargas')->whereRaw("LOWER({$colKey}) LIKE ?", [$likeVal])->pluck('nomor_kartu_keluarga')->toArray();
-                                    $itemQ->whereIn('nomor_kartu_keluarga', $kkList);
-                                } else {
-                                    $itemQ->whereRaw("LOWER(JSON_EXTRACT(extra_attributes, '$.{$colKey}')) LIKE ?", [$likeVal]);
-                                }
-                            });
-                        }
-                    });
-                };
-
-                $salaryQuery->where($filterMultiBlock);
-                $query->where($filterMultiBlock);
-            }
-        }
-
-        // Combined Single SQL Aggregate Query for Gaji (5ms Execution)
-        $gajiStats = (clone $salaryQuery)->selectRaw("
-            MAX(gaji_bulanan) as max1, MAX(gaji) as max2,
-            MIN(gaji_bulanan) as min1, MIN(gaji) as min2,
-            AVG(gaji_bulanan) as avg1, AVG(gaji) as avg2,
-            SUM(gaji_bulanan) as sum1, SUM(gaji) as sum2,
-            COUNT(CASE WHEN gaji_bulanan > 0 OR gaji > 0 THEN 1 END) as cnt
-        ")->first();
-
-        $gajiMax = (float)($gajiStats->max1 ?: ($gajiStats->max2 ?: 0));
-        $gajiMin = (float)($gajiStats->min1 ?: ($gajiStats->min2 ?: 0));
-        $gajiAvg = round((float)($gajiStats->avg1 ?: ($gajiStats->avg2 ?: 0)), 2);
-        $gajiSum = (float)($gajiStats->sum1 ?: ($gajiStats->sum2 ?: 0));
-        $gajiCount = (int)($gajiStats->cnt ?? 0);
-
-        $gajiMaxSubjek = $gajiCount > 0 ? (clone $salaryQuery)->orderByDesc('gaji_bulanan')->first() : null;
-        $gajiMinSubjek = $gajiCount > 0 ? (clone $salaryQuery)->whereNotNull('gaji_bulanan')->orderBy('gaji_bulanan')->first() : null;
-        $isSalaryFallback = ($gajiCount === 0);
-
         $hasSalaryColumn = array_key_exists('gaji_bulanan', $activeColumnsMap) || array_key_exists('gaji', $activeColumnsMap);
 
-        // KPI Metrik Dinamis Berdasarkan Variabel Pilihan User (Maksimum, Minimum, Rata-Rata)
+        // Distinct values for filter dropdowns
+        $importColumnDistinctValues = session('import_distinct_values', null);
+        if (!is_array($importColumnDistinctValues) || empty($importColumnDistinctValues)) {
+            $duckDbRes = $this->runDuckDbQuery('distinct_values', [
+                'columns' => array_keys($activeColumnsMap)
+            ]);
+            $importColumnDistinctValues = $duckDbRes['distinct_map'] ?? [];
+            session(['import_distinct_values' => $importColumnDistinctValues]);
+        }
+
+        // KPI Metrik via DuckDB
         $kpiTargetVar = $request->input('kpi_var', 'gaji_bulanan');
         if (!isset($activeColumnsMap[$kpiTargetVar]) && !empty($activeColumnsMap)) {
             $kpiTargetVar = array_key_first($activeColumnsMap);
         }
 
-        if (in_array($kpiTargetVar, $tableColsListing)) {
-            $kpiStats = (clone $query)->selectRaw("
-                MAX({$kpiTargetVar}) as k_max,
-                MIN({$kpiTargetVar}) as k_min,
-                AVG({$kpiTargetVar}) as k_avg,
-                SUM({$kpiTargetVar}) as k_sum
-            ")->first();
+        $duckKpi = $this->runDuckDbQuery('kpi_metrics', [
+            'kpi_var' => $kpiTargetVar,
+            'search' => $search,
+            'quality_status' => $qualityStatus,
+            'filters' => $request->all()
+        ]);
 
-            $kpiMax = (float)($kpiStats->k_max ?? 0);
-            $kpiMin = (float)($kpiStats->k_min ?? 0);
-            $kpiAvg = round((float)($kpiStats->k_avg ?? 0), 2);
-            $kpiSum = (float)($kpiStats->k_sum ?? 0);
-            $top5Records = (clone $query)->orderByDesc($kpiTargetVar)->take(5)->get();
-            $bottom5Records = (clone $query)->whereNotNull($kpiTargetVar)->orderBy($kpiTargetVar)->take(5)->get();
-        } else {
-            $kpiMax = $gajiMax;
-            $kpiMin = $gajiMin;
-            $kpiAvg = $gajiAvg;
-            $kpiSum = $gajiSum;
-            $top5Records = (clone $query)->orderByDesc('id')->take(5)->get();
-            $bottom5Records = (clone $query)->orderBy('id')->take(5)->get();
-        }
+        $gajiMax = (float)($duckKpi['max'] ?? 0);
+        $gajiMin = (float)($duckKpi['min'] ?? 0);
+        $gajiAvg = round((float)($duckKpi['avg'] ?? 0), 2);
+        $gajiSum = (float)($duckKpi['sum'] ?? 0);
+        $gajiCount = (int)($duckKpi['count'] ?? 0);
 
-        // Audit Trail Error List
-        $issueRecords = (clone $query)->whereIn('quality_status', ['Critical', 'Warning'])->orderBy('quality_status', 'desc')->limit(6)->get();
+        $kpiMax = $gajiMax;
+        $kpiMin = $gajiMin;
+        $kpiAvg = $gajiAvg;
+        $kpiSum = $gajiSum;
 
-        $page = (int)$request->input('page', 1);
-        $perPage = 15;
+        $mapRecordWithMasking = function($item) {
+            $obj = (object)$item;
+            $nik = (string)($item['nomor_induk_kependudukan'] ?? $item['nik'] ?? ($obj->nomor_induk_kependudukan ?? ($obj->nik ?? '')));
+            $nama = (string)($item['nama'] ?? $item['nama_lengkap'] ?? ($obj->nama ?? ($obj->nama_lengkap ?? '')));
+            $obj->nama = $nama;
+            $obj->nomor_induk_kependudukan = $nik;
+            $obj->masked_nik = strlen($nik) >= 8 ? (substr($nik, 0, 4) . '********' . substr($nik, -4)) : ($nik ?: '****************');
+            $obj->masked_nama = strlen($nama) >= 2 ? (substr($nama, 0, 2) . str_repeat('*', max(1, strlen($nama) - 2))) : ($nama ?: '***');
+            $obj->id = $obj->id ?? ($nik ?: rand(1000, 9999));
+            $obj->val = $item['val'] ?? ($obj->val ?? null);
+            return $obj;
+        };
 
-        // Calculate accurate filtered count if any filter/search is active
-        $hasActiveFilter = !empty($search) || $qualityStatus !== 'semua' || (!empty($filterCol) && !empty($filterVal) && $filterVal !== 'semua');
-        if (!$hasActiveFilter) {
-            foreach ($allFilterableColumns as $cKey => $cLabel) {
-                if (!empty($request->input($cKey)) && $request->input($cKey) !== 'semua') {
-                    $hasActiveFilter = true;
-                    break;
-                }
-            }
-        }
-        $filteredTotal = $hasActiveFilter ? (clone $query)->count() : $totalRows;
+        $top5Records = collect($duckKpi['top5'] ?? [])->map($mapRecordWithMasking);
+        $bottom5Records = collect($duckKpi['bot5'] ?? [])->map($mapRecordWithMasking);
+        $gajiMaxSubjek = $top5Records->first() ?: null;
+        $gajiMinSubjek = $bottom5Records->first() ?: null;
+        $isSalaryFallback = ($gajiCount === 0);
 
-        $items = (clone $query)->orderBy('id', 'desc')->skip(($page - 1) * $perPage)->take($perPage)->get();
-        $records = new \Illuminate\Pagination\LengthAwarePaginator(
-            $items,
-            $filteredTotal,
-            $perPage,
-            $page,
-            ['path' => $request->url(), 'query' => $request->query()]
-        );
-        $records->fragment('tabel-data');
         $salaryFilterCol = $request->input('salary_filter_col');
         $salaryFilterVal = $request->input('salary_filter_val');
 
-        $officialIndividuVars = self::getOfficialIndividuVariables();
-        $officialKeluargaVars = self::getOfficialKeluargaVariables();
+        $allIndividuDict = self::getOfficialIndividuVariables();
+        $allKeluargaDict = self::getOfficialKeluargaVariables();
 
-        return view('dtsen.index', compact(
+        $officialIndividuVars = array_intersect_key($allIndividuDict, $activeColumnsMap);
+        $officialKeluargaVars = array_intersect_key($allKeluargaDict, $activeColumnsMap);
+
+        $viewData = compact(
             'records',
             'totalRows',
+            'totalSystemRows',
             'totalKk',
             'validCount',
             'warningCount',
@@ -752,7 +467,65 @@ class DtsenController extends Controller
             'hasSalaryColumn',
             'srcDtsenFiles',
             'srcExportFiles'
-        ));
+        );
+
+        if ($request->ajax() || $request->wantsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            $html = view('dtsen.index', $viewData)->render();
+            return response()->json([
+                'success' => true,
+                'html' => $html
+            ]);
+        }
+
+        return view('dtsen.index', $viewData);
+    }
+
+    /**
+     * Helper proses output dari Python Fast Import Engine
+     */
+    private function processImportOutput(string $output, string $fileName, int $fileSize): void
+    {
+        $uploadedHeaders = self::getAllOfficialVariables();
+
+        if (preg_match('/\[HEADERS_JSON\]\s*(\[.*\])/', $output, $matches)) {
+            $parsedHeaders = json_decode($matches[1], true);
+            if (is_array($parsedHeaders) && count($parsedHeaders) > 0) {
+                $dynamicHeadersMap = [];
+                foreach ($parsedHeaders as $h) {
+                    $k = strtolower(trim(str_replace([' ', '.'], '_', $h)));
+                    $dynamicHeadersMap[$k] = ucwords(str_replace('_', ' ', $k));
+                }
+                if (!empty($dynamicHeadersMap)) {
+                    $uploadedHeaders = array_merge($uploadedHeaders, $dynamicHeadersMap);
+                }
+            }
+        }
+
+        if (preg_match('/\[SUMMARY_STATS\]\s*(\{.*\})/', $output, $sm)) {
+            $parsedStats = json_decode($sm[1], true);
+            if (is_array($parsedStats)) {
+                session(['dataset_summary_stats' => $parsedStats]);
+            }
+        }
+
+        if (preg_match('/\[DISTINCT_MAP_JSON\]\s*(\{.*\})/', $output, $dm)) {
+            $parsedMap = json_decode($dm[1], true);
+            if (is_array($parsedMap) && isset($parsedMap['distinct_map'])) {
+                session(['import_distinct_values' => $parsedMap['distinct_map']]);
+            }
+        }
+
+        session([
+            'uploaded_headers' => $uploadedHeaders,
+            'uploaded_file_metrics' => [
+                'original_name' => $fileName,
+                'file_size_formatted' => DtsenImportService::formatBytes($fileSize),
+                'file_size_bytes' => $fileSize,
+                'total_headers' => count($uploadedHeaders),
+                'mapped_variables' => count($uploadedHeaders),
+                'uploaded_at' => date('Y-m-d H:i:s'),
+            ]
+        ]);
     }
 
     /**
@@ -782,12 +555,7 @@ class DtsenController extends Controller
                 $elapsedT = round(microtime(true) - $startT, 2);
 
                 if ($output && str_contains($output, '[SUCCESS]')) {
-                    if (preg_match('/\[SUMMARY_STATS\]\s*(\{.*\})/', $output, $sm)) {
-                        $parsedStats = json_decode($sm[1], true);
-                        if (is_array($parsedStats)) {
-                            session(['dataset_summary_stats' => $parsedStats]);
-                        }
-                    }
+                    $this->processImportOutput($output, $originalName, $fileSize);
                     return redirect()->route('dtsen.index')->with('success', "Berhasil mengimpor berkas '{$originalName}' dalam {$elapsedT} detik.");
                 }
             }
@@ -847,12 +615,7 @@ class DtsenController extends Controller
                             @unlink($tempPath);
 
                             if ($output && str_contains($output, '[SUCCESS]')) {
-                                if (preg_match('/\[SUMMARY_STATS\]\s*(\{.*\})/', $output, $sm)) {
-                                    $parsedStats = json_decode($sm[1], true);
-                                    if (is_array($parsedStats)) {
-                                        session(['dataset_summary_stats' => $parsedStats]);
-                                    }
-                                }
+                                $this->processImportOutput($output, $fileName, $fileSize);
                                 return response()->json([
                                     'success' => true,
                                     'is_complete' => true,
@@ -942,54 +705,12 @@ class DtsenController extends Controller
                 $elapsedT = round(microtime(true) - $startT, 2);
 
                 if ($output && str_contains($output, '[SUCCESS]')) {
-                    $uploadedHeaders = [
-                        'nomor_induk_kependudukan' => 'NIK',
-                        'nomor_kartu_keluarga' => 'Nomor KK',
-                        'nama' => 'Nama Lengkap',
-                        'gaji_bulanan' => 'Gaji Bulanan',
-                        'desil_nasional' => 'Desil Kesejahteraan',
-                        'usia' => 'Usia',
-                        'jenis_kelamin' => 'Jenis Kelamin',
-                    ];
-
-                    if (preg_match('/\[HEADERS_JSON\]\s*(\[.*\])/', $output, $matches)) {
-                        $parsedHeaders = json_decode($matches[1], true);
-                        if (is_array($parsedHeaders) && count($parsedHeaders) > 0) {
-                            $dynamicHeadersMap = [];
-                            foreach ($parsedHeaders as $h) {
-                                $k = strtolower(trim(str_replace([' ', '.'], '_', $h)));
-                                $dynamicHeadersMap[$k] = ucwords(str_replace('_', ' ', $k));
-                            }
-                            if (!empty($dynamicHeadersMap)) {
-                                $uploadedHeaders = array_merge($uploadedHeaders, $dynamicHeadersMap);
-                            }
-                        }
-                    }
-
-                    if (preg_match('/\[SUMMARY_STATS\]\s*(\{.*\})/', $output, $sm)) {
-                        $parsedStats = json_decode($sm[1], true);
-                        if (is_array($parsedStats)) {
-                            session(['dataset_summary_stats' => $parsedStats]);
-                        }
-                    }
+                    $this->processImportOutput($output, $fileName, $fileSize);
 
                     $rowCountStr = '';
                     if (preg_match('/Impor\s+([0-9.,]+)\s+baris/', $output, $matches)) {
                         $rowCountStr = $matches[1];
                     }
-
-                    session([
-                        'uploaded_headers' => $uploadedHeaders,
-                        'uploaded_file_metrics' => [
-                            'original_name' => $fileName,
-                            'extension' => strtoupper($extension),
-                            'file_size_formatted' => DtsenImportService::formatBytes($fileSize),
-                            'file_size_bytes' => $fileSize,
-                            'total_headers' => count($uploadedHeaders),
-                            'mapped_variables' => count($uploadedHeaders),
-                            'uploaded_at' => date('Y-m-d H:i:s'),
-                        ]
-                    ]);
 
                     $rowMsg = !empty($rowCountStr) ? "{$rowCountStr} baris data" : "data";
                     $successMsg = "Berhasil mengimpor {$rowMsg} dari 'src-dtsen/{$fileName}' dalam {$elapsedT} detik.";
@@ -1048,6 +769,8 @@ class DtsenController extends Controller
      */
     public function exportCsv(Request $request)
     {
+        set_time_limit(0);
+        ini_set('memory_limit', '1024M');
         $mode = $request->input('mode', 'as_is');
         $filters = [
             'search' => trim($request->input('search', '')),
@@ -1083,10 +806,8 @@ class DtsenController extends Controller
                     $sizeStr = trim($matches[3]);
                 }
 
-                session(['uploaded_headers' => null, 'uploaded_file_metrics' => null, 'dataset_summary_stats' => null]);
-                
-                $msgStr = !empty($zipName) ? "ke 'src-export/{$zipName}' ({$sizeStr})" : "ke folder 'src-export/'";
-                return redirect()->route('dtsen.index')->with('success', "Berhasil mengekspor {$rowCountStr} baris data {$msgStr} dalam {$elapsedT} detik.");
+                $zipInfo = !empty($zipName) ? " ke 'src-export/{$zipName}' ({$sizeStr})" : "";
+                return redirect()->route('dtsen.index')->with('success', "🟢 Data ({$rowCountStr} baris) selesai diekspor{$zipInfo} dalam {$elapsedT} detik.");
             } else {
                 return redirect()->route('dtsen.index')->with('error', "Gagal mengekspor data via Python Engine: " . substr($output, 0, 300));
             }
@@ -1100,78 +821,42 @@ class DtsenController extends Controller
      */
     public function exportErrors()
     {
-        ini_set('memory_limit', '512M');
-        set_time_limit(300);
-        \Illuminate\Support\Facades\DB::disableQueryLog();
+        set_time_limit(0);
+        ini_set('memory_limit', '1024M');
 
+        $pyScript = base_path('scratch/fast_export.py');
+        $dbPath = database_path('database.sqlite');
         $exportDir = base_path('src-export');
+
         if (!file_exists($exportDir)) {
             @mkdir($exportDir, 0777, true);
         }
 
-        $fileName = 'laporan_audit_kualitas_data_dtsen_' . date('Ymd_His') . '.csv';
-        $filePath = $exportDir . DIRECTORY_SEPARATOR . $fileName;
+        $pyBin = $this->getPythonBinary();
+        if (file_exists($pyScript) && $pyBin) {
+            $cmd = "{$pyBin} " . escapeshellarg($pyScript) . " " . escapeshellarg($dbPath) . " " . escapeshellarg($exportDir) . " 'errors_only' '{}' 2>&1";
+            $startT = microtime(true);
+            $output = shell_exec($cmd);
+            $elapsedT = round(microtime(true) - $startT, 2);
 
-        $file = fopen($filePath, 'w');
-        fputs($file, "\xEF\xBB\xBF");
+            if (str_contains($output, '[EXPORT_SUCCESS]')) {
+                $fileName = '';
+                $rowCountStr = '';
+                $sizeStr = '';
 
-        fputcsv($file, [
-            'No. Baris',
-            'Tingkat Validitas',
-            'NIK',
-            'No. KK',
-            'Nama Lengkap',
-            'Desil Kesejahteraan',
-            'Wilayah (Prov/Kab/Kec)',
-            'Rincian Temuan Error / Corrupt',
-            'Rekomendasi Tindakan Perbaikan'
-        ]);
-
-        $no = 1;
-        Individu::with('keluarga')
-            ->whereIn('quality_status', ['Critical', 'Warning'])
-            ->orderBy('quality_status', 'desc')
-            ->chunk(2000, function($rows) use ($file, &$no) {
-                foreach ($rows as $row) {
-                    $issues = is_array($row->quality_issues) ? implode('; ', $row->quality_issues) : (string)$row->quality_issues;
-                    
-                    $rekomendasi = [];
-                    if (str_contains($issues, 'NIK')) {
-                        $rekomendasi[] = 'Perbaiki NIK di file master agar persis 16 digit angka';
-                    }
-                    if (str_contains($issues, 'KK')) {
-                        $rekomendasi[] = 'Perbaiki Nomor KK di file master agar persis 16 digit angka';
-                    }
-                    if (str_contains($issues, 'Nama')) {
-                        $rekomendasi[] = 'Isi nama lengkap subjek tanpa angka/simbol khusus';
-                    }
-                    if (str_contains($issues, 'RT/RW')) {
-                        $rekomendasi[] = 'Lengkapi nomor RT dan RW KTP';
-                    }
-                    if (empty($rekomendasi)) {
-                        $rekomendasi[] = 'Periksa kelengkapan variabel pendukung';
-                    }
-
-                    $wilayahStr = ($row->keluarga ? $row->keluarga->provinsi : 'DKI Jakarta') . ' / ' . ($row->keluarga ? $row->keluarga->kabupaten_kota : 'Jakarta');
-
-                    fputcsv($file, [
-                        $no++,
-                        $row->quality_status === 'Critical' ? '🔴 CRITICAL ERROR' : '🟡 WARNING (MISSING VALUE)',
-                        "'" . $row->nomor_induk_kependudukan,
-                        "'" . $row->nomor_kartu_keluarga,
-                        $row->nama,
-                        'Desil ' . ($row->keluarga ? $row->keluarga->desil_nasional : '-'),
-                        $wilayahStr,
-                        $issues,
-                        implode(' | ', $rekomendasi)
-                    ]);
+                if (preg_match('/\[EXPORT_SUCCESS\]\s*([^\s|]+)\s*\|\s*([^\s|]+)\s*\|\s*([^\s|]+)/', $output, $matches)) {
+                    $fileName = trim($matches[1]);
+                    $rowCountStr = trim($matches[2]);
+                    $sizeStr = trim($matches[3]);
                 }
-            });
+                
+                return redirect()->route('dtsen.index')->with('success', "🟢 Laporan Audit Kualitas Data ({$rowCountStr} baris) berhasil diekspor ke 'src-export/{$fileName}' ({$sizeStr}) dalam {$elapsedT} detik.");
+            } else {
+                return redirect()->route('dtsen.index')->with('error', "Gagal mengekspor Laporan Audit Data: " . substr($output, 0, 300));
+            }
+        }
 
-        fclose($file);
-
-        $formattedSize = DtsenImportService::formatBytes(filesize($filePath));
-        return redirect()->route('dtsen.index')->with('success', "🟢 Berhasil mengekspor Laporan Audit Kualitas Data ke folder 'src-export/{$fileName}' ({$formattedSize})!");
+        return redirect()->route('dtsen.index')->with('error', "Script Python fast_export.py tidak ditemukan.");
     }
 
     /**
@@ -1179,35 +864,50 @@ class DtsenController extends Controller
      */
     public function preview($id)
     {
-        $individu = Individu::with('keluarga')->findOrFail($id);
+        $duckPreview = $this->runDuckDbQuery('preview', ['id' => (int)$id]);
+        $row = $duckPreview['item'] ?? null;
+
+        if (!$row) {
+            return response()->json(['success' => false, 'message' => 'Data tidak ditemukan.'], 404);
+        }
+
+        $nik = (string)($row['nomor_induk_kependudukan'] ?? $row['nik'] ?? '-');
+        $nama = (string)($row['nama'] ?? $row['nama_lengkap'] ?? '-');
+        $maskedNik = strlen($nik) >= 8 ? (substr($nik, 0, 4) . '********' . substr($nik, -4)) : '****************';
+        $maskedNama = strlen($nama) >= 2 ? (substr($nama, 0, 2) . str_repeat('*', max(1, strlen($nama) - 2))) : '***';
+
+        $qualityIssues = $row['quality_issues'] ?? [];
+        if (is_string($qualityIssues)) {
+            $qualityIssues = json_decode($qualityIssues, true) ?: [$qualityIssues];
+        }
 
         return response()->json([
             'success' => true,
             'data' => [
-                'id' => $individu->id,
-                'nik' => $individu->nomor_induk_kependudukan,
-                'masked_nik' => $individu->masked_nik,
-                'nama' => $individu->nama,
-                'masked_nama' => $individu->masked_nama,
-                'nomor_kartu_keluarga' => $individu->nomor_kartu_keluarga,
-                'jenis_kelamin' => $individu->jenis_kelamin,
-                'tanggal_lahir' => $individu->tanggal_lahir ? $individu->tanggal_lahir->format('d F Y') : '-',
-                'usia' => $individu->usia . ' Tahun',
-                'status_hubungan' => $individu->status_hubungan_keluarga,
-                'status_bekerja' => $individu->status_bekerja,
-                'quality_status' => $individu->quality_status,
-                'quality_issues' => $individu->quality_issues ?: [],
-                'keluarga' => $individu->keluarga ? [
-                    'desil_nasional' => $individu->keluarga->desil_nasional,
-                    'provinsi' => $individu->keluarga->provinsi,
-                    'kabupaten_kota' => $individu->keluarga->kabupaten_kota,
-                    'kecamatan' => $individu->keluarga->kecamatan,
-                    'alamat' => $individu->keluarga->alamat,
-                    'jenis_lantai' => $individu->keluarga->label_jenis_lantai,
-                    'jenis_atap' => $individu->keluarga->label_jenis_atap,
-                    'jumlah_ternak_sapi' => $individu->keluarga->jumlah_ternak_sapi,
-                    'jumlah_ternak_kambing' => $individu->keluarga->jumlah_ternak_kambing_domba,
-                ] : null
+                'id' => $row['id'] ?? $id,
+                'nik' => $nik,
+                'masked_nik' => $maskedNik,
+                'nama' => $nama,
+                'masked_nama' => $maskedNama,
+                'nomor_kartu_keluarga' => $row['nomor_kartu_keluarga'] ?? $row['no_kk'] ?? '-',
+                'jenis_kelamin' => $row['jenis_kelamin'] ?? '-',
+                'tanggal_lahir' => $row['tanggal_lahir'] ?? '-',
+                'usia' => ($row['usia'] ?? '-') . ' Tahun',
+                'status_hubungan' => $row['status_hubungan_keluarga'] ?? '-',
+                'status_bekerja' => $row['status_bekerja'] ?? '-',
+                'quality_status' => $row['quality_status'] ?? 'Valid',
+                'quality_issues' => $qualityIssues ?: [],
+                'keluarga' => [
+                    'desil_nasional' => $row['desil_nasional'] ?? $row['desil'] ?? '-',
+                    'provinsi' => $row['provinsi'] ?? '-',
+                    'kabupaten_kota' => $row['kabupaten_kota'] ?? '-',
+                    'kecamatan' => $row['kecamatan'] ?? '-',
+                    'alamat' => $row['alamat'] ?? '-',
+                    'jenis_lantai' => $row['jenis_lantai_terluas'] ?? '-',
+                    'jenis_atap' => $row['jenis_atap_terluas'] ?? '-',
+                    'jumlah_ternak_sapi' => $row['jumlah_ternak_sapi'] ?? 0,
+                    'jumlah_ternak_kambing' => $row['jumlah_ternak_kambing_domba'] ?? 0,
+                ]
             ]
         ]);
     }
@@ -1239,7 +939,7 @@ class DtsenController extends Controller
             Demographic::query()->delete();
         }
 
-        session(['uploaded_headers' => null, 'uploaded_file_metrics' => null, 'dataset_summary_stats' => null]);
+        session(['uploaded_headers' => null, 'uploaded_file_metrics' => null, 'dataset_summary_stats' => null, 'import_distinct_values' => null]);
 
         return redirect()->route('dtsen.index')->with('success', 'Seluruh data dataset berhasil dikosongkan.');
     }
@@ -1265,12 +965,48 @@ class DtsenController extends Controller
     }
 
     /**
+     * Helper Eksekusi Query Instant DuckDB OLAP Engine
+     */
+    private function runDuckDbQuery(string $mode, array $params = [])
+    {
+        $pyBin = $this->getPythonBinary();
+        $pyScript = base_path('scratch/fast_duckdb.py');
+        $dbPath = database_path('database.sqlite');
+
+        if (file_exists($pyScript) && $pyBin) {
+            $base64Params = base64_encode(json_encode($params));
+            $cmd = "{$pyBin} " . escapeshellarg($pyScript) . " " . escapeshellarg($dbPath) . " " . escapeshellarg($mode) . " " . escapeshellarg($base64Params) . " 2>&1";
+            $output = shell_exec($cmd);
+
+            if ($mode === 'page_data' && preg_match('/\[DUCKDB_PAGE_RESULT\]\s*(\{.*\})/', $output, $m)) {
+                return json_decode($m[1], true);
+            } elseif ($mode === 'distinct_values' && preg_match('/\[DUCKDB_DISTINCT_RESULT\]\s*(\{.*\})/', $output, $m)) {
+                return json_decode($m[1], true);
+            } elseif ($mode === 'kpi_metrics' && preg_match('/\[DUCKDB_KPI_RESULT\]\s*(\{.*\})/', $output, $m)) {
+                return json_decode($m[1], true);
+            } elseif ($mode === 'top_bottom_5' && preg_match('/\[DUCKDB_RANKING_RESULT\]\s*(\{.*\})/', $output, $m)) {
+                return json_decode($m[1], true);
+            } elseif ($mode === 'preview' && preg_match('/\[DUCKDB_PREVIEW_RESULT\]\s*(\{.*\})/', $output, $m)) {
+                return json_decode($m[1], true);
+            } elseif ($mode === 'total_system_rows' && preg_match('/\[DUCKDB_COUNT_RESULT\]\s*(\{.*\})/', $output, $m)) {
+                return json_decode($m[1], true);
+            }
+        }
+        return null;
+    }
+
+    /**
      * Cari perintah/path Python yang valid di sistem (support Portable Python, Windows, Linux, Mac).
      */
     private function getPythonBinary(): ?string
     {
+        static $cachedPyBin = null;
+        if ($cachedPyBin !== null) {
+            return $cachedPyBin;
+        }
+
         if ($envPy = env('PYTHON_BINARY')) {
-            return $envPy;
+            return $cachedPyBin = $envPy;
         }
 
         $candidates = [];
@@ -1299,7 +1035,13 @@ class DtsenController extends Controller
             $escaped = (str_starts_with($bin, '"') || (!str_contains($bin, ' ') && !str_contains($bin, '\\'))) ? $bin : '"' . $bin . '"';
             $out = @shell_exec("{$escaped} --version 2>&1");
             if ($out && preg_match('/Python\s+3\./i', $out)) {
-                return $escaped;
+                // Verifikasi modul duckdb
+                $duckCheck = @shell_exec("{$escaped} -c \"import duckdb\" 2>&1");
+                if ($duckCheck && str_contains($duckCheck, 'ModuleNotFoundError')) {
+                    // Otomatis install duckdb jika belum ada
+                    @shell_exec("{$escaped} -m pip install duckdb 2>&1");
+                }
+                return $cachedPyBin = $escaped;
             }
         }
 

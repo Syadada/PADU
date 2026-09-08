@@ -12,10 +12,24 @@ class Individu extends Model
     protected $guarded = ['id'];
 
     protected $casts = [
-        'tanggal_lahir' => 'date',
         'quality_issues' => 'array',
         'extra_attributes' => 'array',
     ];
+
+    /**
+     * Accessor Tanggal Lahir Aman (Mencegah Carbon Parse Error)
+     */
+    public function getTanggalLahirAttribute($value)
+    {
+        if (empty($value) || strtolower(trim((string)$value)) === 'tanggal_lahir') {
+            return null;
+        }
+        try {
+            return \Carbon\Carbon::parse($value);
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
 
     /**
      * Relasi ke Data Keluarga (Rumah Tangga)

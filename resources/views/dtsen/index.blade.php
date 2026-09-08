@@ -2,6 +2,51 @@
 
 @section('content')
 <div class="space-y-6" x-data="dtsenApp()">
+    <style>
+    @media print {
+        nav, header, button, form, .no-print, [x-show="showColumnModal"], [x-show="showPreviewModal"], [x-show="showImportProgressModal"] {
+            display: none !important;
+        }
+        body {
+            background: #ffffff !important;
+            color: #0f172a !important;
+            font-family: sans-serif !important;
+        }
+        #tabel-data {
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        .overflow-x-auto, .max-h-\[70vh\] {
+            max-height: none !important;
+            overflow: visible !important;
+        }
+        table {
+            width: 100% !important;
+            min-width: 100% !important;
+            border-collapse: collapse !important;
+            page-break-inside: auto;
+        }
+        tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
+        }
+        th, td {
+            border: 1px solid #cbd5e1 !important;
+            padding: 6px 10px !important;
+            font-size: 11px !important;
+            color: #0f172a !important;
+        }
+        th {
+            background-color: #f1f5f9 !important;
+            font-weight: 800 !important;
+        }
+        th div .relative {
+            display: none !important;
+        }
+    }
+    </style>
 
     <!-- Header Banner Dashboard -->
     <div class="p-6 bg-white rounded-2xl border border-slate-400 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -303,7 +348,7 @@
         </div>
     @endif
 
-    @if($totalRows === 0 || empty($activeColumnsMap))
+    @if(($totalSystemRows ?? $totalRows) === 0)
         <!-- KETIKA SISTEM KOSONG (0 BARIS DATA) -> BERSIH TOTAL TANPA MENGHASILKAN HEADER KOSONG APA PUN -->
         <div class="p-12 bg-white rounded-2xl border-2 border-dashed border-slate-200 text-center space-y-3">
             <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-2xl mx-auto font-bold">📂</div>
@@ -312,7 +357,7 @@
         </div>
     @else
         <!-- KARTU WARNA KUNING: METRIK STATISTIK & STANDAR VALIDASI DATA -->
-        <div class="p-6 rounded-2xl bg-amber-50/90 border-2 border-amber-300 text-amber-950 shadow-sm space-y-4">
+        <div id="summary-stats-section" class="p-6 rounded-2xl bg-amber-50/90 border-2 border-amber-300 text-amber-950 shadow-sm space-y-4">
             <div>
                 <div class="flex items-center justify-between border-b border-amber-200 pb-3 mb-3">
                     <h3 class="font-black text-amber-900 text-sm flex items-center gap-2 uppercase tracking-wide">
@@ -372,33 +417,33 @@
                 <form method="GET" action="{{ route('dtsen.index') }}#salary-analytics-section" id="salaryFilterForm" class="space-y-4">
                     <input type="hidden" name="kpi_var" value="{{ $kpiTargetVar }}">
 
+                    @php
+                        $activeSalaryFilters = [];
+                        if (request('salary_search')) {
+                            $activeSalaryFilters['search'] = '🔍 "' . request('salary_search') . '"';
+                        }
+                        foreach ($importFilterableColumns as $cK => $cT) {
+                            if (request('salary_' . $cK) && request('salary_' . $cK) !== 'semua') {
+                                $activeSalaryFilters[$cK] = '📌 ' . $cT . ': ' . request('salary_' . $cK);
+                            }
+                        }
+                    @endphp
+
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-100 pb-3">
                         <div>
                             <h3 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
                                 <span>🔍</span> Filter Khusus Analisis Metrik Gaji Kelompok Subjek
                             </h3>
-                            <p class="text-xs text-slate-500">Tentukan kriteria kelompok (misal: Perempuan, SMA, Desil Kesejahteraan, Status Pekerjaan) untuk menghitung statistik gaji kelompok tersebut.</p>
+                            <p class="text-xs text-slate-500">Tentukan kriteria kelompok (misal: Perempuan, SMA, Desil Kesejahteraan, Status Pekerjaan) untuk menghitung statistik gaji kelompok tersebut secara terpisah.</p>
                         </div>
 
-                        @if($jenisKelamin !== 'semua' || $pendidikan !== 'semua' || $statusBekerja !== 'semua' || $statusKawin !== 'semua' || $desil !== 'semua' || !empty($search))
+                        @if(!empty($activeSalaryFilters))
                             <div class="flex flex-wrap items-center gap-1.5 bg-blue-50/80 p-2 rounded-xl border border-blue-200 shrink-0">
-                                <span class="text-[11px] font-bold text-blue-900">Kelompok Terfilter:</span>
-                                @if(!empty($search))
-                                    <span class="px-2 py-0.5 bg-blue-600 text-white rounded-md text-[10px] font-bold">🔍 "{{ $search }}"</span>
-                                @endif
-                                @if($jenisKelamin !== 'semua')
-                                    <span class="px-2 py-0.5 bg-indigo-600 text-white rounded-md text-[10px] font-bold">👤 {{ $jenisKelamin }}</span>
-                                @endif
-                                @if($pendidikan !== 'semua')
-                                    <span class="px-2 py-0.5 bg-purple-600 text-white rounded-md text-[10px] font-bold">🎓 {{ $pendidikan }}</span>
-                                @endif
-                                @if($desil !== 'semua')
-                                    <span class="px-2 py-0.5 bg-emerald-600 text-white rounded-md text-[10px] font-bold">📊 Desil {{ $desil }}</span>
-                                @endif
-                                @if($statusBekerja !== 'semua')
-                                    <span class="px-2 py-0.5 bg-slate-700 text-white rounded-md text-[10px] font-bold">💼 {{ $statusBekerja }}</span>
-                                @endif
-                                <a href="{{ route('dtsen.index') }}#salary-analytics-section" class="text-[10px] font-bold text-rose-600 hover:underline ml-1">Reset Filter Gaji</a>
+                                <span class="text-[11px] font-bold text-blue-900">Kelompok Terfilter Gaji:</span>
+                                @foreach($activeSalaryFilters as $sFKey => $sFBadge)
+                                    <span class="px-2 py-0.5 bg-blue-600 text-white rounded-md text-[10px] font-bold">{{ $sFBadge }}</span>
+                                @endforeach
+                                <a href="{{ request()->fullUrlWithQuery(array_fill_keys(array_merge(['salary_search'], array_map(fn($k) => 'salary_' . $k, array_keys($importFilterableColumns))), null)) }}" class="text-[10px] font-bold text-rose-600 hover:underline ml-1">Reset Filter Gaji</a>
                             </div>
                         @endif
                     </div>
@@ -408,18 +453,18 @@
                         <!-- 1. Text Search (Nama Subjek) -->
                         <div>
                             <label class="block text-[11px] font-extrabold text-slate-700 uppercase tracking-wider mb-1">Cari Nama Subjek</label>
-                            <input type="text" name="search" value="{{ $search }}" placeholder="Ketik nama subjek..." class="w-full text-xs font-medium bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="text" name="salary_search" value="{{ request('salary_search') }}" placeholder="Ketik nama subjek..." class="w-full text-xs font-medium bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
 
-                        <!-- 2. Dedicated Dynamic Filter Dropdowns for EVERY Column in the Data Table -->
+                        <!-- 2. Dedicated Dynamic Data-Driven Filter Dropdowns for EVERY Column in the Data Table -->
                         @foreach($importFilterableColumns as $colKey => $colTitle)
                             @if(isset($importColumnDistinctValues[$colKey]) && count($importColumnDistinctValues[$colKey]) > 0)
                                 <div>
                                     <label class="block text-[11px] font-extrabold text-blue-900 uppercase tracking-wider mb-1">{{ $colTitle }}</label>
-                                    <select name="{{ $colKey }}" class="w-full text-xs font-bold bg-blue-50 border border-blue-300 text-blue-900 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500">
+                                    <select name="salary_{{ $colKey }}" class="w-full text-xs font-bold bg-blue-50 border border-blue-300 text-blue-900 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
                                         <option value="semua">Semua {{ $colTitle }}</option>
                                         @foreach($importColumnDistinctValues[$colKey] as $vItem)
-                                            <option value="{{ $vItem }}" {{ (request($colKey) == $vItem) ? 'selected' : '' }}>📌 {{ $vItem }}</option>
+                                            <option value="{{ $vItem }}" {{ (request('salary_' . $colKey) == $vItem) ? 'selected' : '' }}>📌 {{ $vItem }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -428,8 +473,8 @@
                     </div>
 
                     <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
-                        <a href="{{ route('dtsen.index') }}#salary-analytics-section" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all">
-                            🔄 Reset Filter
+                        <a href="{{ request()->fullUrlWithQuery(array_fill_keys(array_merge(['salary_search'], array_map(fn($k) => 'salary_' . $k, array_keys($importFilterableColumns))), null)) }}" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all">
+                            🔄 Reset Filter Gaji
                         </a>
                         <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center gap-1.5">
                             <span>💵</span> Hitung Metrik Gaji Terfilter
@@ -478,7 +523,7 @@
                         <div class="text-2xl sm:text-3xl font-black" style="color: #0f172a;">Rp {{ number_format($gajiMax, 0, ',', '.') }}</div>
                         <div class="text-xs font-medium truncate" style="color: #047857;">
                             @if($gajiMaxSubjek)
-                                Subjek: <strong class="font-extrabold" style="color: #064e3b;" x-text="isMasked ? @json($gajiMaxSubjek->masked_nama) : @json($gajiMaxSubjek->nama)"></strong>
+                                Subjek: <strong class="font-extrabold" style="color: #064e3b;"><span x-show="isMasked">{{ $gajiMaxSubjek->masked_nama ?? ($gajiMaxSubjek->nama ?? 'Subjek') }}</span><span x-show="!isMasked" style="display:none;">{{ $gajiMaxSubjek->nama ?? 'Subjek' }}</span></strong>
                             @else
                                 Subjek: <em class="text-slate-400">Belum ada data terfilter</em>
                             @endif
@@ -494,7 +539,7 @@
                         <div class="text-2xl sm:text-3xl font-black" style="color: #0f172a;">Rp {{ number_format($gajiMin, 0, ',', '.') }}</div>
                         <div class="text-xs font-medium truncate" style="color: #b45309;">
                             @if($gajiMinSubjek)
-                                Subjek: <strong class="font-extrabold" style="color: #78350f;" x-text="isMasked ? @json($gajiMinSubjek->masked_nama) : @json($gajiMinSubjek->nama)"></strong>
+                                Subjek: <strong class="font-extrabold" style="color: #78350f;"><span x-show="isMasked">{{ $gajiMinSubjek->masked_nama ?? ($gajiMinSubjek->nama ?? 'Subjek') }}</span><span x-show="!isMasked" style="display:none;">{{ $gajiMinSubjek->nama ?? 'Subjek' }}</span></strong>
                             @else
                                 Subjek: <em class="text-slate-400">Belum ada data terfilter</em>
                             @endif
@@ -529,7 +574,7 @@
         </script>
 
         <!-- SEKSI DINAMIS 2: KPI METRIK DINAMIS & DIAGRAM TOP 5 / BOTTOM 5 WIDGET -->
-        <div class="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-5">
+        <div id="kpi-analytics-section" class="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-5">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
                 <div>
                     <h3 class="font-extrabold text-slate-900 text-base flex items-center gap-2">
@@ -539,7 +584,7 @@
                 </div>
 
                 <!-- Form Dropdown Pilihan Variabel Target KPI oleh User -->
-                <form method="GET" action="{{ route('dtsen.index') }}" class="flex items-center gap-2 shrink-0">
+                <form method="GET" action="{{ route('dtsen.index') }}#kpi-analytics-section" id="kpiVarForm" class="flex items-center gap-2 shrink-0">
                     <input type="hidden" name="search" value="{{ $search }}">
                     <input type="hidden" name="desil" value="{{ $desil }}">
                     <input type="hidden" name="jenis_kelamin" value="{{ $jenisKelamin }}">
@@ -550,7 +595,7 @@
                     <input type="hidden" name="filter_val" value="{{ $filterVal }}">
                     
                     <label class="text-xs font-bold text-slate-700 whitespace-nowrap">Variabel Target:</label>
-                    <select name="kpi_var" onchange="this.form.submit()" class="text-xs font-bold bg-blue-50 border border-blue-300 rounded-xl px-3 py-2 text-blue-900 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer shadow-sm">
+                    <select name="kpi_var" class="text-xs font-bold bg-blue-50 border border-blue-300 rounded-xl px-3 py-2 text-blue-900 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer shadow-sm">
                         @foreach($activeColumnsMap as $key => $title)
                             <option value="{{ $key }}" {{ $kpiTargetVar === $key ? 'selected' : '' }}>{{ $title }}</option>
                         @endforeach
@@ -602,7 +647,9 @@
                                 $rawDisplayVal = null;
                                 $targetClean = strtolower(str_replace(' ', '_', trim($kpiTargetVar)));
 
-                                if ($targetClean === 'desil_nasional' || $targetClean === 'desil') {
+                                if (isset($rec->val) && $rec->val !== '' && $rec->val !== null) {
+                                    $rawDisplayVal = $rec->val;
+                                } elseif ($targetClean === 'desil_nasional' || $targetClean === 'desil') {
                                     $rawDisplayVal = $rec->keluarga ? 'Desil ' . $rec->keluarga->desil_nasional : ($rec->extra_attributes['desil_nasional'] ?? ($rec->extra_attributes['desil'] ?? null));
                                     if (is_numeric($rawDisplayVal)) {
                                         $rawDisplayVal = 'Desil ' . $rawDisplayVal;
@@ -654,7 +701,10 @@
                             @endphp
                             <div class="space-y-1">
                                 <div class="flex items-center justify-between text-xs font-medium text-slate-700">
-                                    <span class="truncate font-bold text-slate-900">{{ $index + 1 }}. {{ $rec->nama }} (NIK: {{ $rec->masked_nik }})</span>
+                                    <span class="truncate font-bold text-slate-900">
+                                        <span x-show="isMasked">{{ $index + 1 }}. {{ ($rec->masked_nama ?? $rec->nama ?? null) ?: ('Subjek #' . ($rec->id ?? $index + 1)) }} (NIK: {{ $rec->masked_nik ?? '-' }})</span>
+                                        <span x-show="!isMasked" style="display:none;">{{ $index + 1 }}. {{ ($rec->nama ?? null) ?: ('Subjek #' . ($rec->id ?? $index + 1)) }} (NIK: {{ $rec->nomor_induk_kependudukan ?? '-' }})</span>
+                                    </span>
                                     <span class="px-2 py-0.5 rounded-lg bg-emerald-100 text-emerald-900 font-extrabold text-[11px] shadow-sm">{{ $displayTopVal }}</span>
                                 </div>
                                 <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
@@ -682,7 +732,9 @@
                                 $rawDisplayVal = null;
                                 $targetClean = strtolower(str_replace(' ', '_', trim($kpiTargetVar)));
 
-                                if ($targetClean === 'desil_nasional' || $targetClean === 'desil') {
+                                if (isset($rec->val) && $rec->val !== '' && $rec->val !== null) {
+                                    $rawDisplayVal = $rec->val;
+                                } elseif ($targetClean === 'desil_nasional' || $targetClean === 'desil') {
                                     $rawDisplayVal = $rec->keluarga ? 'Desil ' . $rec->keluarga->desil_nasional : ($rec->extra_attributes['desil_nasional'] ?? ($rec->extra_attributes['desil'] ?? null));
                                     if (is_numeric($rawDisplayVal)) {
                                         $rawDisplayVal = 'Desil ' . $rawDisplayVal;
@@ -734,7 +786,10 @@
                             @endphp
                             <div class="space-y-1">
                                 <div class="flex items-center justify-between text-xs font-medium text-slate-700">
-                                    <span class="truncate font-bold text-slate-900">{{ $index + 1 }}. {{ $rec->nama }} (NIK: {{ $rec->masked_nik }})</span>
+                                    <span class="truncate font-bold text-slate-900">
+                                        <span x-show="isMasked">{{ $index + 1 }}. {{ ($rec->masked_nama ?? $rec->nama ?? null) ?: ('Subjek #' . ($rec->id ?? $index + 1)) }} (NIK: {{ $rec->masked_nik ?? '-' }})</span>
+                                        <span x-show="!isMasked" style="display:none;">{{ $index + 1 }}. {{ ($rec->nama ?? null) ?: ('Subjek #' . ($rec->id ?? $index + 1)) }} (NIK: {{ $rec->nomor_induk_kependudukan ?? '-' }})</span>
+                                    </span>
                                     <span class="px-2 py-0.5 rounded-lg bg-amber-100 text-amber-900 font-extrabold text-[11px] shadow-sm">{{ $displayBotVal }}</span>
                                 </div>
                                 <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
@@ -777,17 +832,23 @@
                                     @else
                                         <span class="px-2 py-0.5 rounded-md bg-amber-500 text-white font-bold text-[10px]">🟡 WARNING</span>
                                     @endif
-                                    <strong class="text-slate-900 text-xs" x-text="isMasked ? '{{ $issueRec->masked_nama }}' : '{{ $issueRec->nama }}'"></strong>
+                                    <strong class="text-slate-900 text-xs">
+                                        <span x-show="isMasked">{{ $issueRec->masked_nama ?? ($issueRec->nama ?? 'Subjek') }}</span>
+                                        <span x-show="!isMasked" style="display:none;">{{ $issueRec->nama ?? 'Subjek' }}</span>
+                                    </strong>
                                 </div>
-                                <button @click="openPreview({{ $issueRec->id }})" class="px-2.5 py-1 bg-white hover:bg-slate-100 border text-slate-700 font-bold text-[11px] rounded-lg shadow-sm">
+                                <button @click="openPreview({{ $issueRec->id ?? 0 }})" class="px-2.5 py-1 bg-white hover:bg-slate-100 border text-slate-700 font-bold text-[11px] rounded-lg shadow-sm">
                                     👁 Inspeksi Baris Data
                                 </button>
                             </div>
 
                             <div class="text-xs space-y-1">
                                 <div class="text-slate-600 flex items-center gap-3 font-mono text-[11px]">
-                                    <span>NIK: <strong class="text-slate-900" x-text="isMasked ? '{{ $issueRec->masked_nik }}' : '{{ $issueRec->nomor_induk_kependudukan }}'"></strong></span>
-                                    <span>KK: <strong class="text-slate-900">{{ $issueRec->nomor_kartu_keluarga }}</strong></span>
+                                    <span>NIK: <strong class="text-slate-900">
+                                        <span x-show="isMasked">{{ $issueRec->masked_nik ?? '****************' }}</span>
+                                        <span x-show="!isMasked" style="display:none;">{{ $issueRec->nomor_induk_kependudukan ?? '-' }}</span>
+                                    </strong></span>
+                                    <span>KK: <strong class="text-slate-900">{{ $issueRec->nomor_kartu_keluarga ?? '-' }}</strong></span>
                                 </div>
                                 
                                 <div class="bg-white p-2.5 rounded-lg border border-slate-200 space-y-0.5">
@@ -824,14 +885,18 @@
                     <button type="button" @click="showColumnModal = true" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl border border-slate-300 shadow-xs transition-all flex items-center gap-1.5 cursor-pointer">
                         <span>⚙️</span> Atur Kolom Tabel (<span x-text="visibleCols.length"></span>/{{ count($activeColumnsMap) }})
                     </button>
+                    <!-- Tombol Cetak / Print Tabel Data -->
+                    <button type="button" onclick="window.print()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-xl border border-slate-700 shadow-xs transition-all flex items-center gap-1.5 cursor-pointer">
+                        <span>🖨️</span> Cetak Tabel Data
+                    </button>
                     <span class="text-xs font-bold text-slate-500 bg-slate-50 px-3 py-2 rounded-xl border border-slate-200">Halaman {{ $records->currentPage() }} dari {{ $records->lastPage() }}</span>
                 </div>
             </div>
 
             <!-- SEARCH ENGINE DATA TABLE (Pencarian Cepat NIK, KK, Nama, Alamat, Wilayah) -->
-            <form method="GET" action="{{ route('dtsen.index') }}#tabel-data" class="flex items-center gap-2">
+            <form method="GET" action="{{ route('dtsen.index') }}#tabel-data" id="dataTableSearchForm" class="flex items-center gap-2">
                 <div class="relative w-full">
-                    <input type="text" name="search" value="{{ $search }}" placeholder="Search Engine Data Table: Ketik NIK, Nomor KK, Nama Lengkap, Alamat, Kecamatan, atau Provinsi..." class="w-full pl-4 pr-16 py-2.5 bg-slate-50 border border-slate-300 text-slate-900 font-bold text-xs rounded-xl outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all shadow-xs">
+                    <input type="text" name="search" value="{{ $search }}" placeholder="Cari data?..." class="w-full pl-4 pr-16 py-2.5 bg-slate-50 border border-slate-300 text-slate-900 font-bold text-xs rounded-xl outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all shadow-xs">
                     @if(!empty($search))
                         <a href="{{ route('dtsen.index') }}#tabel-data" class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-slate-700 font-extrabold text-xs">✕ Clear</a>
                     @endif
@@ -842,57 +907,61 @@
             </form>
 
             <!-- MODAL POPUP ATUR KOLOM TABEL (COLUMN VISIBILITY MANAGER) -->
-            <div x-show="showColumnModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
-                <div @click.away="showColumnModal = false" class="bg-white rounded-2xl max-w-4xl w-full p-6 space-y-4 shadow-2xl border border-slate-200">
-                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div x-show="showColumnModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs p-3 sm:p-6 flex items-center justify-center">
+                <div @click.away="showColumnModal = false" class="bg-white rounded-2xl max-w-4xl w-full p-5 sm:p-6 space-y-4 shadow-2xl border border-slate-200 my-auto flex flex-col" style="max-height: 88vh;">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-3 shrink-0">
                         <div>
                             <h3 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
-                                <span>⚙️</span> Pengatur Tampilan Kolom Tabel (Kamus Resmi DTSEN 2026 BPS-Bappenas)
+                                <span>⚙️</span> Pengatur Tampilan Kolom Tabel (Terdeteksi Berkas Dataset CSV)
                             </h3>
-                            <p class="text-xs text-slate-500">Centang atau hilangkan centang untuk memilih dari 100 variabel resmi DTSEN 2026 yang tampil pada tabel data.</p>
+                            <p class="text-xs text-slate-500">Centang atau hilangkan centang untuk memilih dari {{ count($activeColumnsMap) }} variabel terdeteksi yang tampil pada tabel data.</p>
                         </div>
-                        <button type="button" @click="showColumnModal = false" class="text-slate-400 hover:text-slate-700 font-extrabold text-lg">&times;</button>
+                        <button type="button" @click="showColumnModal = false" class="text-slate-400 hover:text-slate-700 font-extrabold text-lg p-1 cursor-pointer">&times;</button>
                     </div>
 
-                    <div class="space-y-4 max-h-[65vh] overflow-y-auto pr-1">
-                        <!-- Group 1: Set Data Anggota Keluarga (Individu - 48) -->
-                        <div class="p-3 bg-blue-50/60 rounded-xl border border-blue-200 space-y-2">
-                            <h4 class="text-xs font-black uppercase text-blue-900 flex items-center gap-1.5 border-b border-blue-200 pb-1.5">
-                                👤 Set Data Anggota Keluarga (Individu - 48 Variabel Resmi)
-                            </h4>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                                @foreach($officialIndividuVars as $cKey => $cTitle)
-                                    <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:bg-blue-100/60 cursor-pointer text-xs font-bold text-slate-800 transition-colors">
-                                        <input type="checkbox" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
-                                        <span class="truncate" title="{{ $cTitle }}">{{ $cTitle }}</span>
-                                    </label>
-                                @endforeach
+                    <div class="space-y-4 overflow-y-auto pr-2 flex-1" style="max-height: 60vh;">
+                        <!-- Group 1: Set Data Anggota Keluarga (Individu) -->
+                        @if(!empty($officialIndividuVars))
+                            <div class="p-3 bg-blue-50/60 rounded-xl border border-blue-200 space-y-2">
+                                <h4 class="text-xs font-black uppercase text-blue-900 flex items-center gap-1.5 border-b border-blue-200 pb-1.5">
+                                    👤 Set Data Anggota Keluarga / Individu ({{ count($officialIndividuVars) }} Variabel Terdeteksi)
+                                </h4>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                                    @foreach($officialIndividuVars as $cKey => $cTitle)
+                                        <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:bg-blue-100/60 cursor-pointer text-xs font-bold text-slate-800 transition-colors">
+                                            <input type="checkbox" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                                            <span class="truncate" title="{{ $cTitle }}">{{ $cTitle }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
                             </div>
-                        </div>
+                        @endif
 
-                        <!-- Group 2: Set Data Keluarga (52) -->
-                        <div class="p-3 bg-emerald-50/60 rounded-xl border border-emerald-200 space-y-2">
-                            <h4 class="text-xs font-black uppercase text-emerald-900 flex items-center gap-1.5 border-b border-emerald-200 pb-1.5">
-                                🏠 Set Data Keluarga (52 Variabel Resmi)
-                            </h4>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                                @foreach($officialKeluargaVars as $cKey => $cTitle)
-                                    <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:bg-emerald-100/60 cursor-pointer text-xs font-bold text-slate-800 transition-colors">
-                                        <input type="checkbox" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500">
-                                        <span class="truncate" title="{{ $cTitle }}">{{ $cTitle }}</span>
-                                    </label>
-                                @endforeach
+                        <!-- Group 2: Set Data Keluarga -->
+                        @if(!empty($officialKeluargaVars))
+                            <div class="p-3 bg-emerald-50/60 rounded-xl border border-emerald-200 space-y-2">
+                                <h4 class="text-xs font-black uppercase text-emerald-900 flex items-center gap-1.5 border-b border-emerald-200 pb-1.5">
+                                    🏠 Set Data Keluarga ({{ count($officialKeluargaVars) }} Variabel Terdeteksi)
+                                </h4>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                                    @foreach($officialKeluargaVars as $cKey => $cTitle)
+                                        <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:bg-emerald-100/60 cursor-pointer text-xs font-bold text-slate-800 transition-colors">
+                                            <input type="checkbox" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500">
+                                            <span class="truncate" title="{{ $cTitle }}">{{ $cTitle }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
                             </div>
-                        </div>
+                        @endif
 
-                        <!-- Group 3: Variabel Tambahan / QC -->
+                        <!-- Group 3: Variabel Berkas CSV / Custom -->
                         @php
                             $extraCols = array_diff_key($activeColumnsMap, $officialIndividuVars, $officialKeluargaVars);
                         @endphp
                         @if(!empty($extraCols))
                             <div class="p-3 bg-purple-50/60 rounded-xl border border-purple-200 space-y-2">
                                 <h4 class="text-xs font-black uppercase text-purple-900 flex items-center gap-1.5 border-b border-purple-200 pb-1.5">
-                                    📌 Variabel Khusus & Indikator QC
+                                    📌 Variabel Berkas CSV / Custom ({{ count($extraCols) }} Variabel)
                                 </h4>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                                     @foreach($extraCols as $cKey => $cTitle)
@@ -906,7 +975,7 @@
                         @endif
                     </div>
 
-                    <div class="pt-3 flex items-center justify-between border-t border-slate-100">
+                    <div class="pt-3 flex items-center justify-between border-t border-slate-100 shrink-0">
                         <button type="button" @click="resetCols()" class="text-xs font-black hover:underline cursor-pointer" style="color: #2563eb !important;">
                             🔄 Tampilkan Semua Kolom
                         </button>
@@ -923,34 +992,179 @@
                     <thead class="sticky top-0 z-20 bg-slate-100 shadow-xs">
                         <tr class="bg-slate-100 border-b border-slate-200">
                             <th class="px-4 py-3 text-xs font-bold text-slate-700 uppercase tracking-wider bg-slate-100">No</th>
-                            <th class="px-4 py-3 text-xs font-bold text-slate-700 uppercase tracking-wider bg-slate-100">QC Status</th>
+                            <th class="px-4 py-3 text-xs font-bold text-slate-700 uppercase tracking-wider bg-slate-100">
+                                <div class="flex items-center justify-between gap-2">
+                                    <span>QC Status</span>
+                                    <div class="relative" x-data="{ 
+                                        open: false, 
+                                        searchVal: '',
+                                        selectedVals: {{ json_encode(array_values(array_filter(is_array(request('quality_status')) ? request('quality_status') : explode(',', (string)request('quality_status')), fn($v) => $v !== '' && $v !== 'semua'))) }},
+                                        hasVal(val) {
+                                            if (val === null || val === undefined) return false;
+                                            const target = String(val).trim().toLowerCase();
+                                            return this.selectedVals.some(v => String(v).trim().toLowerCase() === target);
+                                        },
+                                        toggleVal(val) {
+                                            if (this.hasVal(val)) {
+                                                const target = String(val).trim().toLowerCase();
+                                                this.selectedVals = this.selectedVals.filter(v => String(v).trim().toLowerCase() !== target);
+                                            } else {
+                                                this.selectedVals.push(val);
+                                            }
+                                        },
+                                        applyFilter() {
+                                            const url = new URL(window.location.href);
+                                            if (this.selectedVals.length > 0) {
+                                                url.searchParams.set('quality_status', this.selectedVals.join(','));
+                                            } else {
+                                                url.searchParams.delete('quality_status');
+                                            }
+                                            url.searchParams.set('page', '1');
+                                            url.hash = 'tabel-data';
+                                            this.open = false;
+                                            window.location.href = url.toString();
+                                        },
+                                        clearFilter() {
+                                            this.selectedVals = [];
+                                            this.searchVal = '';
+                                            const url = new URL(window.location.href);
+                                            url.searchParams.delete('quality_status');
+                                            url.searchParams.set('page', '1');
+                                            url.hash = 'tabel-data';
+                                            this.open = false;
+                                            window.location.href = url.toString();
+                                        }
+                                    }">
+                                        <button type="button" @click.stop="open = !open" 
+                                                class="px-1.5 py-0.5 rounded transition-colors flex items-center gap-1 cursor-pointer"
+                                                :class="selectedVals.length > 0 ? 'bg-blue-600 text-white font-extrabold text-[10px] shadow-xs' : 'text-slate-400 hover:bg-slate-200 hover:text-slate-700'">
+                                            <span class="text-[10px]">🔽</span>
+                                            <span x-show="selectedVals.length > 0" class="text-[10px] font-black" x-text="selectedVals.length"></span>
+                                        </button>
+
+                                        <div x-show="open" @click.away="open = false" x-cloak 
+                                             class="absolute left-0 top-full mt-1.5 w-56 bg-white rounded-xl shadow-2xl border border-slate-200 p-3 z-50 space-y-2.5 text-slate-800 normal-case tracking-normal">
+                                            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                                                <span class="font-extrabold text-[11px] text-blue-900 uppercase">Filter: QC Status</span>
+                                                <button type="button" @click="open = false" class="text-slate-400 hover:text-slate-600 font-bold text-base">&times;</button>
+                                            </div>
+                                            @php $qcItems = ['Valid', 'Warning', 'Critical']; @endphp
+                                            <div class="space-y-1 text-xs border border-slate-100 rounded-lg p-1">
+                                                @foreach($qcItems as $qItem)
+                                                    <label class="flex items-center gap-2 px-2 py-1 rounded hover:bg-blue-50 cursor-pointer font-medium text-slate-700 transition-colors"
+                                                           :class="hasVal('{{ $qItem }}') ? 'bg-blue-50 font-bold text-blue-900' : ''">
+                                                        <input type="checkbox" 
+                                                               :checked="hasVal('{{ $qItem }}')" 
+                                                               @change="toggleVal('{{ $qItem }}')"
+                                                               class="accent-blue-600 rounded cursor-pointer">
+                                                        <span class="truncate text-xs">{{ $qItem }}</span>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                            <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
+                                                <button type="button" @click.prevent.stop="clearFilter()" class="px-2.5 py-1.5 text-[11px] font-bold text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer">
+                                                    Reset
+                                                </button>
+                                                <button type="button" @click.prevent.stop="applyFilter()" class="px-3.5 py-1.5 text-xs font-black bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-sm transition-all flex items-center gap-1 cursor-pointer">
+                                                    <span>✓</span> Terapkan <span x-show="selectedVals.length > 0" x-text="'(' + selectedVals.length + ')'"></span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </th>
 
                             <!-- Header Kolom Dinamis dengan Popover Filter Pivot Excel (Tersedia untuk Seluruh Variabel) -->
                             @foreach($activeColumnsMap as $colKey => $colTitle)
+                                @php
+                                    $reqVal = request($colKey);
+                                    if (empty($reqVal)) {
+                                        $synonymsMap = [
+                                            'jenis_kelamin' => ['gender', 'jk', 'sex'],
+                                            'usia' => ['umur', 'age'],
+                                            'gaji_bulanan' => ['gaji', 'pendapatan', 'income', 'salary'],
+                                            'desil_nasional' => ['desil', 'desil_kesejahteraan'],
+                                            'status_bekerja' => ['pekerjaan', 'status_kerja'],
+                                            'nomor_induk_kependudukan' => ['nik', 'no_nik'],
+                                            'nomor_kartu_keluarga' => ['kk', 'no_kk'],
+                                            'pendidikan' => ['pendidikan_terakhir', 'ijazah_tertinggi_yang_dimiliki'],
+                                            'status_kawin' => ['status_pernikahan'],
+                                        ];
+                                        if (isset($synonymsMap[$colKey])) {
+                                            foreach ($synonymsMap[$colKey] as $syn) {
+                                                if (request()->has($syn) && !empty(request($syn))) {
+                                                    $reqVal = request($syn);
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    $initialSelectedArr = array_values(array_filter(
+                                        is_array($reqVal) ? $reqVal : explode(',', (string)$reqVal), 
+                                        fn($v) => $v !== '' && $v !== 'semua'
+                                    ));
+                                @endphp
                                 <th x-show="isColVisible('{{ $colKey }}')" class="px-4 py-3 text-xs font-bold text-slate-700 uppercase tracking-wider whitespace-nowrap relative group bg-slate-100">
                                     <div class="flex items-center justify-between gap-2">
                                         <span>{{ $colTitle }}</span>
 
-                                        <!-- Tombol Filter Pivot AutoFilter Excel Multi-Select untuk Seluruh Kolom -->
+                                         <!-- Tombol Filter Pivot AutoFilter Excel Multi-Select untuk Seluruh Kolom -->
                                         <div class="relative" x-data="{ 
                                             open: false, 
                                             searchVal: '',
-                                            selectedVals: {{ json_encode(array_values(array_filter(is_array(request($colKey)) ? request($colKey) : explode(',', (string)request($colKey)), fn($v) => $v !== '' && $v !== 'semua'))) }},
+                                            minAgeVal: '',
+                                            maxAgeVal: '',
+                                            selectedVals: {{ json_encode($initialSelectedArr) }},
+                                            hasVal(val) {
+                                                if (val === null || val === undefined) return false;
+                                                const target = String(val).trim().toLowerCase();
+                                                return this.selectedVals.some(v => String(v).trim().toLowerCase() === target);
+                                            },
                                             toggleVal(val) {
-                                                if (this.selectedVals.includes(val)) {
-                                                    this.selectedVals = this.selectedVals.filter(v => v !== val);
+                                                if (this.hasVal(val)) {
+                                                    const target = String(val).trim().toLowerCase();
+                                                    this.selectedVals = this.selectedVals.filter(v => String(v).trim().toLowerCase() !== target);
                                                 } else {
                                                     this.selectedVals.push(val);
                                                 }
+                                                console.log('[FILTER UI TOGGLE] Column:', '{{ $colKey }}', 'Toggled:', val, 'SelectedVals:', JSON.parse(JSON.stringify(this.selectedVals)));
+                                            },
+                                            addCustomAgeRange() {
+                                                const min = parseInt(this.minAgeVal);
+                                                const max = parseInt(this.maxAgeVal);
+                                                let rangeStr = '';
+                                                if (!isNaN(min) && !isNaN(max)) {
+                                                    rangeStr = min + ' - ' + max;
+                                                } else if (!isNaN(min)) {
+                                                    rangeStr = '> ' + (min - 1);
+                                                } else if (!isNaN(max)) {
+                                                    rangeStr = '< ' + (max + 1);
+                                                }
+                                                if (rangeStr) {
+                                                    if (!this.hasVal(rangeStr)) {
+                                                        this.selectedVals.push(rangeStr);
+                                                    }
+                                                    this.minAgeVal = '';
+                                                    this.maxAgeVal = '';
+                                                    this.applyFilter();
+                                                }
                                             },
                                             selectAll(items) {
-                                                if (this.selectedVals.length === items.length) {
+                                                if (this.selectedVals.length >= items.length) {
                                                     this.selectedVals = [];
                                                 } else {
                                                     this.selectedVals = [...items];
                                                 }
+                                                console.log('[FILTER UI SELECT ALL] Column:', '{{ $colKey }}', 'SelectedVals:', JSON.parse(JSON.stringify(this.selectedVals)));
                                             },
-                                            applyFilter() {
+                                            applyFilter(allItems = []) {
+                                                if (this.searchVal.trim() !== '' && this.selectedVals.length === 0 && Array.isArray(allItems)) {
+                                                    const query = this.searchVal.trim().toLowerCase();
+                                                    const matches = allItems.filter(item => String(item).toLowerCase().includes(query));
+                                                    if (matches.length > 0) {
+                                                        this.selectedVals = matches;
+                                                    }
+                                                }
                                                 const url = new URL(window.location.href);
                                                 if (this.selectedVals.length > 0) {
                                                     url.searchParams.set('{{ $colKey }}', this.selectedVals.join(','));
@@ -959,11 +1173,22 @@
                                                 }
                                                 url.searchParams.set('page', '1');
                                                 url.hash = 'tabel-data';
+                                                this.open = false;
+                                                console.log('[FILTER UI APPLY] Column:', '{{ $colKey }}', 'Target URL:', url.toString());
                                                 window.location.href = url.toString();
                                             },
                                             clearFilter() {
                                                 this.selectedVals = [];
-                                                this.applyFilter();
+                                                this.searchVal = '';
+                                                this.minAgeVal = '';
+                                                this.maxAgeVal = '';
+                                                const url = new URL(window.location.href);
+                                                url.searchParams.delete('{{ $colKey }}');
+                                                url.searchParams.set('page', '1');
+                                                url.hash = 'tabel-data';
+                                                this.open = false;
+                                                console.log('[FILTER UI CLEAR] Column:', '{{ $colKey }}', 'Target URL:', url.toString());
+                                                window.location.href = url.toString();
                                             }
                                         }">
                                             <button type="button" @click.stop="open = !open" 
@@ -975,32 +1200,47 @@
 
                                             <!-- Popover Dropdown Filter Pivot Excel Multi-Select -->
                                             <div x-show="open" @click.away="open = false" x-cloak 
-                                                 class="absolute right-0 mt-1 w-72 bg-white rounded-xl shadow-2xl border border-slate-200 p-3 z-30 space-y-2.5 text-slate-800 normal-case tracking-normal">
+                                                 class="absolute top-full mt-1.5 w-72 bg-white rounded-xl shadow-2xl border border-slate-200 p-3 z-50 space-y-2.5 text-slate-800 normal-case tracking-normal {{ $loop->index > 3 ? 'right-0' : 'left-0' }}">
                                                 <div class="flex items-center justify-between border-b border-slate-100 pb-2">
                                                     <span class="font-extrabold text-[11px] text-blue-900 uppercase">Filter: {{ $colTitle }}</span>
                                                     <button type="button" @click="open = false" class="text-slate-400 hover:text-slate-600 font-bold text-base">&times;</button>
                                                 </div>
 
-                                                <input type="text" x-model="searchVal" placeholder="Cari nilai..." class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 outline-none focus:ring-2 focus:ring-blue-500">
+                                                @if($colKey === 'usia' || $colKey === 'umur')
+                                                    <div class="bg-blue-50/70 p-2.5 rounded-lg border border-blue-200 space-y-2 text-xs">
+                                                        <span class="font-extrabold text-blue-900 text-[11px] uppercase tracking-wide flex items-center gap-1">
+                                                            <span>🎂</span> Input Rentang Usia (Min - Max)
+                                                        </span>
+                                                        <div class="flex items-center gap-1.5">
+                                                            <input type="number" x-model="minAgeVal" min="0" max="120" placeholder="Min" class="w-1/2 text-xs bg-white border border-slate-300 rounded px-2 py-1 outline-none focus:ring-2 focus:ring-blue-500">
+                                                            <span class="text-slate-400 font-bold text-xs">s.d.</span>
+                                                            <input type="number" x-model="maxAgeVal" min="0" max="120" placeholder="Max" class="w-1/2 text-xs bg-white border border-slate-300 rounded px-2 py-1 outline-none focus:ring-2 focus:ring-blue-500">
+                                                        </div>
+                                                        <button type="button" @click.prevent.stop="addCustomAgeRange()" class="w-full py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg transition-colors shadow-sm cursor-pointer flex items-center justify-center leading-normal">
+                                                            + Terapkan Rentang Usia
+                                                        </button>
+                                                    </div>
+                                                @endif
 
-                                                <div class="max-h-48 overflow-y-auto space-y-1 text-xs pr-1">
+                                                 <input type="text" x-model="searchVal" @keydown.enter.prevent.stop="applyFilter({{ json_encode($importColumnDistinctValues[$colKey] ?? []) }})" placeholder="Cari nilai..." class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 outline-none focus:ring-2 focus:ring-blue-500">
+
+                                                <div class="max-h-56 overflow-y-auto space-y-1 text-xs pr-1 border border-slate-100 rounded-lg p-1" style="max-height: 220px; overflow-y: auto;">
                                                     @if(isset($importColumnDistinctValues[$colKey]) && count($importColumnDistinctValues[$colKey]) > 0)
-                                                        @php $allItemsJson = json_encode($importColumnDistinctValues[$colKey]); @endphp
                                                         <label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-100 cursor-pointer font-bold text-blue-600 border-b border-slate-100 pb-1.5 mb-1">
                                                             <input type="checkbox" 
-                                                                   :checked="selectedVals.length === {{ count($importColumnDistinctValues[$colKey]) }}" 
-                                                                   @change="selectAll({{ $allItemsJson }})"
+                                                                   :checked="selectedVals.length >= {{ count($importColumnDistinctValues[$colKey]) }}" 
+                                                                   @change="selectAll({{ json_encode($importColumnDistinctValues[$colKey]) }})"
                                                                    class="accent-blue-600 rounded cursor-pointer">
                                                             <span>(Pilih / Hapus Semua)</span>
                                                         </label>
 
                                                         @foreach($importColumnDistinctValues[$colKey] as $dItem)
-                                                            <label x-show="!searchVal || @json(strtolower($dItem)).includes(searchVal.toLowerCase())"
+                                                            <label x-show="!searchVal || {{ json_encode(strtolower($dItem)) }}.includes(searchVal.toLowerCase())"
                                                                    class="flex items-center gap-2 px-2 py-1 rounded hover:bg-blue-50 cursor-pointer font-medium text-slate-700 transition-colors"
-                                                                   :class="selectedVals.includes(@json($dItem)) ? 'bg-blue-50 font-bold text-blue-900' : ''">
+                                                                   :class="hasVal({{ json_encode($dItem) }}) ? 'bg-blue-50 font-bold text-blue-900' : ''">
                                                                 <input type="checkbox" 
-                                                                       :checked="selectedVals.includes(@json($dItem))" 
-                                                                       @change="toggleVal(@json($dItem))"
+                                                                       :checked="hasVal({{ json_encode($dItem) }})" 
+                                                                       @change="toggleVal({{ json_encode($dItem) }})"
                                                                        class="accent-blue-600 rounded cursor-pointer">
                                                                 <span class="truncate text-xs">{{ $dItem }}</span>
                                                             </label>
@@ -1011,10 +1251,10 @@
                                                 </div>
 
                                                 <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
-                                                    <button type="button" @click="clearFilter()" class="px-2.5 py-1.5 text-[11px] font-bold text-rose-600 hover:bg-rose-50 rounded-lg transition-colors">
+                                                    <button type="button" @click.prevent.stop="clearFilter()" class="px-2.5 py-1.5 text-[11px] font-bold text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer">
                                                         Reset
                                                     </button>
-                                                    <button type="button" @click="applyFilter()" class="px-3.5 py-1.5 text-xs font-black bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-sm transition-all flex items-center gap-1 cursor-pointer">
+                                                    <button type="button" @click.prevent.stop="applyFilter({{ json_encode($importColumnDistinctValues[$colKey] ?? []) }})" class="px-3.5 py-1.5 text-xs font-black bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-sm transition-all flex items-center gap-1 cursor-pointer">
                                                         <span>✓</span> Terapkan <span x-show="selectedVals.length > 0" x-text="'(' + selectedVals.length + ')'"></span>
                                                     </button>
                                                 </div>
@@ -1053,18 +1293,24 @@
                                 @foreach($activeColumnsMap as $colKey => $colTitle)
                                     <td x-show="isColVisible('{{ $colKey }}')" class="px-4 py-3 text-xs text-slate-800 whitespace-nowrap">
                                         @if($colKey === 'nomor_induk_kependudukan' || $colKey === 'nik')
-                                            <span class="font-mono font-bold text-slate-900" x-text="isMasked ? '{{ $row->masked_nik }}' : '{{ $row->$colKey }}'"></span>
+                                            <span class="font-mono font-bold text-slate-900">
+                                                <span x-show="isMasked">{{ $row->masked_nik ?? '****************' }}</span>
+                                                <span x-show="!isMasked" style="display:none;">{{ $row->$colKey ?? '-' }}</span>
+                                            </span>
                                         @elseif($colKey === 'nomor_kartu_keluarga' || $colKey === 'no_kk')
-                                            <span class="font-mono text-slate-800">{{ $row->$colKey }}</span>
+                                            <span class="font-mono text-slate-800">{{ $row->$colKey ?? '-' }}</span>
                                         @elseif($colKey === 'nama' || $colKey === 'nama_lengkap')
-                                            <span class="font-bold text-slate-900" x-text="isMasked ? '{{ $row->masked_nama }}' : '{{ $row->$colKey }}'"></span>
+                                            <span class="font-bold text-slate-900">
+                                                <span x-show="isMasked">{{ $row->masked_nama ?? '***' }}</span>
+                                                <span x-show="!isMasked" style="display:none;">{{ $row->$colKey ?? '-' }}</span>
+                                            </span>
                                         @elseif($colKey === 'desil_nasional' || $colKey === 'desil')
                                             <span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-bold text-[11px]">Desil {{ $row->$colKey ?? '-' }}</span>
                                         @elseif($colKey === 'tanggal_lahir')
-                                            <span>{{ $row->tanggal_lahir ? $row->tanggal_lahir->format('d/m/Y') : '-' }}</span>
+                                            <span>{{ !empty($row->tanggal_lahir) ? (is_object($row->tanggal_lahir) ? $row->tanggal_lahir->format('d/m/Y') : date('d/m/Y', strtotime($row->tanggal_lahir))) : '-' }}</span>
                                         @else
                                             @php
-                                                $rawVal = $row->$colKey;
+                                                $rawVal = $row->$colKey ?? null;
                                                 if (is_numeric($rawVal) && strlen((string)$rawVal) < 15) {
                                                     $displayVal = number_format((float)$rawVal, (floor((float)$rawVal) == (float)$rawVal ? 0 : 2), ',', '.');
                                                 } else {
@@ -1092,7 +1338,7 @@
                                             <p class="text-xs text-slate-500 font-medium">Coba sesuaikan kata kunci pencarian atau bersihkan filter pivot header kolom (🔽).</p>
                                         </div>
                                         <div class="pt-2">
-                                            <a href="{{ route('dtsen.index') }}#tabel-data" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-sm transition-all inline-flex items-center gap-1.5 cursor-pointer">
+                                            <a href="{{ request()->fullUrlWithQuery(array_merge(['search' => null, 'quality_status' => null, 'filter_col' => null, 'filter_val' => null, 'page' => null], array_fill_keys(array_keys($activeColumnsMap), null))) }}#tabel-data" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-sm transition-all inline-flex items-center gap-1.5 cursor-pointer">
                                                 <span>🔄</span> Reset Semua Filter
                                             </a>
                                         </div>
@@ -1244,8 +1490,8 @@
             <div class="space-y-2">
                 <div class="flex justify-between items-center text-xs font-bold">
                     <span class="text-slate-700" x-text="importProgressPercent + '% Selesai'"></span>
-                    <span class="text-blue-600 font-mono" x-show="importEtaSeconds > 0" x-text="'Estimasi sisa waktu: ~' + importEtaSeconds + ' detik'"></span>
-                    <span class="text-emerald-600 font-mono" x-show="importEtaSeconds === 0 && importProgressPercent === 100">Selesai!</span>
+                    <span class="text-blue-600 font-mono" x-show="importProgressPercent < 100" x-text="'Estimasi sisa waktu: ~' + (importEtaSeconds > 0 ? formatEta(importEtaSeconds) : '5 detik')"></span>
+                    <span class="text-emerald-600 font-mono" x-show="importProgressPercent === 100">Selesai!</span>
                 </div>
                 <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden p-0.5 border border-slate-200">
                     <div class="h-full bg-blue-600 rounded-full transition-all duration-300 shadow-sm" :style="{ width: importProgressPercent + '%' }"></div>
@@ -1269,12 +1515,26 @@ function dtsenApp() {
         savedCols = JSON.parse(localStorage.getItem('padu_visible_columns'));
     } catch(e) {}
 
+    let validSavedCols = (savedCols && Array.isArray(savedCols)) 
+        ? savedCols.filter(c => allColKeys.includes(c)) 
+        : [];
+
     return {
         isMasked: false,
         showPreviewModal: false,
         showColumnModal: false,
         previewData: null,
-        visibleCols: (savedCols && Array.isArray(savedCols) && savedCols.length > 0) ? savedCols : allColKeys,
+        visibleCols: validSavedCols.length > 0 ? validSavedCols : [...allColKeys],
+
+        formatEta(sec) {
+            if (!sec || sec <= 0) return '5 detik';
+            if (sec >= 60) {
+                const m = Math.floor(sec / 60);
+                const s = sec % 60;
+                return m + ' m ' + (s < 10 ? '0' : '') + s + ' s';
+            }
+            return sec + ' detik';
+        },
 
         isColVisible(colKey) {
             return this.visibleCols.includes(colKey);
@@ -1313,47 +1573,62 @@ function dtsenApp() {
             this.showImportProgressModal = true;
             this.importProgressPercent = 5;
             this.importProgressMessage = 'Membaca data dari berkas CSV...';
-            this.importEtaSeconds = 9;
+            this.importEtaSeconds = 5;
 
             if (this.progressPollTimer) clearInterval(this.progressPollTimer);
 
-            // Smooth Client Progress Animation (Ticks every 400ms for realistic ETA countdown)
-            let elapsedSteps = 0;
+            let startTime = Date.now();
+            let totalEstSec = 6;
             let isPollingActive = false;
-            const totalEstimatedSteps = 22; // ~9 seconds total
-            this.progressPollTimer = setInterval(() => {
-                elapsedSteps++;
-                const progressRatio = Math.min(elapsedSteps / totalEstimatedSteps, 0.95);
-                this.importProgressPercent = Math.min(95, Math.round(5 + (progressRatio * 90)));
-                this.importEtaSeconds = Math.max(1, Math.round(9 * (1 - progressRatio)));
+            let hasServerProgress = false;
 
-                if (this.importProgressPercent < 25) {
-                    this.importProgressMessage = 'Membaca data dari berkas CSV...';
-                } else if (this.importProgressPercent < 50) {
-                    this.importProgressMessage = 'Memvalidasi NIK, KK, & kualitas data...';
-                } else if (this.importProgressPercent < 75) {
-                    this.importProgressMessage = 'Menyiapkan & mengurutkan data...';
-                } else if (this.importProgressPercent < 92) {
-                    this.importProgressMessage = 'Memasukkan data ke dalam database...';
-                } else {
-                    this.importProgressMessage = 'Membangun indeks pencarian database...';
+            this.progressPollTimer = setInterval(() => {
+                let elapsedSec = (Date.now() - startTime) / 1000;
+
+                if (!hasServerProgress) {
+                    let ratio = Math.min(elapsedSec / totalEstSec, 0.95);
+                    let calcPct = Math.min(95, Math.round(5 + (ratio * 90)));
+                    if (calcPct > this.importProgressPercent) {
+                        this.importProgressPercent = calcPct;
+                    }
+                    let calcEta = Math.max(1, Math.round(totalEstSec - elapsedSec));
+                    this.importEtaSeconds = calcEta;
+
+                    if (this.importProgressPercent < 25) {
+                        this.importProgressMessage = 'Membaca data dari berkas CSV...';
+                    } else if (this.importProgressPercent < 50) {
+                        this.importProgressMessage = 'Memvalidasi NIK, KK, & kualitas data...';
+                    } else if (this.importProgressPercent < 75) {
+                        this.importProgressMessage = 'Menyiapkan & mengurutkan data...';
+                    } else if (this.importProgressPercent < 92) {
+                        this.importProgressMessage = 'Memasukkan data ke dalam database...';
+                    } else {
+                        this.importProgressMessage = 'Membangun indeks B-Tree pencarian database...';
+                    }
                 }
 
-                // Safe polling (cegah request menumpuk & browser hang)
-                if (isPollingActive) return;
-                isPollingActive = true;
-                fetch('/dtsen/import-progress', { headers: { 'Accept': 'application/json' } })
-                    .then(res => res.ok ? res.json() : null)
-                    .then(data => {
-                        if (data && data.percent > 0 && data.percent > this.importProgressPercent) {
-                            this.importProgressPercent = data.percent;
-                            this.importProgressMessage = data.message;
-                            this.importEtaSeconds = data.eta_seconds;
-                        }
-                    })
-                    .catch(() => {})
-                    .finally(() => { isPollingActive = false; });
-            }, 1200);
+                if (!isPollingActive) {
+                    isPollingActive = true;
+                    fetch('/dtsen/import-progress', { headers: { 'Accept': 'application/json' } })
+                        .then(res => res.ok ? res.json() : null)
+                        .then(data => {
+                            if (data && data.percent > 0) {
+                                hasServerProgress = true;
+                                if (data.percent >= this.importProgressPercent || data.percent === 100) {
+                                    this.importProgressPercent = data.percent;
+                                }
+                                if (data.message) {
+                                    this.importProgressMessage = data.message;
+                                }
+                                if (typeof data.eta_seconds !== 'undefined') {
+                                    this.importEtaSeconds = data.eta_seconds;
+                                }
+                            }
+                        })
+                        .catch(() => {})
+                        .finally(() => { isPollingActive = false; });
+                }
+            }, 300);
 
             try {
                 const formData = new FormData(e.target);
@@ -1473,5 +1748,89 @@ function dtsenApp() {
         }
     }
 }
+
+let isFilterNavigating = false;
+
+window.applyAjaxFilter = function(targetUrl, targetHash = 'tabel-data', shouldScroll = false) {
+    if (isFilterNavigating) return;
+    
+    if (targetHash && !targetUrl.includes('#')) {
+        targetUrl += '#' + targetHash;
+    }
+
+    const currentClean = window.location.href;
+    if (currentClean === targetUrl) {
+        return;
+    }
+
+    isFilterNavigating = true;
+    window.location.href = targetUrl;
+};
+
+let filterDebounceTimer = null;
+
+function submitFilterFormAjax(form, shouldScroll = false) {
+    if (!form) return;
+    const formData = new FormData(form);
+    
+    const currentUrl = new URL(window.location.href);
+    const urlParams = currentUrl.searchParams;
+    
+    for (const [key, value] of formData.entries()) {
+        if (value === 'semua' || value === '') {
+            urlParams.delete(key);
+        } else {
+            urlParams.set(key, value);
+        }
+    }
+    
+    urlParams.set('page', '1');
+    const actionUrl = new URL(form.action || window.location.href);
+    actionUrl.search = urlParams.toString();
+    
+    let targetHash = 'tabel-data';
+    if (form.id === 'salaryFilterForm') targetHash = 'salary-analytics-section';
+    if (form.id === 'kpiVarForm') targetHash = 'kpi-analytics-section';
+    
+    window.applyAjaxFilter(actionUrl.toString(), targetHash, shouldScroll);
+}
+
+document.addEventListener('change', function(e) {
+    const filterForm = e.target.closest('#salaryFilterForm, #dataTableSearchForm, #kpiVarForm');
+    if (filterForm && (e.target.tagName === 'SELECT' || e.target.type === 'checkbox' || e.target.type === 'radio')) {
+        submitFilterFormAjax(filterForm, false);
+    }
+});
+
+document.addEventListener('input', function(e) {
+    const filterForm = e.target.closest('#salaryFilterForm, #dataTableSearchForm');
+    if (filterForm && (e.target.tagName === 'INPUT' && (e.target.type === 'text' || e.target.type === 'search'))) {
+        clearTimeout(filterDebounceTimer);
+        filterDebounceTimer = setTimeout(() => {
+            submitFilterFormAjax(filterForm, false);
+        }, 300);
+    }
+});
+
+document.addEventListener('click', function(e) {
+    const link = e.target.closest('#tabel-data a, #salary-analytics-section a, #kpi-analytics-section a, #summary-stats-section a, .pagination a');
+    if (link && link.href && !link.href.includes('javascript:') && !link.dataset.noAjax) {
+        try {
+            const url = new URL(link.href);
+            if (url.origin === window.location.origin) {
+                e.preventDefault();
+                window.applyAjaxFilter(link.href, url.hash.replace('#', '') || 'tabel-data', true);
+            }
+        } catch (err) {}
+    }
+});
+
+document.addEventListener('submit', function(e) {
+    const form = e.target.closest('#dataTableSearchForm, #salaryFilterForm, #kpiVarForm');
+    if (form) {
+        e.preventDefault();
+        submitFilterFormAjax(form, true);
+    }
+});
 </script>
 @endsection

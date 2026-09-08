@@ -277,15 +277,43 @@ class DtsenImportService
         $realSize = $fileSize ?? (is_file($filePath) ? filesize($filePath) : 0);
         $name = $originalName ?? ('dataset_dtsen.' . $extension);
 
-        // Jika Excel (.xlsx/.xls), parse dengan PhpSpreadsheet, jika CSV gunakan generator stream
+        // Jika Excel (.xlsx/.xls), parse dengan PhpSpreadsheet, konversi ke CSV sementara, lalu olah via DuckDB
+        if (in_array($extension, ['xls', 'xlsx'])) {
+            $rowsArr = self::parseExcelFile($filePath);
+            $tempDir = storage_path('app/temp_imports');
+            if (!file_exists($tempDir)) {
+                @mkdir($tempDir, 0777, true);
+            }
+            $tempCsvPath = $tempDir . '/excel_converted_' . time() . '.csv';
+            $fcsv = fopen($tempCsvPath, 'w');
+            fputs($fcsv, "\xEF\xBB\xBF");
+            foreach ($rowsArr as $rRow) {
+                fputcsv($fcsv, $rRow);
+            }
+            fclose($fcsv);
+
+            $pyScript = base_path('scratch/fast_import.py');
+            $dbPath = database_path('database.sqlite');
+            $pyBin = env('PYTHON_BINARY') ?: 'python';
+            $cmd = "{$pyBin} " . escapeshellarg($pyScript) . " " . escapeshellarg($tempCsvPath) . " " . escapeshellarg($dbPath) . " 2>&1";
+            $output = shell_exec($cmd);
+            @unlink($tempCsvPath);
+
+            $totalRows = 0;
+            if (preg_match('/Impor\s+([0-9.,]+)\s+baris/', $output, $matches)) {
+                $totalRows = (int)str_replace([',', '.'], '', $matches[1]);
+            }
+            return [
+                'total_rows' => $totalRows,
+                'inserted' => $totalRows,
+                'updated' => 0,
+                'invalid' => 0
+            ];
+        }
+
         $rowGenerator = null;
         if (in_array($extension, ['csv', 'txt'])) {
             $rowGenerator = self::streamCsvRows($filePath);
-        } else if (in_array($extension, ['xls', 'xlsx'])) {
-            $rowsArr = self::parseExcelFile($filePath);
-            $rowGenerator = (function() use ($rowsArr) {
-                foreach ($rowsArr as $r) { yield $r; }
-            })();
         } else {
             throw new \Exception("Format file .{$extension} tidak didukung. Harap upload file .csv, .xls, atau .xlsx.");
         }
@@ -320,7 +348,9 @@ class DtsenImportService
                 'total_headers' => count($headers),
                 'mapped_variables' => count($rawHeadersMap),
                 'uploaded_at' => date('Y-m-d H:i:s'),
-            ]
+            ],
+            'import_distinct_values' => null,
+            'dataset_summary_stats' => null,
         ]);
 
         $insertedCount = 0;
@@ -334,6 +364,10 @@ class DtsenImportService
 
         foreach ($rowGenerator as $rowValues) {
             if (empty(array_filter($rowValues))) {
+                continue;
+            }
+            $rowStr = implode(' ', array_map('strtolower', array_map('trim', $rowValues)));
+            if (str_contains($rowStr, 'nomor_induk_kependudukan') || str_contains($rowStr, 'jenis_kelamin') || str_contains($rowStr, 'status_bekerja')) {
                 continue;
             }
             $chunk[] = $rowValues;

@@ -90,12 +90,23 @@ if %errorlevel% neq 0 (
     "%PHP_BIN%" artisan key:generate --force >nul 2>&1
 )
 
-rem Cek & siapkan Portable Python otomatis jika belum ada
+rem Cek & siapkan Python serta pustaka DuckDB otomatis jika belum ada di laptop ini
+set "NEED_PY_SETUP=0"
 if not exist "%PROJECT_DIR%python\python.exe" (
     where python >nul 2>&1
     if %errorlevel% neq 0 (
-        echo [INFO] Python belum terdeteksi di laptop ini.
-        echo [DOWNLOAD] Menyiapkan Portable Python otomatis 10MB...
+        set "NEED_PY_SETUP=1"
+    )
+)
+
+if "%NEED_PY_SETUP%"=="1" (
+    echo [INFO] Menyiapkan lingkungan Python & DuckDB di laptop ini...
+    powershell -ExecutionPolicy Bypass -File "%PROJECT_DIR%setup_python.ps1"
+) else (
+    rem Pastikan pustaka DuckDB sudah terpasang
+    python -c "import duckdb" >nul 2>&1
+    if %errorlevel% neq 0 (
+        echo [DUCKDB] Memasang pustaka akselerasi data DuckDB...
         powershell -ExecutionPolicy Bypass -File "%PROJECT_DIR%setup_python.ps1"
     )
 )

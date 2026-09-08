@@ -84,7 +84,7 @@
         </div>
     @endif
 
-    @if($errors->any())
+    @if(isset($errors) && $errors && method_exists($errors, 'any') && $errors->any())
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
             <div class="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 text-sm font-medium space-y-1 shadow-sm" x-data="{ show: true }" x-show="show">
                 <div class="flex items-center justify-between">
