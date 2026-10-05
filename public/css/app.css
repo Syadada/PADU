@@ -1,184 +1,990 @@
 /* ==========================================================================
-   PADU v1.02 - Main Application Custom Stylesheet (Clean High Contrast)
-   Lokasi: public/css/app.css
+   0. GLOBAL TEXT-DECORATION RESET: HAPUS SEMUA GARIS BAWAH PADA TEKS & LINK
    ========================================================================== */
-
-/* 1. Base Reset & Typography Reset */
-*, ::before, ::after {
-    box-sizing: border-box;
-    border-width: 0;
-    border-style: solid;
-    border-color: #cbd5e1;
-}
-
-html, body {
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background-color: #f8fafc;
-    color: #0f172a;
-    margin: 0;
-    padding: 0;
-    -webkit-font-smoothing: antialiased;
-}
-
-/* 2. Global Link Reset */
-a, a:hover, a:focus, a:visited {
-    color: inherit;
+*, *::before, *::after,
+a, a:link, a:visited, a:hover, a:active, a:focus, a *,
+button, button *, .btn, .nav-link, .sidebar-nav-item, .sidebar-nav-link,
+.profile-dropdown-link, .pagination-link, u, ins, .underline, .hover\:underline {
     text-decoration: none !important;
 }
 
-/* 3. Alpine.js Cloak Directive */
-[x-cloak] {
-    display: none !important;
+.sidebar-action-btn:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
 }
 
-/* 4. Select Option Colors */
-select option {
-    background-color: #ffffff;
-    color: #0f172a;
-    font-weight: 600;
-    padding: 6px 12px;
-}
-
-/* 5. Button Base Weight */
-button, .btn {
-    font-weight: 700;
-}
-
-/* 6. Card & Table Legibility Rules */
-.card-simple {
-    background-color: #ffffff;
-    border: 1px solid #cbd5e1;
-    border-radius: 0.75rem;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
-}
-
-table th {
-    color: #1e293b;
-    font-weight: 800;
-    background-color: #f1f5f9;
-}
-
-table td {
-    color: #0f172a;
-}
-
-/* 7. Branding Header Helpers */
-.brand-logo-link {
+.sidebar-nav-link {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 0.55rem 0.75rem !important;
+    border-radius: 0.75rem !important;
+    font-size: 0.78rem !important;
+    font-weight: 700 !important;
+    color: #475569 !important;
+    transition: all 0.15s ease !important;
     text-decoration: none !important;
 }
 
-.brand-title {
-    margin: 0;
+.sidebar-nav-link:hover {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+    transform: translateX(3px) !important;
 }
 
-.brand-subtitle {
-    margin-top: 2px;
-    margin-bottom: 0;
+/* Enterprise Left Sidebar Link Polish */
+.sidebar-nav-item {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    text-decoration: none !important;
+    user-select: none;
 }
 
-.nav-link-clean {
+.sidebar-nav-item:hover {
+    transform: translateX(3px) !important;
+}
+
+.sidebar-nav-item:active {
+    transform: scale(0.98) !important;
+}
+
+/* ==========================================================================
+   PADU ENTERPRISE SIDEBAR & MAIN WRAPPER SYSTEM
+   ========================================================================== */
+.padu-sidebar-aside {
+    width: 280px !important;
+    min-width: 280px !important;
+    max-width: 280px !important;
+    position: fixed !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    z-index: 50 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    background-color: #ffffff !important; /* Pure Clean Light Enterprise Theme */
+    color: #0f172a !important;
+    border-right: 1px solid #e2e8f0 !important;
+    box-shadow: 2px 0 16px rgba(15, 23, 42, 0.05) !important;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.padu-sidebar-aside.closed {
+    transform: translateX(-100%) !important;
+}
+
+.padu-sidebar-aside.open {
+    transform: translateX(0) !important;
+}
+
+.padu-main-wrapper {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    min-height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    transition: margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1), width 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+@media (min-width: 1024px) {
+    .padu-main-wrapper.sidebar-open {
+        margin-left: 280px !important;
+        width: calc(100% - 280px) !important;
+        max-width: calc(100% - 280px) !important;
+    }
+    .padu-main-wrapper.sidebar-closed {
+        margin-left: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+}
+
+@media (max-width: 1023px) {
+    .padu-main-wrapper {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+}
+
+/* Sidebar Header Close Button */
+.padu-sidebar-close-btn {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    border-radius: 9px !important;
+    background: #f1f5f9 !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #64748b !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+}
+
+.padu-sidebar-close-btn:hover {
+    background: #e2e8f0 !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+
+/* Navbar Sidebar Toggle Button */
+.padu-navbar-toggle-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    height: 36px !important;
+    padding: 0 12px !important;
+    border-radius: 10px !important;
+    background: #f1f5f9 !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #334155 !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+}
+
+.padu-navbar-toggle-btn:hover {
+    background: #e2e8f0 !important;
+    color: #0f172a !important;
+    border-color: #94a3b8 !important;
+}
+
+/* Mobile Backdrop */
+.padu-sidebar-backdrop {
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(2, 6, 23, 0.65) !important;
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+    z-index: 45 !important;
+    transition: opacity 0.2s ease !important;
+}
+
+/* 1. Header & Brand Box */
+.padu-brand-container {
+    padding: 16px 18px 14px 18px !important;
+    background: #ffffff !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    flex-shrink: 0 !important;
+}
+
+.padu-logo-mark {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    border-radius: 12px !important;
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3) !important;
+    color: #ffffff !important;
+    font-weight: 900 !important;
+    font-size: 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    letter-spacing: -0.05em !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
     text-decoration: none !important;
 }
 
-/* 8. Scrollbar Polish */
-::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+.padu-logo-mark:hover {
+    transform: scale(1.05) !important;
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.4) !important;
 }
 
-::-webkit-scrollbar-track {
-    background: #f1f5f9;
+.padu-brand-title {
+    font-size: 15px !important;
+    font-weight: 800 !important;
+    color: #0f172a !important;
+    letter-spacing: -0.02em !important;
+    line-height: 1.15 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
 }
 
-::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 4px;
+.padu-version-tag {
+    font-size: 9.5px !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.06em !important;
+    color: #2563eb !important;
+    background: #eff6ff !important;
+    border: 1px solid #bfdbfe !important;
+    border-radius: 6px !important;
+    padding: 1.5px 6px !important;
+    display: inline-block !important;
+    line-height: 1.2 !important;
 }
 
-::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
+.padu-brand-subtitle {
+    font-size: 11px !important;
+    color: #64748b !important;
+    font-weight: 500 !important;
+    margin-top: 2px !important;
+    line-height: 1.2 !important;
 }
 
-/* 9. High-Contrast Card & File Selector Helpers (Guaranteed Legibility) */
+.padu-status-badge {
+    margin-top: 10px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 5px 10px !important;
+    border-radius: 9px !important;
+    background: #f0fdf4 !important;
+    border: 1px solid #bbf7d0 !important;
+    font-size: 10px !important;
+    font-weight: 600 !important;
+}
+
+.padu-dot-pulse {
+    width: 7px !important;
+    height: 7px !important;
+    border-radius: 50% !important;
+    background-color: #10b981 !important;
+    box-shadow: 0 0 8px #10b981 !important;
+    display: inline-block !important;
+    margin-right: 6px !important;
+    animation: padu-pulse 2s infinite !important;
+}
+
+@keyframes padu-pulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+    70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+/* Sidebar Toggle/Collapse button inside brand container */
+.padu-sidebar-toggle-btn {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 9px !important;
+    background: #f1f5f9 !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #64748b !important;
+    font-weight: bold !important;
+    font-size: 13px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+}
+
+.padu-sidebar-toggle-btn:hover {
+    background: #e2e8f0 !important;
+    color: #0f172a !important;
+    transform: translateX(-1px) !important;
+}
+
+/* 2. User Profile Card */
+.padu-user-profile-box {
+    margin: 12px 14px 4px 14px !important;
+    padding: 9px 11px !important;
+    border-radius: 12px !important;
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 10px !important;
+    flex-shrink: 0 !important;
+}
+
+.padu-user-avatar {
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    border-radius: 10px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-weight: 800 !important;
+    font-size: 13px !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+}
+
+.padu-user-avatar.superadmin {
+    background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+    border: 1px solid rgba(251, 191, 36, 0.8) !important;
+}
+
+.padu-user-avatar.operator {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
+    border: 1px solid rgba(96, 165, 250, 0.8) !important;
+}
+
+.padu-user-name {
+    font-size: 12.5px !important;
+    font-weight: 800 !important;
+    color: #0f172a !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+.padu-user-role-label {
+    font-size: 9.5px !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.06em !important;
+    margin-top: 1.5px !important;
+    line-height: 1.2 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+}
+
+.padu-user-role-label.superadmin {
+    color: #b45309 !important;
+}
+
+.padu-user-role-label.operator {
+    color: #1d4ed8 !important;
+}
+
+.padu-user-gear-btn {
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    border-radius: 8px !important;
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #64748b !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-decoration: none !important;
+    transition: all 0.15s ease !important;
+    font-size: 13px !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+}
+
+.padu-user-gear-btn:hover {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+    transform: rotate(30deg) !important;
+}
+
+/* 3. Navigation Group Headings */
+.padu-nav-group-title {
+    padding: 10px 10px 6px 10px !important;
+    font-size: 10px !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.08em !important;
+    color: #64748b !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+}
+
+.padu-nav-group-tag {
+    font-size: 9px !important;
+    font-weight: 700 !important;
+    font-family: monospace !important;
+    color: #2563eb !important;
+    background: #eff6ff !important;
+    padding: 1px 5px !important;
+    border-radius: 4px !important;
+    border: 1px solid #bfdbfe !important;
+}
+
+/* 4. Menu Links (Active & Unselected) */
+.padu-nav-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 9px 12px !important;
+    border-radius: 12px !important;
+    text-decoration: none !important;
+    transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    margin-bottom: 3px !important;
+    border: 1px solid transparent !important;
+    color: #334155 !important;
+}
+
+.padu-nav-item:hover {
+    background: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+    color: #0f172a !important;
+    transform: translateX(3px) !important;
+}
+
+.padu-nav-item:hover .padu-nav-title {
+    color: #0f172a !important;
+}
+
+.padu-nav-item:hover .padu-nav-desc {
+    color: #475569 !important;
+}
+
+.padu-nav-item.active {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+    border: 1px solid rgba(37, 99, 235, 0.4) !important;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3) !important;
+    color: #ffffff !important;
+    transform: translateX(2px) !important;
+}
+
+.padu-nav-item.active .padu-nav-title {
+    color: #ffffff !important;
+    font-weight: 800 !important;
+}
+
+.padu-nav-item.active .padu-nav-desc {
+    color: rgba(255, 255, 255, 0.88) !important;
+}
+
+.padu-nav-icon {
+    font-size: 17px !important;
+    line-height: 1 !important;
+    flex-shrink: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.padu-nav-text-wrap {
+    flex: 1 1 0% !important;
+    min-width: 0 !important;
+}
+
+.padu-nav-title {
+    font-size: 12.5px !important;
+    font-weight: 700 !important;
+    color: #1e293b !important;
+    line-height: 1.25 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+.padu-nav-desc {
+    font-size: 10.5px !important;
+    font-weight: 500 !important;
+    color: #64748b !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    margin-top: 1.5px !important;
+}
+
+.padu-nav-badge {
+    padding: 2.5px 7px !important;
+    border-radius: 6px !important;
+    font-size: 9.5px !important;
+    font-weight: 800 !important;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+    flex-shrink: 0 !important;
+    line-height: 1 !important;
+}
+
+.padu-nav-badge.active {
+    background: rgba(255, 255, 255, 0.25) !important;
+    color: #ffffff !important;
+    border: none !important;
+}
+
+.padu-nav-badge.idle {
+    background: #f1f5f9 !important;
+    color: #475569 !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+.padu-nav-badge.critical {
+    background: #ffe4e6 !important;
+    color: #e11d48 !important;
+    border: 1px solid #fecdd3 !important;
+}
+
+.padu-nav-badge.valid {
+    background: #dcfce7 !important;
+    color: #15803d !important;
+    border: 1px solid #bbf7d0 !important;
+}
+
+/* 5. Tool Card & Switch */
+.padu-tool-card {
+    padding: 10px !important;
+    border-radius: 12px !important;
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    margin-bottom: 8px !important;
+}
+
+.padu-tool-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    color: #334155 !important;
+    margin-bottom: 6px !important;
+}
+
+.padu-switch-group {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 4px !important;
+    background: #e2e8f0 !important;
+    padding: 3px !important;
+    border-radius: 9px !important;
+    border: 1px solid #cbd5e1 !important;
+}
+
+.padu-switch-btn {
+    padding: 5px 8px !important;
+    border-radius: 7px !important;
+    font-size: 11px !important;
+    font-weight: 800 !important;
+    border: none !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    transition: all 0.15s ease !important;
+}
+
+.padu-switch-btn.masked-on {
+    background: #e11d48 !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 6px rgba(225, 29, 72, 0.3) !important;
+}
+
+.padu-switch-btn.unmasked-on {
+    background: #10b981 !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3) !important;
+}
+
+.padu-switch-btn.off {
+    background: transparent !important;
+    color: #64748b !important;
+}
+
+.padu-switch-btn.off:hover {
+    color: #0f172a !important;
+    background: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* 6. Action Button in Sidebar */
+.padu-action-btn {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    width: 100% !important;
+    padding: 8.5px 12px !important;
+    border-radius: 11px !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    text-align: left !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+    text-decoration: none !important;
+    margin-bottom: 6px !important;
+    box-sizing: border-box !important;
+}
+
+.padu-action-btn.cyan {
+    background: #f0f9ff !important;
+    border: 1px solid #bae6fd !important;
+    color: #0284c7 !important;
+}
+.padu-action-btn.cyan:hover {
+    background: #e0f2fe !important;
+    color: #0369a1 !important;
+    transform: translateY(-1px) !important;
+}
+
+.padu-action-btn.emerald {
+    background: #f0fdf4 !important;
+    border: 1px solid #bbf7d0 !important;
+    color: #16a34a !important;
+}
+.padu-action-btn.emerald:hover {
+    background: #dcfce7 !important;
+    color: #15803d !important;
+    transform: translateY(-1px) !important;
+}
+
+.padu-action-btn.rose {
+    background: #fff1f2 !important;
+    border: 1px solid #fecdd3 !important;
+    color: #e11d48 !important;
+}
+.padu-action-btn.rose:hover {
+    background: #ffe4e6 !important;
+    color: #be123c !important;
+    transform: translateY(-1px) !important;
+}
+
+/* 7. Snapshot Mini Stats Card */
+.padu-stat-card {
+    padding: 12px 14px !important;
+    border-radius: 12px !important;
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    margin-top: 10px !important;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+    font-size: 11.5px !important;
+}
+
+.padu-stat-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding-bottom: 8px !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    margin-bottom: 8px !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    font-size: 10px !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.06em !important;
+    color: #64748b !important;
+}
+
+.padu-stat-row {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-bottom: 4px !important;
+    color: #475569 !important;
+}
+
+/* 8. Footer Section */
+.padu-sidebar-footer {
+    padding: 12px 16px !important;
+    background: #f8fafc !important;
+    border-top: 1px solid #e2e8f0 !important;
+    flex-shrink: 0 !important;
+}
+
+.padu-footer-engine-row {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    color: #1e293b !important;
+    font-weight: 700 !important;
+    font-size: 11px !important;
+}
+
+.padu-footer-tag {
+    font-size: 9.5px !important;
+    font-weight: 700 !important;
+    padding: 2px 6px !important;
+    border-radius: 5px !important;
+    background: #e2e8f0 !important;
+    color: #475569 !important;
+    border: 1px solid #cbd5e1 !important;
+    font-family: monospace !important;
+}
+
+.padu-footer-note {
+    font-size: 10px !important;
+    color: #64748b !important;
+    margin-top: 2px !important;
+}
+
+.padu-main-content {
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+    transition: margin-left 0.28s cubic-bezier(0.4, 0, 0.2, 1), width 0.28s cubic-bezier(0.4, 0, 0.2, 1), max-width 0.28s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Responsive & Collapsible Behavior */
+@media (min-width: 1024px) {
+    .padu-sidebar.open {
+        transform: translateX(0) !important;
+    }
+    .padu-sidebar.closed {
+        transform: translateX(-100%) !important;
+        box-shadow: none !important;
+    }
+    .padu-main-content.sidebar-expanded {
+        margin-left: 290px !important;
+        width: calc(100% - 290px) !important;
+        max-width: calc(100% - 290px) !important;
+    }
+    .padu-main-content.sidebar-collapsed {
+        margin-left: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+}
+
+@media (max-width: 1023px) {
+    .padu-sidebar {
+        transform: translateX(-100%) !important;
+        box-shadow: 0 20px 40px -8px rgba(0, 0, 0, 0.25) !important;
+    }
+    .padu-sidebar.open {
+        transform: translateX(0) !important;
+    }
+    .padu-sidebar.closed {
+        transform: translateX(-100%) !important;
+    }
+    .padu-main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+}
+
+/* ================= PRINT STYLES ================= */
+@media print {
+    nav, header, button, form, .no-print, [x-show="showColumnModal"], [x-show="showPreviewModal"], [x-show="showImportProgressModal"], .padu-sidebar, .padu-sidebar-toggle-btn {
+        display: none !important;
+    }
+    body {
+        background: #ffffff !important;
+        color: #0f172a !important;
+        font-family: sans-serif !important;
+    }
+    #tabel-data {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    .overflow-x-auto, .max-h-\[70vh\] {
+        max-height: none !important;
+        overflow: visible !important;
+    }
+    table {
+        width: 100% !important;
+        min-width: 100% !important;
+        border-collapse: collapse !important;
+        page-break-inside: auto;
+    }
+    tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+    }
+    th, td {
+        border: 1px solid #cbd5e1 !important;
+        padding: 6px 10px !important;
+        font-size: 11px !important;
+        color: #0f172a !important;
+    }
+    th {
+        background-color: #f1f5f9 !important;
+        font-weight: 800 !important;
+    }
+    th div .relative {
+        display: none !important;
+    }
+}
+
+/* Dark Dashboard Card Utilities (Cleaned from inline styles) */
 .card-dark-slate {
-    background-color: #0f172a !important; /* Dark Slate 900 */
+    background-color: #0f172a !important;
+    color: #ffffff !important;
     border: 1px solid #1e293b !important;
+}
+.card-dark-slate-emerald {
+    background-color: #0f172a !important;
     color: #ffffff !important;
+    border: 1px solid #065f46 !important;
 }
-
-.card-dark-slate h3, 
-.card-dark-slate h4 {
-    color: #ffffff !important;
+.icon-badge-emerald {
+    background-color: rgba(16, 185, 129, 0.2) !important;
 }
-
-.card-dark-slate p,
-.card-dark-slate label {
-    color: #cbd5e1 !important;
+.icon-badge-blue {
+    background-color: rgba(59, 130, 246, 0.2) !important;
 }
-
-.file-option-card {
+.text-emerald-glow {
+    color: #6ee7b7 !important;
+}
+.card-dark-badge-emerald {
+    background-color: #064e3b !important;
+    color: #a7f3d0 !important;
+    border: 1px solid #047857 !important;
+}
+.text-emerald-status {
+    color: #34d399 !important;
+}
+.card-dark-item {
     background-color: #1e293b !important;
     border: 1px solid #334155 !important;
-    color: #ffffff !important;
-    border-radius: 0.75rem;
-    padding: 1rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
 }
-
-.file-option-card:hover {
-    background-color: #334155 !important;
-    border-color: #3b82f6 !important;
+.text-emerald-mint {
+    color: #a7f3d0 !important;
 }
-
-.file-option-card.selected-card {
-    background-color: #172554 !important; /* Blue 950 */
-    border-color: #3b82f6 !important;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5) !important;
+.card-dark-item-footer {
+    border-color: #334155 !important;
+    color: #94a3b8 !important;
 }
-
-.file-option-card strong {
-    color: #ffffff !important;
-}
-
-.file-size-badge {
+.card-dark-badge-warning {
     background-color: #020617 !important;
     color: #f59e0b !important;
     border: 1px solid #334155 !important;
-    padding: 2px 8px;
-    border-radius: 6px;
-    font-family: monospace;
-    font-weight: 700;
 }
-
-.btn-process-data {
-    background-color: #059669 !important; /* Emerald 600 */
+.text-slate-muted-light {
+    color: #cbd5e1 !important;
+}
+.border-slate-dark {
+    border-color: #334155 !important;
+}
+.card-dark-badge-blue {
+    background-color: #1e3a8a !important;
+    color: #93c5fd !important;
+    border: 1px solid #1d4ed8 !important;
+}
+.text-yellow-code {
+    color: #fde047 !important;
+}
+.card-dark-btn-sky {
+    background-color: #0284c7 !important;
     color: #ffffff !important;
-    font-weight: 900 !important;
-    border: none !important;
-    padding: 0.75rem 2rem !important;
-    border-radius: 0.75rem !important;
-    box-shadow: 0 4px 10px rgba(5, 150, 105, 0.4) !important;
-    cursor: pointer !important;
-    transition: all 0.2s ease !important;
-}
-
-.btn-process-data:hover {
-    background-color: #10b981 !important;
-    box-shadow: 0 6px 15px rgba(16, 185, 129, 0.5) !important;
-}
-
-.btn-refresh-folder {
-    background-color: #0284c7 !important; /* Sky 600 */
-    color: #ffffff !important;
-    font-weight: 700 !important;
-    padding: 0.5rem 1rem !important;
-    border-radius: 0.75rem !important;
     border: 1px solid #0369a1 !important;
-    cursor: pointer !important;
+}
+.card-dark-btn-emerald {
+    background-color: #059669 !important;
+    color: #ffffff !important;
+}
+.card-dark-code-tag {
+    background-color: #020617 !important;
+    color: #34d399 !important;
+    border: 1px solid #334155 !important;
+}
+.alert-notice-amber {
+    background-color: #fffbeb !important;
+    border-color: #fde68a !important;
+    color: #78350f !important;
 }
 
-.btn-refresh-folder:hover {
-    background-color: #0ea5e9 !important;
+.badge-vault-amber {
+    background: linear-gradient(135deg, rgba(254, 243, 199, 0.85), rgba(253, 230, 138, 0.7));
+    border-color: rgba(245, 158, 11, 0.6);
+    color: #92400e;
+    box-shadow: 0 4px 15px -2px rgba(245, 158, 11, 0.2), inset 0 1px 1px #ffffff;
 }
 
+/* Official Printable Recovery Voucher Styles */
+.print-voucher-container {
+    border: 3px double #000;
+    padding: 25px;
+    font-family: 'Times New Roman', serif;
+}
+.print-voucher-header {
+    text-align: center;
+    border-bottom: 2px solid #000;
+    padding-bottom: 12px;
+    margin-bottom: 18px;
+}
+.print-voucher-title {
+    font-size: 16pt;
+    margin: 0;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+.print-voucher-sub {
+    font-size: 11pt;
+    margin: 4px 0 0;
+    font-weight: normal;
+}
+
+/* ==============================================================
+   HIGH CONTRAST & THEME LEGIBILITY FIXES
+   Ensures text NEVER blends invisibly into background in any component
+   ============================================================== */
+
+/* Slate Background Utilities */
+.bg-slate-900 { background-color: #0f172a !important; color: #f8fafc; }
+.bg-slate-800 { background-color: #1e293b !important; color: #f8fafc; }
+.bg-slate-950 { background-color: #020617 !important; color: #f8fafc; }
+.bg-slate-800\/60 { background-color: rgba(30, 41, 59, 0.6) !important; }
+.bg-slate-800\/80 { background-color: rgba(30, 41, 59, 0.8) !important; }
+.bg-slate-900\/60 { background-color: rgba(15, 23, 42, 0.6) !important; }
+.bg-slate-900\/70 { background-color: rgba(15, 23, 42, 0.7) !important; }
+.bg-slate-900\/80 { background-color: rgba(15, 23, 42, 0.8) !important; }
+.bg-slate-900\/90 { background-color: rgba(15, 23, 42, 0.9) !important; }
+
+/* Slate Border Utilities */
+.border-slate-800 { border-color: #1e293b !important; }
+.border-slate-700 { border-color: #334155 !important; }
+.border-slate-600 { border-color: #475569 !important; }
+
+/* Slate Text Colors */
+.text-slate-300 { color: #cbd5e1 !important; }
+.text-slate-400 { color: #94a3b8 !important; }
+.text-slate-500 { color: #64748b !important; }
+.text-slate-600 { color: #475569 !important; }
+.text-slate-700 { color: #334155 !important; }
+.text-slate-800 { color: #1e293b !important; }
+.text-slate-900 { color: #0f172a !important; }
+
+/* In dark cards, ensure code tags, headings, and labels are always high-contrast */
+.bg-slate-900 code, .bg-slate-800 code {
+    background-color: #020617 !important;
+    color: #38bdf8 !important;
+    border-color: #334155 !important;
+}
+
+/* Light Theme Card Helpers */
+.clean-light-card {
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05) !important;
+    color: #0f172a !important;
+}
+
+.clean-file-item {
+    background-color: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #0f172a !important;
+    transition: all 0.15s ease-in-out;
+}
+.clean-file-item:hover {
+    background-color: #eff6ff !important;
+    border-color: #93c5fd !important;
+}
+.clean-file-item.selected {
+    background-color: #eff6ff !important;
+    border: 2px solid #2563eb !important;
+    box-shadow: 0 0 0 1px #2563eb !important;
+}
+
+/* Profile Dropdown Styling */
+.profile-dropdown-card {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    width: 270px;
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+    overflow: hidden;
+    z-index: 99999 !important;
+}
+.profile-dropdown-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #334155;
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+.profile-dropdown-link:hover {
+    background-color: #f1f5f9;
+    color: #2563eb;
+}
+.profile-dropdown-divider {
+    height: 1px;
+    background-color: #e2e8f0;
+    margin: 4px 0;
+}

@@ -39,11 +39,42 @@ def build_where_clause(con, table_ref, params):
         qs_escaped = quality_status.replace("'", "''")
         where_clauses.append(f'"{qs_col}" = \'{qs_escaped}\'')
 
+    def resolve_target_column(key, ex_cols):
+        k = str(key).strip().lower()
+        if k in ex_cols:
+            return ex_cols[k]
+        syns = {
+            'gaji': 'gaji_bulanan', 'pendapatan': 'gaji_bulanan', 'income': 'gaji_bulanan', 'salary': 'gaji_bulanan', 'penghasilan': 'gaji_bulanan',
+            'gaji_bulanan': 'gaji',
+            'desil': 'desil_nasional', 'desil_kesejahteraan': 'desil_nasional',
+            'desil_nasional': 'desil',
+            'jk': 'jenis_kelamin', 'gender': 'jenis_kelamin', 'sex': 'jenis_kelamin',
+            'jenis_kelamin': 'jk',
+            'nik': 'nomor_induk_kependudukan', 'no_nik': 'nomor_induk_kependudukan',
+            'nomor_induk_kependudukan': 'nik',
+            'kk': 'nomor_kartu_keluarga', 'no_kk': 'nomor_kartu_keluarga',
+            'nomor_kartu_keluarga': 'kk',
+            'umur': 'usia', 'age': 'usia',
+            'usia': 'umur',
+            'pekerjaan': 'status_bekerja', 'status_kerja': 'status_bekerja',
+            'status_bekerja': 'pekerjaan',
+            'status_kawin': 'status_pernikahan', 'status_pernikahan': 'status_kawin',
+            'nama': 'nama_lengkap', 'nama_lengkap': 'nama',
+            'kabupaten': 'kabupaten_kota', 'kota': 'kabupaten_kota',
+            'desa': 'kelurahan_desa', 'kelurahan': 'kelurahan_desa'
+        }
+        if k in syns and syns[k] in ex_cols:
+            return ex_cols[syns[k]]
+        for exist_k, exist_name in ex_cols.items():
+            if k in exist_k or exist_k in k:
+                return exist_name
+        return None
+
     # 3. Dynamic multi-checkbox / column filters
     filters_map = params.get('filters', {})
     if isinstance(filters_map, dict):
         for req_key, user_val in filters_map.items():
-            if not user_val or user_val == 'semua':
+            if not user_val or user_val == 'semua' or req_key in ('page', 'search', 'quality_status', '_token'):
                 continue
             
             val_arr = user_val if isinstance(user_val, list) else [v.strip() for v in str(user_val).split(',') if v.strip() and v.strip() != 'semua']
@@ -51,21 +82,7 @@ def build_where_clause(con, table_ref, params):
                 continue
 
             col_key = str(req_key).strip().lower()
-            target_col = existing_cols.get(col_key, None)
-            if not target_col:
-                # Try finding synonym
-                syn_map = {
-                    'gaji': 'gaji_bulanan', 'pendapatan': 'gaji_bulanan', 'income': 'gaji_bulanan', 'salary': 'gaji_bulanan',
-                    'desil': 'desil_nasional', 'desil_kesejahteraan': 'desil_nasional',
-                    'jk': 'jenis_kelamin', 'gender': 'jenis_kelamin',
-                    'nik': 'nomor_induk_kependudukan', 'no_nik': 'nomor_induk_kependudukan',
-                    'kk': 'nomor_kartu_keluarga', 'no_kk': 'nomor_kartu_keluarga',
-                    'umur': 'usia', 'age': 'usia'
-                }
-                syn_col = syn_map.get(col_key)
-                if syn_col:
-                    target_col = existing_cols.get(syn_col, None)
-
+            target_col = resolve_target_column(col_key, existing_cols)
             if not target_col:
                 continue
 
@@ -75,57 +92,100 @@ def build_where_clause(con, table_ref, params):
                 item_str = str(item).strip()
                 item_clean = item_str.lower().replace("'", "''")
                 
-                # Age filter handling
-                if col_key in ['usia', 'umur', 'age']:
-                    if '-' in item_str:
+                # Age / Umur filter handling
+                if any(x in col_key for x in ['usia', 'umur', 'age']):
+                    if '<' in item_clean:
+                        num_str = ''.join(c for c in item_clean if c.isdigit())
+                        if num_str:
+                            or_parts.append(f'TRY_CAST("{target_col}" AS INTEGER) < {int(num_str)}')
+                        else:
+                            or_parts.append(f'LOWER(CAST("{target_col}" AS VARCHAR)) LIKE \'%{item_clean}%\'')
+                    elif '>' in item_clean or '≥' in item_clean or '>=' in item_clean:
+                        num_str = ''.join(c for c in item_clean if c.isdigit())
+                        if num_str:
+                            op = '>=' if ('≥' in item_clean or '>=' in item_clean) else '>'
+                            or_parts.append(f'TRY_CAST("{target_col}" AS INTEGER) {op} {int(num_str)}')
+                        else:
+                            or_parts.append(f'LOWER(CAST("{target_col}" AS VARCHAR)) LIKE \'%{item_clean}%\'')
+                    elif '-' in item_str:
                         parts = item_str.split('-')
-                        if len(parts) == 2 and parts[0].strip().isdigit() and parts[1].strip().isdigit():
-                            min_v = int(parts[0].strip())
-                            max_v = int(parts[1].strip())
-                            or_parts.append(f'TRY_CAST("{target_col}" AS INTEGER) BETWEEN {min_v} AND {max_v}')
-                        else:
-                            or_parts.append(f'LOWER(CAST("{target_col}" AS VARCHAR)) LIKE \'%{item_clean}%\'')
-                    elif '>' in item_str:
-                        num_str = ''.join(c for c in item_str if c.isdigit())
-                        if num_str:
-                            num_v = int(num_str)
-                            or_parts.append(f'TRY_CAST("{target_col}" AS INTEGER) > {num_v}')
-                        else:
-                            or_parts.append(f'LOWER(CAST("{target_col}" AS VARCHAR)) LIKE \'%{item_clean}%\'')
-                    elif '<' in item_str:
-                        num_str = ''.join(c for c in item_str if c.isdigit())
-                        if num_str:
-                            num_v = int(num_str)
-                            or_parts.append(f'TRY_CAST("{target_col}" AS INTEGER) < {num_v}')
+                        p0 = ''.join(c for c in parts[0] if c.isdigit())
+                        p1 = ''.join(c for c in parts[1] if c.isdigit())
+                        if p0 and p1:
+                            or_parts.append(f'TRY_CAST("{target_col}" AS INTEGER) BETWEEN {int(p0)} AND {int(p1)}')
                         else:
                             or_parts.append(f'LOWER(CAST("{target_col}" AS VARCHAR)) LIKE \'%{item_clean}%\'')
                     elif item_str.isdigit():
                         or_parts.append(f'TRY_CAST("{target_col}" AS INTEGER) = {int(item_str)}')
                     else:
                         or_parts.append(f'LOWER(CAST("{target_col}" AS VARCHAR)) LIKE \'%{item_clean}%\'')
-                # Salary filter handling
-                elif col_key in ['gaji', 'gaji_bulanan', 'salary', 'income']:
-                    if '<3' in item_clean or '3.000.000' in item_clean:
+
+                # Salary / Gaji filter handling
+                elif any(x in col_key for x in ['gaji', 'pendapatan', 'penghasilan', 'salary', 'income']):
+                    num_only = item_str.replace('.', '').replace(',', '')
+                    if '< 1.5' in item_clean or '< 1,5' in item_clean or '< 1500000' in item_clean:
+                        or_parts.append(f'TRY_CAST("{target_col}" AS DOUBLE) < 1500000')
+                    elif '< 3' in item_clean or '<3' in item_clean or '< 3000000' in item_clean:
                         or_parts.append(f'TRY_CAST("{target_col}" AS DOUBLE) < 3000000')
+                    elif ('1.5' in item_clean or '1,5' in item_clean) and '3' in item_clean:
+                        or_parts.append(f'TRY_CAST("{target_col}" AS DOUBLE) BETWEEN 1500000 AND 3000000')
                     elif '3' in item_clean and '5' in item_clean:
                         or_parts.append(f'TRY_CAST("{target_col}" AS DOUBLE) BETWEEN 3000000 AND 5000000')
                     elif '5' in item_clean and '10' in item_clean:
                         or_parts.append(f'TRY_CAST("{target_col}" AS DOUBLE) BETWEEN 5000000 AND 10000000')
-                    elif '>10' in item_clean or '10.000.000' in item_clean:
+                    elif '> 10' in item_clean or '>10' in item_clean:
                         or_parts.append(f'TRY_CAST("{target_col}" AS DOUBLE) > 10000000')
-                    elif item_str.replace('.', '').isdigit():
-                        exact_val = float(item_str.replace('.', ''))
+                    elif '> 5' in item_clean or '>5' in item_clean:
+                        or_parts.append(f'TRY_CAST("{target_col}" AS DOUBLE) > 5000000')
+                    elif '-' in item_str and not any(c.isalpha() for c in item_str):
+                        parts = item_str.split('-')
+                        p0 = ''.join(c for c in parts[0] if c.isdigit())
+                        p1 = ''.join(c for c in parts[1] if c.isdigit())
+                        if p0 and p1:
+                            or_parts.append(f'TRY_CAST("{target_col}" AS DOUBLE) BETWEEN {float(p0)} AND {float(p1)}')
+                        else:
+                            or_parts.append(f'LOWER(CAST("{target_col}" AS VARCHAR)) LIKE \'%{item_clean}%\'')
+                    elif num_only.isdigit():
+                        exact_val = float(num_only)
                         or_parts.append(f'TRY_CAST("{target_col}" AS DOUBLE) = {exact_val}')
                     else:
                         or_parts.append(f'LOWER(CAST("{target_col}" AS VARCHAR)) LIKE \'%{item_clean}%\'')
+
                 # Desil filter handling
-                elif col_key in ['desil', 'desil_nasional']:
-                    digits = ''.join(c for c in item_str if c.isdigit())
-                    if digits and 1 <= int(digits) <= 10:
-                        or_parts.append(f'TRY_CAST("{target_col}" AS INTEGER) = {int(digits)}')
+                elif 'desil' in col_key:
+                    if '-' in item_str:
+                        parts = item_str.split('-')
+                        p0 = ''.join(c for c in parts[0] if c.isdigit())
+                        p1 = ''.join(c for c in parts[1] if c.isdigit())
+                        if p0 and p1:
+                            or_parts.append(f'TRY_CAST("{target_col}" AS INTEGER) BETWEEN {int(p0)} AND {int(p1)}')
+                        else:
+                            or_parts.append(f'LOWER(CAST("{target_col}" AS VARCHAR)) LIKE \'%{item_clean}%\'')
+                    else:
+                        digits = ''.join(c for c in item_str if c.isdigit())
+                        if digits and 1 <= int(digits) <= 10:
+                            or_parts.append(f'TRY_CAST("{target_col}" AS INTEGER) = {int(digits)}')
+                        else:
+                            or_parts.append(f'LOWER(CAST("{target_col}" AS VARCHAR)) LIKE \'%{item_clean}%\'')
+
+                # Gender / Jenis Kelamin filter handling
+                elif any(x in col_key for x in ['jenis_kelamin', 'gender', 'jk', 'sex']):
+                    if item_clean in ('laki-laki', 'l', 'pria', 'laki'):
+                        or_parts.append(f'LOWER(CAST("{target_col}" AS VARCHAR)) IN (\'laki-laki\', \'l\', \'pria\')')
+                    elif item_clean in ('perempuan', 'p', 'wanita'):
+                        or_parts.append(f'LOWER(CAST("{target_col}" AS VARCHAR)) IN (\'perempuan\', \'p\', \'wanita\')')
                     else:
                         or_parts.append(f'LOWER(CAST("{target_col}" AS VARCHAR)) LIKE \'%{item_clean}%\'')
-                # General text filter
+
+                # NIK / KK digit prefix or exact match
+                elif any(x in col_key for x in ['nik', 'nomor_induk_kependudukan', 'kk', 'nomor_kartu_keluarga']):
+                    digits = ''.join(c for c in item_str if c.isdigit())
+                    if digits:
+                        or_parts.append(f'CAST("{target_col}" AS VARCHAR) LIKE \'%{digits}%\'')
+                    else:
+                        or_parts.append(f'LOWER(CAST("{target_col}" AS VARCHAR)) LIKE \'%{item_clean}%\'')
+
+                # General text filter (Nama, Alamat, Wilayah, Pekerjaan, dll)
                 else:
                     or_parts.append(f'LOWER(CAST("{target_col}" AS VARCHAR)) LIKE \'%{item_clean}%\'')
 
@@ -249,10 +309,10 @@ def run_duckdb_query():
         result = {}
         for col in target_cols:
             col_clean = str(col).strip().lower()
-            target_name = existing_cols.get(col_clean)
-            if target_name and col_clean not in ('id', 'created_at', 'updated_at', 'extra_attributes'):
+            target_name = resolve_target_column(col_clean, existing_cols)
+            if target_name and col_clean not in ('id', 'created_at', 'updated_at', 'extra_attributes', 'quality_issues'):
                 try:
-                    rows = con.execute(f'SELECT DISTINCT "{target_name}" FROM {table_ref} WHERE "{target_name}" IS NOT NULL AND TRIM(CAST("{target_name}" AS VARCHAR)) != \'\' LIMIT 50;').fetchall()
+                    rows = con.execute(f'SELECT DISTINCT "{target_name}" FROM {table_ref} WHERE "{target_name}" IS NOT NULL AND TRIM(CAST("{target_name}" AS VARCHAR)) != \'\' ORDER BY "{target_name}" ASC LIMIT 100;').fetchall()
                     vals = [str(r[0]).strip() for r in rows if r[0] is not None and str(r[0]).strip() != '']
                     if vals:
                         result[col] = vals

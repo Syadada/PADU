@@ -913,11 +913,11 @@
                 <div class="flex items-center justify-between border-b border-blue-100 pb-1">
                     <h4 class="font-bold text-xs uppercase text-blue-700">2. Pilih Kolom Data Yang Ingin Di-Ekspor</h4>
                     <div class="flex items-center gap-2">
-                        <button type="button" @click="selectAllCols()" class="text-[11px] font-bold text-blue-700 hover:underline">
+                        <button type="button" @click="selectAllCols()" class="text-[11px] font-bold text-blue-700 hover:text-blue-900 transition-colors">
                             ☑️ Pilih Semua
                         </button>
                         <span class="text-slate-300 text-xs">•</span>
-                        <button type="button" @click="deselectAllCols()" class="text-[11px] font-bold text-rose-700 hover:underline">
+                        <button type="button" @click="deselectAllCols()" class="text-[11px] font-bold text-rose-700 hover:text-rose-900 transition-colors">
                             ☐ Hapus Semua
                         </button>
                     </div>

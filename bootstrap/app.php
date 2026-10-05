@@ -11,12 +11,16 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //di sini user bisa mengedit atau membolehkan url tertentu untuuk bisa bypasss CSRF protection contoh:
-        //   $middleware->validateCsrfTokens(except: [
-        //     'api/pembayaran',      // Bebas CSRF untuk URL spesifik ini
-        //     'webhook/*',           // Bebas CSRF untuk semua URL berawalan webhook/
-        //     'midtrans/callback',   // Contoh URL callback dari Payment Gateway
-        // ]);
+        // Daftarkan middleware proteksi sesi inaktif dan wajib reset sandi pertama
+        $middleware->web(append: [
+            \App\Http\Middleware\InactivityTimeoutMiddleware::class,
+            \App\Http\Middleware\EnsurePasswordNotExpired::class,
+        ]);
+
+        // Alias middleware hak akses Super Admin
+        $middleware->alias([
+            'superadmin' => \App\Http\Middleware\SuperAdminOnly::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

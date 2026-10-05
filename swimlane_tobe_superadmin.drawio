@@ -1,0 +1,212 @@
+<mxfile host="app.diagrams.net" modified="2026-10-05T03:35:00.000Z" agent="Mozilla/5.0" version="21.0.0" type="device">
+  <diagram id="diagram_tobe_superadmin" name="TO-BE Super Admin: Enterprise RBAC & First-Login Reset">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1740" pageHeight="1510" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- 5 LANES FOR ENTERPRISE ARCHITECTURE (LOCKED 1 PAGE: 1740 x 1510) -->
+        <!-- Lane 1: Operator Data (OPD) -->
+        <mxCell id="lane_1" value="👤 OPERATOR DATA (OPD)" style="swimlane;html=1;startSize=40;fillColor=#1e293b;strokeColor=#334155;fontColor=#ffffff;fontSize=13;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="310" height="1430" as="geometry" />
+        </mxCell>
+
+        <!-- Lane 2: Super Admin (Pimpinan) -->
+        <mxCell id="lane_2" value="🔑 SUPER ADMIN (PIMPINAN &amp; AUDITOR)" style="swimlane;html=1;startSize=40;fillColor=#713f12;strokeColor=#ca8a04;fontColor=#fef08a;fontSize=13;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="350" y="40" width="320" height="1430" as="geometry" />
+        </mxCell>
+
+        <!-- Lane 3: Frontend UI -->
+        <mxCell id="lane_3" value="💻 FRONTEND UI (PORTAL &amp; ADMIN PANEL)" style="swimlane;html=1;startSize=40;fillColor=#0f172a;strokeColor=#1e3a8a;fontColor=#93c5fd;fontSize=13;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="670" y="40" width="330" height="1430" as="geometry" />
+        </mxCell>
+
+        <!-- Lane 4: Backend & RBAC Gateway -->
+        <mxCell id="lane_4" value="⚙️ BACKEND SERVICES &amp; RBAC GATEWAY" style="swimlane;html=1;startSize=40;fillColor=#064e3b;strokeColor=#047857;fontColor=#a7f3d0;fontSize=13;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="40" width="350" height="1430" as="geometry" />
+        </mxCell>
+
+        <!-- Lane 5: Storage & Audit Vault -->
+        <mxCell id="lane_5" value="🗄️ STORAGE, AUDIT TRAIL &amp; BACKUP VAULT" style="swimlane;html=1;startSize=40;fillColor=#3b0764;strokeColor=#6b21a8;fontColor=#f5d0fe;fontSize=13;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="1350" y="40" width="350" height="1430" as="geometry" />
+        </mxCell>
+
+        <!-- ========================================== -->
+        <!-- ALUR 1: OTENTIKASI & FIRST-LOGIN RESET     -->
+        <!-- ========================================== -->
+        <mxCell id="SA_A1" value="&lt;b&gt;Start: Akses Portal Login PADU&lt;/b&gt;&lt;br&gt;Koneksi Jaringan LAN Kantor Offline" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#2563eb;strokeColor=#1d4ed8;fontColor=#ffffff;fontSize=11;" vertex="1" parent="lane_1">
+          <mxGeometry x="35" y="60" width="240" height="45" as="geometry" />
+        </mxCell>
+
+        <mxCell id="SA_A1_ADM" value="&lt;b&gt;Start: Login Akun Super Admin&lt;/b&gt;&lt;br&gt;Input admin@padu.go.id &amp; Password" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#ca8a04;strokeColor=#a16207;fontColor=#ffffff;fontSize=11;" vertex="1" parent="lane_2">
+          <mxGeometry x="40" y="60" width="240" height="45" as="geometry" />
+        </mxCell>
+
+        <mxCell id="SA_B1" value="&lt;b&gt;Render Form Two-Step Email-First&lt;/b&gt;&lt;br&gt;Deteksi Badge Role Super Admin / Operator" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e3a8a;strokeColor=#2563eb;fontColor=#ffffff;fontSize=11;" vertex="1" parent="lane_3">
+          <mxGeometry x="40" y="60" width="250" height="45" as="geometry" />
+        </mxCell>
+
+        <mxCell id="SA_C1" value="&lt;b&gt;Verifikasi Hash Bcrypt &amp; Cek Role&lt;/b&gt;&lt;br&gt;Pemeriksaan Hak Akses RBAC Level" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#065f46;strokeColor=#059669;fontColor=#ffffff;fontSize=11;" vertex="1" parent="lane_4">
+          <mxGeometry x="45" y="60" width="260" height="45" as="geometry" />
+        </mxCell>
+
+        <mxCell id="SA_C2" value="&lt;b&gt;Evaluasi users.metadata:&lt;/b&gt;&lt;br&gt;first_login == true?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#d97706;strokeColor=#b45309;fontColor=#ffffff;fontSize=11;" vertex="1" parent="lane_4">
+          <mxGeometry x="75" y="135" width="200" height="65" as="geometry" />
+        </mxCell>
+
+        <mxCell id="SA_B2_FORCE" value="&lt;b&gt;Form Force Reset Password (1x)&lt;/b&gt;&lt;br&gt;Wajib Ganti Password Awal (Min 15 Char)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#854d0e;strokeColor=#ca8a04;fontColor=#fef08a;fontSize=11;" vertex="1" parent="lane_3">
+          <mxGeometry x="40" y="225" width="250" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="SA_A2_FORCE" value="&lt;b&gt;Super Admin Input Sandi Baru Pribadi&lt;/b&gt;&lt;br&gt;Kombinasi Huruf, Angka, Simbol (20+ Char)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ca8a04;strokeColor=#a16207;fontColor=#ffffff;fontSize=11;" vertex="1" parent="lane_2">
+          <mxGeometry x="40" y="225" width="240" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="SA_C3_UPDATE" value="&lt;b&gt;Bcrypt Hash Baru &amp; first_login=false&lt;/b&gt;&lt;br&gt;Update users.password &amp; timestamp" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#065f46;strokeColor=#059669;fontColor=#ffffff;fontSize=11;" vertex="1" parent="lane_4">
+          <mxGeometry x="45" y="225" width="260" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="SA_D1_USER" value="&lt;b&gt;Update Tabel users (SQLite)&lt;/b&gt;&lt;br&gt;Simpan Hash Baru &amp; Metadata Terkini" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#581c87;strokeColor=#7e22ce;fontColor=#ffffff;fontSize=11;" vertex="1" parent="lane_5">
+          <mxGeometry x="55" y="215" width="240" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="SA_D2_LOG1" value="&lt;b&gt;Rekam ke forensic_audit_logs&lt;/b&gt;&lt;br&gt;Event: FIRST_LOGIN_PASSWORD_RESET" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#581c87;strokeColor=#7e22ce;fontColor=#ffffff;fontSize=11;" vertex="1" parent="lane_5">
+          <mxGeometry x="55" y="310" width="240" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ========================================== -->
+        <!-- ALUR 2: PANEL SUPER ADMIN & TATA KELOLA    -->
+        <!-- ========================================== -->
+        <mxCell id="SA_B3_PANEL" value="&lt;b&gt;Panel Super Admin Aktif&lt;/b&gt;&lt;br&gt;Sidebar: Metadata, User, Audit Log, Backup" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e3a8a;strokeColor=#2563eb;fontColor=#ffffff;fontSize=11;" vertex="1" parent="lane_3">
+          <mxGeometry x="40" y="395" width="250" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="SA_A3_ADM_NAV" value="&lt;b&gt;Super Admin Memilih Fitur Kelola:&lt;/b&gt;&lt;br&gt;1. Kamus Data, 2. User, 3. Backup AES-256" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ca8a04;strokeColor=#a16207;fontColor=#ffffff;fontSize=11;" vertex="1" parent="lane_2">
+          <mxGeometry x="40" y="395" width="240" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Modul A: Kamus Metadata Bappenas -->
+        <mxCell id="SA_A4_LIB" value="&lt;b&gt;Input Opsi Kamus Baru (No DDL)&lt;/b&gt;&lt;br&gt;Contoh: Kategori Sumber Air, Lantai, Bansos" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ca8a04;strokeColor=#a16207;fontColor=#ffffff;fontSize=11;" vertex="1" parent="lane_2">
+          <mxGeometry x="40" y="485" width="240" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="SA_C4_VALID" value="&lt;b&gt;JSON Schema Validation &amp; Hot-Reload&lt;/b&gt;&lt;br&gt;Update In-Memory DuckDB Tanpa Restart" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#065f46;strokeColor=#059669;fontColor=#ffffff;fontSize=11;" vertex="1" parent="lane_4">
+          <mxGeometry x="45" y="485" width="260" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="SA_D3_LIB" value="&lt;b&gt;Tabel metadata_libraries&lt;/b&gt;&lt;br&gt;Atomic Versioning (Active Version Increment)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#581c87;strokeColor=#7e22ce;fontColor=#ffffff;fontSize=11;" vertex="1" parent="lane_5">
+          <mxGeometry x="55" y="475" width="240" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Modul B: Admin-Assisted Reset Password Operator -->
+        <mxCell id="SA_A5_RESET" value="&lt;b&gt;Pilih Operator &amp; Klik Reset Sandi&lt;/b&gt;&lt;br&gt;Permintaan Lupa Sandi Staf Kantor Offline" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ca8a04;strokeColor=#a16207;fontColor=#ffffff;fontSize=11;" vertex="1" parent="lane_2">
+          <mxGeometry x="40" y="585" width="240" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="SA_C5_RESET" value="&lt;b&gt;Generate Sandi Sementara Acak&lt;/b&gt;&lt;br&gt;Set metadata.first_login = true ke Operator" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#065f46;strokeColor=#059669;fontColor=#ffffff;fontSize=11;" vertex="1" parent="lane_4">
+          <mxGeometry x="45" y="585" width="260" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="SA_A2_OPD_LOGIN" value="&lt;b&gt;Operator Login Sandi Sementara&lt;/b&gt;&lt;br&gt;Dipaksa Bikin Password Sendiri Saat Masuk" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#334155;strokeColor=#475569;fontColor=#ffffff;fontSize=11;" vertex="1" parent="lane_1">
+          <mxGeometry x="35" y="585" width="240" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Modul C: Dual-Method Backup AES-256 -->
+        <mxCell id="SA_A6_BAK" value="&lt;b&gt;Klik &quot;Buat Cadangan Baru (AES-256)&quot;&lt;/b&gt;&lt;br&gt;SOP Kontingensi Bencana BSSN No. 11/2024" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ca8a04;strokeColor=#a16207;fontColor=#ffffff;fontSize=11;" vertex="1" parent="lane_2">
+          <mxGeometry x="40" y="685" width="240" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="SA_C6_BAK" value="&lt;b&gt;Engine Backup Dual-Database&lt;/b&gt;&lt;br&gt;Snapshot SQLite + DuckDB 13M+ Baris&lt;br&gt;Enkripsi ZIP AES-256 Sandi Acak 20 Char" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#065f46;strokeColor=#059669;fontColor=#ffffff;fontSize=11;" vertex="1" parent="lane_4">
+          <mxGeometry x="45" y="675" width="260" height="65" as="geometry" />
+        </mxCell>
+
+        <mxCell id="SA_D4_BAK" value="&lt;b&gt;Vault Berkas .padubak (storage/app)&lt;/b&gt;&lt;br&gt;Arsip Terenkripsi AES-256 &amp; Checksum SHA-256" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#581c87;strokeColor=#7e22ce;fontColor=#ffffff;fontSize=11;" vertex="1" parent="lane_5">
+          <mxGeometry x="55" y="675" width="240" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ========================================== -->
+        <!-- ALUR 3: OPERATOR DATA ANALYTICS PIPELINE   -->
+        <!-- ========================================== -->
+        <mxCell id="SA_A3_OPD" value="&lt;b&gt;Pilih File CSV DTSEN &amp; Trigger Ingesti&lt;/b&gt;&lt;br&gt;Dataset 13M+ Baris Diproses Cepat" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#334155;strokeColor=#475569;fontColor=#ffffff;fontSize=11;" vertex="1" parent="lane_1">
+          <mxGeometry x="35" y="800" width="240" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="SA_C7_INGEST" value="&lt;b&gt;PyArrow Chunking &amp; Dual-Table Insert&lt;/b&gt;&lt;br&gt;dtsen_data &amp; quality_audit_logs DuckDB" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#065f46;strokeColor=#059669;fontColor=#ffffff;fontSize=11;" vertex="1" parent="lane_4">
+          <mxGeometry x="45" y="800" width="260" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="SA_A4_OPD" value="&lt;b&gt;Filter Data, PII Masking &amp; 7 Metrik&lt;/b&gt;&lt;br&gt;Tab 1: Data Mikro &amp; Tab 2: Statistik Regional" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#334155;strokeColor=#475569;fontColor=#ffffff;fontSize=11;" vertex="1" parent="lane_1">
+          <mxGeometry x="35" y="900" width="240" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="SA_B4_RENDER" value="&lt;b&gt;Render Sajian Data Mikro &amp; Rekap&lt;/b&gt;&lt;br&gt;Transliterasi Kode FK Real-Time Mengikuti Kamus" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e3a8a;strokeColor=#2563eb;fontColor=#ffffff;fontSize=11;" vertex="1" parent="lane_3">
+          <mxGeometry x="40" y="900" width="250" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="SA_A5_OPD" value="&lt;b&gt;Ekspor Paket Arsip ZIP Terkompresi&lt;/b&gt;&lt;br&gt;Unduh Clean CSV + Error CSV + Manifest" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#334155;strokeColor=#475569;fontColor=#ffffff;fontSize=11;" vertex="1" parent="lane_1">
+          <mxGeometry x="35" y="1000" width="240" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="SA_B5_ZIP" value="&lt;b&gt;Stream Unduhan Paket ZIP Selesai&lt;/b&gt;&lt;br&gt;Arsip Berkas Siap Dipakai untuk Pelaporan" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e3a8a;strokeColor=#2563eb;fontColor=#ffffff;fontSize=11;" vertex="1" parent="lane_3">
+          <mxGeometry x="40" y="1000" width="250" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- ========================================== -->
+        <!-- ALUR 4: FORENSIK AUDIT LOG MONITORING      -->
+        <!-- ========================================== -->
+        <mxCell id="SA_A7_AUDIT" value="&lt;b&gt;Super Admin Buka &quot;Audit Trail Forensik&quot;&lt;/b&gt;&lt;br&gt;Inspeksi Seluruh Aktivitas &amp; Ekspor CSV" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ca8a04;strokeColor=#a16207;fontColor=#ffffff;fontSize=11;" vertex="1" parent="lane_2">
+          <mxGeometry x="40" y="1120" width="240" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="SA_B6_AUDIT" value="&lt;b&gt;Tabel Log Forensik Digital (BSSN)&lt;/b&gt;&lt;br&gt;Stempel Waktu, Aktor, Aksi, Diff Data, IP Client" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e3a8a;strokeColor=#2563eb;fontColor=#ffffff;fontSize=11;" vertex="1" parent="lane_3">
+          <mxGeometry x="40" y="1120" width="250" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="SA_D5_FORENSIC" value="&lt;b&gt;Tabel forensic_audit_logs (Immutable)&lt;/b&gt;&lt;br&gt;Catatan Kebal Manipulasi Sesuai Regulasi" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#581c87;strokeColor=#7e22ce;fontColor=#ffffff;fontSize=11;" vertex="1" parent="lane_5">
+          <mxGeometry x="55" y="1110" width="240" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ========================================== -->
+        <!-- TERMINASI SESI                             -->
+        <!-- ========================================== -->
+        <mxCell id="SA_END" value="&lt;b&gt;Selesai Sesi / Logout Aman&lt;/b&gt;&lt;br&gt;Pelepasan Resource &amp; Sanitasi Token" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#2563eb;strokeColor=#1d4ed8;fontColor=#ffffff;fontSize=11;" vertex="1" parent="lane_2">
+          <mxGeometry x="40" y="1250" width="240" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- ========================================== -->
+        <!-- EDGES                                      -->
+        <!-- ========================================== -->
+        <mxCell id="e_1" edge="1" parent="1" source="SA_A1" target="SA_B1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_2" edge="1" parent="1" source="SA_A1_ADM" target="SA_B1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_3" edge="1" parent="1" source="SA_B1" target="SA_C1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_4" edge="1" parent="1" source="SA_C1" target="SA_C2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_5" edge="1" parent="1" source="SA_C2" target="SA_B2_FORCE"><mxGeometry relative="1" as="geometry"><mxPoint as="offset" /><mxPoint x="825" y="167" as="targetPoint" /></mxCell>
+        <mxCell id="e_6" edge="1" parent="1" source="SA_B2_FORCE" target="SA_A2_FORCE"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_7" edge="1" parent="1" source="SA_A2_FORCE" target="SA_C3_UPDATE"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_8" edge="1" parent="1" source="SA_C3_UPDATE" target="SA_D1_USER"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_9" edge="1" parent="1" source="SA_C3_UPDATE" target="SA_D2_LOG1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_10" edge="1" parent="1" source="SA_C3_UPDATE" target="SA_B3_PANEL"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_11" edge="1" parent="1" source="SA_B3_PANEL" target="SA_A3_ADM_NAV"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_12" edge="1" parent="1" source="SA_A3_ADM_NAV" target="SA_A4_LIB"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_13" edge="1" parent="1" source="SA_A4_LIB" target="SA_C4_VALID"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_14" edge="1" parent="1" source="SA_C4_VALID" target="SA_D3_LIB"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_15" edge="1" parent="1" source="SA_A3_ADM_NAV" target="SA_A5_RESET"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_16" edge="1" parent="1" source="SA_A5_RESET" target="SA_C5_RESET"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_17" edge="1" parent="1" source="SA_C5_RESET" target="SA_A2_OPD_LOGIN"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_18" edge="1" parent="1" source="SA_A3_ADM_NAV" target="SA_A6_BAK"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_19" edge="1" parent="1" source="SA_A6_BAK" target="SA_C6_BAK"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_20" edge="1" parent="1" source="SA_C6_BAK" target="SA_D4_BAK"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_21" edge="1" parent="1" source="SA_A3_OPD" target="SA_C7_INGEST"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_22" edge="1" parent="1" source="SA_C7_INGEST" target="SA_A4_OPD"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_23" edge="1" parent="1" source="SA_A4_OPD" target="SA_B4_RENDER"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_24" edge="1" parent="1" source="SA_A4_OPD" target="SA_A5_OPD"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_25" edge="1" parent="1" source="SA_A5_OPD" target="SA_B5_ZIP"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_26" edge="1" parent="1" source="SA_A3_ADM_NAV" target="SA_A7_AUDIT"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_27" edge="1" parent="1" source="SA_A7_AUDIT" target="SA_B6_AUDIT"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_28" edge="1" parent="1" source="SA_B6_AUDIT" target="SA_D5_FORENSIC"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_29" edge="1" parent="1" source="SA_A7_AUDIT" target="SA_END"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

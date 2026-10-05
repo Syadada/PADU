@@ -18,6 +18,12 @@
 /public/storage
 /storage/*.key
 /storage/pail
+/storage/framework/sessions/*
+!/storage/framework/sessions/.gitignore
+/storage/framework/views/*
+!/storage/framework/views/.gitignore
+/storage/framework/cache/*
+!/storage/framework/cache/.gitignore
 /vendor
 Homestead.json
 Homestead.yaml
@@ -29,6 +35,9 @@ src-dtsen/sample_13_juta_data.csv
 database/*.duckdb
 database/*.sqlite
 scratch/import_progress.json
+scratch/*.txt
+scratch/*.html
+scratch/script_*
 ~$*
 src-export/*.zip
 python/

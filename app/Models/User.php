@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Carbon\Carbon;
 
 class User extends Authenticatable
 {
@@ -22,6 +22,14 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'first_login',
+        'failed_login_attempts',
+        'locked_until',
+        'password_changed_at',
+        'two_factor_secret',
+        'two_factor_recovery_hash',
+        'two_factor_enabled',
     ];
 
     /**
@@ -32,6 +40,8 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'two_factor_secret',
+        'two_factor_recovery_hash',
     ];
 
     /**
@@ -44,6 +54,49 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'first_login' => 'boolean',
+            'two_factor_enabled' => 'boolean',
+            'locked_until' => 'datetime',
+            'password_changed_at' => 'datetime',
+            'failed_login_attempts' => 'integer',
         ];
+    }
+
+    /**
+     * Cek apakah pengguna adalah Super Administrator (Pimpinan)
+     */
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === 'superadmin';
+    }
+
+    /**
+     * Cek apakah pengguna adalah Operator Staf
+     */
+    public function isOperator(): bool
+    {
+        return $this->role === 'operator';
+    }
+
+    /**
+     * Cek apakah akun sedang terkunci karena pelanggaran batas percobaan login
+     */
+    public function isLocked(): bool
+    {
+        if ($this->locked_until && Carbon::now()->lessThan($this->locked_until)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Dapatkan sisa waktu kunci akun dalam detik
+     */
+    public function remainingLockoutSeconds(): int
+    {
+        if (!$this->isLocked()) {
+            return 0;
+        }
+        return (int)Carbon::now()->diffInSeconds($this->locked_until, false);
     }
 }

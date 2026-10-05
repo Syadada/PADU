@@ -447,7 +447,7 @@
                                 @foreach($activeSalaryFilters as $sFKey => $sFBadge)
                                     <span class="px-2 py-0.5 bg-blue-600 text-white rounded-md text-[10px] font-bold">{{ $sFBadge }}</span>
                                 @endforeach
-                                <a href="{{ request()->fullUrlWithQuery(array_fill_keys(array_merge(['salary_search'], array_map(fn($k) => 'salary_' . $k, array_keys($importFilterableColumns))), null)) }}" class="text-[10px] font-bold text-rose-600 hover:underline ml-1">Reset Filter Gaji</a>
+                                <a href="{{ request()->fullUrlWithQuery(array_fill_keys(array_merge(['salary_search'], array_map(fn($k) => 'salary_' . $k, array_keys($importFilterableColumns))), null)) }}" class="text-[10px] font-bold text-rose-600 hover:text-rose-800 transition-colors ml-1">Reset Filter Gaji</a>
                             </div>
                         @endif
                     </div>
@@ -980,7 +980,7 @@
                     </div>
 
                     <div class="pt-3 flex items-center justify-between border-t border-slate-100 shrink-0">
-                        <button type="button" @click="resetCols()" class="text-xs font-black hover:underline cursor-pointer" style="color: #2563eb !important;">
+                        <button type="button" @click="resetCols()" class="text-xs font-black hover:opacity-80 transition-opacity cursor-pointer" style="color: #2563eb !important;">
                             🔄 Tampilkan Semua Kolom
                         </button>
                         <button type="button" @click="showColumnModal = false" class="px-6 py-2.5 rounded-xl font-black text-xs shadow-md transition-all cursor-pointer" style="background-color: #0f172a; color: #ffffff !important;">

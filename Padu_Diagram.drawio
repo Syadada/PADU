@@ -1,0 +1,1072 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" agent="Antigravity" version="21.0.0" type="device">
+<diagram name="AS-IS Level 0 (Diagram Konteks)" id="QWJHi9hv6cmxVt_nl1YS">
+    <mxGraphModel dx="1539" dy="607" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t_asis_0" parent="1" style="html=1;text;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" value="&lt;div style=&quot;font-size:18px;font-weight:bold;color:#0f172a;&quot;&gt;DATA FLOW DIAGRAM (DFD) LEVEL 0 — AS-IS (DIAGRAM KONTEKS)&lt;/div&gt;&lt;div style=&quot;font-size:13px;color:#64748b;margin-top:4px;&quot;&gt;Sistem Analisis &amp;amp; Pengolah Data DTSEN Eksisting (Tanpa Pengamanan Biometrik &amp;amp; PII Masking)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="50" width="850" x="350" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="P0_ASIS" parent="1" style="html=1;rounded=1;arcSize=20;whiteSpace=wrap;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=3;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:14px;color:#000000;font-weight:bold;&quot;&gt;0.0&lt;/div&gt; &lt;div style=&quot;font-size:16px;font-weight:bold;margin-top:4px;color:#000000;line-height:1.3;&quot;&gt;SISTEM PENGOLAH &amp;amp; ANALISIS DATA&lt;br&gt;DTSEN 2026 (PADU v1.0 — AS-IS)&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:12px 0;&quot;&gt; &lt;div style=&quot;font-size:11px;color:#000000;line-height:1.5;&quot;&gt; • Dual-Engine: Laravel 12 + Python DuckDB&lt;br&gt; • Impor Lokal CSV/XLSX ke Database&lt;br&gt; • Filter Multi-Kolom &amp;amp; Table Grid Standar&lt;br&gt; • Ekspor Berkas CSV Polos &lt;/div&gt;" vertex="1">
+          <mxGeometry height="440" width="360" x="640" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="E1_ASIS_0" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size: 12px; color: rgb(0, 0, 0); font-weight: bold;&quot;&gt;&lt;br&gt;&lt;/div&gt; &lt;div style=&quot;font-size: 16px; font-weight: bold; margin-top: 3px; color: rgb(0, 0, 0);&quot;&gt;OPERATOR DATA / ANALIS&lt;/div&gt; &lt;hr style=&quot;border: 1px solid rgb(0, 122, 204); margin: 10px 0px;&quot;&gt; &lt;div style=&quot;text-align: left; font-size: 11px; line-height: 1.6; color: rgb(0, 0, 0); padding: 0px 8px;&quot;&gt; • Menyalin file CSV/XLSX ke src-dtsen/&lt;br&gt; • Memilih file &amp;amp; trigger impor lokal&lt;br&gt; • Memantau progress bar impor&lt;br&gt; • Mengatur filter NIK, Wilayah, Desil&lt;br&gt; • Melihat tabel data mentah (as-is)&lt;br&gt; • Mengunduh file CSV hasil filter/error &lt;/div&gt;" vertex="1">
+          <mxGeometry height="440" width="240" x="70" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="e_asis_0_1" edge="1" parent="1" source="E1_ASIS_0" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;fontStyle=1;labelBackgroundColor=#f0f9ff;labelBorderColor=#bae6fd;exitX=1;exitY=0.09;entryX=0;entryY=0.09;" target="P0_ASIS" value="1. Berkas Mentah DTSEN (CSV / XLSX)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_asis_0_2" edge="1" parent="1" source="E1_ASIS_0" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;fontStyle=1;labelBackgroundColor=#f0f9ff;labelBorderColor=#bae6fd;exitX=1;exitY=0.22;entryX=0;entryY=0.22;" target="P0_ASIS" value="2. Pilihan File &amp;amp; Perintah Impor Lokal">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_asis_0_3" edge="1" parent="1" source="E1_ASIS_0" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;fontStyle=1;labelBackgroundColor=#f0f9ff;labelBorderColor=#bae6fd;exitX=1;exitY=0.35;entryX=0;entryY=0.35;" target="P0_ASIS" value="3. Kriteria Filter Multi-Kolom &amp;amp; Keyword">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_asis_0_4" edge="1" parent="1" source="E1_ASIS_0" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;fontStyle=1;labelBackgroundColor=#f0f9ff;labelBorderColor=#bae6fd;exitX=1;exitY=0.48;entryX=0;entryY=0.48;" target="P0_ASIS" value="4. Permintaan Ekspor Berkas CSV">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_asis_0_5" edge="1" parent="1" source="P0_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;labelBackgroundColor=#ecfdf5;labelBorderColor=#a7f3d0;exitX=0;exitY=0.61;entryX=1;entryY=0.61;" target="E1_ASIS_0" value="5. Status &amp;amp; Progress Bar Ingesti Data">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_asis_0_6" edge="1" parent="1" source="P0_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;labelBackgroundColor=#ecfdf5;labelBorderColor=#a7f3d0;exitX=0;exitY=0.74;entryX=1;entryY=0.74;" target="E1_ASIS_0" value="6. Ringkasan Metrik KPI Kualitas (Count)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_asis_0_7" edge="1" parent="1" source="P0_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;labelBackgroundColor=#ecfdf5;labelBorderColor=#a7f3d0;exitX=0;exitY=0.86;entryX=1;entryY=0.86;" target="E1_ASIS_0" value="7. Tabel Data DTSEN Biasa (Tanpa PII Masking)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_asis_0_8" edge="1" parent="1" source="P0_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;labelBackgroundColor=#ecfdf5;labelBorderColor=#a7f3d0;exitX=0;exitY=0.97;entryX=1;entryY=0.97;" target="E1_ASIS_0" value="8. Berkas Ekspor CSV (Clean / Error CSV)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="AS-IS Level 1 (Dekomposisi Sistem)" id="yCft1l233G6U8pFbcm8W">
+    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="1800" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t_asis_1" parent="1" style="html=1;text;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" value="&lt;div style=&quot;font-size:20px;font-weight:bold;color:#0f172a;&quot;&gt;DATA FLOW DIAGRAM (DFD) LEVEL 1 — AS-IS (DEKOMPOSISI SISTEM)&lt;/div&gt;&lt;div style=&quot;font-size:13px;color:#64748b;margin-top:4px;&quot;&gt;Pemetaan 4 Sub-Proses dan 3 Data Store Sistem Eksisting&lt;/div&gt;" vertex="1">
+          <mxGeometry height="50" width="850" x="450" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="E1_ASIS_1" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size: 12px; color: rgb(0, 0, 0); font-weight: bold;&quot;&gt;&lt;br&gt;&lt;/div&gt; &lt;div style=&quot;font-size: 16px; font-weight: bold; margin-top: 3px; color: rgb(0, 0, 0);&quot;&gt;OPERATOR DATA / ANALIS&lt;/div&gt; &lt;hr style=&quot;border: 1px solid rgb(0, 122, 204); margin: 10px 0px;&quot;&gt; &lt;div style=&quot;text-align: left; font-size: 11px; line-height: 1.6; color: rgb(0, 0, 0); padding: 0px 8px;&quot;&gt; • Menyalin file CSV/XLSX ke src-dtsen/&lt;br&gt; • Memilih file &amp;amp; trigger impor lokal&lt;br&gt; • Memantau progress bar impor&lt;br&gt; • Mengatur filter NIK, Wilayah, Desil&lt;br&gt; • Melihat tabel data mentah (as-is)&lt;br&gt; • Mengunduh file CSV hasil filter/error &lt;/div&gt;" vertex="1">
+          <mxGeometry height="680" width="240" x="60" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="D1_ASIS" parent="1" style="shape=partialRectangle;right=0;left=0;html=1;fillColor=#0f172a;strokeColor=#38bdf8;strokeWidth=2;fontColor=#ffffff;align=center;verticalAlign=middle;" value="&lt;b style=&quot;font-size:12px;color:#38bdf8;&quot;&gt;D1&lt;/b&gt; | &lt;b&gt;Folder Sumber DTSEN (src-dtsen/)&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px;color:#94a3b8;&quot;&gt;File mentah CSV / XLSX (13M+ baris)&lt;/span&gt;" vertex="1">
+          <mxGeometry height="55" width="320" x="420" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="D3_ASIS" parent="1" style="shape=partialRectangle;right=0;left=0;html=1;fillColor=#4c0519;strokeColor=#fb7185;strokeWidth=2;fontColor=#ffffff;align=center;verticalAlign=middle;" value="&lt;b style=&quot;font-size:12px;color:#fb7185;&quot;&gt;D3&lt;/b&gt; | &lt;b&gt;Log Audit Kualitas (quality_audit_logs)&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px;color:#fecdd3;&quot;&gt;Rekam baris anomali (Critical &amp;amp; Warning) — DuckDB&lt;/span&gt;" vertex="1">
+          <mxGeometry height="55" width="340" x="900" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="D2_ASIS" parent="1" style="shape=partialRectangle;right=0;left=0;html=1;fillColor=#3b0764;strokeColor=#c084fc;strokeWidth=2;fontColor=#ffffff;align=center;verticalAlign=middle;" value="&lt;b style=&quot;font-size:12px;color:#c084fc;&quot;&gt;D2&lt;/b&gt; | &lt;b&gt;Tabel Kolumnar (dtsen_data — DuckDB)&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px;color:#e9d5ff;&quot;&gt;Dataset 48 variabel ternormalisasi (Vector Pages)&lt;/span&gt;" vertex="1">
+          <mxGeometry height="60" width="340" x="900" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="P1_ASIS" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;1.0&lt;/div&gt; &lt;div style=&quot;font-size:14px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Scan Direktori &amp;amp; Ingesti Data&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:6px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Auto-scan folder src-dtsen/&lt;br&gt; • Validasi eksistensi &amp;amp; ukuran berkas&lt;br&gt; • Ingesti stream PyArrow / fast_import.py &lt;/div&gt;" vertex="1">
+          <mxGeometry height="100" width="320" x="420" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="P2_ASIS" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;2.0&lt;/div&gt; &lt;div style=&quot;font-size:14px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Normalisasi &amp;amp; Evaluasi Kualitas Data&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:6px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Mapping sinonim 48 variabel BPS&lt;br&gt; • Evaluasi Valid, Warning, Critical&lt;br&gt; • Catat progres ke import_progress.json &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="320" x="420" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="P3_ASIS" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;3.0&lt;/div&gt; &lt;div style=&quot;font-size:14px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Pencarian, Filter &amp;amp; Agregasi KPI&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:6px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Eksekusi table scan DuckDB&lt;br&gt; • Agregasi KPI (Valid/Warn/Crit Count)&lt;br&gt; • Render Data Table biasa (50 rows/page polos) &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="320" x="420" y="500" as="geometry" />
+        </mxCell>
+        <mxCell id="P4_ASIS" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;4.0&lt;/div&gt; &lt;div style=&quot;font-size:14px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Ekspor Berkas CSV Mentah&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:6px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Query filter dataset atau error logs&lt;br&gt; • Stream CSV langsung ke browser&lt;br&gt; • Unduh Clean CSV / Error CSV polos &lt;/div&gt;" vertex="1">
+          <mxGeometry height="100" width="320" x="420" y="635" as="geometry" />
+        </mxCell>
+        <mxCell id="e_asis_d1_in" edge="1" parent="1" source="E1_ASIS_1" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;fontStyle=1;labelBackgroundColor=#f0f9ff;labelBorderColor=#bae6fd;exitX=1;exitY=0.04;entryX=0;entryY=0.5;" target="D1_ASIS" value="Salin File CSV/XLSX">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_asis_d1_read" edge="1" parent="1" source="D1_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;fontStyle=1;labelBackgroundColor=#f0f9ff;labelBorderColor=#bae6fd;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="P1_ASIS" value="Baca Berkas Mentah">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_asis_p1_trig" edge="1" parent="1" source="E1_ASIS_1" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;fontStyle=1;labelBackgroundColor=#f0f9ff;labelBorderColor=#bae6fd;exitX=1;exitY=0.12;entryX=0;entryY=0.5;" target="P1_ASIS" value="Trigger Import (POST)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_asis_p1_p2" edge="1" parent="1" source="P1_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;fontStyle=1;labelBackgroundColor=#f0f9ff;labelBorderColor=#bae6fd;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="P2_ASIS" value="Stream Baris Data Mentah">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_asis_p2_d2" edge="1" parent="1" source="P2_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;labelBackgroundColor=#ecfdf5;labelBorderColor=#a7f3d0;exitX=1;exitY=0.7;entryX=0;entryY=0.25;" target="D2_ASIS" value="Simpan Data Bersih">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_asis_p2_d3" edge="1" parent="1" source="P2_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#dc2626;strokeWidth=2;fontColor=#991b1b;fontSize=10;fontStyle=1;labelBackgroundColor=#fef2f2;labelBorderColor=#fecaca;exitX=1;exitY=0.3;entryX=0;entryY=0.5;" target="D3_ASIS" value="Rekam Log Audit Error">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_asis_p2_stat" edge="1" parent="1" source="P2_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;labelBackgroundColor=#ecfdf5;labelBorderColor=#a7f3d0;exitX=0;exitY=0.5;entryX=1;entryY=0.35;" target="E1_ASIS_1" value="Update Progres &amp;amp; Ringkasan Kualitas">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_asis_p3_filter" edge="1" parent="1" source="E1_ASIS_1" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#7c3aed;strokeWidth=2;fontColor=#6d28d9;fontSize=10;fontStyle=1;labelBackgroundColor=#f5f3ff;labelBorderColor=#ddd6fe;exitX=1;exitY=0.58;entryX=0;entryY=0.3;" target="P3_ASIS" value="Parameter Filter &amp;amp; Keyword">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_asis_p3_query" edge="1" parent="1" source="P3_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#7c3aed;strokeWidth=2;fontColor=#6d28d9;fontSize=10;fontStyle=1;labelBackgroundColor=#f5f3ff;labelBorderColor=#ddd6fe;exitX=1;exitY=0.35;entryX=0;entryY=0.75;" target="D2_ASIS" value="Query Table Scan">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_asis_d2_p3" edge="1" parent="1" source="D2_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#7c3aed;strokeWidth=2;fontColor=#6d28d9;fontSize=10;fontStyle=1;labelBackgroundColor=#f5f3ff;labelBorderColor=#ddd6fe;exitX=0;exitY=0.9;entryX=1;entryY=0.65;" target="P3_ASIS" value="Dataset Terfilter">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_asis_p3_out" edge="1" parent="1" source="P3_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#7c3aed;strokeWidth=2;fontColor=#6d28d9;fontSize=10;fontStyle=1;labelBackgroundColor=#f5f3ff;labelBorderColor=#ddd6fe;exitX=0;exitY=0.75;entryX=1;entryY=0.69;" target="E1_ASIS_1" value="Tabel Data Polos &amp;amp; KPI Cards">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_asis_p4_req" edge="1" parent="1" source="E1_ASIS_1" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;fontStyle=1;labelBackgroundColor=#f0f9ff;labelBorderColor=#bae6fd;exitX=1;exitY=0.88;entryX=0;entryY=0.3;" target="P4_ASIS" value="Permintaan Ekspor CSV">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_asis_d2_p4" edge="1" parent="1" source="D2_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;labelBackgroundColor=#ecfdf5;labelBorderColor=#a7f3d0;exitX=0.25;exitY=1;entryX=0.85;entryY=0;" target="P4_ASIS" value="Ambil Data Bersih">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="985" y="750" />
+              <mxPoint x="692" y="750" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_asis_p4_down" edge="1" parent="1" source="P4_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;labelBackgroundColor=#ecfdf5;labelBorderColor=#a7f3d0;exitX=0;exitY=0.7;entryX=1;entryY=0.94;" target="E1_ASIS_1" value="Stream File Unduhan CSV">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="AS-IS Level 2 - P1.0 (Scan &amp; Ingesti Data)" id="MPB6jScdgTL5XkvrwkSc">
+    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="1800" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t_l2_asis_p1" parent="1" style="html=1;text;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" value="&lt;div style=&quot;font-size:20px;font-weight:bold;color:#0f172a;&quot;&gt;DATA FLOW DIAGRAM (DFD) LEVEL 2 — PROSES 1.0 (AS-IS)&lt;/div&gt;&lt;div style=&quot;font-size:13px;color:#64748b;margin-top:4px;&quot;&gt;Dekomposisi Sub-Sistem Scan Direktori &amp;amp; Ingesti Berkas Mentah Sistem Eksisting&lt;/div&gt;" vertex="1">
+          <mxGeometry height="50" width="950" x="450" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="E1_L2_ASIS_P1" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size: 12px; color: rgb(0, 0, 0); font-weight: bold;&quot;&gt;&lt;br&gt;&lt;/div&gt; &lt;div style=&quot;font-size: 16px; font-weight: bold; margin-top: 3px; color: rgb(0, 0, 0);&quot;&gt;OPERATOR DATA / ANALIS&lt;/div&gt; &lt;hr style=&quot;border: 1px solid rgb(0, 122, 204); margin: 10px 0px;&quot;&gt; &lt;div style=&quot;text-align: left; font-size: 11px; line-height: 1.6; color: rgb(0, 0, 0); padding: 0px 8px;&quot;&gt; • Menyalin file CSV/XLSX ke src-dtsen/&lt;br&gt; • Memilih file &amp;amp; trigger impor lokal&lt;br&gt; • Memantau progress bar impor&lt;br&gt; • Mengatur filter NIK, Wilayah, Desil&lt;br&gt; • Melihat tabel data mentah (as-is)&lt;br&gt; • Mengunduh file CSV hasil filter/error &lt;/div&gt;" vertex="1">
+          <mxGeometry height="350" width="230" x="60" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="D1_L2_ASIS_P1" parent="1" style="shape=partialRectangle;right=0;left=0;html=1;fillColor=#0f172a;strokeColor=#38bdf8;strokeWidth=2;fontColor=#ffffff;align=center;verticalAlign=middle;" value="&lt;b style=&quot;font-size:12px;color:#38bdf8;&quot;&gt;D1&lt;/b&gt; | &lt;b&gt;Folder Sumber DTSEN (src-dtsen/)&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px;color:#94a3b8;&quot;&gt;File mentah CSV / XLSX (13M+ baris)&lt;/span&gt;" vertex="1">
+          <mxGeometry height="55" width="300" x="350" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="P1_1_ASIS" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;1.1&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Auto-Scan Direktori Sumber&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Scan folder lokal src-dtsen/&lt;br&gt; • Deteksi berkas CSV / XLSX aktif&lt;br&gt; • Ambil metadata file (nama &amp;amp; size) &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="260" x="350" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="P1_2_ASIS" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;1.2&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Validasi Format &amp;amp; Ukuran Berkas&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Cek validitas ekstensi (.csv / .xlsx)&lt;br&gt; • Validasi berkas tidak korup/kosong&lt;br&gt; • Kembalikan status siap impor &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="260" x="690" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="P1_3_ASIS" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;1.3&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Penerimaan Trigger Impor Lokal&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Tangkap POST /import-local dari Operator&lt;br&gt; • Kunci berkas agar tidak terduplikasi&lt;br&gt; • Panggil script fast_import.py &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="260" x="1030" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="P1_4_ASIS" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;1.4&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Streaming PyArrow Ingestion&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Baca blok data CSV/XLSX ke memori&lt;br&gt; • Eksekusi fast_import.py secara streaming&lt;br&gt; • Konversi batch data mentah &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="270" x="850" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="P1_5_ASIS" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;1.5&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Penyaluran Stream Baris Mentah&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Buffer batch baris data mentah&lt;br&gt; • Salurkan batch ke Proses 2.0 (Normalisasi)&lt;br&gt; • Jaga kestabilan alokasi RAM &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="260" x="1180" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_as_p1_copy" edge="1" parent="1" source="E1_L2_ASIS_P1" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;fontStyle=1;labelBackgroundColor=#f0f9ff;labelBorderColor=#bae6fd;exitX=1;exitY=0.1;entryX=0;entryY=0.5;" target="D1_L2_ASIS_P1" value="Salin Berkas CSV/XLSX">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_as_p1_read" edge="1" parent="1" source="D1_L2_ASIS_P1" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;fontStyle=1;labelBackgroundColor=#f0f9ff;labelBorderColor=#bae6fd;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="P1_1_ASIS" value="Daftar Berkas Mentah">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_as_p1_1_2" edge="1" parent="1" source="P1_1_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;fontStyle=1;labelBackgroundColor=#f0f9ff;labelBorderColor=#bae6fd;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="P1_2_ASIS" value="Metadata File Terdeteksi">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_as_p1_trig" edge="1" parent="1" source="E1_L2_ASIS_P1" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;fontStyle=1;labelBackgroundColor=#f0f9ff;labelBorderColor=#bae6fd;exitX=1;exitY=0.4;entryX=0;entryY=0.2;" target="P1_3_ASIS" value="Trigger Impor (POST)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="320" y="360" />
+              <mxPoint x="320" y="200" />
+              <mxPoint x="990" y="200" />
+              <mxPoint x="990" y="252" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_l2_as_p1_2_3" edge="1" parent="1" source="P1_2_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;fontStyle=1;labelBackgroundColor=#f0f9ff;labelBorderColor=#bae6fd;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="P1_3_ASIS" value="Berkas Valid Siap Impor">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_as_p1_3_4" edge="1" parent="1" source="P1_3_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;fontStyle=1;labelBackgroundColor=#f0f9ff;labelBorderColor=#bae6fd;exitX=0.5;exitY=1;entryX=0.7;entryY=0;" target="P1_4_ASIS" value="Inisialisasi fast_import.py">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_as_p1_4_5" edge="1" parent="1" source="P1_4_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;fontStyle=1;labelBackgroundColor=#f0f9ff;labelBorderColor=#bae6fd;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="P1_5_ASIS" value="Raw Chunk Records">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="AS-IS Level 2 - P2.0 (Normalisasi &amp; Evaluasi Kualitas)" id="acB4fffbQAbGHLMkhDBW">
+    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="1850" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t_l2_asis_p2" parent="1" style="html=1;text;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" value="&lt;div style=&quot;font-size:20px;font-weight:bold;color:#0f172a;&quot;&gt;DATA FLOW DIAGRAM (DFD) LEVEL 2 — PROSES 2.0 (AS-IS)&lt;/div&gt;&lt;div style=&quot;font-size:13px;color:#64748b;margin-top:4px;&quot;&gt;Dekomposisi Sub-Sistem Normalisasi Kolom &amp;amp; Evaluasi Kualitas Data Standar Eksisting&lt;/div&gt;" vertex="1">
+          <mxGeometry height="50" width="1050" x="450" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="E1_L2_ASIS_P2" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size: 12px; color: rgb(0, 0, 0); font-weight: bold;&quot;&gt;&lt;br&gt;&lt;/div&gt; &lt;div style=&quot;font-size: 16px; font-weight: bold; margin-top: 3px; color: rgb(0, 0, 0);&quot;&gt;OPERATOR DATA / ANALIS&lt;/div&gt; &lt;hr style=&quot;border: 1px solid rgb(0, 122, 204); margin: 10px 0px;&quot;&gt; &lt;div style=&quot;text-align: left; font-size: 11px; line-height: 1.6; color: rgb(0, 0, 0); padding: 0px 8px;&quot;&gt; • Menyalin file CSV/XLSX ke src-dtsen/&lt;br&gt; • Memilih file &amp;amp; trigger impor lokal&lt;br&gt; • Memantau progress bar impor&lt;br&gt; • Mengatur filter NIK, Wilayah, Desil&lt;br&gt; • Melihat tabel data mentah (as-is)&lt;br&gt; • Mengunduh file CSV hasil filter/error &lt;/div&gt;" vertex="1">
+          <mxGeometry height="480" width="230" x="50" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="D2_L2_ASIS_P2" parent="1" style="shape=partialRectangle;right=0;left=0;html=1;fillColor=#3b0764;strokeColor=#c084fc;strokeWidth=2;fontColor=#ffffff;align=center;verticalAlign=middle;" value="&lt;b style=&quot;font-size:12px;color:#c084fc;&quot;&gt;D2&lt;/b&gt; | &lt;b&gt;Tabel Kolumnar (dtsen_data DuckDB)&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px;color:#e9d5ff;&quot;&gt;Dataset 48 kolom bersih siap query&lt;/span&gt;" vertex="1">
+          <mxGeometry height="55" width="320" x="1050" y="680" as="geometry" />
+        </mxCell>
+        <mxCell id="D3_L2_ASIS_P2" parent="1" style="shape=partialRectangle;right=0;left=0;html=1;fillColor=#4c0519;strokeColor=#fb7185;strokeWidth=2;fontColor=#ffffff;align=center;verticalAlign=middle;" value="&lt;b style=&quot;font-size:12px;color:#fb7185;&quot;&gt;D3&lt;/b&gt; | &lt;b&gt;Log Audit Kualitas (quality_audit_logs)&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px;color:#fecdd3;&quot;&gt;Rekam baris anomali Critical &amp;amp; Warning DuckDB&lt;/span&gt;" vertex="1">
+          <mxGeometry height="55" width="320" x="1420" y="680" as="geometry" />
+        </mxCell>
+        <mxCell id="P2_1_ASIS" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;2.1&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Mapping Sinonim Kolom BPS&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Baca kamus sinonim variabel BPS&lt;br&gt; • Petakan nama kolom input ke nama standar&lt;br&gt; • Validasi kelengkapan 48 variabel wajib &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="260" x="350" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="P2_2_ASIS" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;2.2&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Pemeriksaan Aturan Kualitas&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Cek panjang NIK (16 digit)&lt;br&gt; • Cek rentang nilai Desil (1 s/d 10)&lt;br&gt; • Klasifikasi: Valid, Warning, Critical &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="270" x="690" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="P2_3_ASIS" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;2.3&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Pemisahan Record Bersih &amp;amp; Error&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Pisahkan baris status Valid&lt;br&gt; • Pisahkan baris Critical &amp;amp; Warning&lt;br&gt; • Format struktur record untuk disimpan &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="270" x="1040" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="P2_4_ASIS" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;2.4&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Simpan Data Bersih ke DuckDB&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Batch insert ke tabel dtsen_data&lt;br&gt; • Kompresi kolumnar halaman vektor&lt;br&gt; • Indexing kolom kunci NIK &amp;amp; Desil &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="270" x="1040" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="P2_5_ASIS" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;2.5&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Catat Log Audit Error ke DuckDB&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Tulis rekaman anomali ke quality_audit_logs&lt;br&gt; • Simpan deskripsi kesalahan &amp;amp; nomor baris&lt;br&gt; • Siapkan data untuk pelaporan audit &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="270" x="1380" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="P2_6_ASIS" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;2.6&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Update Progress JSON &amp;amp; Metrik&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Tulis progres ke import_progress.json&lt;br&gt; • Hitung total baris &amp;amp; rasio validitas&lt;br&gt; • Kirim ringkasan kualitas ke Operator &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="270" x="690" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_as_p2_1_2" edge="1" parent="1" source="P2_1_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;fontStyle=1;labelBackgroundColor=#f0f9ff;labelBorderColor=#bae6fd;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="P2_2_ASIS" value="48 Kolom Terpetakan">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_as_p2_2_3" edge="1" parent="1" source="P2_2_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;fontStyle=1;labelBackgroundColor=#f0f9ff;labelBorderColor=#bae6fd;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="P2_3_ASIS" value="Record Berlabel Status Kualitas">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_as_p2_3_4" edge="1" parent="1" source="P2_3_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;labelBackgroundColor=#ecfdf5;labelBorderColor=#a7f3d0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="P2_4_ASIS" value="Batch Record Bersih (Valid)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_as_p2_3_5" edge="1" parent="1" source="P2_3_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#dc2626;strokeWidth=2;fontColor=#991b1b;fontSize=10;fontStyle=1;labelBackgroundColor=#fef2f2;labelBorderColor=#fecaca;exitX=0.8;exitY=1;entryX=0.2;entryY=0;" target="P2_5_ASIS" value="Batch Record Anomali (Crit/Warn)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1256" y="380" />
+              <mxPoint x="1434" y="380" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_l2_as_p2_4_d2" edge="1" parent="1" source="P2_4_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;labelBackgroundColor=#ecfdf5;labelBorderColor=#a7f3d0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="D2_L2_ASIS_P2" value="Simpan Data Bersih">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_as_p2_5_d3" edge="1" parent="1" source="P2_5_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#dc2626;strokeWidth=2;fontColor=#991b1b;fontSize=10;fontStyle=1;labelBackgroundColor=#fef2f2;labelBorderColor=#fecaca;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="D3_L2_ASIS_P2" value="Simpan Log Anomali">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_as_p2_4_6" edge="1" parent="1" source="P2_4_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;labelBackgroundColor=#ecfdf5;labelBorderColor=#a7f3d0;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" target="P2_6_ASIS" value="Status Batch Selesai">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_as_p2_6_e1" edge="1" parent="1" source="P2_6_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;labelBackgroundColor=#ecfdf5;labelBorderColor=#a7f3d0;exitX=0;exitY=0.5;entryX=1;entryY=0.65;" target="E1_L2_ASIS_P2" value="Update Progres &amp;amp; Ringkasan Kualitas">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="AS-IS Level 2 - P3.0 (Pencarian &amp; Agregasi KPI)" id="FT5O9h9hNXrrkT5Lgfw4">
+    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="1800" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t_l2_asis_p3" parent="1" style="html=1;text;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" value="&lt;div style=&quot;font-size:20px;font-weight:bold;color:#0f172a;&quot;&gt;DATA FLOW DIAGRAM (DFD) LEVEL 2 — PROSES 3.0 (AS-IS)&lt;/div&gt;&lt;div style=&quot;font-size:13px;color:#64748b;margin-top:4px;&quot;&gt;Dekomposisi Sub-Sistem Pencarian, Query Table Scan &amp;amp; Render Grid Polos (Tanpa Masking PII)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="50" width="1100" x="450" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="E1_L2_ASIS_P3" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size: 12px; color: rgb(0, 0, 0); font-weight: bold;&quot;&gt;&lt;br&gt;&lt;/div&gt; &lt;div style=&quot;font-size: 16px; font-weight: bold; margin-top: 3px; color: rgb(0, 0, 0);&quot;&gt;OPERATOR DATA / ANALIS&lt;/div&gt; &lt;hr style=&quot;border: 1px solid rgb(0, 122, 204); margin: 10px 0px;&quot;&gt; &lt;div style=&quot;text-align: left; font-size: 11px; line-height: 1.6; color: rgb(0, 0, 0); padding: 0px 8px;&quot;&gt; • Menyalin file CSV/XLSX ke src-dtsen/&lt;br&gt; • Memilih file &amp;amp; trigger impor lokal&lt;br&gt; • Memantau progress bar impor&lt;br&gt; • Mengatur filter NIK, Wilayah, Desil&lt;br&gt; • Melihat tabel data mentah (as-is)&lt;br&gt; • Mengunduh file CSV hasil filter/error &lt;/div&gt;" vertex="1">
+          <mxGeometry height="480" width="230" x="20" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="D2_L2_ASIS_P3" parent="1" style="shape=partialRectangle;right=0;left=0;html=1;fillColor=#3b0764;strokeColor=#c084fc;strokeWidth=2;fontColor=#ffffff;align=center;verticalAlign=middle;" value="&lt;b style=&quot;font-size:12px;color:#c084fc;&quot;&gt;D2&lt;/b&gt; | &lt;b&gt;Tabel Kolumnar (dtsen_data DuckDB)&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px;color:#e9d5ff;&quot;&gt;Dataset 48 variabel ternormalisasi (Vector Pages)&lt;/span&gt;" vertex="1">
+          <mxGeometry height="55" width="320" x="690" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="P3_1_ASIS" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;3.1&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Input Parser Filter &amp;amp; Keyword&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Terima parameter filter NIK, Wilayah, Desil&lt;br&gt; • Parse kata kunci pencarian dari Operator&lt;br&gt; • Bangun kondisi filter WHERE &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="260" x="350" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="P3_2_ASIS" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;3.2&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Dynamic SQL Query Constructor&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Bangun query SELECT terhadap DuckDB&lt;br&gt; • Terapkan limit 50 baris &amp;amp; offset paginasi&lt;br&gt; • Siapkan perintah query scan memori &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="270" x="690" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="P3_3_ASIS" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;3.3&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;DuckDB Table Scan Execution&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Eksekusi table scan pada tabel dtsen_data&lt;br&gt; • Ambil baris data mentah terfilter&lt;br&gt; • Ekstrak data numerik untuk metrik agregat &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="270" x="1050" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="P3_4_ASIS" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;3.4&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;KPI Statistics Calculator&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Hitung total baris hasil filter (COUNT)&lt;br&gt; • Agregasi jumlah baris Valid, Warn, Crit&lt;br&gt; • Siapkan data angka untuk KPI cards &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="270" x="1050" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="P3_5_ASIS" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;3.5&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Render Grid Polos (Tanpa Masking)&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Render tabel 50 baris per halaman&lt;br&gt; • Data PII ditampilkan polos apa adanya&lt;br&gt; • Transmisi tabel biasa &amp;amp; KPI card ke browser &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="280" x="520" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_as_p3_filter" edge="1" parent="1" source="E1_L2_ASIS_P3" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#7c3aed;strokeWidth=2;fontColor=#6d28d9;fontSize=10;fontStyle=1;labelBackgroundColor=#f5f3ff;labelBorderColor=#ddd6fe;exitX=1;exitY=0.15;entryX=0;entryY=0.5;" target="P3_1_ASIS" value="Parameter Filter &amp;amp; Keyword">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_as_p3_1_2" edge="1" parent="1" source="P3_1_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#7c3aed;strokeWidth=2;fontColor=#6d28d9;fontSize=10;fontStyle=1;labelBackgroundColor=#f5f3ff;labelBorderColor=#ddd6fe;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="P3_2_ASIS" value="Parsed Filter Criteria">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_as_p3_2_d2" edge="1" parent="1" source="P3_2_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#7c3aed;strokeWidth=2;fontColor=#6d28d9;fontSize=10;fontStyle=1;labelBackgroundColor=#f5f3ff;labelBorderColor=#ddd6fe;exitX=0.5;exitY=0;entryX=0.5;entryY=1;" target="D2_L2_ASIS_P3" value="Query Table Scan">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_as_p3_d2_3" edge="1" parent="1" source="D2_L2_ASIS_P3" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#7c3aed;strokeWidth=2;fontColor=#6d28d9;fontSize=10;fontStyle=1;labelBackgroundColor=#f5f3ff;labelBorderColor=#ddd6fe;exitX=0.8;exitY=1;entryX=0.3;entryY=0;" target="P3_3_ASIS" value="Raw Columnar Records">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="946" y="180" />
+              <mxPoint x="1131" y="180" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_l2_as_p3_3_4" edge="1" parent="1" source="P3_3_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#7c3aed;strokeWidth=2;fontColor=#6d28d9;fontSize=10;fontStyle=1;labelBackgroundColor=#f5f3ff;labelBorderColor=#ddd6fe;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="P3_4_ASIS" value="Aliran Data Numerik">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_as_p3_3_5" edge="1" parent="1" source="P3_3_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#7c3aed;strokeWidth=2;fontColor=#6d28d9;fontSize=10;fontStyle=1;labelBackgroundColor=#f5f3ff;labelBorderColor=#ddd6fe;exitX=0.2;exitY=1;entryX=0.8;entryY=0;" target="P3_5_ASIS" value="Raw Tabular Records (Tanpa Masking)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1104" y="380" />
+              <mxPoint x="744" y="380" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_l2_as_p3_4_5" edge="1" parent="1" source="P3_4_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#7c3aed;strokeWidth=2;fontColor=#6d28d9;fontSize=10;fontStyle=1;labelBackgroundColor=#f5f3ff;labelBorderColor=#ddd6fe;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" target="P3_5_ASIS" value="Metrik Ringkasan KPI">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_as_p3_5_e1" edge="1" parent="1" source="P3_5_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#7c3aed;strokeWidth=2;fontColor=#6d28d9;fontSize=10;fontStyle=1;labelBackgroundColor=#f5f3ff;labelBorderColor=#ddd6fe;exitX=0;exitY=0.5;entryX=1;entryY=0.65;" target="E1_L2_ASIS_P3" value="Tabel Data Polos &amp;amp; KPI Cards">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="AS-IS Level 2 - P4.0 (Ekspor CSV Mentah)" id="Nmq-GRtWYAX0t1HX8-OO">
+    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="1800" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t_l2_asis_p4" parent="1" style="html=1;text;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" value="&lt;div style=&quot;font-size:20px;font-weight:bold;color:#0f172a;&quot;&gt;DATA FLOW DIAGRAM (DFD) LEVEL 2 — PROSES 4.0 (AS-IS)&lt;/div&gt;&lt;div style=&quot;font-size:13px;color:#64748b;margin-top:4px;&quot;&gt;Dekomposisi Sub-Sistem Ekspor Berkas CSV Polos Tanpa Kompresi/Enkripsi Sistem Eksisting&lt;/div&gt;" vertex="1">
+          <mxGeometry height="50" width="1050" x="450" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="E1_L2_ASIS_P4" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size: 12px; color: rgb(0, 0, 0); font-weight: bold;&quot;&gt;&lt;br&gt;&lt;/div&gt; &lt;div style=&quot;font-size: 16px; font-weight: bold; margin-top: 3px; color: rgb(0, 0, 0);&quot;&gt;OPERATOR DATA / ANALIS&lt;/div&gt; &lt;hr style=&quot;border: 1px solid rgb(0, 122, 204); margin: 10px 0px;&quot;&gt; &lt;div style=&quot;text-align: left; font-size: 11px; line-height: 1.6; color: rgb(0, 0, 0); padding: 0px 8px;&quot;&gt; • Menyalin file CSV/XLSX ke src-dtsen/&lt;br&gt; • Memilih file &amp;amp; trigger impor lokal&lt;br&gt; • Memantau progress bar impor&lt;br&gt; • Mengatur filter NIK, Wilayah, Desil&lt;br&gt; • Melihat tabel data mentah (as-is)&lt;br&gt; • Mengunduh file CSV hasil filter/error &lt;/div&gt;" vertex="1">
+          <mxGeometry height="420" width="230" x="50" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="D2_L2_ASIS_P4" parent="1" style="shape=partialRectangle;right=0;left=0;html=1;fillColor=#3b0764;strokeColor=#c084fc;strokeWidth=2;fontColor=#ffffff;align=center;verticalAlign=middle;" value="&lt;b style=&quot;font-size:12px;color:#c084fc;&quot;&gt;D2&lt;/b&gt; | &lt;b&gt;Tabel Kolumnar (dtsen_data DuckDB)&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px;color:#e9d5ff;&quot;&gt;Dataset 48 kolom bersih&lt;/span&gt;" vertex="1">
+          <mxGeometry height="55" width="280" x="350" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="D3_L2_ASIS_P4" parent="1" style="shape=partialRectangle;right=0;left=0;html=1;fillColor=#4c0519;strokeColor=#fb7185;strokeWidth=2;fontColor=#ffffff;align=center;verticalAlign=middle;" value="&lt;b style=&quot;font-size:12px;color:#fb7185;&quot;&gt;D3&lt;/b&gt; | &lt;b&gt;Log Audit Kualitas (quality_audit_logs)&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px;color:#fecdd3;&quot;&gt;Rekam log anomali kualitas&lt;/span&gt;" vertex="1">
+          <mxGeometry height="55" width="290" x="710" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="P4_1_ASIS" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;4.1&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Parser Permintaan Ekspor Berkas&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Tangkap request ekspor dari Operator&lt;br&gt; • Cek tipe berkas (Clean CSV / Error CSV)&lt;br&gt; • Teruskan instruksi query penarikan data &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="270" x="350" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="P4_2_ASIS" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;4.2&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Query Dataset Bersih atau Error&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Query baris bersih dari dtsen_data (D2)&lt;br&gt; • Query baris anomali dari audit_logs (D3)&lt;br&gt; • Tarik data dalam format tabular mentah &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="270" x="700" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="P4_3_ASIS" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;4.3&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Raw CSV Formatter &amp;amp; Buffer&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Format baris data ke string CSV biasa&lt;br&gt; • Tulis header kolom &amp;amp; delimiter koma&lt;br&gt; • Buffer baris teks tanpa kompresi ZIP &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="270" x="1050" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="P4_4_ASIS" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;4.4&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Direct Browser CSV File Streamer&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Set HTTP Header: text/csv&lt;br&gt; • Stream berkas langsung ke browser&lt;br&gt; • Operator menerima Clean / Error CSV polos &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="280" x="650" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_as_p4_req" edge="1" parent="1" source="E1_L2_ASIS_P4" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;fontStyle=1;labelBackgroundColor=#f0f9ff;labelBorderColor=#bae6fd;exitX=1;exitY=0.15;entryX=0;entryY=0.5;" target="P4_1_ASIS" value="Permintaan Ekspor CSV">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_as_p4_1_2" edge="1" parent="1" source="P4_1_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;fontStyle=1;labelBackgroundColor=#f0f9ff;labelBorderColor=#bae6fd;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="P4_2_ASIS" value="Target Tipe Ekspor">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_as_p4_d2_2" edge="1" parent="1" source="D2_L2_ASIS_P4" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;labelBackgroundColor=#ecfdf5;labelBorderColor=#a7f3d0;exitX=0.5;exitY=1;entryX=0.2;entryY=0;" target="P4_2_ASIS" value="Ambil Data Bersih">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="490" y="180" />
+              <mxPoint x="754" y="180" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_l2_as_p4_d3_2" edge="1" parent="1" source="D3_L2_ASIS_P4" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#dc2626;strokeWidth=2;fontColor=#991b1b;fontSize=10;fontStyle=1;labelBackgroundColor=#fef2f2;labelBorderColor=#fecaca;exitX=0.5;exitY=1;entryX=0.7;entryY=0;" target="P4_2_ASIS" value="Ambil Log Error">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="855" y="180" />
+              <mxPoint x="889" y="180" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_l2_as_p4_2_3" edge="1" parent="1" source="P4_2_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;fontStyle=1;labelBackgroundColor=#f0f9ff;labelBorderColor=#bae6fd;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="P4_3_ASIS" value="Raw Tabular Records">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_as_p4_3_4" edge="1" parent="1" source="P4_3_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;labelBackgroundColor=#ecfdf5;labelBorderColor=#a7f3d0;exitX=0.5;exitY=1;entryX=1;entryY=0.5;" target="P4_4_ASIS" value="Stream Berkas CSV Polos">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1185" y="475" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_l2_as_p4_4_e1" edge="1" parent="1" source="P4_4_ASIS" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;labelBackgroundColor=#ecfdf5;labelBorderColor=#a7f3d0;exitX=0;exitY=0.5;entryX=1;entryY=0.65;" target="E1_L2_ASIS_P4" value="Stream File Unduhan CSV">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+        <diagram id="dfd_tobe_level_0" name="TO-BE Level 0 (Diagram Konteks)">
+    <mxGraphModel dx="1400" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="800" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t_tobe_0" value="&lt;div style=&quot;font-size:18px;font-weight:bold;color:#0f172a;&quot;&gt;DATA FLOW DIAGRAM (DFD) LEVEL 0 — TO-BE (DIAGRAM KONTEKS)&lt;/div&gt;&lt;div style=&quot;font-size:13px;color:#64748b;margin-top:4px;&quot;&gt;Sistem Analisis Data Terpadu &amp;amp; Analitik Regional (PADU v2.0 Enterprise — Clean Web App)&lt;/div&gt;" style="html=1;text;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="300" y="40" width="800" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="P0_TOBE" value="&lt;div style=&quot;font-size:14px;color:#000000;font-weight:bold;&quot;&gt;0.0&lt;/div&gt;
+&lt;div style=&quot;font-size:16px;font-weight:bold;margin-top:4px;color:#000000;&quot;&gt;SISTEM ANALISIS DATA DTSEN &amp;amp;&lt;br/&gt;ANALITIK REGIONAL (CLEAN WEB)&lt;/div&gt;
+&lt;div style=&quot;font-size:12px;font-weight:bold;color:#004080;margin-top:2px;&quot;&gt;(PADU v2.0 Enterprise)&lt;/div&gt;
+&lt;hr style=&quot;border:1px solid #007ACC;margin:10px 0;&quot;&gt;
+&lt;div style=&quot;text-align:left;font-size:11px;line-height:1.5;color:#000000;padding:0 12px;&quot;&gt;
+• Otentikasi Web Dua Tahap (Two-Step Email-First Login)&lt;br/&gt;
+• Kebijakan Kata Sandi Minimal 15 Karakter (NIST / BSSN)&lt;br/&gt;
+• Ingesti Cepat Chunking PyArrow &amp;gt; 1,5 Juta Baris/Detik&lt;br/&gt;
+• Engine Evaluasi Kualitas Data &amp;amp; Rekam Anomali&lt;br/&gt;
+• Tab 1: Data Mikro Terpadu (Dynamic PII Masking &amp;amp; FK Transliterasi)&lt;br/&gt;
+• Tab 2: Data Statistik Regional (Kalkulasi 7 Metrik Agregasi)&lt;br/&gt;
+• Ekspor Paket Arsip ZIP Terkompresi (DEFLATE + SHA-256)
+&lt;/div&gt;" style="shape=ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=3;fontColor=#000000;align=center;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="640" y="160" width="460" height="460" as="geometry" />
+        </mxCell>
+        <mxCell id="E1_TOBE_0" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;ENTITAS LUAR (EXTERNAL ENTITY)&lt;/div&gt;
+&lt;div style=&quot;font-size:15px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;👤 OPERATOR DATA / ANALIS&lt;/div&gt;
+&lt;hr style=&quot;border:1px solid #007ACC;margin:8px 0;&quot;&gt;
+&lt;div style=&quot;text-align:left;font-size:11px;line-height:1.6;color:#000000;padding:0 8px;&quot;&gt;
+• Otentikasi Kredensial Pengguna Standar BSSN&lt;br/&gt;
+• Mengunggah berkas mentah DTSEN ke src-dtsen/&lt;br/&gt;
+• Memilih Modul: Data Mikro vs Statistik Wilayah&lt;br/&gt;
+• Menjalankan filter dinamis &amp;amp; pencarian NIK/KK&lt;br/&gt;
+• Meninjau data mikro terpadu (Transliterasi Label FK)&lt;br/&gt;
+• Menganalisis agregasi wilayah (7 Metrik Statistik)&lt;br/&gt;
+• Mengunduh paket ZIP arsip olahan &amp;amp; log audit
+&lt;/div&gt;" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="80" y="180" width="300" height="420" as="geometry" />
+        </mxCell>
+        <mxCell id="e_tb_0_1" value="1. Kredensial Login (Email &amp;amp; Password Min 15 Char)" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;fontStyle=1;labelBackgroundColor=#f0f9ff;labelBorderColor=#bae6fd;exitX=1;exitY=0.15;entryX=0;entryY=0.15;" edge="1" parent="1" source="E1_TOBE_0" target="P0_TOBE">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_tb_0_2" value="2. Berkas Mentah DTSEN (CSV / XLSX 13M+ Baris)" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;fontStyle=1;labelBackgroundColor=#f0f9ff;labelBorderColor=#bae6fd;exitX=1;exitY=0.30;entryX=0;entryY=0.30;" edge="1" parent="1" source="E1_TOBE_0" target="P0_TOBE">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_tb_0_3" value="3. Parameter Filter Dinamis &amp;amp; Pilihan Modul" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;fontStyle=1;labelBackgroundColor=#f0f9ff;labelBorderColor=#bae6fd;exitX=1;exitY=0.45;entryX=0;entryY=0.45;" edge="1" parent="1" source="E1_TOBE_0" target="P0_TOBE">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_tb_0_4" value="4. Permintaan Unduh Paket Arsip ZIP" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;fontStyle=1;labelBackgroundColor=#f0f9ff;labelBorderColor=#bae6fd;exitX=1;exitY=0.60;entryX=0;entryY=0.60;" edge="1" parent="1" source="E1_TOBE_0" target="P0_TOBE">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_tb_0_5" value="5. Sesi Valid HttpOnly &amp;amp; Progress Status Ingesti" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;labelBackgroundColor=#ecfdf5;labelBorderColor=#a7f3d0;exitX=0;exitY=0.72;entryX=1;entryY=0.72;" edge="1" parent="1" source="P0_TOBE" target="E1_TOBE_0">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_tb_0_6" value="6. Tab 1: Data Mikro Terpadu (PII-Masked &amp;amp; Label FK)" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;labelBackgroundColor=#ecfdf5;labelBorderColor=#a7f3d0;exitX=0;exitY=0.82;entryX=1;entryY=0.82;" edge="1" parent="1" source="P0_TOBE" target="E1_TOBE_0">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_tb_0_7" value="7. Tab 2: Rekap 7 Metrik Statistik Regional" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;labelBackgroundColor=#ecfdf5;labelBorderColor=#a7f3d0;exitX=0;exitY=0.90;entryX=1;entryY=0.90;" edge="1" parent="1" source="P0_TOBE" target="E1_TOBE_0">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_tb_0_8" value="8. Paket Arsip ZIP (Clean/Error CSV + SHA-256)" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;labelBackgroundColor=#ecfdf5;labelBorderColor=#a7f3d0;exitX=0;exitY=0.97;entryX=1;entryY=0.97;" edge="1" parent="1" source="P0_TOBE" target="E1_TOBE_0">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>  <diagram id="dfd_tobe_level_1" name="TO-BE Level 1 (Dekomposisi Sistem)">
+    <mxGraphModel dx="2400" dy="1100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2400" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t_tobe_1" value="&lt;div style=&quot;font-size:18px;font-weight:bold;color:#0f172a;&quot;&gt;DATA FLOW DIAGRAM (DFD) LEVEL 1 — TO-BE (DEKOMPOSISI 4 PROSES SEKUENSIAL)&lt;/div&gt;&lt;div style=&quot;font-size:13px;color:#64748b;margin-top:4px;&quot;&gt;PADU v2.0 Enterprise: Clean Web Architecture Sesuai BSSN No. 4/2021 &amp;amp; UU PDP No. 27/2022&lt;/div&gt;" style="html=1;text;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="650" y="30" width="1100" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- EXTERNAL ENTITY -->
+        <mxCell id="E1_L1" value="&lt;div style=&quot;font-size:13px;font-weight:bold;&quot;&gt;👤 OPERATOR DATA / ANALIS&lt;/div&gt;&lt;div style=&quot;font-size:11px;margin-top:2px;&quot;&gt;Client Web Browser&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;align=center;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="240" width="230" height="600" as="geometry" />
+        </mxCell>
+
+        <!-- 4 PROCESSES SEQUENTIAL (P1 to P4) -->
+        <mxCell id="P1_L1" value="&lt;div style=&quot;font-size:14px;font-weight:bold;&quot;&gt;1.0&lt;/div&gt;&lt;div style=&quot;font-size:14px;font-weight:bold;margin-top:4px;&quot;&gt;Otentikasi Pengguna &amp;amp;&lt;br/&gt;Pengendalian Sesi BSSN&lt;/div&gt;&lt;div style=&quot;font-size:10px;margin-top:4px;&quot;&gt;Two-Step Login, Bcrypt &amp;amp; Rate Limit 5x&lt;/div&gt;" style="shape=ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;align=center;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="380" y="250" width="220" height="220" as="geometry" />
+        </mxCell>
+
+        <mxCell id="P2_L1" value="&lt;div style=&quot;font-size:14px;font-weight:bold;&quot;&gt;2.0&lt;/div&gt;&lt;div style=&quot;font-size:14px;font-weight:bold;margin-top:4px;&quot;&gt;Ingesti, Normalisasi &amp;amp;&lt;br/&gt;Audit Kualitas Data&lt;/div&gt;&lt;div style=&quot;font-size:10px;margin-top:4px;&quot;&gt;PyArrow Streaming &amp;gt; 1,5M Baris/Detik&lt;/div&gt;" style="shape=ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;align=center;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="720" y="250" width="220" height="220" as="geometry" />
+        </mxCell>
+
+        <mxCell id="P3_L1" value="&lt;div style=&quot;font-size:14px;font-weight:bold;&quot;&gt;3.0&lt;/div&gt;&lt;div style=&quot;font-size:14px;font-weight:bold;margin-top:4px;&quot;&gt;Pemrosesan Analitik,&lt;br/&gt;Dual-Modul &amp;amp; 7 Metrik&lt;/div&gt;&lt;div style=&quot;font-size:10px;margin-top:4px;&quot;&gt;PII Masking &amp;amp; Transliterasi FK BPS&lt;/div&gt;" style="shape=ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;align=center;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="250" width="220" height="220" as="geometry" />
+        </mxCell>
+
+        <mxCell id="P4_L1" value="&lt;div style=&quot;font-size:14px;font-weight:bold;&quot;&gt;4.0&lt;/div&gt;&lt;div style=&quot;font-size:14px;font-weight:bold;margin-top:4px;&quot;&gt;Pengelolaan Ekspor &amp;amp;&lt;br/&gt;Pengarsipan Paket ZIP&lt;/div&gt;&lt;div style=&quot;font-size:10px;margin-top:4px;&quot;&gt;Kompresi DEFLATE &amp;amp; Manifest SHA-256&lt;/div&gt;" style="shape=ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;align=center;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="250" width="220" height="220" as="geometry" />
+        </mxCell>
+
+        <!-- DATA STORES -->
+        <mxCell id="D1_L1" value="&lt;b&gt;D1: src-dtsen/&lt;/b&gt;&lt;br/&gt;Folder Berkas Mentah" style="shape=partialRectangle;collapsible=0;dropTarget=0;pointerEvents=0;fillColor=#3b0764;strokeColor=#c084fc;fontColor=#ffffff;fontSize=11;align=center;" vertex="1" parent="1">
+          <mxGeometry x="720" y="600" width="220" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="D2_L1" value="&lt;b&gt;D2: dtsen_data DuckDB&lt;/b&gt;&lt;br/&gt;Tabel Kolumnar Bersih" style="shape=partialRectangle;collapsible=0;dropTarget=0;pointerEvents=0;fillColor=#3b0764;strokeColor=#c084fc;fontColor=#ffffff;fontSize=11;align=center;" vertex="1" parent="1">
+          <mxGeometry x="890" y="700" width="220" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="D3_L1" value="&lt;b&gt;D3: quality_audit_logs&lt;/b&gt;&lt;br/&gt;Log Anomali Kualitas" style="shape=partialRectangle;collapsible=0;dropTarget=0;pointerEvents=0;fillColor=#3b0764;strokeColor=#c084fc;fontColor=#ffffff;fontSize=11;align=center;" vertex="1" parent="1">
+          <mxGeometry x="720" y="800" width="220" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="D4_L1" value="&lt;b&gt;D4: sqlite_users &amp;amp; sessions&lt;/b&gt;&lt;br/&gt;Akun, Hak Akses &amp;amp; Token Sesi" style="shape=partialRectangle;collapsible=0;dropTarget=0;pointerEvents=0;fillColor=#3b0764;strokeColor=#c084fc;fontColor=#ffffff;fontSize=11;align=center;" vertex="1" parent="1">
+          <mxGeometry x="380" y="600" width="220" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="D5_L1" value="&lt;b&gt;D5: src-export/ &amp;amp; ZIP&lt;/b&gt;&lt;br/&gt;Repositori Paket Arsip" style="shape=partialRectangle;collapsible=0;dropTarget=0;pointerEvents=0;fillColor=#3b0764;strokeColor=#c084fc;fontColor=#ffffff;fontSize=11;align=center;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="600" width="220" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="D_REF_L1" value="&lt;b&gt;D_REF: referensi_kamus_data&lt;/b&gt;&lt;br/&gt;Kamus Label Transliterasi FK BPS" style="shape=partialRectangle;collapsible=0;dropTarget=0;pointerEvents=0;fillColor=#3b0764;strokeColor=#c084fc;fontColor=#ffffff;fontSize=11;align=center;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="600" width="220" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- FLOW EDGES -->
+        <mxCell id="el1_1" value="Input Email &amp;amp; Password" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;" edge="1" parent="1" source="E1_L1" target="P1_L1" />
+        <mxCell id="el1_2" value="Verifikasi Bcrypt &amp;amp; Sesi" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;" edge="1" parent="1" source="P1_L1" target="D4_L1" />
+        <mxCell id="el1_3" value="Sesi Terverifikasi" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;" edge="1" parent="1" source="P1_L1" target="E1_L1" />
+        <mxCell id="el1_4" value="Salin Berkas Mentah" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;" edge="1" parent="1" source="E1_L1" target="D1_L1" />
+        <mxCell id="el1_5" value="Baca Chunking" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;" edge="1" parent="1" source="D1_L1" target="P2_L1" />
+        <mxCell id="el1_6" value="Simpan Data Bersih" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;" edge="1" parent="1" source="P2_L1" target="D2_L1" />
+        <mxCell id="el1_7" value="Rekam Anomali" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;" edge="1" parent="1" source="P2_L1" target="D3_L1" />
+        <mxCell id="el1_8" value="Status &amp;amp; Skor KPI" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;" edge="1" parent="1" source="P2_L1" target="E1_L1" />
+        <mxCell id="el1_9" value="Filter &amp;amp; Parameter Analitik" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;" edge="1" parent="1" source="E1_L1" target="P3_L1" />
+        <mxCell id="el1_10" value="Scan Kolumnar" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;" edge="1" parent="1" source="D2_L1" target="P3_L1" />
+        <mxCell id="el1_11" value="Kamus Label FK" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;" edge="1" parent="1" source="D_REF_L1" target="P3_L1" />
+        <mxCell id="el1_12" value="Sajian Tab 1 (Mikro) &amp;amp; Tab 2 (Statistik)" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;" edge="1" parent="1" source="P3_L1" target="E1_L1" />
+        <mxCell id="el1_13" value="Perintah Ekspor ZIP" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;" edge="1" parent="1" source="E1_L1" target="P4_L1" />
+        <mxCell id="el1_14" value="Ambil Data Bersih" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;" edge="1" parent="1" source="D2_L1" target="P4_L1" />
+        <mxCell id="el1_15" value="Ambil Log Anomali" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;" edge="1" parent="1" source="D3_L1" target="P4_L1" />
+        <mxCell id="el1_16" value="Simpan Paket ZIP" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;" edge="1" parent="1" source="P4_L1" target="D5_L1" />
+        <mxCell id="el1_17" value="Stream Download ZIP" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;" edge="1" parent="1" source="P4_L1" target="E1_L1" />
+      </root>
+    </mxGraphModel>
+  </diagram><diagram name="TO-BE Level 2 - P1.0 (Inisialisasi Biometrik)" id="NrZWwlLvzgtph3xuN8Fq">
+    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="1800" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t_l2_p1" parent="1" style="html=1;text;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" value="&lt;div style=&quot;font-size:20px;font-weight:bold;color:#0f172a;&quot;&gt;DATA FLOW DIAGRAM (DFD) LEVEL 2 — PROSES 1.0 (TO-BE)&lt;/div&gt;&lt;div style=&quot;font-size:13px;color:#64748b;margin-top:4px;&quot;&gt;Dekomposisi Sub-Sistem Inisialisasi &amp;amp; Verifikasi Biometrik Awal (Headless OpenCV + MediaPipe)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="50" width="950" x="450" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="E2_L2_P1" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size: 12px; color: rgb(0, 0, 0); font-weight: bold;&quot;&gt;&lt;br&gt;&lt;/div&gt; &lt;div style=&quot;font-size: 15px; font-weight: bold; margin-top: 2px; color: rgb(0, 0, 0);&quot;&gt;SENSOR KAMERA / WEBCAM&lt;/div&gt; &lt;hr style=&quot;border: 1px solid rgb(0, 122, 204); margin: 8px 0px;&quot;&gt; &lt;div style=&quot;text-align: left; font-size: 11px; line-height: 1.5; color: rgb(0, 0, 0); padding: 0px 6px;&quot;&gt; • Headless OpenCV Capture (DSHOW)&lt;br&gt; • Frame visual berkala (loop 0.2s)&lt;br&gt; • Snapshot verifikasi biometrik &lt;/div&gt;" vertex="1">
+          <mxGeometry height="180" width="230" x="60" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="E1_L2_P1" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size: 12px; color: rgb(0, 0, 0); font-weight: bold;&quot;&gt;&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(237, 237, 237)); font-size: 16px; background-color: transparent;&quot;&gt;OPERATOR DATA / ANALIS&lt;/span&gt;&lt;/div&gt; &lt;hr style=&quot;border: 1px solid rgb(0, 122, 204); margin: 10px 0px;&quot;&gt; &lt;div style=&quot;text-align: left; font-size: 11px; line-height: 1.6; color: rgb(0, 0, 0); padding: 0px 8px;&quot;&gt; • Mengunggah berkas mentah DTSEN&lt;br&gt; • Menjalankan filter dinamis &amp;amp; pencarian&lt;br&gt; • Meninjau tabel data ter-masking PII&lt;br&gt; • Menganalisis metrik kualitas data&lt;br&gt; • Mengunduh paket ZIP arsip &amp;amp; log audit&lt;br&gt; • Menerima notifikasi peringatan layar &lt;/div&gt;" vertex="1">
+          <mxGeometry height="420" width="230" x="1480" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="D4_L2_P1" parent="1" style="shape=partialRectangle;right=0;left=0;html=1;fillColor=#451a03;strokeColor=#f59e0b;strokeWidth=2;fontColor=#ffffff;align=center;verticalAlign=middle;" value="&lt;b style=&quot;font-size:12px;color:#f59e0b;&quot;&gt;D4&lt;/b&gt; | &lt;b&gt;Kredensial Sesi (sesi_wajah_aktif.jpg / RAM)&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px;color:#fef08a;&quot;&gt;Snapshot matriks wajah tunggal pemilik sah&lt;/span&gt;" vertex="1">
+          <mxGeometry height="60" width="360" x="720" y="580" as="geometry" />
+        </mxCell>
+        <mxCell id="P1_1" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;1.1&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Inisialisasi Device &amp;amp; Warm-Up Kamera&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • cv2.VideoCapture(0, DSHOW)&lt;br&gt; • Warm-up adaptasi auto-exposure (2s)&lt;br&gt; • Stream frame awal beresolusi 640x480 &lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="250" x="350" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="P1_2" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;1.2&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Deteksi &amp;amp; Ekstraksi Face Mesh&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • MediaPipe FaceMesh Engine&lt;br&gt; • Ekstraksi 468 titik koordinat 3D&lt;br&gt; • Identifikasi bounding box &amp;amp; centroid &lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="250" x="680" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="P1_3" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;1.3&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Validasi Kebijakan Wajah Tunggal&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Hitung total face detected&lt;br&gt; • Rule: Reject if count == 0 or count &amp;gt; 1&lt;br&gt; • Valid if count == 1 (Single User) &lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="260" x="1010" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="P1_4" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;1.4&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Registrasi Kredensial Pemilik Sah&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Crop &amp;amp; encode frame acuan (baseline)&lt;br&gt; • Tulis ke sesi_wajah_aktif.jpg di RAM&lt;br&gt; • Catat token identifikasi sesi aktif &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="260" x="840" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="P1_5" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;1.5&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Handshake Sesi &amp;amp; Dispatcher UI&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Teruskan token aktif ke Laravel Web UI&lt;br&gt; • Unlock tampilan login/dasbor aplikasi&lt;br&gt; • Kirim notifikasi 'Autentikasi Sukses' &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="240" x="1180" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p1_cam" edge="1" parent="1" source="E2_L2_P1" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#d97706;strokeWidth=2;fontColor=#b45309;fontSize=10;fontStyle=1;labelBackgroundColor=#fffbeb;labelBorderColor=#fde68a;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="P1_1" value="Frame Video Mentah">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p1_1_2" edge="1" parent="1" source="P1_1" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#d97706;strokeWidth=2;fontColor=#b45309;fontSize=10;fontStyle=1;labelBackgroundColor=#fffbeb;labelBorderColor=#fde68a;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="P1_2" value="Frame Visual Siap Injeksi">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p1_2_3" edge="1" parent="1" source="P1_2" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;fontStyle=1;labelBackgroundColor=#f0f9ff;labelBorderColor=#bae6fd;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="P1_3" value="Vektor 468 Landmark &amp;amp; Count">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p1_3_4" edge="1" parent="1" source="P1_3" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#d97706;strokeWidth=2;fontColor=#b45309;fontSize=10;fontStyle=1;labelBackgroundColor=#fffbeb;labelBorderColor=#fde68a;exitX=0.3;exitY=1;entryX=0.7;entryY=0;" target="P1_4" value="Snapshot Wajah Sah (Count = 1)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p1_4_d4" edge="1" parent="1" source="P1_4" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#d97706;strokeWidth=2;fontColor=#b45309;fontSize=10;fontStyle=1;labelBackgroundColor=#fffbeb;labelBorderColor=#fde68a;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="D4_L2_P1" value="Simpan Buffer Wajah Acuan">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p1_4_5" edge="1" parent="1" source="P1_4" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;labelBackgroundColor=#ecfdf5;labelBorderColor=#a7f3d0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="P1_5" value="Sinyal Otorisasi Sesi Sah">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p1_5_e1" edge="1" parent="1" source="P1_5" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;labelBackgroundColor=#ecfdf5;labelBorderColor=#a7f3d0;exitX=1;exitY=0.5;entryX=0;entryY=0.65;" target="E1_L2_P1" value="Buka Dashboard Analitik">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p1_3_rej" edge="1" parent="1" source="P1_3" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#dc2626;strokeWidth=2;fontColor=#991b1b;fontSize=10;fontStyle=1;labelBackgroundColor=#fef2f2;labelBorderColor=#fecaca;exitX=1;exitY=0.3;entryX=0;entryY=0.15;" target="E1_L2_P1" value="Auto-Reject (Count 0 atau &amp;gt;1)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="TO-BE Level 2 - P2.0 (Ingesti &amp; Audit Kualitas)" id="LblbXh7tClRlRwuVw3qj">
+    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="1850" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t_l2_p2" parent="1" style="html=1;text;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" value="&lt;div style=&quot;font-size:20px;font-weight:bold;color:#0f172a;&quot;&gt;DATA FLOW DIAGRAM (DFD) LEVEL 2 — PROSES 2.0 (TO-BE)&lt;/div&gt;&lt;div style=&quot;font-size:13px;color:#64748b;margin-top:4px;&quot;&gt;Dekomposisi Sub-Sistem Ingesti Vektor, Pemetaan Sinonim BPS &amp;amp; Evaluasi Kualitas Data DuckDB&lt;/div&gt;" vertex="1">
+          <mxGeometry height="50" width="1050" x="450" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="E1_L2_P2" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size: 12px; color: rgb(0, 0, 0); font-weight: bold;&quot;&gt;&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(237, 237, 237)); font-size: 16px; background-color: transparent;&quot;&gt;OPERATOR DATA / ANALIS&lt;/span&gt;&lt;/div&gt; &lt;hr style=&quot;border: 1px solid rgb(0, 122, 204); margin: 10px 0px;&quot;&gt; &lt;div style=&quot;text-align: left; font-size: 11px; line-height: 1.6; color: rgb(0, 0, 0); padding: 0px 8px;&quot;&gt; • Mengunggah berkas mentah DTSEN&lt;br&gt; • Menjalankan filter dinamis &amp;amp; pencarian&lt;br&gt; • Meninjau tabel data ter-masking PII&lt;br&gt; • Menganalisis metrik kualitas data&lt;br&gt; • Mengunduh paket ZIP arsip &amp;amp; log audit&lt;br&gt; • Menerima notifikasi peringatan layar &lt;/div&gt;" vertex="1">
+          <mxGeometry height="480" width="230" x="50" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="D1_L2_P2" parent="1" style="shape=partialRectangle;right=0;left=0;html=1;fillColor=#0f172a;strokeColor=#38bdf8;strokeWidth=2;fontColor=#ffffff;align=center;verticalAlign=middle;" value="&lt;b style=&quot;font-size:12px;color:#38bdf8;&quot;&gt;D1&lt;/b&gt; | &lt;b&gt;Folder Sumber DTSEN (src-dtsen/)&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px;color:#94a3b8;&quot;&gt;File mentah CSV / XLSX (13M+ baris)&lt;/span&gt;" vertex="1">
+          <mxGeometry height="55" width="280" x="340" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="D2_L2_P2" parent="1" style="shape=partialRectangle;right=0;left=0;html=1;fillColor=#3b0764;strokeColor=#c084fc;strokeWidth=2;fontColor=#ffffff;align=center;verticalAlign=middle;" value="&lt;b style=&quot;font-size:12px;color:#c084fc;&quot;&gt;D2&lt;/b&gt; | &lt;b&gt;Tabel Kolumnar (dtsen_data DuckDB)&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px;color:#e9d5ff;&quot;&gt;Dataset 48 kolom bersih siap query&lt;/span&gt;" vertex="1">
+          <mxGeometry height="55" width="320" x="1050" y="680" as="geometry" />
+        </mxCell>
+        <mxCell id="D3_L2_P2" parent="1" style="shape=partialRectangle;right=0;left=0;html=1;fillColor=#4c0519;strokeColor=#fb7185;strokeWidth=2;fontColor=#ffffff;align=center;verticalAlign=middle;" value="&lt;b style=&quot;font-size:12px;color:#fb7185;&quot;&gt;D3&lt;/b&gt; | &lt;b&gt;Log Audit Kualitas (quality_audit_logs)&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px;color:#fecdd3;&quot;&gt;Rekam baris anomali Critical &amp;amp; Warning DuckDB&lt;/span&gt;" vertex="1">
+          <mxGeometry height="55" width="320" x="1420" y="680" as="geometry" />
+        </mxCell>
+        <mxCell id="P2_1" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;2.1&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Scan Direktori &amp;amp; Validasi Berkas&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Scan folder lokal src-dtsen/&lt;br&gt; • Cek eksistensi, ekstensi, &amp;amp; ukuran berkas&lt;br&gt; • Validasi permission file read-only &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="260" x="340" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="P2_2" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;2.2&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Streaming PyArrow Chunking Reader&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Fast zero-copy PyArrow CSV/XLSX reader&lt;br&gt; • Streaming batch chunk (500k-1M baris/batch)&lt;br&gt; • Kecepatan &amp;gt; 1.5 Juta baris/detik &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="270" x="670" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="P2_3" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;2.3&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Synonym Header Mapping BPS&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Kamus sinonim 48 variabel individu BPS&lt;br&gt; • Kamus 52 variabel keluarga (KK)&lt;br&gt; • Standarisasi nama atribut kolom seragam &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="270" x="1010" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="P2_4" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;2.4&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Rule Engine Evaluasi Kualitas Data&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Cek NIK == 16 digit &amp;amp; Nama regex valid&lt;br&gt; • Cek Desil (1-10) &amp;amp; Usia (0-120)&lt;br&gt; • Klasifikasi: Valid, Warning, Critical &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="270" x="1350" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="P2_5" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;2.5&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Dual-Table Batch Ingestion&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Batch insert clean data ke dtsen_data&lt;br&gt; • Batch log anomali ke quality_audit_logs&lt;br&gt; • Kompresi kolumnar vektor DuckDB &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="280" x="1200" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="P2_6" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;2.6&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;KPI Calculator &amp;amp; Progress Notifier&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Agregasi baris Valid, Warning, Critical&lt;br&gt; • Estimasi kardinalitas KK unik via HyperLogLog&lt;br&gt; • Update import_progress.json &amp;amp; UI bar &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="270" x="670" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p2_scan" edge="1" parent="1" source="E1_L2_P2" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;fontStyle=1;labelBackgroundColor=#f0f9ff;labelBorderColor=#bae6fd;exitX=1;exitY=0.15;entryX=0;entryY=0.5;" target="P2_1" value="Perintah Trigger Impor">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p2_d1" edge="1" parent="1" source="D1_L2_P2" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;fontStyle=1;labelBackgroundColor=#f0f9ff;labelBorderColor=#bae6fd;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="P2_1" value="File Mentah CSV/XLSX">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p2_1_2" edge="1" parent="1" source="P2_1" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;fontStyle=1;labelBackgroundColor=#f0f9ff;labelBorderColor=#bae6fd;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="P2_2" value="Valid File Pointer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p2_2_3" edge="1" parent="1" source="P2_2" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;fontStyle=1;labelBackgroundColor=#f0f9ff;labelBorderColor=#bae6fd;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="P2_3" value="Raw PyArrow Table Batch">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p2_3_4" edge="1" parent="1" source="P2_3" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;fontStyle=1;labelBackgroundColor=#f0f9ff;labelBorderColor=#bae6fd;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="P2_4" value="Standardized 48-Column Chunks">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p2_4_5" edge="1" parent="1" source="P2_4" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;labelBackgroundColor=#ecfdf5;labelBorderColor=#a7f3d0;exitX=0.5;exitY=1;entryX=0.7;entryY=0;" target="P2_5" value="Audit Flagged Batches">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p2_5_d2" edge="1" parent="1" source="P2_5" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;labelBackgroundColor=#ecfdf5;labelBorderColor=#a7f3d0;exitX=0.3;exitY=1;entryX=0.5;entryY=0;" target="D2_L2_P2" value="Clean Vector Pages">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p2_5_d3" edge="1" parent="1" source="P2_5" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#dc2626;strokeWidth=2;fontColor=#991b1b;fontSize=10;fontStyle=1;labelBackgroundColor=#fef2f2;labelBorderColor=#fecaca;exitX=0.8;exitY=1;entryX=0.5;entryY=0;" target="D3_L2_P2" value="Audit Error Rows">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p2_5_6" edge="1" parent="1" source="P2_5" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;labelBackgroundColor=#ecfdf5;labelBorderColor=#a7f3d0;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" target="P2_6" value="Metrik Batch Selesai">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p2_6_e1" edge="1" parent="1" source="P2_6" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;labelBackgroundColor=#ecfdf5;labelBorderColor=#a7f3d0;exitX=0;exitY=0.5;entryX=1;entryY=0.65;" target="E1_L2_P2" value="Progress &amp;amp; KPI Summary">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+        <diagram id="dfd_tobe_level_2_p3" name="TO-BE Level 2 - P3.0 (Analitik &amp; PII Masking)">
+    <mxGraphModel dx="2100" dy="1100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2100" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t_l2_p3_enh" value="&lt;div style=&quot;font-size:20px;font-weight:bold;color:#0f172a;&quot;&gt;DATA FLOW DIAGRAM (DFD) LEVEL 2 — PROSES 3.0 (TO-BE)&lt;/div&gt;&lt;div style=&quot;font-size:13px;color:#64748b;margin-top:4px;&quot;&gt;Dekomposisi Sub-Sistem Pemrosesan Analitik: Data Mikro (Transliterasi FK), PII Masking &amp;amp; Agregasi Wilayah (7 Metrik)&lt;/div&gt;" style="html=1;text;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="500" y="30" width="1200" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="E1_L2_P3" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;ENTITAS LUAR&lt;/div&gt;
+&lt;div style=&quot;font-size:16px;font-weight:bold;margin-top:3px;color:#000000;&quot;&gt;OPERATOR DATA / ANALIS&lt;/div&gt;
+&lt;hr style=&quot;border:1px solid #007ACC;margin:10px 0;&quot;&gt;
+&lt;div style=&quot;text-align:left;font-size:11px;line-height:1.6;color:#000000;padding:0 8px;&quot;&gt;
+• Mengunggah berkas mentah DTSEN&lt;br&gt;
+• Memilih Modul: Data Mikro vs Statistik Wilayah&lt;br&gt;
+• Menjalankan filter dinamis &amp;amp; pencarian NIK/KK&lt;br&gt;
+• Meninjau data mikro terpadu (Transliterasi Label FK)&lt;br&gt;
+• Menganalisis agregasi wilayah (7 Metrik Statistik)&lt;br&gt;
+• Mengunduh paket ZIP arsip olahan &amp;amp; log audit&lt;br&gt;
+• Menerima notifikasi peringatan layar
+&lt;/div&gt;" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="240" width="250" height="650" as="geometry" />
+        </mxCell>
+        <mxCell id="D2_L2_P3" value="&lt;b style=&quot;font-size:12px;color:#c084fc;&quot;&gt;D2&lt;/b&gt; | &lt;b&gt;Tabel Kolumnar (dtsen_data DuckDB)&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px;color:#e9d5ff;&quot;&gt;Dataset 48 variabel ternormalisasi (Vector Pages)&lt;/span&gt;" style="shape=partialRectangle;right=0;left=0;html=1;fillColor=#3b0764;strokeColor=#c084fc;strokeWidth=2;fontColor=#ffffff;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="750" y="90" width="340" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="D_REF_KAMUS" value="&lt;b style=&quot;font-size:12px;color:#38bdf8;&quot;&gt;REF&lt;/b&gt; | &lt;b&gt;Kamus Referensi Kode (referensi_kamus_data)&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px;color:#bae6fd;&quot;&gt;Pemetaan Kode Numerik ke Label Deskriptif&lt;/span&gt;" style="shape=partialRectangle;right=0;left=0;html=1;fillColor=#0369a1;strokeColor=#38bdf8;strokeWidth=2;fontColor=#ffffff;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="90" width="340" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="P3_1" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;3.1&lt;/div&gt;
+&lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Request Query Parser &amp;amp; Modul Dispatcher&lt;/div&gt;
+&lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt;
+&lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt;
+• Parse pilihan modul: Data Mikro / Statistik Wilayah&lt;br&gt;
+• Parse filter: NIK, KK, Desil, Rentang Usia/Gaji&lt;br&gt;
+• Sanitasi parameter cegah SQL Injection
+&lt;/div&gt;" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="240" width="280" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="P3_2" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;3.2&lt;/div&gt;
+&lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Memory-Mapped Vector Slicing Engine&lt;/div&gt;
+&lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt;
+&lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt;
+• Eksekusi query teroptimasi DuckDB zero-copy&lt;br&gt;
+• Kecepatan respons &amp;lt; 0.05 detik pada 13M+ baris&lt;br&gt;
+• Pisahkan aliran: Record Individual vs Aggregation
+&lt;/div&gt;" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="750" y="240" width="300" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="P3_3" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;3.3&lt;/div&gt;
+&lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Dynamic PII Masking Transformer&lt;/div&gt;
+&lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt;
+&lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt;
+• NIK: 3201************ (4 digit awal)&lt;br&gt;
+• Nama: B*** S****** (huruf pertama tiap kata)&lt;br&gt;
+• Gaji: Rp 8.xxx.xxx | Alamat: sensor parsial
+&lt;/div&gt;" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="1160" y="240" width="280" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="P3_4" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;3.4&lt;/div&gt;
+&lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Transliterasi FK &amp;amp; Metadata Label Mapper&lt;/div&gt;
+&lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt;
+&lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt;
+• Ubah kode numerik menjadi label deskriptif:&lt;br&gt;
+  - Air Minum: '1' &amp;rarr; 'Kemasan Bermerk', '2' &amp;rarr; 'Sumur'&lt;br&gt;
+  - Lantai: '01' &amp;rarr; 'Marmer', '02' &amp;rarr; 'Keramik'&lt;br&gt;
+  - Gender: '1' &amp;rarr; 'Laki-Laki', '2' &amp;rarr; 'Perempuan'&lt;br&gt;
+• Hasilkan Master Record Mikro Terpadu
+&lt;/div&gt;" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="1540" y="240" width="310" height="135" as="geometry" />
+        </mxCell>
+        <mxCell id="P3_5" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;3.5&lt;/div&gt;
+&lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Dynamic Regional Aggregator (7 Metrik)&lt;/div&gt;
+&lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt;
+&lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt;
+• Agregasi multi-level: Kab/Kota &amp;rarr; Kec &amp;rarr; Desa/Kel&lt;br&gt;
+• 7 Rumus Metrik Statistik Terpilih:&lt;br&gt;
+  - COUNT (Jiwa/KK), SUM (Finansial), AVG (Rata-rata)&lt;br&gt;
+  - MIN, MAX, MEDIAN, MODUS Distribusi&lt;br&gt;
+• Hasilkan Rangkuman Tabel Statistik Wilayah
+&lt;/div&gt;" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="1160" y="480" width="320" height="135" as="geometry" />
+        </mxCell>
+        <mxCell id="P3_6" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;3.6&lt;/div&gt;
+&lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Dual-Module View &amp;amp; Navigation Generator&lt;/div&gt;
+&lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt;
+&lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt;
+• Render Tab 1: Grid Data Mikro Terpadu (Transliterasi FK)&lt;br&gt;
+• Render Tab 2: Tabel Agregasi Statistik Wilayah Dinamis&lt;br&gt;
+• Transmisi tampilan aman ke browser Operator
+&lt;/div&gt;" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="650" y="480" width="330" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p3_filter" value="Kriteria Filter, Modul &amp;amp; Metrik" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#7c3aed;strokeWidth=2;fontColor=#6d28d9;fontSize=10;fontStyle=1;labelBackgroundColor=#f5f3ff;labelBorderColor=#ddd6fe;exitX=1;exitY=0.15;entryX=0;entryY=0.5;" edge="1" parent="1" source="E1_L2_P3" target="P3_1">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_l2_p3_1_2" value="Sanitized Query AST &amp;amp; Target Modul" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#7c3aed;strokeWidth=2;fontColor=#6d28d9;fontSize=10;fontStyle=1;labelBackgroundColor=#f5f3ff;labelBorderColor=#ddd6fe;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="P3_1" target="P3_2">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_l2_p3_2_d2" value="Direct Table Scan" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#7c3aed;strokeWidth=2;fontColor=#6d28d9;fontSize=10;fontStyle=1;labelBackgroundColor=#f5f3ff;labelBorderColor=#ddd6fe;exitX=0.3;exitY=0;entryX=0.3;entryY=1;" edge="1" parent="1" source="P3_2" target="D2_L2_P3">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_l2_p3_d2_2" value="Slices Data Mentah Terpilih" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#7c3aed;strokeWidth=2;fontColor=#6d28d9;fontSize=10;fontStyle=1;labelBackgroundColor=#f5f3ff;labelBorderColor=#ddd6fe;exitX=0.7;exitY=1;entryX=0.7;entryY=0;" edge="1" parent="1" source="D2_L2_P3" target="P3_2">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_l2_p3_2_3" value="Filtered Micro Records" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#7c3aed;strokeWidth=2;fontColor=#6d28d9;fontSize=10;fontStyle=1;labelBackgroundColor=#f5f3ff;labelBorderColor=#ddd6fe;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="P3_2" target="P3_3">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_l2_p3_3_4" value="Masked Individual Records" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#7c3aed;strokeWidth=2;fontColor=#6d28d9;fontSize=10;fontStyle=1;labelBackgroundColor=#f5f3ff;labelBorderColor=#ddd6fe;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="P3_3" target="P3_4">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_l2_p3_dref_4" value="Tabel Referensi Kode &amp;amp; Label" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;fontStyle=1;labelBackgroundColor=#f0f9ff;labelBorderColor=#bae6fd;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="D_REF_KAMUS" target="P3_4">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_l2_p3_2_5" value="Raw Numeric &amp;amp; Region Vector Stream" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#7c3aed;strokeWidth=2;fontColor=#6d28d9;fontSize=10;fontStyle=1;labelBackgroundColor=#f5f3ff;labelBorderColor=#ddd6fe;exitX=0.9;exitY=1;entryX=0.1;entryY=0;" edge="1" parent="1" source="P3_2" target="P3_5">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="1020" y="420" /><mxPoint x="1192" y="420" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_l2_p3_4_6" value="Master View Data Mikro (Transliterasi FK)" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#7c3aed;strokeWidth=2;fontColor=#6d28d9;fontSize=10;fontStyle=1;labelBackgroundColor=#f5f3ff;labelBorderColor=#ddd6fe;exitX=0.5;exitY=1;entryX=0.9;entryY=0;" edge="1" parent="1" source="P3_4" target="P3_6">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="1695" y="440" /><mxPoint x="947" y="440" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_l2_p3_5_6" value="Tabel Rekap Agregasi Wilayah (7 Metrik)" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#7c3aed;strokeWidth=2;fontColor=#6d28d9;fontSize=10;fontStyle=1;labelBackgroundColor=#f5f3ff;labelBorderColor=#ddd6fe;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" edge="1" parent="1" source="P3_5" target="P3_6">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_l2_p3_6_e1" value="Render Tab Data Mikro &amp;amp; Statistik Wilayah" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;labelBackgroundColor=#ecfdf5;labelBorderColor=#a7f3d0;exitX=0;exitY=0.5;entryX=1;entryY=0.65;" edge="1" parent="1" source="P3_6" target="E1_L2_P3">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram><diagram name="TO-BE Level 2 - P4.0 (Guard Loop &amp; Anti-Surfing)" id="jMNiBaCoA0x5pWxrQvvd">
+    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="1850" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t_l2_p4" parent="1" style="html=1;text;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" value="&lt;div style=&quot;font-size:20px;font-weight:bold;color:#0f172a;&quot;&gt;DATA FLOW DIAGRAM (DFD) LEVEL 2 — PROSES 4.0 (TO-BE)&lt;/div&gt;&lt;div style=&quot;font-size:13px;color:#64748b;margin-top:4px;&quot;&gt;Dekomposisi Sub-Sistem Pemantauan Keamanan Real-Time (Biometric Guard Loop &amp;amp; Anti-Shoulder Surfing)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="50" width="1100" x="450" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="E2_L2_P4" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size: 12px; color: rgb(0, 0, 0); font-weight: bold;&quot;&gt;&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(237, 237, 237)); font-size: 15px; background-color: transparent;&quot;&gt;SENSOR KAMERA / WEBCAM&lt;/span&gt;&lt;/div&gt; &lt;hr style=&quot;border: 1px solid rgb(0, 122, 204); margin: 8px 0px;&quot;&gt; &lt;div style=&quot;text-align: left; font-size: 11px; line-height: 1.5; color: rgb(0, 0, 0); padding: 0px 6px;&quot;&gt; • Headless OpenCV Capture (DSHOW)&lt;br&gt; • Frame visual berkala (loop 0.2s)&lt;br&gt; • Snapshot verifikasi biometrik &lt;/div&gt;" vertex="1">
+          <mxGeometry height="180" width="230" x="50" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="D4_L2_P4" parent="1" style="shape=partialRectangle;right=0;left=0;html=1;fillColor=#451a03;strokeColor=#f59e0b;strokeWidth=2;fontColor=#ffffff;align=center;verticalAlign=middle;" value="&lt;b style=&quot;font-size:12px;color:#f59e0b;&quot;&gt;D4&lt;/b&gt; | &lt;b&gt;Kredensial Sesi (sesi_wajah_aktif.jpg / RAM)&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px;color:#fef08a;&quot;&gt;Profil geometri wajah pemilik sah sesi aktif&lt;/span&gt;" vertex="1">
+          <mxGeometry height="55" width="340" x="720" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="E3_L2_P4" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size: 12px; color: rgb(0, 0, 0); font-weight: bold;&quot;&gt;&lt;br&gt;&lt;/div&gt; &lt;div style=&quot;font-size: 15px; font-weight: bold; margin-top: 2px; color: rgb(0, 0, 0);&quot;&gt;SISTEM OPERASI WINDOWS&lt;/div&gt; &lt;hr style=&quot;border: 1px solid rgb(0, 122, 204); margin: 8px 0px;&quot;&gt; &lt;div style=&quot;text-align: left; font-size: 11px; line-height: 1.5; color: rgb(0, 0, 0); padding: 0px 6px;&quot;&gt; • Windows API (user32.dll)&lt;br&gt; • Layar LockWorkStation (Win+L)&lt;br&gt; • Sinyal OS (SIGTERM / atexit) &lt;/div&gt;" vertex="1">
+          <mxGeometry height="180" width="230" x="1450" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="E1_L2_P4" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size: 12px; color: rgb(0, 0, 0); font-weight: bold;&quot;&gt;&lt;br&gt;&lt;/div&gt; &lt;div style=&quot;font-size: 16px; font-weight: bold; margin-top: 3px; color: rgb(0, 0, 0);&quot;&gt;OPERATOR DATA / ANALIS&lt;/div&gt; &lt;hr style=&quot;border: 1px solid rgb(0, 122, 204); margin: 10px 0px;&quot;&gt; &lt;div style=&quot;text-align: left; font-size: 11px; line-height: 1.6; color: rgb(0, 0, 0); padding: 0px 8px;&quot;&gt; • Mengunggah berkas mentah DTSEN&lt;br&gt; • Menjalankan filter dinamis &amp;amp; pencarian&lt;br&gt; • Meninjau tabel data ter-masking PII&lt;br&gt; • Menganalisis metrik kualitas data&lt;br&gt; • Mengunduh paket ZIP arsip &amp;amp; log audit&lt;br&gt; • Menerima notifikasi peringatan layar &lt;/div&gt;" vertex="1">
+          <mxGeometry height="240" width="230" x="1450" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="P4_1" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;4.1&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Polling Frame Loop 0.2s (OpenCV)&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Polling periodik non-blocking setiap 200ms&lt;br&gt; • Beban CPU sangat ringan (&amp;lt; 3%)&lt;br&gt; • Stream frame RGB ke pipeline evaluasi &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="260" x="340" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="P4_2" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;4.2&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Iris Tracking &amp;amp; Face Matcher&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Deteksi orientasi pandangan mata (gaze)&lt;br&gt; • Komparasi kemiripan terhadap D4 baseline&lt;br&gt; • Klasifikasi status visual frame aktif &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="280" x="720" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="P4_3" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;4.3&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Absence Detector (User Pergi &amp;gt; 4s)&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Deteksi 0 wajah pada frame berkala&lt;br&gt; • Stopwatch delta waktu ketidakhadiran&lt;br&gt; • Trigger lockout jika durasi &amp;gt; 4.0 detik &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="270" x="1080" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="P4_4" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;4.4&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Shoulder Surfing Detector (Asing &amp;gt; 1s)&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Deteksi kemunculan wajah kedua / asing&lt;br&gt; • Evaluasi tatapan mata asing mengintip ke layar&lt;br&gt; • Trigger lockout instan jika durasi &amp;gt; 1.0 detik &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="270" x="1080" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="P4_5" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;4.5&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Security Actuator &amp;amp; Lockdown Controller&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Eksekusi API user32.LockWorkStation (Win+L)&lt;br&gt; • Tampilkan overlay Red Lock &amp;amp; Blur UI&lt;br&gt; • Freeze seluruh interaksi data secara instan &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="270" x="1080" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p4_stream" edge="1" parent="1" source="E2_L2_P4" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#d97706;strokeWidth=2;fontColor=#b45309;fontSize=10;fontStyle=1;labelBackgroundColor=#fffbeb;labelBorderColor=#fde68a;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="P4_1" value="Continuous Video Frames">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p4_1_2" edge="1" parent="1" source="P4_1" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#d97706;strokeWidth=2;fontColor=#b45309;fontSize=10;fontStyle=1;labelBackgroundColor=#fffbeb;labelBorderColor=#fde68a;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="P4_2" value="Synchronized Frame Buffers">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p4_d4_2" edge="1" parent="1" source="D4_L2_P4" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#d97706;strokeWidth=2;fontColor=#b45309;fontSize=10;fontStyle=1;labelBackgroundColor=#fffbeb;labelBorderColor=#fde68a;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="P4_2" value="Baca Profil Geometri Acuan">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p4_2_3" edge="1" parent="1" source="P4_2" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#dc2626;strokeWidth=2;fontColor=#991b1b;fontSize=10;fontStyle=1;labelBackgroundColor=#fef2f2;labelBorderColor=#fecaca;exitX=1;exitY=0.3;entryX=0;entryY=0.5;" target="P4_3" value="Status: Wajah Hilang (Count 0)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p4_2_4" edge="1" parent="1" source="P4_2" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#dc2626;strokeWidth=2;fontColor=#991b1b;fontSize=10;fontStyle=1;labelBackgroundColor=#fef2f2;labelBorderColor=#fecaca;exitX=1;exitY=0.7;entryX=0;entryY=0.5;" target="P4_4" value="Status: Wajah Asing (Count &amp;gt; 1)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p4_3_5" edge="1" parent="1" source="P4_3" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#dc2626;strokeWidth=2;fontColor=#991b1b;fontSize=10;fontStyle=1;labelBackgroundColor=#fef2f2;labelBorderColor=#fecaca;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="P4_5" value="Timeout Terpenuhi (&amp;gt; 4s)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1215" y="305" />
+              <mxPoint x="1215" y="470" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_l2_p4_4_5" edge="1" parent="1" source="P4_4" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#dc2626;strokeWidth=2;fontColor=#991b1b;fontSize=10;fontStyle=1;labelBackgroundColor=#fef2f2;labelBorderColor=#fecaca;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="P4_5" value="Surfer Terdeteksi (&amp;gt; 1s)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p4_5_e3" edge="1" parent="1" source="P4_5" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#dc2626;strokeWidth=2;fontColor=#991b1b;fontSize=10;fontStyle=1;labelBackgroundColor=#fef2f2;labelBorderColor=#fecaca;exitX=1;exitY=0.3;entryX=0;entryY=0.6;" target="E3_L2_P4" value="Instruksi Win+L (user32.dll)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1390" y="513" />
+              <mxPoint x="1390" y="288" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_l2_p4_5_e1" edge="1" parent="1" source="P4_5" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#dc2626;strokeWidth=2;fontColor=#991b1b;fontSize=10;fontStyle=1;labelBackgroundColor=#fef2f2;labelBorderColor=#fecaca;exitX=1;exitY=0.7;entryX=0;entryY=0.5;" target="E1_L2_P4" value="Red Alert Banner &amp;amp; Blur UI">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="TO-BE Level 2 - P5.0 (Ekspor Paket ZIP)" id="gp1PqFULQu7ECzpzbx2-">
+    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="1800" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t_l2_p5" parent="1" style="html=1;text;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" value="&lt;div style=&quot;font-size:20px;font-weight:bold;color:#0f172a;&quot;&gt;DATA FLOW DIAGRAM (DFD) LEVEL 2 — PROSES 5.0 (TO-BE)&lt;/div&gt;&lt;div style=&quot;font-size:13px;color:#64748b;margin-top:4px;&quot;&gt;Dekomposisi Sub-Sistem Pengelolaan Ekspor, Packaging ZIP &amp;amp; Pengarsipan Terpadu&lt;/div&gt;" vertex="1">
+          <mxGeometry height="50" width="1050" x="450" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="E1_L2_P5" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size: 12px; color: rgb(0, 0, 0); font-weight: bold;&quot;&gt;&lt;br&gt;&lt;/div&gt; &lt;div style=&quot;font-size: 16px; font-weight: bold; margin-top: 3px; color: rgb(0, 0, 0);&quot;&gt;OPERATOR DATA / ANALIS&lt;/div&gt; &lt;hr style=&quot;border: 1px solid rgb(0, 122, 204); margin: 10px 0px;&quot;&gt; &lt;div style=&quot;text-align: left; font-size: 11px; line-height: 1.6; color: rgb(0, 0, 0); padding: 0px 8px;&quot;&gt; • Mengunggah berkas mentah DTSEN&lt;br&gt; • Menjalankan filter dinamis &amp;amp; pencarian&lt;br&gt; • Meninjau tabel data ter-masking PII&lt;br&gt; • Menganalisis metrik kualitas data&lt;br&gt; • Mengunduh paket ZIP arsip &amp;amp; log audit&lt;br&gt; • Menerima notifikasi peringatan layar &lt;/div&gt;" vertex="1">
+          <mxGeometry height="480" width="230" x="50" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="D2_L2_P5" parent="1" style="shape=partialRectangle;right=0;left=0;html=1;fillColor=#3b0764;strokeColor=#c084fc;strokeWidth=2;fontColor=#ffffff;align=center;verticalAlign=middle;" value="&lt;b style=&quot;font-size:12px;color:#c084fc;&quot;&gt;D2&lt;/b&gt; | &lt;b&gt;Tabel Kolumnar (dtsen_data DuckDB)&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px;color:#e9d5ff;&quot;&gt;Dataset bersih terfilter&lt;/span&gt;" vertex="1">
+          <mxGeometry height="55" width="280" x="350" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="D3_L2_P5" parent="1" style="shape=partialRectangle;right=0;left=0;html=1;fillColor=#4c0519;strokeColor=#fb7185;strokeWidth=2;fontColor=#ffffff;align=center;verticalAlign=middle;" value="&lt;b style=&quot;font-size:12px;color:#fb7185;&quot;&gt;D3&lt;/b&gt; | &lt;b&gt;Log Audit Kualitas (quality_audit_logs)&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px;color:#fecdd3;&quot;&gt;Rekam log anomali kualitas&lt;/span&gt;" vertex="1">
+          <mxGeometry height="55" width="290" x="710" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="D5_L2_P5" parent="1" style="shape=partialRectangle;right=0;left=0;html=1;fillColor=#064e3b;strokeColor=#34d399;strokeWidth=2;fontColor=#ffffff;align=center;verticalAlign=middle;" value="&lt;b style=&quot;font-size:12px;color:#34d399;&quot;&gt;D5&lt;/b&gt; | &lt;b&gt;Repositori Ekspor (src-export/ &amp;amp; ZIP)&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px;color:#bbf7d0;&quot;&gt;Paket ZIP terkompresi permanen&lt;/span&gt;" vertex="1">
+          <mxGeometry height="55" width="300" x="1440" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="P5_1" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;5.1&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Query Fetcher Data Bersih &amp;amp; Anomali&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Fetch dataset bersih dari dtsen_data (D2)&lt;br&gt; • Fetch rekaman error dari quality_audit_logs (D3)&lt;br&gt; • Filter sesuai parameter aktif sesi &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="280" x="350" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="P5_2" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;5.2&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;CSV Serializer &amp;amp; Data Sanitizer&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Tulis berkas data_dtsen.csv (Clean CSV)&lt;br&gt; • Tulis berkas audit_error.csv (Anomali Log)&lt;br&gt; • Zero-copy memory buffer streaming &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="280" x="710" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="P5_3" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;5.3&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Audit Metadata Manifest Generator&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Buat metadata.txt berisi log sesi integritas&lt;br&gt; • Catat waktu ekspor, operator, filter used&lt;br&gt; • Generate checksum hash integritas berkas &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="280" x="1060" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="P5_4" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;5.4&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;ZIP Packaging &amp;amp; Compression Engine&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Packaging 3 berkas (Clean, Error, Metadata)&lt;br&gt; • Kompresi algoritma DEFLATE tingkat tinggi&lt;br&gt; • Simpan arsip resmi ke folder src-export/ &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="280" x="1060" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="P5_5" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;5.5&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Streaming Download Dispatcher&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Set HTTP Header: application/zip&lt;br&gt; • Stream berkas langsung ke browser operator&lt;br&gt; • Log status pengunduhan selesai &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="280" x="540" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p5_req" edge="1" parent="1" source="E1_L2_P5" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;labelBackgroundColor=#ecfdf5;labelBorderColor=#a7f3d0;exitX=1;exitY=0.15;entryX=0;entryY=0.5;" target="P5_1" value="Permintaan Ekspor Paket ZIP">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p5_d2_1" edge="1" parent="1" source="D2_L2_P5" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;labelBackgroundColor=#ecfdf5;labelBorderColor=#a7f3d0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="P5_1" value="Stream Data Bersih">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p5_d3_1" edge="1" parent="1" source="D3_L2_P5" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#dc2626;strokeWidth=2;fontColor=#991b1b;fontSize=10;fontStyle=1;labelBackgroundColor=#fef2f2;labelBorderColor=#fecaca;exitX=0.5;exitY=1;entryX=0.8;entryY=0;" target="P5_1" value="Stream Log Anomali">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="855" y="190" />
+              <mxPoint x="574" y="190" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_l2_p5_1_2" edge="1" parent="1" source="P5_1" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;labelBackgroundColor=#ecfdf5;labelBorderColor=#a7f3d0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="P5_2" value="Raw Data Stream Collections">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p5_2_3" edge="1" parent="1" source="P5_2" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;labelBackgroundColor=#ecfdf5;labelBorderColor=#a7f3d0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="P5_3" value="Formatted CSV Objects">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p5_3_4" edge="1" parent="1" source="P5_3" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;labelBackgroundColor=#ecfdf5;labelBorderColor=#a7f3d0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="P5_4" value="Trio Berkas (CSV + Log + Meta)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p5_4_d5" edge="1" parent="1" source="P5_4" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;labelBackgroundColor=#ecfdf5;labelBorderColor=#a7f3d0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="D5_L2_P5" value="Arsip Paket ZIP Tersimpan">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p5_4_5" edge="1" parent="1" source="P5_4" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;labelBackgroundColor=#ecfdf5;labelBorderColor=#a7f3d0;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" target="P5_5" value="Stream File Unduhan ZIP">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p5_5_e1" edge="1" parent="1" source="P5_5" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;labelBackgroundColor=#ecfdf5;labelBorderColor=#a7f3d0;exitX=0;exitY=0.5;entryX=1;entryY=0.65;" target="E1_L2_P5" value="Kirim File Unduhan ke Browser">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="TO-BE Level 2 - P6.0 (Terminasi &amp; Purge)" id="bwIgcdhJ2RZqRSjVLsci">
+    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="1700" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t_l2_p6" parent="1" style="html=1;text;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" value="&lt;div style=&quot;font-size:20px;font-weight:bold;color:#0f172a;&quot;&gt;DATA FLOW DIAGRAM (DFD) LEVEL 2 — PROSES 6.0 (TO-BE)&lt;/div&gt;&lt;div style=&quot;font-size:13px;color:#64748b;margin-top:4px;&quot;&gt;Dekomposisi Sub-Sistem Terminasi Sesi &amp;amp; Pembersihan Jejak Biometrik (Zero-Trace Purge)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="50" width="1050" x="450" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="E1_L2_P6" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size: 12px; color: rgb(0, 0, 0); font-weight: bold;&quot;&gt;&lt;br&gt;&lt;/div&gt; &lt;div style=&quot;font-size: 16px; font-weight: bold; margin-top: 3px; color: rgb(0, 0, 0);&quot;&gt;OPERATOR DATA / ANALIS&lt;/div&gt; &lt;hr style=&quot;border: 1px solid rgb(0, 122, 204); margin: 10px 0px;&quot;&gt; &lt;div style=&quot;text-align: left; font-size: 11px; line-height: 1.6; color: rgb(0, 0, 0); padding: 0px 8px;&quot;&gt; • Mengunggah berkas mentah DTSEN&lt;br&gt; • Menjalankan filter dinamis &amp;amp; pencarian&lt;br&gt; • Meninjau tabel data ter-masking PII&lt;br&gt; • Menganalisis metrik kualitas data&lt;br&gt; • Mengunduh paket ZIP arsip &amp;amp; log audit&lt;br&gt; • Menerima notifikasi peringatan layar &lt;/div&gt;" vertex="1">
+          <mxGeometry height="200" width="230" x="50" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="E3_L2_P6" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size: 12px; color: rgb(0, 0, 0); font-weight: bold;&quot;&gt;&lt;br&gt;&lt;/div&gt; &lt;div style=&quot;font-size: 15px; font-weight: bold; margin-top: 2px; color: rgb(0, 0, 0);&quot;&gt;SISTEM OPERASI WINDOWS&lt;/div&gt; &lt;hr style=&quot;border: 1px solid rgb(0, 122, 204); margin: 8px 0px;&quot;&gt; &lt;div style=&quot;text-align: left; font-size: 11px; line-height: 1.5; color: rgb(0, 0, 0); padding: 0px 6px;&quot;&gt; • Windows API (user32.dll)&lt;br&gt; • Layar LockWorkStation (Win+L)&lt;br&gt; • Sinyal OS (SIGTERM / atexit) &lt;/div&gt;" vertex="1">
+          <mxGeometry height="200" width="230" x="50" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="D4_L2_P6" parent="1" style="shape=partialRectangle;right=0;left=0;html=1;fillColor=#451a03;strokeColor=#f59e0b;strokeWidth=2;fontColor=#ffffff;align=center;verticalAlign=middle;" value="&lt;b style=&quot;font-size:12px;color:#f59e0b;&quot;&gt;D4&lt;/b&gt; | &lt;b&gt;Kredensial Sesi (sesi_wajah_aktif.jpg / RAM)&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px;color:#fef08a;&quot;&gt;Snapshot file di RAM/disk yang harus dimusnahkan&lt;/span&gt;" vertex="1">
+          <mxGeometry height="60" width="340" x="1200" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="P6_1" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;6.1&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Termination Signal Interceptor&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Tangkap event tutup browser (window.onbeforeunload)&lt;br&gt; • Tangkap handler python atexit / SIGTERM&lt;br&gt; • Cegah proses terminasi sebelum cleanup selesai &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="270" x="360" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="P6_2" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;6.2&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Resource &amp;amp; Hardware Teardown&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • cv2.VideoCapture.release() (Lepas kamera)&lt;br&gt; • Tutup koneksi &amp;amp; cursor DuckDB database&lt;br&gt; • Matikan thread background guard loop &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="270" x="700" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="P6_3" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;6.3&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;Cryptographic Byte Overwrite (0x00)&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • Buka sesi_wajah_aktif.jpg mode r+b&lt;br&gt; • Tuliskan byte 0x00 sebanyak ukuran file penuh&lt;br&gt; • Flush buffer disk I/O seketika &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="270" x="1040" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="P6_4" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#66B2FF;strokeColor=#007ACC;strokeWidth=2;fontColor=#000000;verticalAlign=middle;align=center;shadow=1;" value="&lt;div style=&quot;font-size:12px;color:#000000;font-weight:bold;&quot;&gt;6.4&lt;/div&gt; &lt;div style=&quot;font-size:13px;font-weight:bold;margin-top:2px;color:#000000;&quot;&gt;File Unlink &amp;amp; RAM Cache Purge&lt;/div&gt; &lt;hr style=&quot;border:1px solid #007ACC;margin:5px 0;&quot;&gt; &lt;div style=&quot;font-size:10px;text-align:left;line-height:1.4;color:#000000;&quot;&gt; • os.unlink(sesi_wajah_aktif.jpg) (Hapus permanen)&lt;br&gt; • Garbage collection paksa untuk clear RAM memory&lt;br&gt; • Jaminan Zero-Trace (Tanpa jejak biometrik tersisa) &lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="270" x="1040" y="390" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p6_e1_trig" edge="1" parent="1" source="E1_L2_P6" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#dc2626;strokeWidth=2;fontColor=#991b1b;fontSize=10;fontStyle=1;labelBackgroundColor=#fef2f2;labelBorderColor=#fecaca;exitX=1;exitY=0.5;entryX=0;entryY=0.3;" target="P6_1" value="Perintah Tutup Aplikasi">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p6_e3_sig" edge="1" parent="1" source="E3_L2_P6" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#4f46e5;strokeWidth=2;fontColor=#3730a3;fontSize=10;fontStyle=1;labelBackgroundColor=#eef2ff;labelBorderColor=#c7d2fe;exitX=1;exitY=0.5;entryX=0;entryY=0.7;" target="P6_1" value="Sinyal OS SIGTERM / Shutdown">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p6_1_2" edge="1" parent="1" source="P6_1" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#dc2626;strokeWidth=2;fontColor=#991b1b;fontSize=10;fontStyle=1;labelBackgroundColor=#fef2f2;labelBorderColor=#fecaca;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="P6_2" value="Sinyal Shutdown Terverifikasi">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p6_2_3" edge="1" parent="1" source="P6_2" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#dc2626;strokeWidth=2;fontColor=#991b1b;fontSize=10;fontStyle=1;labelBackgroundColor=#fef2f2;labelBorderColor=#fecaca;exitX=1;exitY=0.3;entryX=0;entryY=0.5;" target="P6_3" value="Perintah Secure Wipe Berkas">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p6_3_d4" edge="1" parent="1" source="P6_3" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#dc2626;strokeWidth=2;fontColor=#991b1b;fontSize=10;fontStyle=1;labelBackgroundColor=#fef2f2;labelBorderColor=#fecaca;exitX=1;exitY=0.5;entryX=0.3;entryY=0;" target="D4_L2_P6" value="Timpa Byte 0x00 ke Berkas">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p6_3_4" edge="1" parent="1" source="P6_3" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#dc2626;strokeWidth=2;fontColor=#991b1b;fontSize=10;fontStyle=1;labelBackgroundColor=#fef2f2;labelBorderColor=#fecaca;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="P6_4" value="Konfirmasi Byte Terhapus">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_p6_4_d4" edge="1" parent="1" source="P6_4" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#dc2626;strokeWidth=2;fontColor=#991b1b;fontSize=10;fontStyle=1;labelBackgroundColor=#fef2f2;labelBorderColor=#fecaca;exitX=1;exitY=0.5;entryX=0.3;entryY=1;" target="D4_L2_P6" value="Unlink Berkas dari Disk &amp;amp; RAM">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="ERD Logikal (DTSEN 2026)" id="OaHepwmMxJ_r5mqAX0oy">
+    <mxGraphModel dx="3300" dy="1400" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2400" pageHeight="1600" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title_erd_1" parent="1" style="html=1;text;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" value="&lt;div style=&quot;font-size:22px;font-weight:bold;color:#0f172a;letter-spacing:-0.5px;&quot;&gt;ENTITY RELATIONSHIP DIAGRAM (ERD) — PADU v1.02&lt;/div&gt;&#10;&lt;div style=&quot;font-size:13px;color:#475569;margin-top:5px;&quot;&gt;Sistem Pengolah &amp;amp; Analisis Data Terpadu (DTSEN 2026 Engine) — Skema Relasi Database Relasional (OLTP)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="1200" x="600" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_box" parent="1" style="html=1;rounded=1;arcSize=10;fillColor=#f8fafc;strokeColor=#94a3b8;strokeWidth=1.5;shadow=1;align=center;verticalAlign=top;spacingTop=8;spacingLeft=10;spacingRight=10;" value="&lt;div style=&quot;font-size:12px;font-weight:bold;color:#1e293b;border-bottom:1px solid #cbd5e1;padding-bottom:4px;margin-bottom:6px;&quot;&gt;KETERANGAN NOTASI &amp;amp; SIMBOL ERD&lt;/div&gt;&#10;&lt;div style=&quot;font-size:11px;line-height:1.6;color:#334155;text-align:left;&quot;&gt;&#10;&lt;span style=&quot;background-color:#fee2e2;color:#991b1b;font-weight:bold;padding:1px 5px;border-radius:3px;&quot;&gt;PK&lt;/span&gt; = Primary Key (Kunci Utama)&lt;br&gt;&#10;&lt;span style=&quot;background-color:#fef3c7;color:#92400e;font-weight:bold;padding:1px 5px;border-radius:3px;&quot;&gt;FK&lt;/span&gt; = Foreign Key (Kunci Tamu)&lt;br&gt;&#10;&lt;span style=&quot;background-color:#e0e7ff;color:#3730a3;font-weight:bold;padding:1px 5px;border-radius:3px;&quot;&gt;UK&lt;/span&gt; = Unique Key (Indeks Unik)&lt;br&gt;&#10;&lt;span style=&quot;background-color:#dcfce7;color:#166534;font-weight:bold;padding:1px 5px;border-radius:3px;&quot;&gt;IDX&lt;/span&gt; = Indexed Column (Optimasi Query)&lt;br&gt;&#10;&lt;b&gt;Relasi&lt;/b&gt;: 1 : N (One-to-Many) dengan &lt;i&gt;ON DELETE CASCADE&lt;/i&gt;&#10;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="240" width="320" x="1910" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_users" parent="1" style="html=1;whiteSpace=wrap;overflow=hidden;rounded=1;arcSize=6;fillColor=#ffffff;strokeColor=#2563eb;strokeWidth=2;shadow=1;verticalAlign=top;" value="&lt;div style=&quot;background-color:#3b82f6;color:#ffffff;font-size:14px;font-weight:bold;padding:8px;border-radius:6px 6px 0 0;text-align:center;&quot;&gt;&#10;  users&#10;&lt;/div&gt;&#10;&lt;div style=&quot;padding:10px;text-align:left;font-size:11px;line-height:1.7;color:#1e293b;background-color:#ffffff;&quot;&gt;&#10;  &lt;div style=&quot;border-bottom:1px solid #f1f5f9;padding:2px 0;&quot;&gt;&lt;b&gt;[PK]&lt;/b&gt; id : &lt;i&gt;BIGINT AUTO_INCREMENT&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div style=&quot;border-bottom:1px solid #f1f5f9;padding:2px 0;&quot;&gt;name : &lt;i&gt;VARCHAR(255)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div style=&quot;border-bottom:1px solid #f1f5f9;padding:2px 0;&quot;&gt;&lt;b&gt;[UK]&lt;/b&gt; email : &lt;i&gt;VARCHAR(255) UNIQUE&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div style=&quot;border-bottom:1px solid #f1f5f9;padding:2px 0;&quot;&gt;email_verified_at : &lt;i&gt;TIMESTAMP NULL&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div style=&quot;border-bottom:1px solid #f1f5f9;padding:2px 0;&quot;&gt;password : &lt;i&gt;VARCHAR(255)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div style=&quot;border-bottom:1px solid #f1f5f9;padding:2px 0;&quot;&gt;remember_token : &lt;i&gt;VARCHAR(100) NULL&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div style=&quot;border-bottom:1px solid #f1f5f9;padding:2px 0;&quot;&gt;created_at : &lt;i&gt;TIMESTAMP&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div style=&quot;padding:2px 0;&quot;&gt;updated_at : &lt;i&gt;TIMESTAMP&lt;/i&gt;&lt;/div&gt;&#10;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="460" width="300" x="1930" y="780" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_demographics" parent="1" style="html=1;whiteSpace=wrap;overflow=hidden;rounded=1;arcSize=6;fillColor=#ffffff;strokeColor=#0284c7;strokeWidth=2;shadow=1;verticalAlign=top;" value="&lt;div style=&quot;background-color:#0284c7;color:#ffffff;font-size:14px;font-weight:bold;padding:8px;border-radius:6px 6px 0 0;text-align:center;&quot;&gt;&#10;  demographics (Stand-alone Analytics)&#10;&lt;/div&gt;&#10;&lt;div style=&quot;padding:10px;text-align:left;font-size:11px;line-height:1.6;color:#1e293b;background-color:#ffffff;&quot;&gt;&#10;  &lt;div style=&quot;border-bottom:1px solid #f1f5f9;padding:2px 0;&quot;&gt;&lt;b&gt;[PK]&lt;/b&gt; id : &lt;i&gt;BIGINT AUTO_INCREMENT&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div style=&quot;border-bottom:1px solid #f1f5f9;padding:2px 0;&quot;&gt;&lt;b&gt;[UK]&lt;/b&gt; nik : &lt;i&gt;VARCHAR(16) UNIQUE&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div style=&quot;border-bottom:1px solid #f1f5f9;padding:2px 0;&quot;&gt;nama_lengkap : &lt;i&gt;VARCHAR(255)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div style=&quot;border-bottom:1px solid #f1f5f9;padding:2px 0;&quot;&gt;jenis_kelamin : &lt;i&gt;ENUM('L','P')&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div style=&quot;border-bottom:1px solid #f1f5f9;padding:2px 0;&quot;&gt;pendidikan_terakhir : &lt;i&gt;ENUM(...)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div style=&quot;border-bottom:1px solid #f1f5f9;padding:2px 0;&quot;&gt;tanggal_lahir : &lt;i&gt;DATE&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div style=&quot;border-bottom:1px solid #f1f5f9;padding:2px 0;&quot;&gt;gaji_bulanan : &lt;i&gt;DECIMAL(12,2)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div style=&quot;border-bottom:1px solid #f1f5f9;padding:2px 0;&quot;&gt;kota_domisili : &lt;i&gt;VARCHAR(255)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div style=&quot;border-bottom:1px solid #f1f5f9;padding:2px 0;&quot;&gt;email : &lt;i&gt;VARCHAR(255)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div style=&quot;border-bottom:1px solid #f1f5f9;padding:2px 0;&quot;&gt;status_pernikahan : &lt;i&gt;ENUM(...)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div style=&quot;border-bottom:1px solid #f1f5f9;padding:2px 0;&quot;&gt;status_kehidupan : &lt;i&gt;VARCHAR(50)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div style=&quot;border-bottom:1px solid #f1f5f9;padding:2px 0;&quot;&gt;created_at / updated_at : &lt;i&gt;TIMESTAMP&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div style=&quot;padding:2px 0;color:#e11d48;&quot;&gt;deleted_at : &lt;i&gt;TIMESTAMP NULL (Soft Delete)&lt;/i&gt;&lt;/div&gt;&#10;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="630" width="270" x="1580" y="380" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_keluargas" parent="1" style="html=1;whiteSpace=wrap;overflow=hidden;rounded=1;arcSize=4;fillColor=#ffffff;strokeColor=#059669;strokeWidth=2.5;shadow=1;verticalAlign=top;" value="&lt;div style=&quot;background-color:#047857;color:#ffffff;font-size:15px;font-weight:bold;padding:10px;border-radius:6px 6px 0 0;text-align:center;&quot;&gt;&#10;  keluargas (Set Data Rumah Tangga - 52 Variabel DTSEN)&#10;&lt;/div&gt;&#10;&lt;div style=&quot;padding:10px 12px;text-align:left;font-size:11px;line-height:1.55;color:#1e293b;background-color:#ffffff;&quot;&gt;&#10;  &lt;div style=&quot;background-color:#f1f5f9;font-weight:bold;color:#475569;padding:3px 6px;margin:3px 0;border-radius:3px;&quot;&gt;IDENTITAS &amp;amp; KUNCI UTAMA&lt;/div&gt;&#10;  &lt;div&gt;&lt;b&gt;[PK]&lt;/b&gt; id : &lt;i&gt;BIGINT AUTO_INCREMENT&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;&lt;b&gt;[UK, IDX]&lt;/b&gt; nomor_kartu_keluarga : &lt;i&gt;VARCHAR(16) UNIQUE&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;nama_kepala_keluarga : &lt;i&gt;VARCHAR(500)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;jumlah_anggota_keluarga : &lt;i&gt;INTEGER DEFAULT 1&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;alamat : &lt;i&gt;VARCHAR(500)&lt;/i&gt;&lt;/div&gt;&#10;  &#10;  &lt;div style=&quot;background-color:#f1f5f9;font-weight:bold;color:#475569;padding:3px 6px;margin:6px 0 3px 0;border-radius:3px;&quot;&gt;WILAYAH ADMINISTRASI&lt;/div&gt;&#10;  &lt;div&gt;kode_provinsi : &lt;i&gt;VARCHAR(2)&lt;/i&gt; | provinsi : &lt;i&gt;VARCHAR(100)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;kode_kabupaten_kota : &lt;i&gt;VARCHAR(4)&lt;/i&gt; | kabupaten_kota : &lt;i&gt;VARCHAR(100)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;kode_kecamatan : &lt;i&gt;VARCHAR(7)&lt;/i&gt; | kecamatan : &lt;i&gt;VARCHAR(100)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;kode_kelurahan_desa : &lt;i&gt;VARCHAR(10)&lt;/i&gt; | kelurahan_desa : &lt;i&gt;VARCHAR(100)&lt;/i&gt;&lt;/div&gt;&#10;&#10;  &lt;div style=&quot;background-color:#f1f5f9;font-weight:bold;color:#475569;padding:3px 6px;margin:6px 0 3px 0;border-radius:3px;&quot;&gt;DESIL KESEJAHTERAAN &amp;amp; BANTUAN&lt;/div&gt;&#10;  &lt;div&gt;&lt;b&gt;[IDX]&lt;/b&gt; desil_nasional : &lt;i&gt;INTEGER (1 - 10)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;desil_provinsi : &lt;i&gt;INTEGER&lt;/i&gt; | desil_kabupaten_kota : &lt;i&gt;INTEGER&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;pbi_nas : &lt;i&gt;VARCHAR(2)&lt;/i&gt; | pbi_pemda : &lt;i&gt;VARCHAR(2)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;id_pelanggan_pln : &lt;i&gt;VARCHAR(255)&lt;/i&gt;&lt;/div&gt;&#10;&#10;  &lt;div style=&quot;background-color:#f1f5f9;font-weight:bold;color:#475569;padding:3px 6px;margin:6px 0 3px 0;border-radius:3px;&quot;&gt;PERUMAHAN &amp;amp; SANITASI&lt;/div&gt;&#10;  &lt;div&gt;status_kepemilikan_rumah : &lt;i&gt;VARCHAR(2)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;jenis_lantai_terluas : &lt;i&gt;VARCHAR(2)&lt;/i&gt; | luas_lantai : &lt;i&gt;INTEGER&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;jenis_dinding_terluas : &lt;i&gt;VARCHAR(2)&lt;/i&gt; | jenis_atap_terluas : &lt;i&gt;VARCHAR(2)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;sumber_air_minum_utama : &lt;i&gt;VARCHAR(2)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;sumber_penerangan_utama : &lt;i&gt;VARCHAR(2)&lt;/i&gt; | daya_terpasang : &lt;i&gt;VARCHAR(2)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;bahan_bakar_utama_memasak : &lt;i&gt;VARCHAR(2)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;fasilitas_bab : &lt;i&gt;VARCHAR(2)&lt;/i&gt; | jenis_kloset : &lt;i&gt;VARCHAR(2)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;pembuangan_akhir_tinja : &lt;i&gt;VARCHAR(2)&lt;/i&gt;&lt;/div&gt;&#10;&#10;  &lt;div style=&quot;background-color:#f1f5f9;font-weight:bold;color:#475569;padding:3px 6px;margin:6px 0 3px 0;border-radius:3px;&quot;&gt;KEPEMILIKAN ASET (1=Ya, 2=Tidak)&lt;/div&gt;&#10;  &lt;div&gt;kepemilikan_aset : &lt;i&gt;INT&lt;/i&gt; | aset_bergerak_tabung_gas : &lt;i&gt;INT&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;aset_bergerak_lemari_es : &lt;i&gt;INT&lt;/i&gt; | aset_bergerak_ac : &lt;i&gt;INT&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;aset_bergerak_tv_datar : &lt;i&gt;INT&lt;/i&gt; | aset_bergerak_pemanas_air : &lt;i&gt;INT&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;aset_bergerak_sepeda_motor : &lt;i&gt;INT&lt;/i&gt; | aset_bergerak_mobil : &lt;i&gt;INT&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;aset_bergerak_komputer_laptop_tablet : &lt;i&gt;INT&lt;/i&gt; | aset_bergerak_smartphone : &lt;i&gt;INT&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;aset_bergerak_emas_perhiasan : &lt;i&gt;INT&lt;/i&gt; | aset_bergerak_perahu / motor : &lt;i&gt;INT&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;aset_tidak_bergerak_lahan_lainnya / rumah_lainnya : &lt;i&gt;INT&lt;/i&gt;&lt;/div&gt;&#10;&#10;  &lt;div style=&quot;background-color:#f1f5f9;font-weight:bold;color:#475569;padding:3px 6px;margin:6px 0 3px 0;border-radius:3px;&quot;&gt;KEPEMILIKAN TERNAK &amp;amp; AUDIT TIMESTAMPS&lt;/div&gt;&#10;  &lt;div&gt;ternak_sapi, kerbau, kuda, babi, kambing_domba : &lt;i&gt;INTEGER DEFAULT 0&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;created_at : &lt;i&gt;TIMESTAMP&lt;/i&gt; | updated_at : &lt;i&gt;TIMESTAMP&lt;/i&gt;&lt;/div&gt;&#10;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="1520" width="460" x="40" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_individus" parent="1" style="html=1;whiteSpace=wrap;overflow=hidden;rounded=1;arcSize=4;fillColor=#ffffff;strokeColor=#4338ca;strokeWidth=2.5;shadow=1;verticalAlign=top;" value="&lt;div style=&quot;background-color:#4338ca;color:#ffffff;font-size:15px;font-weight:bold;padding:10px;border-radius:6px 6px 0 0;text-align:center;&quot;&gt;&#10;  individus (Set Data Anggota Keluarga - 48 Variabel DTSEN)&#10;&lt;/div&gt;&#10;&lt;div style=&quot;padding:10px 12px;text-align:left;font-size:11px;line-height:1.55;color:#1e293b;background-color:#ffffff;&quot;&gt;&#10;  &lt;div style=&quot;background-color:#f1f5f9;font-weight:bold;color:#475569;padding:3px 6px;margin:3px 0;border-radius:3px;&quot;&gt;IDENTITAS POKOK &amp;amp; KUNCI RELASI&lt;/div&gt;&#10;  &lt;div&gt;&lt;b&gt;[PK]&lt;/b&gt; id : &lt;i&gt;BIGINT AUTO_INCREMENT&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;&lt;b&gt;[UK, IDX]&lt;/b&gt; nomor_induk_kependudukan : &lt;i&gt;VARCHAR(16) UNIQUE (NIK)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div style=&quot;color:#b45309;font-weight:bold;&quot;&gt;&lt;b&gt;[FK, IDX]&lt;/b&gt; nomor_kartu_keluarga : &lt;i&gt;VARCHAR(16) -&gt; keluargas.nomor_kartu_keluarga&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;nama : &lt;i&gt;VARCHAR(500)&lt;/i&gt; (Dukung Masking PII di Tampilan)&lt;/div&gt;&#10;  &lt;div&gt;tanggal_lahir : &lt;i&gt;DATE&lt;/i&gt; | usia : &lt;i&gt;INTEGER&lt;/i&gt; | jenis_kelamin : &lt;i&gt;VARCHAR(20)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;status_hubungan_keluarga : &lt;i&gt;VARCHAR(50)&lt;/i&gt; | status_kawin : &lt;i&gt;VARCHAR(50)&lt;/i&gt;&lt;/div&gt;&#10;&#10;  &lt;div style=&quot;background-color:#f1f5f9;font-weight:bold;color:#475569;padding:3px 6px;margin:6px 0 3px 0;border-radius:3px;&quot;&gt;PENDIDIKAN &amp;amp; KETENAGAKERJAAN&lt;/div&gt;&#10;  &lt;div&gt;partisipasi_sekolah : &lt;i&gt;VARCHAR(50)&lt;/i&gt; | jenjang_tertinggi_yang_diduduki : &lt;i&gt;VARCHAR(50)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;kelas_tertinggi_yang_diduduki : &lt;i&gt;VARCHAR(10)&lt;/i&gt; | ijazah_tertinggi : &lt;i&gt;VARCHAR(50)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;status_bekerja : &lt;i&gt;VARCHAR(20)&lt;/i&gt; | lapangan_usaha_pekerjaan_utama : &lt;i&gt;VARCHAR(100)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;status_dalam_pekerjaan_utama : &lt;i&gt;VARCHAR(100)&lt;/i&gt; | kepemilikan_usaha : &lt;i&gt;VARCHAR(20)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;jumlah_usaha : &lt;i&gt;INT&lt;/i&gt; | lapangan_usaha_utama : &lt;i&gt;VARCHAR(100)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;pekerja_dibayar_usaha / pekerja_tidak_dibayar : &lt;i&gt;INTEGER&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;omzet_usaha_utama : &lt;i&gt;VARCHAR(50)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;gaji_bulanan : &lt;i&gt;DECIMAL(15,2)&lt;/i&gt; | gaji : &lt;i&gt;DECIMAL(15,2)&lt;/i&gt;&lt;/div&gt;&#10;&#10;  &lt;div style=&quot;background-color:#f1f5f9;font-weight:bold;color:#475569;padding:3px 6px;margin:6px 0 3px 0;border-radius:3px;&quot;&gt;KESEHATAN, BANSOS &amp;amp; FUNGSIONALITAS DISABILITAS&lt;/div&gt;&#10;  &lt;div&gt;pbi_nas : &lt;i&gt;VARCHAR(2)&lt;/i&gt; | pbi_pemda : &lt;i&gt;VARCHAR(2)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;kondisi_gizi : &lt;i&gt;VARCHAR(50)&lt;/i&gt; | penyakit_kronis : &lt;i&gt;VARCHAR(100)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;penglihatan, pendengaran, berjalan_atau_naik_tangga : &lt;i&gt;VARCHAR(50)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;menggunakan_tangan_jari, belajar_intelektual, pengendalian_perilaku : &lt;i&gt;VARCHAR(50)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;berbicara_komunikasi, mengurus_diri, mengingat_berkonsentrasi : &lt;i&gt;VARCHAR(50)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;kesedihan_depresi : &lt;i&gt;VARCHAR(50)&lt;/i&gt;&lt;/div&gt;&#10;&#10;  &lt;div style=&quot;background-color:#f1f5f9;font-weight:bold;color:#475569;padding:3px 6px;margin:6px 0 3px 0;border-radius:3px;&quot;&gt;ALAMAT KTP LENGKAP&lt;/div&gt;&#10;  &lt;div&gt;kode_provinsi_ktp, provinsi_ktp | kode_kabupaten_kota_ktp, kabupaten_kota_ktp&lt;/div&gt;&#10;  &lt;div&gt;kode_kecamatan_ktp, kecamatan_ktp | kode_kelurahan_desa_ktp, kelurahan_desa_ktp&lt;/div&gt;&#10;  &lt;div&gt;rt_ktp : &lt;i&gt;VARCHAR(10)&lt;/i&gt; | rw_ktp : &lt;i&gt;VARCHAR(10)&lt;/i&gt; | dusun_ktp : &lt;i&gt;VARCHAR(100)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;alamat_ktp : &lt;i&gt;VARCHAR(500)&lt;/i&gt; | pekerjaan_ktp / pendidikan_akhir_ktp&lt;/div&gt;&#10;&#10;  &lt;div style=&quot;background-color:#f1f5f9;font-weight:bold;color:#475569;padding:3px 6px;margin:6px 0 3px 0;border-radius:3px;&quot;&gt;QUALITY AUDIT ENGINE &amp;amp; METADATA&lt;/div&gt;&#10;  &lt;div style=&quot;color:#b91c1c;font-weight:bold;&quot;&gt;&lt;b&gt;[IDX]&lt;/b&gt; quality_status : &lt;i&gt;ENUM('Valid', 'Warning', 'Critical') DEFAULT 'Valid'&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;quality_issues : &lt;i&gt;JSON (Log Detail Rule Gagal)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;extra_attributes : &lt;i&gt;JSON (Atribut Tambahan Fleksibel)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div&gt;created_at : &lt;i&gt;TIMESTAMP&lt;/i&gt; | updated_at : &lt;i&gt;TIMESTAMP&lt;/i&gt;&lt;/div&gt;&#10;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="1420" width="560" x="960" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="rel_keluarga_individu" edge="1" parent="1" source="tbl_keluargas" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;strokeColor=#4338ca;strokeWidth=3;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;labelBackgroundColor=none;" target="tbl_individus" value="&lt;div style=&quot;background-color:#ffffff;border:1px solid #4338ca;padding:4px 8px;border-radius:4px;font-size:11px;font-weight:bold;color:#1e1b4b;box-shadow:0 1px 3px rgba(0,0,0,0.1);&quot;&gt;&#10;  1 : N (One-to-Many)&lt;br&gt;&#10;  &lt;span style=&quot;font-size:10px;font-weight:normal;color:#6b21a8;&quot;&gt;FK: nomor_kartu_keluarga&lt;/span&gt;&lt;br&gt;&#10;  &lt;span style=&quot;font-size:9px;color:#dc2626;&quot;&gt;ON DELETE CASCADE&lt;/span&gt;&#10;&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel_desc_box" parent="1" style="html=1;rounded=1;arcSize=10;fillColor=#f0fdfa;strokeColor=#0d9488;strokeWidth=1.5;shadow=1;align=center;verticalAlign=top;spacingTop=6;spacingLeft=10;spacingRight=10;" value="&lt;div style=&quot;font-size:12px;font-weight:bold;color:#0f766e;margin-bottom:4px;&quot;&gt;INTEGRITAS REFERENSIAL &amp;amp; KARDINALITAS&lt;/div&gt;&#10;&lt;div style=&quot;font-size:11px;line-height:1.5;color:#134e4a;text-align:left;&quot;&gt;&#10;• Setiap 1 Kartu Keluarga (&lt;b&gt;keluargas&lt;/b&gt;) menjadi induk dari 1 hingga N Anggota Keluarga (&lt;b&gt;individus&lt;/b&gt;).&lt;br&gt;&#10;• Relasi diikat via &lt;code&gt;nomor_kartu_keluarga&lt;/code&gt; (16 digit angka unik di tabel &lt;i&gt;keluargas&lt;/i&gt;).&lt;br&gt;&#10;• Jika berkas/kartu keluarga dihapus, seluruh anggota keluarga terkait dihapus otomatis (&lt;i&gt;Cascade&lt;/i&gt;).&lt;br&gt;&#10;• Model Eloquent: &lt;code&gt;Keluarga-&gt;hasMany(Individu)&lt;/code&gt; &amp;amp; &lt;code&gt;Individu-&gt;belongsTo(Keluarga)&lt;/code&gt;.&#10;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="210" width="820" x="1540" y="130" as="geometry" />
+        </mxCell>
+              <mxCell id="tbl_ref_kamus" parent="1" style="html=1;whiteSpace=wrap;overflow=hidden;rounded=1;arcSize=6;fillColor=#ffffff;strokeColor=#0891b2;strokeWidth=2;shadow=1;verticalAlign=top;" value="&lt;div style=&quot;background-color:#0891b2;color:#ffffff;font-size:14px;font-weight:bold;padding:8px;border-radius:6px 6px 0 0;text-align:center;&quot;&gt;&#10;  referensi_kamus_data (Kamus Transliterasi FK)&#10;&lt;/div&gt;&#10;&lt;div style=&quot;padding:10px;text-align:left;font-size:11px;line-height:1.6;color:#1e293b;background-color:#ffffff;&quot;&gt;&#10;  &lt;div style=&quot;border-bottom:1px solid #f1f5f9;padding:2px 0;&quot;&gt;&lt;b&gt;[PK]&lt;/b&gt; id : &lt;i&gt;BIGINT AUTO_INCREMENT&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div style=&quot;border-bottom:1px solid #f1f5f9;padding:2px 0;&quot;&gt;&lt;b&gt;[IDX]&lt;/b&gt; nama_tabel : &lt;i&gt;VARCHAR(50) ('keluargas', 'individus')&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div style=&quot;border-bottom:1px solid #f1f5f9;padding:2px 0;&quot;&gt;&lt;b&gt;[IDX]&lt;/b&gt; nama_kolom : &lt;i&gt;VARCHAR(100)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div style=&quot;border-bottom:1px solid #f1f5f9;padding:2px 0;&quot;&gt;kode_nilai : &lt;i&gt;VARCHAR(20) (misal '1', '2', '01')&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div style=&quot;border-bottom:1px solid #f1f5f9;padding:2px 0;color:#0e7490;font-weight:bold;&quot;&gt;label_transliterasi : &lt;i&gt;VARCHAR(255) (Deskripsi)&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div style=&quot;border-bottom:1px solid #f1f5f9;padding:2px 0;&quot;&gt;kategori_sumber : &lt;i&gt;VARCHAR(100) ('Bappenas 2026', 'BPS')&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div style=&quot;border-bottom:1px solid #f1f5f9;padding:2px 0;&quot;&gt;urutan : &lt;i&gt;INTEGER DEFAULT 0&lt;/i&gt;&lt;/div&gt;&#10;  &lt;div style=&quot;padding:2px 0;&quot;&gt;created_at / updated_at : &lt;i&gt;TIMESTAMP&lt;/i&gt;&lt;/div&gt;&#10;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="320" width="320" x="1560" y="1050" as="geometry" />
+        </mxCell>
+        <mxCell id="rel_ref_individu" edge="1" parent="1" source="tbl_ref_kamus" style="html=1;edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#0891b2;strokeWidth=2;dashed=1;exitX=0;exitY=0.3;entryX=1;entryY=0.7;" target="tbl_individus" value="&lt;div style=&quot;background-color:#ffffff;border:1px solid #0891b2;padding:3px 6px;border-radius:4px;font-size:10px;color:#0e7490;&quot;&gt;Transliterasi Kode FK&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="Arsitektur Dual-Storage (OLTP + OLAP)" id="ltO1dyAxFthQE1UvvTBj">
+    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="2000" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title_erd_2" parent="1" style="html=1;text;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" value="&lt;div style=&quot;font-size:20px;font-weight:bold;color:#0f172a;&quot;&gt;ARSITEKTUR PENYIMPANAN DATA DUAL-ENGINE (PADU v1.02)&lt;/div&gt;&#10;&lt;div style=&quot;font-size:13px;color:#475569;margin-top:4px;&quot;&gt;Kolaborasi Database Relasional Transaksional (SQLite / MySQL) dan Engine Analitik Tervektorisasi (DuckDB)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="50" width="1200" x="400" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="src_box" parent="1" style="html=1;whiteSpace=wrap;overflow=hidden;rounded=1;arcSize=6;fillColor=#ffffff;strokeColor=#ea580c;strokeWidth=2;shadow=1;verticalAlign=top;" value="&lt;div style=&quot;background-color:#ea580c;color:#ffffff;font-size:14px;font-weight:bold;padding:8px;border-radius:6px 6px 0 0;text-align:center;&quot;&gt;&#10;  DATASET SUMBER (INPUT)&#10;&lt;/div&gt;&#10;&lt;div style=&quot;padding:10px;text-align:left;font-size:11px;line-height:1.6;color:#1e293b;background-color:#ffffff;&quot;&gt;&#10;  &lt;b&gt;Berkas Masukan:&lt;/b&gt;&lt;br&gt;&#10;  • CSV / XLSX Dataset DTSEN&lt;br&gt;&#10;  • Skala: 500 s.d 13+ Juta Baris&lt;br&gt;&#10;  • Lokasi: &lt;code&gt;src-dtsen/&lt;/code&gt;&lt;br&gt;&#10;  • Kecepatan Baca: &amp;gt; 1.5M baris/detik&#10;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="160" width="240" x="60" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="disp_box" parent="1" style="html=1;whiteSpace=wrap;overflow=hidden;rounded=1;arcSize=6;fillColor=#ffffff;strokeColor=#4f46e5;strokeWidth=2;shadow=1;verticalAlign=top;" value="&lt;div style=&quot;background-color:#4f46e5;color:#ffffff;font-size:14px;font-weight:bold;padding:8px;border-radius:6px 6px 0 0;text-align:center;&quot;&gt;&#10;  INGESTION &amp;amp; AUDIT PIPELINE&#10;&lt;/div&gt;&#10;&lt;div style=&quot;padding:10px;text-align:left;font-size:11px;line-height:1.6;color:#1e293b;background-color:#ffffff;&quot;&gt;&#10;  &lt;b&gt;Komponen Pemroses:&lt;/b&gt;&lt;br&gt;&#10;  • &lt;code&gt;fast_import.py&lt;/code&gt; (Vectorized Loader)&lt;br&gt;&#10;  • Quality Rules Evaluation (Critical/Warning/Valid)&lt;br&gt;&#10;  • Synonym Header Mapper (48/52 Variabel)&lt;br&gt;&#10;  • PII Masking Transformer&#10;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="160" width="280" x="380" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="oltp_box" parent="1" style="html=1;whiteSpace=wrap;overflow=hidden;rounded=1;arcSize=6;fillColor=#ffffff;strokeColor=#0284c7;strokeWidth=2;shadow=1;verticalAlign=top;" value="&lt;div style=&quot;background-color:#0284c7;color:#ffffff;font-size:14px;font-weight:bold;padding:8px;border-radius:6px 6px 0 0;text-align:center;&quot;&gt;&#10;  OLTP RELASIONAL (SQLite / MySQL)&#10;&lt;/div&gt;&#10;&lt;div style=&quot;padding:10px;text-align:left;font-size:11px;line-height:1.6;color:#1e293b;background-color:#ffffff;&quot;&gt;&#10;  &lt;b&gt;Tabel Relasional:&lt;/b&gt;&lt;br&gt;&#10;  1. &lt;code&gt;keluargas&lt;/code&gt; (52 Variabel DTSEN)&lt;br&gt;&#10;  2. &lt;code&gt;individus&lt;/code&gt; (48 Variabel DTSEN)&lt;br&gt;&#10;  3. &lt;code&gt;users&lt;/code&gt; (Autentikasi)&lt;br&gt;&#10;  4. &lt;code&gt;demographics&lt;/code&gt; (Legacy)&lt;br&gt;&#10;  &lt;br&gt;&#10;  &lt;b&gt;Tujuan:&lt;/b&gt;&lt;br&gt;&#10;  • Integritas referensial (Foreign Keys &amp;amp; Cascades)&lt;br&gt;&#10;  • CRUD transaksional &amp;amp; Session Store&lt;br&gt;&#10;  • Laravel Eloquent ORM Model Binding&#10;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="220" width="340" x="780" y="140" as="geometry" />
+        </mxCell>
+        <mxCell id="olap_box" parent="1" style="html=1;whiteSpace=wrap;overflow=hidden;rounded=1;arcSize=6;fillColor=#ffffff;strokeColor=#059669;strokeWidth=2;shadow=1;verticalAlign=top;" value="&lt;div style=&quot;background-color:#059669;color:#ffffff;font-size:14px;font-weight:bold;padding:8px;border-radius:6px 6px 0 0;text-align:center;&quot;&gt;&#10;  OLAP ENGINE (dataset.duckdb)&#10;&lt;/div&gt;&#10;&lt;div style=&quot;padding:10px;text-align:left;font-size:11px;line-height:1.6;color:#1e293b;background-color:#ffffff;&quot;&gt;&#10;  &lt;b&gt;Tabel Teroptimasi:&lt;/b&gt;&lt;br&gt;&#10;  1. &lt;code&gt;individus&lt;/code&gt; (Flattened Denormalized Columns)&lt;br&gt;&#10;  2. Index Kolom: NIK, KK, Desil, Gaji, Usia, Wilayah&lt;br&gt;&#10;  &lt;br&gt;&#10;  &lt;b&gt;Tujuan:&lt;/b&gt;&lt;br&gt;&#10;  • Eksekusi Vektor SIMD 13+ Juta Baris Data&lt;br&gt;&#10;  • Agregasi Statistik Real-Time (&amp;lt; 0.05 detik)&lt;br&gt;&#10;  • Multi-Column Filtering &amp;amp; Pencarian Instan&lt;br&gt;&#10;  • Ekspor Cepat ZIP/CSV via &lt;code&gt;fast_export.py&lt;/code&gt;&#10;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="220" width="340" x="780" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="ui_box" parent="1" style="html=1;whiteSpace=wrap;overflow=hidden;rounded=1;arcSize=6;fillColor=#ffffff;strokeColor:#0f172a;strokeWidth=2;shadow=1;verticalAlign=top;" value="&lt;div style=&quot;background-color:#0f172a;color:#ffffff;font-size:14px;font-weight:bold;padding:8px;border-radius:6px 6px 0 0;text-align:center;&quot;&gt;&#10;  LARAVEL WEB UI / DASHBOARD&#10;&lt;/div&gt;&#10;&lt;div style=&quot;padding:10px;text-align:left;font-size:11px;line-height:1.6;color:#1e293b;background-color:#ffffff;&quot;&gt;&#10;  &lt;b&gt;Fitur Antarmuka:&lt;/b&gt;&lt;br&gt;&#10;  • Dashboard Metrik &amp;amp; Visualisasi Desil&lt;br&gt;&#10;  • Dynamic Multi-Filter Checkbox&lt;br&gt;&#10;  • Grid Data dengan PII Masking Aktif&lt;br&gt;&#10;  • Export Manager (ZIP Package &amp;amp; CSV Log)&#10;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="180" width="300" x="1240" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="e_src_disp" edge="1" parent="1" source="src_box" style="html=1;strokeColor=#ea580c;strokeWidth=2;fontColor=#c2410c;fontSize=10;fontStyle=1;edgeStyle=orthogonalEdgeStyle;rounded=0;" target="disp_box" value="Baca File CSV/XLSX">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_disp_oltp" edge="1" parent="1" source="disp_box" style="html=1;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;fontStyle=1;edgeStyle=orthogonalEdgeStyle;rounded=0;" target="oltp_box" value="Relational Insert / Migration">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_disp_olap" edge="1" parent="1" source="disp_box" style="html=1;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;edgeStyle=orthogonalEdgeStyle;rounded=0;" target="olap_box" value="Vectorized Ingestion (500k/s)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_oltp_ui" edge="1" parent="1" source="oltp_box" style="html=1;strokeColor=#0284c7;strokeWidth=2;fontColor=#0369a1;fontSize=10;fontStyle=1;edgeStyle=orthogonalEdgeStyle;rounded=0;" target="ui_box" value="Auth &amp; Relasional Detail">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_olap_ui" edge="1" parent="1" source="olap_box" style="html=1;strokeColor=#059669;strokeWidth=2;fontColor=#047857;fontSize=10;fontStyle=1;edgeStyle=orthogonalEdgeStyle;rounded=0;" target="ui_box" value="Instant Analytics Query (&lt;0.05s)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+
+
+</mxfile>

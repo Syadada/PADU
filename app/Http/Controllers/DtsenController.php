@@ -152,7 +152,7 @@ class DtsenController extends Controller
     /**
      * Halaman Utama Dashboard DTSEN 2026 Analytics & Multi-Checkbox Dynamic Data Table
      */
-    public function index(Request $request)
+    public function getSharedAnalyticsData(Request $request)
     {
         set_time_limit(0);
         ini_set('memory_limit', '1024M');
@@ -487,14 +487,81 @@ class DtsenController extends Controller
             'srcExportFiles'
         );
 
+        return $viewData;
+    }
+
+    /**
+     * Halaman 1: Tabel Master Data (58 Variabel DTSEN 2026)
+     */
+    public function dataTable(Request $request)
+    {
+        $viewData = $this->getSharedAnalyticsData($request);
         if ($request->ajax() || $request->wantsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
-            $html = view('dtsen.index', $viewData)->render();
             return response()->json([
                 'success' => true,
-                'html' => $html
+                'html' => view('dtsen.data', $viewData)->render()
             ]);
         }
+        return view('dtsen.data', $viewData);
+    }
 
+    /**
+     * Halaman 2: Metrik Kualitas & Ringkasan Data (QC)
+     */
+    public function qualityCheck(Request $request)
+    {
+        $viewData = $this->getSharedAnalyticsData($request);
+        return view('dtsen.quality', $viewData);
+    }
+
+    /**
+     * Halaman 3: Diagram KPI & Peringkat Variabel
+     */
+    public function kpiAnalytics(Request $request)
+    {
+        $viewData = $this->getSharedAnalyticsData($request);
+        return view('dtsen.kpi', $viewData);
+    }
+
+    /**
+     * Halaman 4: Analisis Finansial & Gaji Subjek
+     */
+    public function salaryAnalytics(Request $request)
+    {
+        $viewData = $this->getSharedAnalyticsData($request);
+        return view('dtsen.salary', $viewData);
+    }
+
+    /**
+     * Halaman 5: Audit Temuan Error & Anomali Data
+     */
+    public function issueAudit(Request $request)
+    {
+        $viewData = $this->getSharedAnalyticsData($request);
+        return view('dtsen.audit', $viewData);
+    }
+
+    /**
+     * Halaman 6: Manajemen Berkas & Ingesti / Ekspor
+     */
+    public function filesManagement(Request $request)
+    {
+        $viewData = $this->getSharedAnalyticsData($request);
+        return view('dtsen.files', $viewData);
+    }
+
+    /**
+     * Tampilan Terpadu (All-in-One Dashboard)
+     */
+    public function index(Request $request)
+    {
+        $viewData = $this->getSharedAnalyticsData($request);
+        if ($request->ajax() || $request->wantsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            return response()->json([
+                'success' => true,
+                'html' => view('dtsen.index', $viewData)->render()
+            ]);
+        }
         return view('dtsen.index', $viewData);
     }
 
@@ -905,6 +972,23 @@ class DtsenController extends Controller
         $row = $duckPreview['item'] ?? null;
 
         if (!$row) {
+            try {
+                $ind = \Illuminate\Support\Facades\DB::table('individus')->where('id', (int)$id)->first();
+                if ($ind) {
+                    $row = (array)$ind;
+                    if (!empty($ind->nomor_kartu_keluarga)) {
+                        $kel = \Illuminate\Support\Facades\DB::table('keluargas')->where('nomor_kartu_keluarga', $ind->nomor_kartu_keluarga)->first();
+                        if ($kel) {
+                            $row = array_merge((array)$kel, $row);
+                        }
+                    }
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning('[PREVIEW FALLBACK ERROR] ' . $e->getMessage());
+            }
+        }
+
+        if (!$row) {
             return response()->json(['success' => false, 'message' => 'Data tidak ditemukan.'], 404);
         }
 
@@ -1096,7 +1180,22 @@ class DtsenController extends Controller
     /**
      * Kosongkan berkas log aktivitas sistem di web
      */
-    public function clearLogs(Request $request)
+        /**
+     * Unduh Berkas Log Aktivitas Sistem
+     */
+    public function downloadLogs()
+    {
+        $logFile = storage_path('logs/dtsen_activity.log');
+        if (!file_exists($logFile)) {
+            self::logActivity('INFO', 'Sistem PADU Analytics beroperasi dalam mode 100% Offline.');
+        }
+        $fileName = 'dtsen_activity_log_' . date('Y-m-d_H-i-s') . '.txt';
+        return response()->download($logFile, $fileName, [
+            'Content-Type' => 'text/plain; charset=UTF-8',
+        ]);
+    }
+
+public function clearLogs(Request $request)
     {
         $logFile = storage_path('logs/dtsen_activity.log');
         if (file_exists($logFile)) {

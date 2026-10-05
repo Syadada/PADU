@@ -1,0 +1,236 @@
+<mxfile host="app.diagrams.net" modified="2026-10-05T03:30:00.000Z" agent="Mozilla/5.0" version="21.0.0" type="device">
+  <diagram id="diagram_tobe_master_enterprise" name="TO-BE Master: PADU v2.0 Enterprise Clean Web App">
+    <mxGraphModel dx="1800" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1540" pageHeight="2200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- 4 CLEAN LANES -->
+        <!-- Lane 1: Operator Data / Client -->
+        <mxCell id="lane_1" value="👤 OPERATOR DATA (CLIENT BROWSER)" style="swimlane;html=1;startSize=40;fillColor=#1e293b;strokeColor=#334155;fontColor=#ffffff;fontSize=14;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="340" height="2100" as="geometry" />
+        </mxCell>
+        <!-- Lane 2: Frontend UI -->
+        <mxCell id="lane_2" value="💻 FRONTEND UI (CLEAN ENTERPRISE LIGHT)" style="swimlane;html=1;startSize=40;fillColor=#0f172a;strokeColor=#1e3a8a;fontColor=#93c5fd;fontSize=14;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="380" y="40" width="360" height="2100" as="geometry" />
+        </mxCell>
+        <!-- Lane 3: Backend Gateway -->
+        <mxCell id="lane_3" value="⚙️ BACKEND SERVICES &amp; BSSN AUTH GATEWAY (LARAVEL 12)" style="swimlane;html=1;startSize=40;fillColor=#064e3b;strokeColor=#047857;fontColor=#a7f3d0;fontSize=14;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="740" y="40" width="380" height="2100" as="geometry" />
+        </mxCell>
+        <!-- Lane 4: Storage & Analytics Engine -->
+        <mxCell id="lane_4" value="🗄️ ENGINE ANALITIK CEPAT &amp; STORAGE (DUCKDB &amp; SQLITE)" style="swimlane;html=1;startSize=40;fillColor=#3b0764;strokeColor=#6b21a8;fontColor=#f5d0fe;fontSize=14;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="1120" y="40" width="380" height="2100" as="geometry" />
+        </mxCell>
+
+        <!-- ========================================== -->
+        <!-- BAGIAN 1: OTENTIKASI & INITIAL SESSION     -->
+        <!-- ========================================== -->
+        <mxCell id="T_A1" value="&lt;b&gt;Start: Akses URL PADU di Browser&lt;/b&gt;&lt;br&gt;http://192.168.1.10:8000 via LAN Kantor" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#2563eb;strokeColor=#1d4ed8;fontColor=#ffffff;" vertex="1" parent="lane_1">
+          <mxGeometry x="40" y="70" width="260" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="T_B1" value="&lt;b&gt;Render Form Two-Step Login&lt;/b&gt;&lt;br&gt;Input Email (Deteksi Role Otomatis)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e3a8a;strokeColor=#2563eb;fontColor=#ffffff;" vertex="1" parent="lane_2">
+          <mxGeometry x="50" y="70" width="260" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="T_A2" value="&lt;b&gt;Input Email &amp; Password (Min 15 Karakter)&lt;/b&gt;&lt;br&gt;Standar Kepatuhan NIST SP 800-63B" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#334155;strokeColor=#475569;fontColor=#ffffff;" vertex="1" parent="lane_1">
+          <mxGeometry x="40" y="165" width="260" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="T_C1" value="&lt;b&gt;Verifikasi Bcrypt &amp; Rate Limiter BSSN&lt;/b&gt;&lt;br&gt;Proteksi Brute-Force (Lockout 5x Gagal)&lt;br&gt;Validasi Hash Kredensial Pengguna" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#065f46;strokeColor=#059669;fontColor=#ffffff;" vertex="1" parent="lane_3">
+          <mxGeometry x="50" y="160" width="280" height="65" as="geometry" />
+        </mxCell>
+
+        <mxCell id="T_D1" value="&lt;b&gt;Pengecekan Tabel users (SQLite)&lt;/b&gt;&lt;br&gt;Bcrypt cost &gt;= 12 &amp; Status Akun Aktif" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#581c87;strokeColor=#7e22ce;fontColor=#ffffff;" vertex="1" parent="lane_4">
+          <mxGeometry x="70" y="152.5" width="240" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="T_C2" value="&lt;b&gt;Terbitkan Token CSRF &amp; Sesi HttpOnly&lt;/b&gt;&lt;br&gt;Catat Jejak Login di Audit Trail Sesi" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#065f46;strokeColor=#059669;fontColor=#ffffff;" vertex="1" parent="lane_3">
+          <mxGeometry x="50" y="270" width="280" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="T_B2" value="&lt;b&gt;Tampilkan Dashboard DTSEN 2026&lt;/b&gt;&lt;br&gt;Clean Light Enterprise Card &amp; Sidebar" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e3a8a;strokeColor=#2563eb;fontColor=#ffffff;" vertex="1" parent="lane_2">
+          <mxGeometry x="50" y="270" width="260" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- ========================================== -->
+        <!-- BAGIAN 2: DATASET INGESTION & QUALITY      -->
+        <!-- ========================================== -->
+        <mxCell id="T_A3" value="&lt;b&gt;Salin Berkas ke Folder src-dtsen/&lt;/b&gt;&lt;br&gt;Dataset CSV/XLSX 13M+ Baris Kependudukan" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#334155;strokeColor=#475569;fontColor=#ffffff;" vertex="1" parent="lane_1">
+          <mxGeometry x="40" y="380" width="260" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="T_C3" value="&lt;b&gt;Scan Folder src-dtsen/ Otomatis&lt;/b&gt;&lt;br&gt;Deteksi Ukuran, Timestamp, &amp; Format Berkas" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#065f46;strokeColor=#059669;fontColor=#ffffff;" vertex="1" parent="lane_3">
+          <mxGeometry x="50" y="380" width="280" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="T_B3" value="&lt;b&gt;Daftar Berkas Terdeteksi di Layar&lt;/b&gt;&lt;br&gt;Tampilan Radio Card Kontras Tinggi" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e3a8a;strokeColor=#2563eb;fontColor=#ffffff;" vertex="1" parent="lane_2">
+          <mxGeometry x="50" y="475" width="260" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="T_A4" value="&lt;b&gt;Pilih File &amp; Klik &quot;Mulai Impor Cepat&quot;&lt;/b&gt;&lt;br&gt;Memicu proses ingesti batch ke server" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#334155;strokeColor=#475569;fontColor=#ffffff;" vertex="1" parent="lane_1">
+          <mxGeometry x="40" y="475" width="260" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="T_C4" value="&lt;b&gt;PyArrow Zero-Copy Chunking Ingestion&lt;/b&gt;&lt;br&gt;Streaming &amp;gt; 1,5 Juta Baris/Detik&lt;br&gt;Normalisasi 48 Variabel Individu &amp; 52 KK" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#065f46;strokeColor=#059669;fontColor=#ffffff;" vertex="1" parent="lane_3">
+          <mxGeometry x="50" y="570" width="280" height="65" as="geometry" />
+        </mxCell>
+
+        <mxCell id="T_D2" value="&lt;b&gt;Penyimpanan Dual-Table DuckDB&lt;/b&gt;&lt;br&gt;1. dtsen_data (Tabel Kolumnar Bersih)&lt;br&gt;2. quality_audit_logs (Tabel Anomali)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#581c87;strokeColor=#7e22ce;fontColor=#ffffff;" vertex="1" parent="lane_4">
+          <mxGeometry x="70" y="560" width="240" height="85" as="geometry" />
+        </mxCell>
+
+        <mxCell id="T_B4" value="&lt;b&gt;Progress Bar &amp; Skor Kualitas Data&lt;/b&gt;&lt;br&gt;Statistik Valid, Warning &amp; Critical" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e3a8a;strokeColor=#2563eb;fontColor=#ffffff;" vertex="1" parent="lane_2">
+          <mxGeometry x="50" y="685" width="260" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- ========================================== -->
+        <!-- BAGIAN 3: ANALITIK DUAL-MODUL & PII        -->
+        <!-- ========================================== -->
+        <mxCell id="T_A5" value="&lt;b&gt;Pilih Modul &amp; Terapkan Filter Dinamis&lt;/b&gt;&lt;br&gt;Filter NIK, Nama, Desil, Wilayah (Kec/Kel)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#334155;strokeColor=#475569;fontColor=#ffffff;" vertex="1" parent="lane_1">
+          <mxGeometry x="40" y="790" width="260" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="T_C5" value="&lt;b&gt;Slicing Engine OLAP DuckDB (&amp;lt;0.05s)&lt;/b&gt;&lt;br&gt;Pemindaian Cepat Berbasis Indeks Vektor" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#065f46;strokeColor=#059669;fontColor=#ffffff;" vertex="1" parent="lane_3">
+          <mxGeometry x="50" y="790" width="280" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="T_C6" value="&lt;b&gt;Dynamic PII Masking Transformer&lt;/b&gt;&lt;br&gt;Sensor NIK (3201************)&lt;br&gt;Sensor Nama (B*** S******) [UU PDP]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#065f46;strokeColor=#059669;fontColor=#ffffff;" vertex="1" parent="lane_3">
+          <mxGeometry x="50" y="890" width="280" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="T_D3" value="&lt;b&gt;Kamus Metadata Bappenas (D_REF)&lt;/b&gt;&lt;br&gt;Transliterasi Kode BPS ke Teks Resmi&lt;br&gt;(Air Bersih, Lantai Granit, Milik Sendiri)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#581c87;strokeColor=#7e22ce;fontColor=#ffffff;" vertex="1" parent="lane_4">
+          <mxGeometry x="70" y="877.5" width="240" height="85" as="geometry" />
+        </mxCell>
+
+        <mxCell id="T_B5" value="&lt;b&gt;Tampilan Tab 1: Data Mikro Terpadu&lt;/b&gt;&lt;br&gt;Integrasi Kepala Keluarga &amp; Anggota&lt;br&gt;Label Deskriptif FK &amp; Data PII Terproteksi" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e3a8a;strokeColor=#2563eb;fontColor=#ffffff;" vertex="1" parent="lane_2">
+          <mxGeometry x="50" y="1000" width="260" height="65" as="geometry" />
+        </mxCell>
+
+        <mxCell id="T_C7" value="&lt;b&gt;Kalkulasi 7 Metrik Statistik Regional&lt;/b&gt;&lt;br&gt;COUNT, SUM, AVG, MIN, MAX, MEDIAN, MODUS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#065f46;strokeColor=#059669;fontColor=#ffffff;" vertex="1" parent="lane_3">
+          <mxGeometry x="50" y="1100" width="280" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="T_B6" value="&lt;b&gt;Tampilan Tab 2: Data Statistik Regional&lt;/b&gt;&lt;br&gt;Tabel Agregasi Multi-Level &amp; Chart KPI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e3a8a;strokeColor=#2563eb;fontColor=#ffffff;" vertex="1" parent="lane_2">
+          <mxGeometry x="50" y="1100" width="260" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- ========================================== -->
+        <!-- BAGIAN 4: EKSPOR ARSIP ZIP & MANIFEST      -->
+        <!-- ========================================== -->
+        <mxCell id="T_A6" value="&lt;b&gt;Klik &quot;Ekspor Paket Arsip ZIP&quot;&lt;/b&gt;&lt;br&gt;Sesuai Hasil Slicing &amp; Filter Aktif" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#334155;strokeColor=#475569;fontColor=#ffffff;" vertex="1" parent="lane_1">
+          <mxGeometry x="40" y="1230" width="260" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="T_C8" value="&lt;b&gt;Serialisasi Trio Berkas Arsip Resmi&lt;/b&gt;&lt;br&gt;1. data_dtsen.csv (Data Bersih Slicing)&lt;br&gt;2. audit_error.csv (Catatan Anomali)&lt;br&gt;3. metadata.txt (Checksum SHA-256)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#065f46;strokeColor=#059669;fontColor=#ffffff;" vertex="1" parent="lane_3">
+          <mxGeometry x="50" y="1220" width="280" height="75" as="geometry" />
+        </mxCell>
+
+        <mxCell id="T_D4" value="&lt;b&gt;Penyimpanan src-export/ &amp; ZIP&lt;/b&gt;&lt;br&gt;Kompresi Tingkat Tinggi DEFLATE&lt;br&gt;Generasi Checksum SHA-256 Otomatis" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#581c87;strokeColor=#7e22ce;fontColor=#ffffff;" vertex="1" parent="lane_4">
+          <mxGeometry x="70" y="1215" width="240" height="85" as="geometry" />
+        </mxCell>
+
+        <mxCell id="T_B7" value="&lt;b&gt;Direct Stream Download ZIP ke Browser&lt;/b&gt;&lt;br&gt;Header application/zip berkecepatan tinggi" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e3a8a;strokeColor=#2563eb;fontColor=#ffffff;" vertex="1" parent="lane_2">
+          <mxGeometry x="50" y="1340" width="260" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="T_A7" value="&lt;b&gt;Paket Berkas ZIP Diterima di Laptop&lt;/b&gt;&lt;br&gt;Arsip Resmi Siap Kirim / Disimpan Aman" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2563eb;strokeColor=#1d4ed8;fontColor=#ffffff;" vertex="1" parent="lane_1">
+          <mxGeometry x="40" y="1340" width="260" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- ========================================== -->
+        <!-- BAGIAN 5: TERMINASI SESI AMAN              -->
+        <!-- ========================================== -->
+        <mxCell id="T_A8" value="&lt;b&gt;Klik &quot;Keluar / Logout&quot;&lt;/b&gt;&lt;br&gt;Atau Tutup Browser Laptop Staf" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#334155;strokeColor=#475569;fontColor=#ffffff;" vertex="1" parent="lane_1">
+          <mxGeometry x="40" y="1465" width="260" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="T_C9" value="&lt;b&gt;Penghancuran Sesi &amp; Sanitasi Cookie&lt;/b&gt;&lt;br&gt;Invalasi Token Sesi di SQLite&lt;br&gt;Catat Waktu Selesai di Audit Log Sesi" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#065f46;strokeColor=#059669;fontColor=#ffffff;" vertex="1" parent="lane_3">
+          <mxGeometry x="50" y="1460" width="280" height="65" as="geometry" />
+        </mxCell>
+
+        <mxCell id="T_B8" value="&lt;b&gt;Redirect ke Form Login&lt;/b&gt;&lt;br&gt;Sesi Tertutup Sempurna Tanpa Sisa Jejak" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#2563eb;strokeColor=#1d4ed8;fontColor=#ffffff;" vertex="1" parent="lane_2">
+          <mxGeometry x="50" y="1465" width="260" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- ========================================== -->
+        <!-- EDGES / CONNECTIONS                        -->
+        <!-- ========================================== -->
+        <mxCell id="edge_1" edge="1" parent="1" source="T_A1" target="T_B1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_2" edge="1" parent="1" source="T_B1" target="T_A2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_3" edge="1" parent="1" source="T_A2" target="T_C1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_4" edge="1" parent="1" source="T_C1" target="T_D1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_5" edge="1" parent="1" source="T_C1" target="T_C2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_6" edge="1" parent="1" source="T_C2" target="T_B2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_7" edge="1" parent="1" source="T_A3" target="T_C3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_8" edge="1" parent="1" source="T_C3" target="T_B3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_9" edge="1" parent="1" source="T_B3" target="T_A4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_10" edge="1" parent="1" source="T_A4" target="T_C4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_11" edge="1" parent="1" source="T_C4" target="T_D2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_12" edge="1" parent="1" source="T_C4" target="T_B4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_13" edge="1" parent="1" source="T_A5" target="T_C5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_14" edge="1" parent="1" source="T_C5" target="T_C6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_15" edge="1" parent="1" source="T_D3" target="T_C6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_16" edge="1" parent="1" source="T_C6" target="T_B5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_17" edge="1" parent="1" source="T_C5" target="T_C7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_18" edge="1" parent="1" source="T_C7" target="T_B6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_19" edge="1" parent="1" source="T_A6" target="T_C8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_20" edge="1" parent="1" source="T_C8" target="T_D4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_21" edge="1" parent="1" source="T_C8" target="T_B7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_22" edge="1" parent="1" source="T_B7" target="T_A7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_23" edge="1" parent="1" source="T_A8" target="T_C9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_24" edge="1" parent="1" source="T_C9" target="T_B8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
