@@ -16,7 +16,9 @@ def build_where_clause(con, table_ref, params):
     # 1. Search filter
     search = str(params.get('search', '')).strip()
     if not search:
-        search = str(params.get('filters', {}).get('salary_search', '')).strip()
+        filters_map = params.get('filters', {})
+        if isinstance(filters_map, dict):
+            search = str(filters_map.get('salary_search', '')).strip()
     if search:
         search_clean = search.lower()
         if len(search) == 16 and search.isdigit():
