@@ -15,6 +15,8 @@ def build_where_clause(con, table_ref, params):
 
     # 1. Search filter
     search = str(params.get('search', '')).strip()
+    if not search:
+        search = str(params.get('filters', {}).get('salary_search', '')).strip()
     if search:
         search_clean = search.lower()
         if len(search) == 16 and search.isdigit():
@@ -41,6 +43,8 @@ def build_where_clause(con, table_ref, params):
 
     def resolve_target_column(key, ex_cols):
         k = str(key).strip().lower()
+        if k.startswith('salary_'):
+            k = k[7:]
         if k in ex_cols:
             return ex_cols[k]
         syns = {
@@ -347,6 +351,10 @@ def run_duckdb_query():
 
         try:
             num_expr = f'TRY_CAST(REGEXP_REPLACE(CAST("{col_name}" AS VARCHAR), \'[^0-9.]\', \'\', \'g\') AS DOUBLE)'
+            
+            where_not_null = f"{where_sql} AND {num_expr} IS NOT NULL" if where_sql else f" WHERE {num_expr} IS NOT NULL"
+            where_gt_zero = f"{where_sql} AND {num_expr} > 0" if where_sql else f" WHERE {num_expr} > 0"
+
             row = con.execute(f"""
                 SELECT 
                     MAX({num_expr}) AS k_max,
@@ -354,16 +362,85 @@ def run_duckdb_query():
                     AVG({num_expr}) AS k_avg,
                     SUM({num_expr}) AS k_sum,
                     COUNT(CASE WHEN {num_expr} > 0 THEN 1 END) AS k_count
-                FROM {table_ref}{where_sql}
-                WHERE {num_expr} IS NOT NULL;
+                FROM {table_ref}{where_not_null};
             """).fetchone()
 
             nik_col = existing_cols.get('nomor_induk_kependudukan', existing_cols.get('nik', 'nik'))
             kk_col = existing_cols.get('nomor_kartu_keluarga', existing_cols.get('no_kk', existing_cols.get('kk', 'kk')))
             nama_col = existing_cols.get('nama', existing_cols.get('nama_lengkap', 'nama'))
 
-            top_rows = con.execute(f'SELECT id, "{nik_col}", "{kk_col}", "{nama_col}", {num_expr} FROM {table_ref}{where_sql} WHERE {num_expr} IS NOT NULL ORDER BY {num_expr} DESC LIMIT 5;').fetchall()
-            bot_rows = con.execute(f'SELECT id, "{nik_col}", "{kk_col}", "{nama_col}", {num_expr} FROM {table_ref}{where_sql} WHERE {num_expr} > 0 ORDER BY {num_expr} ASC LIMIT 5;').fetchall()
+            # 1. Distinct Top 5 Values (Peringkat 1 s/d 5 berjenjang dengan angka berbeda)
+            top_vals = [r[0] for r in con.execute(f'SELECT DISTINCT {num_expr} FROM {table_ref}{where_not_null} ORDER BY {num_expr} DESC LIMIT 5;').fetchall()]
+            top_rows = []
+            for v in top_vals:
+                where_v = f"{where_sql} AND {num_expr} = {v}" if where_sql else f" WHERE {num_expr} = {v}"
+                r = con.execute(f'SELECT id, "{nik_col}", "{kk_col}", "{nama_col}", {num_expr} FROM {table_ref}{where_v} ORDER BY id ASC LIMIT 1;').fetchone()
+                if r:
+                    top_rows.append(r)
+
+            if len(top_rows) < 5:
+                existing_top_ids = [r[0] for r in top_rows]
+                id_filter = f" AND id NOT IN ({','.join(str(i) for i in existing_top_ids)})" if existing_top_ids else ""
+                extra = con.execute(f'SELECT id, "{nik_col}", "{kk_col}", "{nama_col}", {num_expr} FROM {table_ref}{where_not_null}{id_filter} ORDER BY {num_expr} DESC LIMIT {5 - len(top_rows)};').fetchall()
+                top_rows.extend(extra)
+
+            # 2. Distinct Bottom 5 Values (Peringkat 1 s/d 5 terendah berjenjang dengan angka berbeda)
+            bot_vals = [r[0] for r in con.execute(f'SELECT DISTINCT {num_expr} FROM {table_ref}{where_gt_zero} ORDER BY {num_expr} ASC LIMIT 5;').fetchall()]
+            bot_rows = []
+            for v in bot_vals:
+                where_bv = f"{where_sql} AND {num_expr} = {v}" if where_sql else f" WHERE {num_expr} = {v}"
+                r = con.execute(f'SELECT id, "{nik_col}", "{kk_col}", "{nama_col}", {num_expr} FROM {table_ref}{where_bv} ORDER BY id ASC LIMIT 1;').fetchone()
+                if r:
+                    bot_rows.append(r)
+
+            if len(bot_rows) < 5:
+                existing_bot_ids = [r[0] for r in bot_rows]
+                id_bot_filter = f" AND id NOT IN ({','.join(str(i) for i in existing_bot_ids)})" if existing_bot_ids else ""
+                extra_bot = con.execute(f'SELECT id, "{nik_col}", "{kk_col}", "{nama_col}", {num_expr} FROM {table_ref}{where_gt_zero}{id_bot_filter} ORDER BY {num_expr} ASC LIMIT {5 - len(bot_rows)};').fetchall()
+                bot_rows.extend(extra_bot)
+
+            # 3. Macro Demographics Summary
+            demographics = {}
+            try:
+                jk_col = existing_cols.get('jenis_kelamin', existing_cols.get('jk', existing_cols.get('gender', None)))
+                if jk_col:
+                    demographics['gender'] = [{'name': str(r[0]), 'count': int(r[1])} for r in con.execute(f'SELECT COALESCE(CAST("{jk_col}" AS VARCHAR), \'Lainnya\'), COUNT(*) FROM {table_ref}{where_sql} GROUP BY 1 ORDER BY 2 DESC;').fetchall()]
+
+                desil_col = existing_cols.get('desil_nasional', existing_cols.get('desil', None))
+                if desil_col:
+                    demographics['desil'] = [{'name': 'Desil ' + str(r[0]), 'count': int(r[1])} for r in con.execute(f'SELECT COALESCE(CAST("{desil_col}" AS VARCHAR), \'-\') AS d_name, COUNT(*) AS d_cnt FROM {table_ref}{where_sql} GROUP BY d_name ORDER BY TRY_CAST(REGEXP_REPLACE(d_name, \'[^0-9]\', \'\', \'g\') AS INTEGER) ASC;').fetchall()]
+
+                usia_col = existing_cols.get('usia', existing_cols.get('umur', None))
+                if usia_col:
+                    u_expr = f'TRY_CAST(REGEXP_REPLACE(CAST("{usia_col}" AS VARCHAR), \'[^0-9.]\', \'\', \'g\') AS DOUBLE)'
+                    u_row = con.execute(f'''
+                        SELECT 
+                            ROUND(AVG({u_expr}), 1),
+                            COUNT(CASE WHEN {u_expr} < 6 THEN 1 END),
+                            COUNT(CASE WHEN {u_expr} BETWEEN 6 AND 17 THEN 1 END),
+                            COUNT(CASE WHEN {u_expr} BETWEEN 18 AND 59 THEN 1 END),
+                            COUNT(CASE WHEN {u_expr} >= 60 THEN 1 END)
+                        FROM {table_ref}{where_sql}
+                        WHERE {u_expr} IS NOT NULL;
+                    ''').fetchone()
+                    if u_row:
+                        demographics['age'] = {
+                            'avg_age': float(u_row[0]) if u_row[0] is not None else 0.0,
+                            'balita': int(u_row[1] or 0),
+                            'anak': int(u_row[2] or 0),
+                            'produktif': int(u_row[3] or 0),
+                            'lansia': int(u_row[4] or 0)
+                        }
+
+                kerja_col = existing_cols.get('status_bekerja', existing_cols.get('pekerjaan', None))
+                if kerja_col:
+                    demographics['employment'] = [{'name': str(r[0]), 'count': int(r[1])} for r in con.execute(f'SELECT COALESCE(CAST("{kerja_col}" AS VARCHAR), \'Lainnya\'), COUNT(*) FROM {table_ref}{where_sql} GROUP BY 1 ORDER BY 2 DESC LIMIT 6;').fetchall()]
+
+                kawin_col = existing_cols.get('status_kawin', existing_cols.get('status_pernikahan', None))
+                if kawin_col:
+                    demographics['marital'] = [{'name': str(r[0]), 'count': int(r[1])} for r in con.execute(f'SELECT COALESCE(CAST("{kawin_col}" AS VARCHAR), \'Lainnya\'), COUNT(*) FROM {table_ref}{where_sql} GROUP BY 1 ORDER BY 2 DESC LIMIT 6;').fetchall()]
+            except Exception as e_demo:
+                demographics['error'] = str(e_demo)
 
             res = {
                 'max': float(row[0]) if row and row[0] is not None else 0.0,
@@ -372,7 +449,8 @@ def run_duckdb_query():
                 'sum': float(row[3]) if row and row[3] is not None else 0.0,
                 'count': int(row[4]) if row and row[4] is not None else 0,
                 'top5': [{'id': r[0], 'nik': r[1], 'kk': r[2], 'nama': r[3], 'val': r[4]} for r in top_rows],
-                'bot5': [{'id': r[0], 'nik': r[1], 'kk': r[2], 'nama': r[3], 'val': r[4]} for r in bot_rows]
+                'bot5': [{'id': r[0], 'nik': r[1], 'kk': r[2], 'nama': r[3], 'val': r[4]} for r in bot_rows],
+                'demographics': demographics
             }
             print(f"[DUCKDB_KPI_RESULT] {json.dumps(res)}", flush=True)
         except Exception as e:

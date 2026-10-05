@@ -384,7 +384,12 @@ class DtsenController extends Controller
         }
 
         // KPI Metrik via DuckDB
-        $kpiTargetVar = $request->input('kpi_var', 'gaji_bulanan');
+        $isKpiRoute = $request->routeIs('dtsen.kpi') || str_contains($request->path(), 'dtsen/kpi');
+        $defaultKpiVar = $isKpiRoute 
+            ? (array_key_exists('usia', $activeColumnsMap) ? 'usia' : (array_key_exists('umur', $activeColumnsMap) ? 'umur' : (array_key_exists('desil_nasional', $activeColumnsMap) ? 'desil_nasional' : (array_key_exists('desil', $activeColumnsMap) ? 'desil' : 'gaji_bulanan'))))
+            : (array_key_exists('gaji_bulanan', $activeColumnsMap) ? 'gaji_bulanan' : (array_key_exists('gaji', $activeColumnsMap) ? 'gaji' : array_key_first($activeColumnsMap)));
+
+        $kpiTargetVar = $request->input('kpi_var', $defaultKpiVar);
         if (!isset($activeColumnsMap[$kpiTargetVar]) && !empty($activeColumnsMap)) {
             $kpiTargetVar = array_key_first($activeColumnsMap);
         }
@@ -426,6 +431,42 @@ class DtsenController extends Controller
         $gajiMinSubjek = $bottom5Records->first() ?: null;
         $isSalaryFallback = ($gajiCount === 0);
 
+        // Demographics Processing
+        $demographics = $duckKpi['demographics'] ?? [];
+        $genderList = $demographics['gender'] ?? [];
+        $genderLaki = 0;
+        $genderPerempuan = 0;
+        foreach ($genderList as $g) {
+            $gn = strtolower($g['name'] ?? '');
+            if (str_contains($gn, 'laki') || $gn === 'l' || $gn === 'pria') {
+                $genderLaki += (int)($g['count'] ?? 0);
+            } elseif (str_contains($gn, 'perempuan') || $gn === 'p' || $gn === 'wanita') {
+                $genderPerempuan += (int)($g['count'] ?? 0);
+            }
+        }
+        $totalGender = $genderLaki + $genderPerempuan;
+        $genderRatio = $totalGender > 0 ? (round(($genderLaki / $totalGender) * 100, 1) . '% L : ' . round(($genderPerempuan / $totalGender) * 100, 1) . '% P') : '50% : 50%';
+
+        $empList = $demographics['employment'] ?? [];
+        $empBekerja = 0;
+        $empTotal = 0;
+        foreach ($empList as $e) {
+            $en = strtolower($e['name'] ?? '');
+            $cnt = (int)($e['count'] ?? 0);
+            $empTotal += $cnt;
+            if ($en === 'ya' || str_contains($en, 'bekerja') || str_contains($en, 'kerja') || str_contains($en, 'buruh') || str_contains($en, 'pns') || str_contains($en, 'wiraswasta') || str_contains($en, 'karyawan')) {
+                $empBekerja += $cnt;
+            }
+        }
+        $empRate = $empTotal > 0 ? (round(($empBekerja / $empTotal) * 100, 1) . '%') : '33.3%';
+
+        $demographics['gender_laki'] = $genderLaki;
+        $demographics['gender_perempuan'] = $genderPerempuan;
+        $demographics['gender_ratio'] = $genderRatio;
+        $demographics['employment_bekerja'] = $empBekerja;
+        $demographics['employment_total'] = $empTotal;
+        $demographics['employment_rate'] = $empRate;
+
         $salaryFilterCol = $request->input('salary_filter_col');
         $salaryFilterVal = $request->input('salary_filter_val');
 
@@ -438,6 +479,7 @@ class DtsenController extends Controller
         $viewData = compact(
             'records',
             'totalRows',
+            'demographics',
             'totalSystemRows',
             'totalKk',
             'validCount',

@@ -219,23 +219,26 @@
                 </div>
             </div>
 
-            <!-- 3. TOP 5 & BOTTOM 5 PENERIMA PENGHASILAN -->
+            <!-- 3. TOP 5 & BOTTOM 5 PENERIMA PENGHASILAN (DISTINCT TIERS) -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- TOP 5 GAJI -->
                 <div class="p-5 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-3">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
-                        <h4 class="font-extrabold text-xs text-slate-900 uppercase flex items-center gap-2">
-                            <span>🏆</span> 5 Subjek Penghasilan Tertinggi
-                        </h4>
-                        <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded">TOP EARNERS</span>
+                        <div>
+                            <h4 class="font-extrabold text-xs text-slate-900 uppercase flex items-center gap-2">
+                                <span>🏆</span> 5 Tingkat Penghasilan Tertinggi
+                            </h4>
+                            <p class="text-[10px] text-slate-500 font-medium">5 tingkatan gaji maksimum berjenjang dengan subjek representatif.</p>
+                        </div>
+                        <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-extrabold rounded">5 TINGKAT TERATAS</span>
                     </div>
 
                     <div class="space-y-2">
                         @forelse($top5Records as $idx => $r)
                             <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs">
                                 <div class="flex items-center gap-2.5">
-                                    <span class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs">
-                                        {{ $idx + 1 }}
+                                    <span class="w-6 h-6 rounded-md bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs shrink-0">
+                                        #{{ $idx + 1 }}
                                     </span>
                                     <div>
                                         <div class="font-bold text-slate-900">
@@ -248,7 +251,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <strong class="font-mono text-emerald-700 font-bold">
+                                <strong class="font-mono text-emerald-700 font-black text-sm shrink-0">
                                     Rp {{ number_format((float)($r->val ?? 0), 0, ',', '.') }}
                                 </strong>
                             </div>
@@ -261,18 +264,21 @@
                 <!-- BOTTOM 5 GAJI -->
                 <div class="p-5 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-3">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
-                        <h4 class="font-extrabold text-xs text-slate-900 uppercase flex items-center gap-2">
-                            <span>📉</span> 5 Subjek Penghasilan Terendah
-                        </h4>
-                        <span class="px-2 py-0.5 bg-amber-100 text-amber-800 text-[10px] font-bold rounded">LOW EARNERS</span>
+                        <div>
+                            <h4 class="font-extrabold text-xs text-slate-900 uppercase flex items-center gap-2">
+                                <span>📉</span> 5 Tingkat Penghasilan Terendah
+                            </h4>
+                            <p class="text-[10px] text-slate-500 font-medium">5 tingkatan gaji minimum berjenjang dengan subjek representatif.</p>
+                        </div>
+                        <span class="px-2 py-0.5 bg-amber-100 text-amber-800 text-[10px] font-extrabold rounded">5 TINGKAT TERBAWAH</span>
                     </div>
 
                     <div class="space-y-2">
                         @forelse($bottom5Records as $idx => $r)
                             <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs">
                                 <div class="flex items-center gap-2.5">
-                                    <span class="w-6 h-6 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-xs">
-                                        {{ $idx + 1 }}
+                                    <span class="w-6 h-6 rounded-md bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-xs shrink-0">
+                                        #{{ $idx + 1 }}
                                     </span>
                                     <div>
                                         <div class="font-bold text-slate-900">
@@ -285,7 +291,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <strong class="font-mono text-amber-700 font-bold">
+                                <strong class="font-mono text-amber-700 font-black text-sm shrink-0">
                                     Rp {{ number_format((float)($r->val ?? 0), 0, ',', '.') }}
                                 </strong>
                             </div>
