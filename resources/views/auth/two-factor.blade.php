@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verifikasi 2FA HP Cerdas — PADU Enterprise</title>
+    <title>Verifikasi 2FA HP Cerdas — PADU</title>
     
     <!-- 100% Offline Standalone Assets -->
     <link rel="stylesheet" href="{{ asset('css/tailwind.min.css') }}">
@@ -178,7 +178,7 @@
         <!-- Footer Akreditasi -->
         <div class="mt-6 text-center text-[11px] text-slate-400 space-y-0.5">
             <div>100% Offline Standalone &bull; Tanpa Internet & Pulsa &bull; Standar RFC 6238</div>
-            <div class="text-[10px] text-slate-500">Direktori Forensik Keamanan Tingkat Tinggi PADU Enterprise v2.0</div>
+            <div class="text-[10px] text-slate-500">Direktori Forensik Keamanan Tingkat Tinggi PADU v2.0</div>
         </div>
 
     </div>

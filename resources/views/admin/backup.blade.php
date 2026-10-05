@@ -1,6 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
+<style>
+@media print {
+    body * { visibility: hidden !important; }
+    #printable-recovery-sheet, #printable-recovery-sheet * { visibility: visible !important; }
+    #printable-recovery-sheet { position: absolute; left: 0; top: 0; width: 100%; display: block !important; }
+    nav, header, footer, aside, .glass-card, .padu-sidebar, .padu-top-header { display: none !important; }
+}
+</style>
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6" x-data="backupPage()">
 
     <!-- Header Section (Glassmorphism) -->
@@ -63,9 +71,9 @@
             </div>
             <button type="button" 
                     @click="printDisasterSheet()" 
-                    class="px-3.5 py-1.5 bg-white hover:bg-slate-50 text-slate-900 rounded-xl text-xs font-bold border border-amber-300 shadow-sm transition-all flex items-center gap-1.5 cursor-pointer shrink-0 hover:scale-105 active:scale-95">
+                    class="px-3.5 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold border border-amber-500 shadow-md transition-all flex items-center gap-1.5 cursor-pointer shrink-0 hover:scale-105 active:scale-95">
                 <span>🖨️</span>
-                <span>Cetak Lembar Brankas DRP</span>
+                <span x-text="hasPrintedDisaster ? 'Cetak Ulang Lembar DRP' : 'Cetak Lembar Brankas DRP'"></span>
             </button>
         </div>
 
@@ -81,13 +89,29 @@
         <div class="space-y-2">
             <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 block">KODE PEMULIHAN BENCANA HARDWARE (TIDAK DAPAT DISALIN):</span>
             
-            <!-- Tampilan Anti-Copy: Sama sekali tidak bisa dicopy, diselect, atau disalin ke clipboard -->
-            <div class="recovery-key-display select-none anti-copy-protection font-black tracking-widest text-center"
-                 oncopy="return false;"
-                 oncut="return false;"
-                 oncontextmenu="return false;"
-                 draggable="false"
-                 x-text="disasterKey"></div>
+            <!-- Keadaan 1: Belum Dicetak (Dimask) -->
+            <div x-show="!hasPrintedDisaster" class="p-3.5 rounded-xl border border-dashed border-amber-400 bg-amber-50/80 text-center space-y-1.5">
+                <div class="font-mono text-base font-black text-amber-950 tracking-widest select-none">
+                    PADU-••••-••••-••••-••••
+                </div>
+                <div class="text-[11px] text-amber-900 font-semibold leading-relaxed flex items-center justify-center gap-1.5">
+                    <span>🔒</span>
+                    <span>Kode disembunyikan demi keamanan. Klik tombol <strong>"Cetak Lembar Brankas DRP"</strong> di atas untuk mencetak dokumen fisik berisikan kode ini.</span>
+                </div>
+            </div>
+
+            <!-- Keadaan 2: Sudah Dicetak (Terbuka) -->
+            <div x-show="hasPrintedDisaster" x-cloak class="space-y-1.5">
+                <div class="recovery-key-display select-none anti-copy-protection font-black tracking-widest text-center"
+                     oncopy="return false;"
+                     oncut="return false;"
+                     oncontextmenu="return false;"
+                     draggable="false"
+                     x-text="disasterKey"></div>
+                <p class="text-[10px] text-emerald-800 font-bold text-center">
+                    ✅ Dokumen brankas DRP telah dicetak & kode terbuka di layar
+                </p>
+            </div>
         </div>
 
         <!-- Banner Anti-Copy Sesuai Instruksi User & Mitigasi BSSN -->
@@ -234,7 +258,7 @@
         <div style="border: 3px double #000; padding: 25px; font-family: 'Times New Roman', serif;">
             <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 12px; margin-bottom: 18px;">
                 <h2 style="font-size: 16pt; margin: 0; text-transform: uppercase; font-weight: bold;">LEMBAR KUNCI PEMULIHAN BENCANA SERVER (DISASTER RECOVERY KEY - DRP)</h2>
-                <h3 style="font-size: 11pt; margin: 4px 0 0; font-weight: normal;">Sistem Informasi PADU Enterprise v2.0 &bull; Bab 3.3 Dokumen Proposal Teknis (Anti-Oper Folder & Re-Binding)</h3>
+                <h3 style="font-size: 11pt; margin: 4px 0 0; font-weight: normal;">Sistem Informasi PADU v2.0 &bull; Standar Keamanan BSSN</h3>
                 <p style="font-size: 9pt; margin: 2px 0 0; font-style: italic; color: #555;">DOKUMEN SANGAT RAHASIA &bull; BERBEDA TOTAL DARI KUNCI 2FA HP &bull; WAJIB DISIMPAN DALAM AMPLOP TERSEGEL DI BRANKAS PIMPINAN</p>
             </div>
 
@@ -296,8 +320,10 @@ function backupPage() {
         backupFilename: @json(session('new_backup_filename', '')),
         backupSha256: @json(session('new_backup_sha256', '')),
         disasterKey: @json($disasterKey ?? 'PADU-DR-RECOVERY-KEY-2026'),
+        hasPrintedDisaster: false,
 
         printDisasterSheet() {
+            this.hasPrintedDisaster = true;
             window.print();
         }
     };

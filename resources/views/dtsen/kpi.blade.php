@@ -63,30 +63,38 @@
                 </span>
             </div>
 
-            <!-- CARDS METRIK 4 STATISTIK UTAMA -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="p-4 rounded-xl text-white shadow-sm space-y-1" style="background: linear-gradient(135deg, #059669 0%, #0f766e 100%) !important;">
-                    <span class="text-xs font-black uppercase tracking-wider text-emerald-100">Nilai Maksimum (MAX)</span>
-                    <div class="text-2xl font-black text-white font-mono">{{ is_numeric($kpiMax) ? number_format($kpiMax, (floor($kpiMax) == $kpiMax ? 0 : 2), ',', '.') : $kpiMax }}</div>
-                    <p class="text-[11px] font-bold text-emerald-100">Nilai puncak tertinggi dari dataset</p>
+            <!-- CARDS METRIK 4 STATISTIK UTAMA (RESPONSIVE FLEX & OVERFLOW SAFE) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                <div class="kpi-stat-card p-4 rounded-xl text-white shadow-sm space-y-1.5 min-w-0" style="background: linear-gradient(135deg, #059669 0%, #0f766e 100%) !important;">
+                    <span class="text-xs font-black uppercase tracking-wider text-emerald-100 truncate block">Nilai Maksimum (MAX)</span>
+                    <div class="kpi-stat-value text-white font-mono" title="{{ is_numeric($kpiMax) ? number_format($kpiMax, (floor($kpiMax) == $kpiMax ? 0 : 2), ',', '.') : $kpiMax }}">
+                        <span class="truncate">{{ is_numeric($kpiMax) ? number_format($kpiMax, (floor($kpiMax) == $kpiMax ? 0 : 2), ',', '.') : $kpiMax }}</span>
+                    </div>
+                    <p class="text-[11px] font-bold text-emerald-100 truncate">Nilai puncak tertinggi dari dataset</p>
                 </div>
 
-                <div class="p-4 rounded-xl text-white shadow-sm space-y-1" style="background: linear-gradient(135deg, #2563eb 0%, #4338ca 100%) !important;">
-                    <span class="text-xs font-black uppercase tracking-wider text-blue-100">Rata-Rata (AVG)</span>
-                    <div class="text-2xl font-black text-white font-mono">{{ number_format($kpiAvg, 2, ',', '.') }}</div>
-                    <p class="text-[11px] font-bold text-blue-100">Nilai rata-rata dari seluruh baris</p>
+                <div class="kpi-stat-card p-4 rounded-xl text-white shadow-sm space-y-1.5 min-w-0" style="background: linear-gradient(135deg, #2563eb 0%, #4338ca 100%) !important;">
+                    <span class="text-xs font-black uppercase tracking-wider text-blue-100 truncate block">Rata-Rata (AVG)</span>
+                    <div class="kpi-stat-value text-white font-mono" title="{{ number_format($kpiAvg, 2, ',', '.') }}">
+                        <span class="truncate">{{ number_format($kpiAvg, 2, ',', '.') }}</span>
+                    </div>
+                    <p class="text-[11px] font-bold text-blue-100 truncate">Nilai rata-rata dari seluruh baris</p>
                 </div>
 
-                <div class="p-4 rounded-xl text-white shadow-sm space-y-1" style="background: linear-gradient(135deg, #d97706 0%, #c2410c 100%) !important;">
-                    <span class="text-xs font-black uppercase tracking-wider text-amber-100">Nilai Minimum (MIN)</span>
-                    <div class="text-2xl font-black text-white font-mono">{{ is_numeric($kpiMin) ? number_format($kpiMin, (floor($kpiMin) == $kpiMin ? 0 : 2), ',', '.') : $kpiMin }}</div>
-                    <p class="text-[11px] font-bold text-amber-100">Nilai dasar terendah dari dataset</p>
+                <div class="kpi-stat-card p-4 rounded-xl text-white shadow-sm space-y-1.5 min-w-0" style="background: linear-gradient(135deg, #d97706 0%, #c2410c 100%) !important;">
+                    <span class="text-xs font-black uppercase tracking-wider text-amber-100 truncate block">Nilai Minimum (MIN)</span>
+                    <div class="kpi-stat-value text-white font-mono" title="{{ is_numeric($kpiMin) ? number_format($kpiMin, (floor($kpiMin) == $kpiMin ? 0 : 2), ',', '.') : $kpiMin }}">
+                        <span class="truncate">{{ is_numeric($kpiMin) ? number_format($kpiMin, (floor($kpiMin) == $kpiMin ? 0 : 2), ',', '.') : $kpiMin }}</span>
+                    </div>
+                    <p class="text-[11px] font-bold text-amber-100 truncate">Nilai dasar terendah dari dataset</p>
                 </div>
 
-                <div class="p-4 rounded-xl text-white shadow-sm space-y-1" style="background: linear-gradient(135deg, #7c3aed 0%, #1e293b 100%) !important;">
-                    <span class="text-xs font-black uppercase tracking-wider text-purple-100">Total Akumulasi (SUM)</span>
-                    <div class="text-2xl font-black text-white font-mono">{{ is_numeric($kpiSum) ? number_format($kpiSum, (floor($kpiSum) == $kpiSum ? 0 : 2), ',', '.') : $kpiSum }}</div>
-                    <p class="text-[11px] font-bold text-purple-100">Akumulasi total keseluruhan nilai</p>
+                <div class="kpi-stat-card p-4 rounded-xl text-white shadow-sm space-y-1.5 min-w-0" style="background: linear-gradient(135deg, #7c3aed 0%, #1e293b 100%) !important;">
+                    <span class="text-xs font-black uppercase tracking-wider text-purple-100 truncate block">Total Akumulasi (SUM)</span>
+                    <div class="kpi-stat-value text-white font-mono" title="{{ is_numeric($kpiSum) ? number_format($kpiSum, (floor($kpiSum) == $kpiSum ? 0 : 2), ',', '.') : $kpiSum }}">
+                        <span class="truncate">{{ is_numeric($kpiSum) ? number_format($kpiSum, (floor($kpiSum) == $kpiSum ? 0 : 2), ',', '.') : $kpiSum }}</span>
+                    </div>
+                    <p class="text-[11px] font-bold text-purple-100 truncate">Akumulasi total keseluruhan nilai</p>
                 </div>
             </div>
 

@@ -1,4 +1,4 @@
-<!-- ================= SHARED GLOBAL MODALS PADU ENTERPRISE ================= -->
+<!-- ================= SHARED GLOBAL MODALS PADU ================= -->
 
 <!-- 1. Modal Konfirmasi Kosongkan Data -->
 <div x-show="showClearModal" 

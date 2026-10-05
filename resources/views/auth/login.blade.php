@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Masuk Sistem — PADU v2.0 Enterprise</title>
+    <title>Masuk Sistem — PADU</title>
     
     <!-- Cache Control -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -43,7 +43,7 @@
                 <span class="brand-logo-text">P</span>
             </div>
             <div class="brand-title">
-                <span>PADU Enterprise</span>
+                <span>PADU</span>
                 <span class="version-pill">v2.0</span>
             </div>
             <p class="brand-subtitle">Pengolah & Analisis Data Terpadu (DTSEN 2026)</p>
@@ -278,7 +278,7 @@
 
         <!-- Footer Akreditasi -->
         <div class="auth-footer">
-            <div>Sistem Informasi PADU v2.0 Enterprise &bull; Kedaulatan Mandiri Lepas Kunci</div>
+            <div>Sistem Informasi PADU &bull; Kedaulatan Mandiri Lepas Kunci</div>
             <div class="auth-footer-sub">Selaras Regulasi BSSN No. 4/2021, No. 11/2024, & UU No. 27/2022 (UU PDP)</div>
         </div>
 

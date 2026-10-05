@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PADU v2.0 Enterprise - Pengolah & Analisis Data Terpadu (DTSEN 2026)</title>
+    <title>PADU - Pengolah & Analisis Data Terpadu (DTSEN 2026)</title>
     
     <!-- 100% Pure Offline Assets (Murni Lokal, Tanpa Request Jaringan Luar / Google Fonts) -->
     <link rel="stylesheet" href="{{ asset('css/tailwind.min.css') }}">
@@ -54,7 +54,7 @@
                     </div>
                     <div class="min-w-0">
                         <div class="flex items-center gap-1.5">
-                            <span class="font-extrabold text-slate-900 text-sm tracking-tight leading-none truncate">PADU Enterprise</span>
+                            <span class="font-extrabold text-slate-900 text-sm tracking-tight leading-none truncate">PADU</span>
                             <span class="px-1.5 py-0.5 text-[9px] uppercase font-black bg-blue-50 text-blue-700 border border-blue-200 rounded-md shrink-0">v2.0</span>
                         </div>
                         <p class="text-[11px] text-slate-500 font-medium truncate mt-1">DTSEN 2026 &bull; Standar BSSN</p>
@@ -325,9 +325,9 @@
     <div class="padu-main-wrapper"
          :class="sidebarOpen ? 'sidebar-open' : 'sidebar-closed'">
         
-        <!-- HEADER TOP BAR ENTERPRISE (FROSTED GLASS) -->
-        <header class="sticky top-0 z-30"
-                style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(226, 232, 240, 0.9); box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.03);">
+        <!-- HEADER TOP BAR SOLID STICKY -->
+        <header class="sticky top-0 z-50 bg-white"
+                style="background: #ffffff !important; opacity: 1 !important; border-bottom: 1px solid #e2e8f0; box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.06);">
             <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
                 
                 <!-- Left: Sidebar Toggle Button & Active Module Breadcrumb -->
@@ -350,7 +350,7 @@
                     <div class="flex items-center gap-2 text-xs font-semibold text-slate-500">
                         <a href="{{ route('dtsen.data') }}" class="hover:text-blue-600 transition-colors font-bold text-slate-700 flex items-center gap-1.5">
                             <span>📊</span>
-                            <span class="hidden sm:inline">PADU Enterprise</span>
+                            <span class="hidden sm:inline">PADU</span>
                         </a>
                         <span>/</span>
                         <span class="font-extrabold text-blue-700">
@@ -466,7 +466,7 @@
 
                                 @if(Route::has('logout'))
                                     <div style="border-top: 1px solid #f1f5f9; padding: 6px 0;">
-                                        <form action="{{ route('logout') }}" method="POST" onsubmit="return confirm('Keluar dari sesi sistem PADU Enterprise sekarang?');">
+                                        <form action="{{ route('logout') }}" method="POST" onsubmit="return confirm('Keluar dari sesi sistem PADU sekarang?');">
                                             @csrf
                                             <button type="submit" class="profile-dropdown-item" style="width: 100%; text-align: left; background: transparent; border: none; color: #e11d48; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 10px; padding: 8px 16px;">
                                                 <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="width: 15px; height: 15px; min-width: 15px;">
@@ -531,7 +531,7 @@
         <!-- FOOTER STANDAR BSSN -->
         <footer class="bg-white border-t border-slate-200 py-6 mt-auto">
             <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2">
-                <p><strong>PADU v2.0 Enterprise</strong> &copy; {{ date('Y') }} — Pengolah & Analisis Data Terpadu (Kedaulatan Mandiri Lepas Kunci).</p>
+                <p><strong>PADU</strong> &copy; {{ date('Y') }} — Pengolah & Analisis Data Terpadu (Kedaulatan Mandiri Lepas Kunci).</p>
                 <div class="flex items-center gap-4 text-[11px]">
                     <span class="text-emerald-600 font-bold flex items-center gap-1">
                         <span class="w-2 h-2 rounded-full bg-emerald-500"></span>

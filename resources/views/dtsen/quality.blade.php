@@ -69,35 +69,35 @@
                 </div>
             </div>
 
-            <!-- GRID 7 STAT KARTU -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
-                <div class="p-3.5 bg-white/90 rounded-xl border border-amber-200 text-center shadow-xs">
-                    <span class="block text-[11px] font-bold text-slate-500 uppercase">Total Baris Data</span>
-                    <strong class="text-xl font-black text-slate-900 font-mono">{{ number_format($totalRows) }}</strong>
+            <!-- GRID 7 STAT KARTU (RESPONSIVE FLEX & OVERFLOW SAFE) -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-7 gap-3">
+                <div class="p-3 bg-white/90 rounded-xl border border-amber-200 text-center shadow-xs flex flex-col justify-between min-w-0 overflow-hidden">
+                    <span class="block text-[11px] font-bold text-slate-500 uppercase truncate">Total Baris Data</span>
+                    <strong class="text-base sm:text-lg lg:text-xl font-black text-slate-900 font-mono truncate" title="{{ number_format($totalRows) }}">{{ number_format($totalRows) }}</strong>
                 </div>
-                <div class="p-3.5 bg-white/90 rounded-xl border border-amber-200 text-center shadow-xs">
-                    <span class="block text-[11px] font-bold text-slate-500 uppercase">Kolom Terbaca</span>
-                    <strong class="text-xl font-black text-slate-900 font-mono">{{ count($activeColumnsMap) }}</strong>
+                <div class="p-3 bg-white/90 rounded-xl border border-amber-200 text-center shadow-xs flex flex-col justify-between min-w-0 overflow-hidden">
+                    <span class="block text-[11px] font-bold text-slate-500 uppercase truncate">Kolom Terbaca</span>
+                    <strong class="text-base sm:text-lg lg:text-xl font-black text-slate-900 font-mono truncate" title="{{ count($activeColumnsMap) }}">{{ count($activeColumnsMap) }}</strong>
                 </div>
-                <div class="p-3.5 bg-white/90 rounded-xl border border-amber-200 text-center shadow-xs">
-                    <span class="block text-[11px] font-bold text-slate-500 uppercase">KK Terelasi</span>
-                    <strong class="text-xl font-black text-blue-900 font-mono">{{ number_format($totalKk) }}</strong>
+                <div class="p-3 bg-white/90 rounded-xl border border-amber-200 text-center shadow-xs flex flex-col justify-between min-w-0 overflow-hidden">
+                    <span class="block text-[11px] font-bold text-slate-500 uppercase truncate">KK Terelasi</span>
+                    <strong class="text-base sm:text-lg lg:text-xl font-black text-blue-900 font-mono truncate" title="{{ number_format($totalKk) }}">{{ number_format($totalKk) }}</strong>
                 </div>
-                <div class="p-3.5 bg-emerald-100/90 rounded-xl border border-emerald-300 text-center shadow-xs">
-                    <span class="block text-[11px] font-bold text-emerald-800 uppercase">🟢 Data Valid</span>
-                    <strong class="text-xl font-black text-emerald-950 font-mono">{{ number_format($validCount) }}</strong>
+                <div class="p-3 bg-emerald-100/90 rounded-xl border border-emerald-300 text-center shadow-xs flex flex-col justify-between min-w-0 overflow-hidden">
+                    <span class="block text-[11px] font-bold text-emerald-800 uppercase truncate">🟢 Data Valid</span>
+                    <strong class="text-base sm:text-lg lg:text-xl font-black text-emerald-950 font-mono truncate" title="{{ number_format($validCount) }}">{{ number_format($validCount) }}</strong>
                 </div>
-                <div class="p-3.5 bg-amber-100/90 rounded-xl border border-amber-300 text-center shadow-xs">
-                    <span class="block text-[11px] font-bold text-amber-900 uppercase">🟡 Missing Value</span>
-                    <strong class="text-xl font-black text-amber-950 font-mono">{{ number_format($warningCount) }}</strong>
+                <div class="p-3 bg-amber-100/90 rounded-xl border border-amber-300 text-center shadow-xs flex flex-col justify-between min-w-0 overflow-hidden">
+                    <span class="block text-[11px] font-bold text-amber-900 uppercase truncate">🟡 Missing Value</span>
+                    <strong class="text-base sm:text-lg lg:text-xl font-black text-amber-950 font-mono truncate" title="{{ number_format($warningCount) }}">{{ number_format($warningCount) }}</strong>
                 </div>
-                <div class="p-3.5 bg-rose-100/90 rounded-xl border border-rose-300 text-center shadow-xs">
-                    <span class="block text-[11px] font-bold text-rose-800 uppercase">🔴 Critical Error</span>
-                    <strong class="text-xl font-black text-rose-950 font-mono">{{ number_format($criticalCount) }}</strong>
+                <div class="p-3 bg-rose-100/90 rounded-xl border border-rose-300 text-center shadow-xs flex flex-col justify-between min-w-0 overflow-hidden">
+                    <span class="block text-[11px] font-bold text-rose-800 uppercase truncate">🔴 Critical Error</span>
+                    <strong class="text-base sm:text-lg lg:text-xl font-black text-rose-950 font-mono truncate" title="{{ number_format($criticalCount) }}">{{ number_format($criticalCount) }}</strong>
                 </div>
-                <div class="p-3.5 bg-purple-100/90 rounded-xl border border-purple-300 text-center shadow-xs">
-                    <span class="block text-[11px] font-bold text-purple-900 uppercase">⚠️ Multi-Error (3+)</span>
-                    <strong class="text-xl font-black text-purple-950 font-mono">{{ number_format($multiErrorCount ?? 0) }}</strong>
+                <div class="p-3 bg-purple-100/90 rounded-xl border border-purple-300 text-center shadow-xs flex flex-col justify-between min-w-0 overflow-hidden">
+                    <span class="block text-[11px] font-bold text-purple-900 uppercase truncate">⚠️ Multi-Error (3+)</span>
+                    <strong class="text-base sm:text-lg lg:text-xl font-black text-purple-950 font-mono truncate" title="{{ number_format($multiErrorCount ?? 0) }}">{{ number_format($multiErrorCount ?? 0) }}</strong>
                 </div>
             </div>
 

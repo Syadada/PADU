@@ -304,7 +304,7 @@ class AdminController extends Controller
         $recoveryKey = session('setup_2fa_recovery_key') ?? TwoFactorService::generateEmergencyRecoveryKey();
         session(['setup_2fa_recovery_key' => $recoveryKey]);
 
-        $otpUri = TwoFactorService::getProvisioningUri('PADU Enterprise', $user->email, $secret);
+        $otpUri = TwoFactorService::getProvisioningUri('PADU', $user->email, $secret);
 
         return view('admin.two-factor-setup', compact('user', 'secret', 'recoveryKey', 'otpUri'));
     }

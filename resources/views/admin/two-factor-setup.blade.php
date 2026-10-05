@@ -5,6 +5,22 @@
 
     <!-- Script Pure Offline QR Code Generator -->
     <script src="{{ asset('js/qrcode.min.js') }}"></script>
+    <style>
+        @media print {
+            body > * {
+                display: none !important;
+            }
+            #printable-recovery-sheet {
+                display: block !important;
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 20px !important;
+            }
+        }
+    </style>
 
     <!-- Header Section (Glassmorphism) -->
     <div class="glass-card p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -122,9 +138,9 @@
                         </div>
                         <button type="button" 
                                 @click="printSheet()" 
-                                class="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-900 rounded-xl text-[11px] font-bold border border-amber-300 shadow-sm transition-all flex items-center gap-1.5 cursor-pointer hover:scale-105 active:scale-95">
+                                class="px-3.5 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold border border-amber-500 shadow-md transition-all flex items-center gap-1.5 cursor-pointer hover:scale-105 active:scale-95">
                             <span>🖨️</span>
-                            <span>Cetak Amplop</span>
+                            <span x-text="hasPrinted ? 'Cetak Ulang Dokumen' : 'Cetak Amplop & Buka Kunci'"></span>
                         </button>
                     </div>
 
@@ -132,14 +148,31 @@
                         Jika ponsel Anda hilang, rusak, atau ter-reset, gunakan <strong>Master Recovery Key</strong> ini untuk memulihkan akses Super Admin:
                     </p>
 
-                    <div class="space-y-2">
-                        <div class="recovery-key-display select-all" x-text="recoveryKey"></div>
-                        <div class="flex justify-end">
-                            <button type="button" 
-                                    @click="copyRecoveryKey()" 
-                                    class="text-[11px] font-bold text-amber-900 hover:text-amber-950 flex items-center gap-1 cursor-pointer">
-                                <span x-text="keyCopied ? '✅ Kunci Berhasil Disalin!' : '📋 Salin Teks Kunci'"></span>
-                            </button>
+                    <div class="space-y-3">
+                        <!-- Keadaan 1: Belum Dicetak (Kunci Dirahasiakan / Dimask) -->
+                        <div x-show="!hasPrinted" class="p-4 rounded-xl border border-dashed border-amber-400 bg-amber-50/80 text-center space-y-2">
+                            <div class="font-mono text-base font-black text-amber-950 tracking-widest select-none py-1">
+                                PADU-••••-••••-••••-••••
+                            </div>
+                            <div class="p-2 bg-white/80 rounded-lg text-[11px] text-amber-950 font-semibold leading-relaxed border border-amber-200 flex items-center justify-center gap-1.5">
+                                <span>🔒</span>
+                                <span>Kode recovery <strong>disembunyikan di layar</strong> demi mitigasi siber. Klik tombol <strong>"Cetak Amplop"</strong> di atas untuk mencetak lembar brankas fisik & membuka kode.</span>
+                            </div>
+                        </div>
+
+                        <!-- Keadaan 2: Sudah Dicetak (Kunci Terbuka) -->
+                        <div x-show="hasPrinted" x-cloak class="space-y-2">
+                            <div class="recovery-key-display select-all" x-text="recoveryKey"></div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-[11px] font-bold text-emerald-800 flex items-center gap-1">
+                                    <span>✅</span> Dokumen fisik telah dicetak & kode terbuka
+                                </span>
+                                <button type="button" 
+                                        @click="copyRecoveryKey()" 
+                                        class="text-[11px] font-bold text-amber-900 hover:text-amber-950 flex items-center gap-1 cursor-pointer">
+                                    <span x-text="keyCopied ? '✅ Kunci Berhasil Disalin!' : '📋 Salin Teks Kunci'"></span>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -239,7 +272,7 @@
         <div style="border: 3px double #000; padding: 25px; font-family: 'Times New Roman', serif;">
             <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 12px; margin-bottom: 18px;">
                 <h2 style="font-size: 18pt; margin: 0; text-transform: uppercase; font-weight: bold;">LEMBAR KUNCI PEMULIHAN DARURAT (MASTER RECOVERY KEY)</h2>
-                <h3 style="font-size: 12pt; margin: 4px 0 0; font-weight: normal;">Sistem Informasi PADU Enterprise v2.0 &bull; Standar Regulasi BSSN No. 4/2021</h3>
+                <h3 style="font-size: 12pt; margin: 4px 0 0; font-weight: normal;">Sistem Informasi PADU v2.0 &bull; Standar Regulasi BSSN No. 4/2021</h3>
                 <p style="font-size: 10pt; margin: 2px 0 0; font-style: italic;">DOKUMEN RAHASIA &bull; WAJIB DISIMPAN DALAM AMPLOP TERSEGEL DI BRANKAS PIMPINAN</p>
             </div>
 
@@ -300,6 +333,7 @@ function twoFactorSetup() {
         secret: @json($secret),
         recoveryKey: @json($recoveryKey),
         code: '',
+        hasPrinted: false,
         keyCopied: false,
         secretCopied: false,
         submitting: false,
@@ -311,17 +345,27 @@ function twoFactorSetup() {
         },
 
         renderQRCode() {
-            const container = document.getElementById('qrcode-container');
-            if (container && typeof QRCode !== 'undefined') {
-                container.innerHTML = '';
-                new QRCode(container, {
-                    text: this.otpUri,
-                    width: 170,
-                    height: 170,
-                    colorDark : '#0f172a',
-                    colorLight : '#ffffff',
-                    correctLevel : QRCode.CorrectLevel.M
-                });
+            const render = () => {
+                const container = document.getElementById('qrcode-container');
+                if (container && typeof QRCode !== 'undefined') {
+                    container.innerHTML = '';
+                    new QRCode(container, {
+                        text: this.otpUri,
+                        width: 180,
+                        height: 180,
+                        colorDark : '#0f172a',
+                        colorLight : '#ffffff',
+                        correctLevel : QRCode.CorrectLevel.M
+                    });
+                    return true;
+                }
+                return false;
+            };
+
+            if (!render()) {
+                setTimeout(render, 150);
+                setTimeout(render, 500);
+                setTimeout(render, 1200);
             }
         },
 
@@ -330,6 +374,7 @@ function twoFactorSetup() {
         },
 
         copyRecoveryKey() {
+            if (!this.hasPrinted) return;
             navigator.clipboard.writeText(this.recoveryKey);
             this.keyCopied = true;
             setTimeout(() => { this.keyCopied = false; }, 2500);
@@ -342,6 +387,7 @@ function twoFactorSetup() {
         },
 
         printSheet() {
+            this.hasPrinted = true;
             window.print();
         }
     };

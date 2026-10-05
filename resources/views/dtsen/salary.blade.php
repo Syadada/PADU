@@ -151,25 +151,31 @@
                     </div>
                 @endif
 
-                <!-- 4 KARTU KPI GAJI HIGH-CONTRAST -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- 4 KARTU KPI GAJI HIGH-CONTRAST (RESPONSIVE FLEX & OVERFLOW SAFE) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
                     <!-- Rata-Rata Gaji -->
-                    <div class="p-5 rounded-2xl border shadow-sm space-y-2 bg-blue-50 border-blue-200">
+                    <div class="kpi-stat-card p-5 rounded-2xl border shadow-sm space-y-2 bg-blue-50 border-blue-200 min-w-0">
                         <div class="flex items-center justify-between text-xs font-extrabold uppercase tracking-wider text-blue-900">
-                            <span>📊 Gaji Rata-Rata (AVG)</span>
-                            <span class="px-2 py-0.5 rounded text-[10px] font-black bg-blue-200 text-blue-950">AVG</span>
+                            <span class="truncate">📊 Gaji Rata-Rata (AVG)</span>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-black bg-blue-200 text-blue-950 shrink-0">AVG</span>
                         </div>
-                        <div class="text-2xl sm:text-3xl font-black text-slate-900 font-mono">Rp {{ number_format($gajiAvg, 0, ',', '.') }}</div>
-                        <p class="text-xs font-medium text-blue-700">Dari {{ number_format($gajiCount) }} subjek terfilter</p>
+                        <div class="kpi-stat-value text-slate-900 font-mono" title="Rp {{ number_format($gajiAvg, 0, ',', '.') }}">
+                            <span class="text-sm font-bold text-slate-500 mr-1">Rp</span>
+                            <span class="truncate">{{ number_format($gajiAvg, 0, ',', '.') }}</span>
+                        </div>
+                        <p class="text-xs font-medium text-blue-700 truncate">Dari {{ number_format($gajiCount) }} subjek terfilter</p>
                     </div>
 
                     <!-- Gaji Tertinggi -->
-                    <div class="p-5 rounded-2xl border shadow-sm space-y-2 bg-emerald-50 border-emerald-200">
+                    <div class="kpi-stat-card p-5 rounded-2xl border shadow-sm space-y-2 bg-emerald-50 border-emerald-200 min-w-0">
                         <div class="flex items-center justify-between text-xs font-extrabold uppercase tracking-wider text-emerald-900">
-                            <span>📈 Gaji Tertinggi (MAX)</span>
-                            <span class="px-2 py-0.5 rounded text-[10px] font-black bg-emerald-200 text-emerald-950">MAX</span>
+                            <span class="truncate">📈 Gaji Tertinggi (MAX)</span>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-black bg-emerald-200 text-emerald-950 shrink-0">MAX</span>
                         </div>
-                        <div class="text-2xl sm:text-3xl font-black text-slate-900 font-mono">Rp {{ number_format($gajiMax, 0, ',', '.') }}</div>
+                        <div class="kpi-stat-value text-slate-900 font-mono" title="Rp {{ number_format($gajiMax, 0, ',', '.') }}">
+                            <span class="text-sm font-bold text-slate-500 mr-1">Rp</span>
+                            <span class="truncate">{{ number_format($gajiMax, 0, ',', '.') }}</span>
+                        </div>
                         <div class="text-xs font-medium truncate text-emerald-800">
                             @if($gajiMaxSubjek)
                                 Subjek: <strong class="font-extrabold"><span x-show="isMasked">{{ $gajiMaxSubjek->masked_nama }}</span><span x-show="!isMasked" style="display:none;">{{ $gajiMaxSubjek->nama }}</span></strong>
@@ -180,12 +186,15 @@
                     </div>
 
                     <!-- Gaji Terendah -->
-                    <div class="p-5 rounded-2xl border shadow-sm space-y-2 bg-amber-50 border-amber-200">
+                    <div class="kpi-stat-card p-5 rounded-2xl border shadow-sm space-y-2 bg-amber-50 border-amber-200 min-w-0">
                         <div class="flex items-center justify-between text-xs font-extrabold uppercase tracking-wider text-amber-900">
-                            <span>📉 Gaji Terendah (MIN)</span>
-                            <span class="px-2 py-0.5 rounded text-[10px] font-black bg-amber-200 text-amber-950">MIN</span>
+                            <span class="truncate">📉 Gaji Terendah (MIN)</span>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-black bg-amber-200 text-amber-950 shrink-0">MIN</span>
                         </div>
-                        <div class="text-2xl sm:text-3xl font-black text-slate-900 font-mono">Rp {{ number_format($gajiMin, 0, ',', '.') }}</div>
+                        <div class="kpi-stat-value text-slate-900 font-mono" title="Rp {{ number_format($gajiMin, 0, ',', '.') }}">
+                            <span class="text-sm font-bold text-slate-500 mr-1">Rp</span>
+                            <span class="truncate">{{ number_format($gajiMin, 0, ',', '.') }}</span>
+                        </div>
                         <div class="text-xs font-medium truncate text-amber-800">
                             @if($gajiMinSubjek)
                                 Subjek: <strong class="font-extrabold"><span x-show="isMasked">{{ $gajiMinSubjek->masked_nama }}</span><span x-show="!isMasked" style="display:none;">{{ $gajiMinSubjek->nama }}</span></strong>
@@ -196,13 +205,16 @@
                     </div>
 
                     <!-- Total Kumulatif Gaji -->
-                    <div class="p-5 rounded-2xl border shadow-sm space-y-2 bg-purple-50 border-purple-200">
+                    <div class="kpi-stat-card p-5 rounded-2xl border shadow-sm space-y-2 bg-purple-50 border-purple-200 min-w-0">
                         <div class="flex items-center justify-between text-xs font-extrabold uppercase tracking-wider text-purple-900">
-                            <span>💰 Total Kumulatif (SUM)</span>
-                            <span class="px-2 py-0.5 rounded text-[10px] font-black bg-purple-200 text-purple-950">SUM</span>
+                            <span class="truncate">💰 Total Kumulatif (SUM)</span>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-black bg-purple-200 text-purple-950 shrink-0">SUM</span>
                         </div>
-                        <div class="text-2xl sm:text-3xl font-black text-slate-900 font-mono">Rp {{ number_format($gajiSum, 0, ',', '.') }}</div>
-                        <p class="text-xs font-medium text-purple-700">Total seluruh pendapatan terfilter</p>
+                        <div class="kpi-stat-value text-slate-900 font-mono" title="Rp {{ number_format($gajiSum, 0, ',', '.') }}">
+                            <span class="text-sm font-bold text-slate-500 mr-1">Rp</span>
+                            <span class="truncate">{{ number_format($gajiSum, 0, ',', '.') }}</span>
+                        </div>
+                        <p class="text-xs font-medium text-purple-700 truncate">Total seluruh pendapatan terfilter</p>
                     </div>
                 </div>
             </div>
