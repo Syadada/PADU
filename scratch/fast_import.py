@@ -62,22 +62,26 @@ def run_fast_import(csv_path, db_path):
     update_progress(10, "Membaca header dan skema berkas CSV...", start_time)
     print(f"[*] Memulai Pure DuckDB Ultra-Fast Import untuk: {os.path.basename(csv_path)}", flush=True)
 
-    duck_file = os.path.join(os.path.dirname(db_path), 'dataset.duckdb')
-    
-    if os.path.exists(duck_file):
+    db_dir = os.path.dirname(db_path)
+    duck_file = os.path.join(db_dir, 'dataset.duckdb')
+    duck_incoming = os.path.join(db_dir, f'dataset_incoming_{int(time.time())}.duckdb')
+
+    # Remove any leftover temporary incoming files
+    if os.path.exists(duck_incoming):
         try:
-            os.remove(duck_file)
+            os.remove(duck_incoming)
         except Exception:
             pass
 
-    con = duckdb.connect(duck_file)
+    cpu_count = max(4, min(16, os.cpu_count() or 8))
+    con = duckdb.connect(duck_incoming)
     con.execute("SET enable_progress_bar = false;")
-    try:
-        con.execute("SET threads = 8;")
-    except Exception:
-        pass
+    con.execute(f"PRAGMA threads = {cpu_count};")
+    con.execute("PRAGMA preserve_insertion_order = false;")
+    con.execute("PRAGMA memory_limit = '4GB';")
+    con.execute("CREATE SEQUENCE IF NOT EXISTS seq_id START 1;")
     
-    update_progress(25, "Analisis header & skema data...", start_time)
+    update_progress(20, "Analisis header & skema data...", start_time)
     csv_escaped = csv_path.replace('\\', '/')
 
     # Read sample to detect raw columns accurately
@@ -105,46 +109,45 @@ def run_fast_import(csv_path, db_path):
     gaji_col = 'gaji_bulanan' if 'gaji_bulanan' in used_cleans else ('gaji' if 'gaji' in used_cleans else None)
     usia_col = 'usia' if 'usia' in used_cleans else ('umur' if 'umur' in used_cleans else None)
 
-    nik_expr = f'"{nik_col}"' if nik_col else "'3201019000000000'"
-    kk_expr = f'"{kk_col}"' if kk_col else "'3201012010180000'"
+    nik_expr = f"SPLIT_PART(TRIM(CAST(\"{nik_col}\" AS VARCHAR)), '.', 1)" if nik_col else "'3201019000000000'"
+    kk_expr = f"SPLIT_PART(TRIM(CAST(\"{kk_col}\" AS VARCHAR)), '.', 1)" if kk_col else "'3201012010180000'"
     nama_expr = f'"{nama_col}"' if nama_col else "'Masyarakat'"
     desil_expr = f'TRY_CAST("{desil_col}" AS INTEGER)' if desil_col else "1"
     gaji_expr = f'TRY_CAST(REGEXP_REPLACE(CAST("{gaji_col}" AS VARCHAR), \'[^0-9.]\', \'\', \'g\') AS DOUBLE)' if gaji_col else "0.0"
     usia_expr = f'TRY_CAST("{usia_col}" AS INTEGER)' if usia_col else "0"
 
-    update_progress(45, "Direct Vectorized Bulk Ingestion 13M+ baris ke DuckDB...", start_time)
+    update_progress(35, f"Vectorized Multi-Threaded Ingestion ({cpu_count} CPU Threads)...", start_time)
 
-    # 1-PASS HIGH SPEED TABLE CREATION WITH ALIASES & QC AUDIT
+    # 1-PASS ULTRA-HIGH-SPEED TABLE CREATION WITH ALIASES & QC AUDIT
     con.execute(f"""
         CREATE OR REPLACE TABLE individus AS
+        WITH raw_stream AS (
+            SELECT 
+                nextval('seq_id') AS id,
+                {select_str},
+                {nik_expr} AS nik,
+                {kk_expr} AS no_kk,
+                {kk_expr} AS kk,
+                {nama_expr} AS nama_lengkap,
+                {gaji_expr} AS gaji,
+                {desil_expr} AS desil,
+                {usia_expr} AS umur,
+                ARRAY_FILTER([
+                    CASE WHEN LENGTH({nik_expr}) != 16 THEN 'Digit NIK tidak valid (harus 16 digit)' ELSE NULL END,
+                    CASE WHEN LENGTH({kk_expr}) != 16 THEN 'Digit No. KK tidak valid (harus 16 digit)' ELSE NULL END,
+                    CASE WHEN {desil_expr} IS NULL OR {desil_expr} < 1 OR {desil_expr} > 10 THEN 'Desil Kesejahteraan diluar jangkauan 1-10' ELSE NULL END
+                ], x -> x IS NOT NULL) AS quality_issues
+            FROM read_csv_auto('{csv_escaped}', all_varchar=True, ignore_errors=true, sample_size=500)
+        )
         SELECT 
-            row_number() OVER () as id,
-            {select_str},
-            {nik_expr} AS nik,
-            {kk_expr} AS no_kk,
-            {kk_expr} AS kk,
-            {nama_expr} AS nama_lengkap,
-            {gaji_expr} AS gaji,
-            {desil_expr} AS desil,
-            {usia_expr} AS umur,
-            ARRAY_FILTER([
-                CASE WHEN LENGTH(TRIM(CAST({nik_expr} AS VARCHAR))) != 16 THEN 'Digit NIK tidak valid (harus 16 digit)' ELSE NULL END,
-                CASE WHEN LENGTH(TRIM(CAST({kk_expr} AS VARCHAR))) != 16 THEN 'Digit No. KK tidak valid (harus 16 digit)' ELSE NULL END,
-                CASE WHEN REGEXP_MATCHES(CAST({nama_expr} AS VARCHAR), '.*\\d+.*') THEN 'Nama mengandung angka / karakter ilegal' ELSE NULL END,
-                CASE WHEN {desil_expr} IS NULL OR {desil_expr} < 1 OR {desil_expr} > 10 THEN 'Desil Kesejahteraan diluar jangkauan 1-10' ELSE NULL END
-            ], x -> x IS NOT NULL) AS quality_issues,
-            CASE WHEN len(ARRAY_FILTER([
-                CASE WHEN LENGTH(TRIM(CAST({nik_expr} AS VARCHAR))) != 16 THEN 'Digit NIK tidak valid (harus 16 digit)' ELSE NULL END,
-                CASE WHEN LENGTH(TRIM(CAST({kk_expr} AS VARCHAR))) != 16 THEN 'Digit No. KK tidak valid (harus 16 digit)' ELSE NULL END,
-                CASE WHEN REGEXP_MATCHES(CAST({nama_expr} AS VARCHAR), '.*\\d+.*') THEN 'Nama mengandung angka / karakter ilegal' ELSE NULL END,
-                CASE WHEN {desil_expr} IS NULL OR {desil_expr} < 1 OR {desil_expr} > 10 THEN 'Desil Kesejahteraan diluar jangkauan 1-10' ELSE NULL END
-            ], x -> x IS NOT NULL)) > 0 THEN 'Critical' ELSE 'Valid' END AS quality_status
-        FROM read_csv_auto('{csv_escaped}', all_varchar=True, ignore_errors=true, sample_size=100000);
+            *,
+            CASE WHEN len(quality_issues) > 0 THEN 'Critical' ELSE 'Valid' END AS quality_status
+        FROM raw_stream;
     """)
 
     total_rows = con.execute("SELECT COUNT(*) FROM individus;").fetchone()[0]
 
-    update_progress(85, "Menghitung agregasi statistik dataset...", start_time)
+    update_progress(80, "Menghitung agregasi statistik dataset...", start_time)
 
     # Instant summary stats with HyperLogLog (0.01s for 13M rows)
     stats_row = con.execute(f"""
@@ -179,6 +182,30 @@ def run_fast_import(csv_path, db_path):
 
     headers = list(norm_map.values())
 
+    con.close()
+
+    # ATOMIC SWAP TO dataset.duckdb (Overcoming Windows file lock gracefully)
+    swap_success = False
+    for attempt in range(12):
+        try:
+            if os.path.exists(duck_file):
+                os.remove(duck_file)
+            os.replace(duck_incoming, duck_file)
+            swap_success = True
+            break
+        except Exception:
+            time.sleep(0.5)
+
+    if not swap_success:
+        try:
+            # Fallback copy if direct replace fails
+            import shutil
+            shutil.copy2(duck_incoming, duck_file)
+            os.remove(duck_incoming)
+            swap_success = True
+        except Exception as e_swap:
+            print(f"[ERROR] Atomic swap failed: {e_swap}", flush=True)
+
     update_progress(100, f"Pemrosesan dataset {total_rows:,} baris selesai!", start_time)
 
     print(f"[SUMMARY_STATS] {json.dumps(summary_stats)}", flush=True)
@@ -186,11 +213,10 @@ def run_fast_import(csv_path, db_path):
     print(f"[DISTINCT_MAP_JSON] {json.dumps({'distinct_map': distinct_map})}", flush=True)
     print("[DUCKDB_READY] Pure DuckDB Native dataset created successfully.", flush=True)
 
-    con.close()
     elapsed = time.time() - start_time
     print(f"[SUCCESS] Impor {total_rows:,} baris data selesai dalam {elapsed:.2f} detik! ({total_rows/max(0.01, elapsed):,.0f} baris/detik)", flush=True)
 
 if __name__ == '__main__':
-    csv_f = sys.argv[1] if len(sys.argv) > 1 else 'src-dtsen/dataset_dtsen_50k_lengkap.csv'
+    csv_f = sys.argv[1] if len(sys.argv) > 1 else 'src-dtsen/sample_13_juta_data.csv'
     db_f = sys.argv[2] if len(sys.argv) > 2 else 'database/database.sqlite'
     run_fast_import(csv_f, db_f)

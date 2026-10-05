@@ -853,6 +853,15 @@ class DtsenController extends Controller
                     }
 
                     return redirect()->route('dtsen.index')->with('success', $successMsg);
+                } else {
+                    $errMsg = "Gagal memproses berkas dengan High-Speed Python Engine: " . ($output ?: 'Proses terhenti tanpa respon.');
+                    self::logActivity('ERROR', $errMsg);
+                    if ($fileSize > 20 * 1024 * 1024) {
+                        if ($request->ajax() || $request->wantsJson()) {
+                            return response()->json(['success' => false, 'message' => $errMsg], 500);
+                        }
+                        return redirect()->route('dtsen.index')->with('error', $errMsg);
+                    }
                 }
             }
         }

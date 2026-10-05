@@ -741,12 +741,12 @@
                 this.showImportProgressModal = true;
                 this.importProgressPercent = 5;
                 this.importProgressMessage = 'Membaca data dari berkas CSV...';
-                this.importEtaSeconds = 5;
+                this.importEtaSeconds = 25;
 
                 if (this.progressPollTimer) clearInterval(this.progressPollTimer);
 
                 let startTime = Date.now();
-                let totalEstSec = 6;
+                let totalEstSec = 25;
                 let isPollingActive = false;
                 let hasServerProgress = false;
 
@@ -811,7 +811,14 @@
                         }
                     });
 
-                    const result = await response.json();
+                    const resText = await response.text();
+                    let result;
+                    try {
+                        result = JSON.parse(resText);
+                    } catch (e) {
+                        const cleanErrText = resText.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim();
+                        throw new Error('Respon server (Status ' + response.status + '): ' + cleanErrText.substring(0, 200));
+                    }
                     if (this.progressPollTimer) clearInterval(this.progressPollTimer);
 
                     if (result.success) {

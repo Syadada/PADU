@@ -1692,12 +1692,12 @@ function dtsenApp() {
             this.showImportProgressModal = true;
             this.importProgressPercent = 5;
             this.importProgressMessage = 'Membaca data dari berkas CSV...';
-            this.importEtaSeconds = 5;
+            this.importEtaSeconds = 25;
 
             if (this.progressPollTimer) clearInterval(this.progressPollTimer);
 
             let startTime = Date.now();
-            let totalEstSec = 6;
+            let totalEstSec = 25;
             let isPollingActive = false;
             let hasServerProgress = false;
 
