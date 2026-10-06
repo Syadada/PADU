@@ -4,6 +4,50 @@ import json
 import base64
 import duckdb
 
+def resolve_target_column(key, ex_cols):
+    k = str(key).strip().lower()
+    if k.startswith('salary_'):
+        k = k[7:]
+    if k in ex_cols:
+        return ex_cols[k]
+    syns = {
+        'gaji': 'gaji_bulanan', 'pendapatan': 'gaji_bulanan', 'income': 'gaji_bulanan', 'salary': 'gaji_bulanan', 'penghasilan': 'gaji_bulanan',
+        'gaji_bulanan': 'gaji',
+        'desil': 'desil_nasional', 'desil_kesejahteraan': 'desil_nasional',
+        'desil_nasional': 'desil',
+        'jk': 'jenis_kelamin', 'gender': 'jenis_kelamin', 'sex': 'jenis_kelamin',
+        'jenis_kelamin': 'jk',
+        'nik': 'nomor_induk_kependudukan', 'no_nik': 'nomor_induk_kependudukan',
+        'nomor_induk_kependudukan': 'nik',
+        'kk': 'nomor_kartu_keluarga', 'no_kk': 'nomor_kartu_keluarga',
+        'nomor_kartu_keluarga': 'kk',
+        'umur': 'usia', 'age': 'usia',
+        'usia': 'umur',
+        'pekerjaan': 'status_bekerja', 'status_kerja': 'status_bekerja',
+        'status_bekerja': 'pekerjaan',
+        'status_kawin': 'status_pernikahan', 'status_pernikahan': 'status_kawin',
+        'nama': 'nama_lengkap', 'nama_lengkap': 'nama',
+        'kabupaten': 'kabupaten_kota', 'kota': 'kabupaten_kota',
+        'desa': 'kelurahan_desa', 'kelurahan': 'kelurahan_desa',
+        'hubungan_keluarga': 'status_hubungan_keluarga', 'shdk': 'status_hubungan_keluarga', 'status_hubungan': 'status_hubungan_keluarga'
+    }
+    if k in syns and syns[k] in ex_cols:
+        return ex_cols[syns[k]]
+    # Only search substrings for longer tokens, and NEVER match small aliases like 'id', 'kk', 'nik'
+    if len(k) >= 4:
+        for exist_k, exist_name in ex_cols.items():
+            if exist_k in ('id', 'nik', 'kk', 'no_kk') or len(exist_k) < 4:
+                continue
+            if k in exist_k or exist_k in k:
+                return exist_name
+    return None
+
+def clean_str(val):
+    if val is None:
+        return ''
+    s = str(val).strip()
+    return '' if s.lower() in ('none', 'null', 'semua') else s
+
 def build_where_clause(con, table_ref, params):
     try:
         cols_info = con.execute(f"DESCRIBE {table_ref};").fetchall()
@@ -14,11 +58,13 @@ def build_where_clause(con, table_ref, params):
     where_clauses = []
 
     # 1. Search filter
-    search = str(params.get('search', '')).strip()
+    search = clean_str(params.get('search'))
     if not search:
         filters_map = params.get('filters', {})
         if isinstance(filters_map, dict):
-            search = str(filters_map.get('salary_search', '')).strip()
+            search = clean_str(filters_map.get('salary_search'))
+            if not search:
+                search = clean_str(filters_map.get('search'))
     if search:
         search_clean = search.lower()
         if len(search) == 16 and search.isdigit():
@@ -37,57 +83,64 @@ def build_where_clause(con, table_ref, params):
             where_clauses.append(f'(LOWER(CAST("{nama_col}" AS VARCHAR)) LIKE \'%{search_escaped}%\' OR LOWER(CAST("{nik_col}" AS VARCHAR)) LIKE \'%{search_escaped}%\' OR LOWER(CAST("{kk_col}" AS VARCHAR)) LIKE \'%{search_escaped}%\')')
 
     # 2. Quality status filter
-    quality_status = str(params.get('quality_status', 'semua')).strip()
+    quality_status = clean_str(params.get('quality_status'))
     if quality_status and quality_status.lower() != 'semua':
         qs_col = existing_cols.get('quality_status', 'quality_status')
         qs_escaped = quality_status.replace("'", "''")
         where_clauses.append(f'"{qs_col}" = \'{qs_escaped}\'')
 
-    def resolve_target_column(key, ex_cols):
-        k = str(key).strip().lower()
-        if k.startswith('salary_'):
-            k = k[7:]
-        if k in ex_cols:
-            return ex_cols[k]
-        syns = {
-            'gaji': 'gaji_bulanan', 'pendapatan': 'gaji_bulanan', 'income': 'gaji_bulanan', 'salary': 'gaji_bulanan', 'penghasilan': 'gaji_bulanan',
-            'gaji_bulanan': 'gaji',
-            'desil': 'desil_nasional', 'desil_kesejahteraan': 'desil_nasional',
-            'desil_nasional': 'desil',
-            'jk': 'jenis_kelamin', 'gender': 'jenis_kelamin', 'sex': 'jenis_kelamin',
-            'jenis_kelamin': 'jk',
-            'nik': 'nomor_induk_kependudukan', 'no_nik': 'nomor_induk_kependudukan',
-            'nomor_induk_kependudukan': 'nik',
-            'kk': 'nomor_kartu_keluarga', 'no_kk': 'nomor_kartu_keluarga',
-            'nomor_kartu_keluarga': 'kk',
-            'umur': 'usia', 'age': 'usia',
-            'usia': 'umur',
-            'pekerjaan': 'status_bekerja', 'status_kerja': 'status_bekerja',
-            'status_bekerja': 'pekerjaan',
-            'status_kawin': 'status_pernikahan', 'status_pernikahan': 'status_kawin',
-            'nama': 'nama_lengkap', 'nama_lengkap': 'nama',
-            'kabupaten': 'kabupaten_kota', 'kota': 'kabupaten_kota',
-            'desa': 'kelurahan_desa', 'kelurahan': 'kelurahan_desa'
-        }
-        if k in syns and syns[k] in ex_cols:
-            return ex_cols[syns[k]]
-        for exist_k, exist_name in ex_cols.items():
-            if k in exist_k or exist_k in k:
-                return exist_name
-        return None
-
     # 3. Dynamic multi-checkbox / column filters
     filters_map = params.get('filters', {})
     if isinstance(filters_map, dict):
+        # Dynamic custom filter pair
+        c_col = clean_str(filters_map.get('salary_filter_col', filters_map.get('custom_filter_col', '')))
+        c_val = clean_str(filters_map.get('salary_filter_val', filters_map.get('custom_filter_val', '')))
+        if c_col and c_val and c_val.lower() != 'semua':
+            target_custom = resolve_target_column(c_col, existing_cols)
+            if target_custom:
+                c_clean = c_val.lower().replace("'", "''")
+                where_clauses.append(f'LOWER(CAST("{target_custom}" AS VARCHAR)) LIKE \'%{c_clean}%\'')
+
+        excluded_param_keys = (
+            'page', 'search', 'quality_status', '_token', 
+            'salary_filter_col', 'salary_filter_val', 'custom_filter_col', 'custom_filter_val',
+            'order_by', 'sort_by', 'salary_sort', 'per_page', 'limit', 'salary_limit',
+            'salary_metric_var', 'salary_group_col', 'salary_search'
+        )
+
         for req_key, user_val in filters_map.items():
-            if not user_val or user_val == 'semua' or req_key in ('page', 'search', 'quality_status', '_token'):
+            if user_val is None or req_key in excluded_param_keys:
                 continue
             
-            val_arr = user_val if isinstance(user_val, list) else [v.strip() for v in str(user_val).split(',') if v.strip() and v.strip() != 'semua']
+            if isinstance(user_val, list):
+                val_arr = [clean_str(v) for v in user_val if clean_str(v) and clean_str(v).lower() != 'semua']
+            else:
+                val_arr = [clean_str(v) for v in str(user_val).split(',') if clean_str(v) and clean_str(v).lower() != 'semua']
+            
             if not val_arr:
                 continue
 
-            col_key = str(req_key).strip().lower()
+            raw_key = str(req_key).strip().lower()
+            col_key = raw_key[7:] if raw_key.startswith('salary_') else raw_key
+
+            # Wilayah / Daerah multi-column filter handling
+            if col_key in ('wilayah', 'daerah') or raw_key in ('wilayah', 'daerah', 'salary_wilayah', 'salary_daerah'):
+                prov_col = existing_cols.get('provinsi')
+                kab_col = existing_cols.get('kabupaten_kota', existing_cols.get('kabupaten'))
+                kec_col = existing_cols.get('kecamatan')
+                w_parts = []
+                for item in val_arr:
+                    item_clean = str(item).strip().lower().replace("'", "''")
+                    sub_parts = []
+                    if prov_col: sub_parts.append(f'LOWER(CAST("{prov_col}" AS VARCHAR)) LIKE \'%{item_clean}%\'')
+                    if kab_col: sub_parts.append(f'LOWER(CAST("{kab_col}" AS VARCHAR)) LIKE \'%{item_clean}%\'')
+                    if kec_col: sub_parts.append(f'LOWER(CAST("{kec_col}" AS VARCHAR)) LIKE \'%{item_clean}%\'')
+                    if sub_parts:
+                        w_parts.append('(' + ' OR '.join(sub_parts) + ')')
+                if w_parts:
+                    where_clauses.append('(' + ' OR '.join(w_parts) + ')')
+                continue
+
             target_col = resolve_target_column(col_key, existing_cols)
             if not target_col:
                 continue
@@ -99,8 +152,16 @@ def build_where_clause(con, table_ref, params):
                 item_clean = item_str.lower().replace("'", "''")
                 
                 # Age / Umur filter handling
-                if any(x in col_key for x in ['usia', 'umur', 'age']):
-                    if '<' in item_clean:
+                if any(x in col_key for x in ['usia', 'umur', 'age']) or target_col in ('usia', 'umur'):
+                    if 'balita' in item_clean or '< 6' in item_clean or '<6' in item_clean:
+                        or_parts.append(f'TRY_CAST("{target_col}" AS INTEGER) < 6')
+                    elif 'anak' in item_clean or 'sekolah' in item_clean or '6-17' in item_clean:
+                        or_parts.append(f'TRY_CAST("{target_col}" AS INTEGER) BETWEEN 6 AND 17')
+                    elif 'produktif' in item_clean or 'kerja' in item_clean or 'dewasa' in item_clean or '18-59' in item_clean:
+                        or_parts.append(f'TRY_CAST("{target_col}" AS INTEGER) BETWEEN 18 AND 59')
+                    elif 'lansia' in item_clean or '> 60' in item_clean or '>= 60' in item_clean or '>=60' in item_clean or '>60' in item_clean:
+                        or_parts.append(f'TRY_CAST("{target_col}" AS INTEGER) >= 60')
+                    elif '<' in item_clean:
                         num_str = ''.join(c for c in item_clean if c.isdigit())
                         if num_str:
                             or_parts.append(f'TRY_CAST("{target_col}" AS INTEGER) < {int(num_str)}')
@@ -126,8 +187,42 @@ def build_where_clause(con, table_ref, params):
                     else:
                         or_parts.append(f'LOWER(CAST("{target_col}" AS VARCHAR)) LIKE \'%{item_clean}%\'')
 
-                # Salary / Gaji filter handling
-                elif any(x in col_key for x in ['gaji', 'pendapatan', 'penghasilan', 'salary', 'income']):
+                # Desil filter handling
+                elif 'desil' in col_key or target_col in ('desil', 'desil_nasional'):
+                    if '-' in item_str:
+                        parts = item_str.split('-')
+                        p0 = ''.join(c for c in parts[0] if c.isdigit())
+                        p1 = ''.join(c for c in parts[1] if c.isdigit())
+                        if p0 and p1:
+                            or_parts.append(f'TRY_CAST("{target_col}" AS INTEGER) BETWEEN {int(p0)} AND {int(p1)}')
+                        else:
+                            or_parts.append(f'LOWER(CAST("{target_col}" AS VARCHAR)) LIKE \'%{item_clean}%\'')
+                    else:
+                        digits = ''.join(c for c in item_str if c.isdigit())
+                        if digits and 1 <= int(digits) <= 10:
+                            or_parts.append(f'(TRY_CAST("{target_col}" AS INTEGER) = {int(digits)} OR CAST("{target_col}" AS VARCHAR) = \'{digits}\')')
+                        else:
+                            or_parts.append(f'LOWER(CAST("{target_col}" AS VARCHAR)) LIKE \'%{item_clean}%\'')
+
+                # Gender / Jenis Kelamin filter handling
+                elif any(x in col_key for x in ['jenis_kelamin', 'gender', 'jk', 'sex']) or target_col in ('jenis_kelamin', 'jk'):
+                    if item_clean in ('laki-laki', 'l', 'pria', 'laki'):
+                        or_parts.append(f'LOWER(CAST("{target_col}" AS VARCHAR)) IN (\'laki-laki\', \'l\', \'pria\')')
+                    elif item_clean in ('perempuan', 'p', 'wanita'):
+                        or_parts.append(f'LOWER(CAST("{target_col}" AS VARCHAR)) IN (\'perempuan\', \'p\', \'wanita\')')
+                    else:
+                        or_parts.append(f'LOWER(CAST("{target_col}" AS VARCHAR)) LIKE \'%{item_clean}%\'')
+
+                # NIK / KK digit prefix or exact match
+                elif any(x in col_key for x in ['nik', 'nomor_induk_kependudukan', 'kk', 'nomor_kartu_keluarga']) or target_col in ('nik', 'nomor_induk_kependudukan', 'kk', 'nomor_kartu_keluarga', 'no_kk'):
+                    digits = ''.join(c for c in item_str if c.isdigit())
+                    if digits:
+                        or_parts.append(f'CAST("{target_col}" AS VARCHAR) LIKE \'%{digits}%\'')
+                    else:
+                        or_parts.append(f'LOWER(CAST("{target_col}" AS VARCHAR)) LIKE \'%{item_clean}%\'')
+
+                # Salary / Gaji filter handling (ONLY when col_key is really a salary dimension)
+                elif any(x in col_key for x in ['gaji', 'pendapatan', 'penghasilan', 'salary', 'income']) or target_col in ('gaji', 'gaji_bulanan'):
                     num_only = item_str.replace('.', '').replace(',', '')
                     if '< 1.5' in item_clean or '< 1,5' in item_clean or '< 1500000' in item_clean:
                         or_parts.append(f'TRY_CAST("{target_col}" AS DOUBLE) < 1500000')
@@ -154,40 +249,6 @@ def build_where_clause(con, table_ref, params):
                     elif num_only.isdigit():
                         exact_val = float(num_only)
                         or_parts.append(f'TRY_CAST("{target_col}" AS DOUBLE) = {exact_val}')
-                    else:
-                        or_parts.append(f'LOWER(CAST("{target_col}" AS VARCHAR)) LIKE \'%{item_clean}%\'')
-
-                # Desil filter handling
-                elif 'desil' in col_key:
-                    if '-' in item_str:
-                        parts = item_str.split('-')
-                        p0 = ''.join(c for c in parts[0] if c.isdigit())
-                        p1 = ''.join(c for c in parts[1] if c.isdigit())
-                        if p0 and p1:
-                            or_parts.append(f'TRY_CAST("{target_col}" AS INTEGER) BETWEEN {int(p0)} AND {int(p1)}')
-                        else:
-                            or_parts.append(f'LOWER(CAST("{target_col}" AS VARCHAR)) LIKE \'%{item_clean}%\'')
-                    else:
-                        digits = ''.join(c for c in item_str if c.isdigit())
-                        if digits and 1 <= int(digits) <= 10:
-                            or_parts.append(f'TRY_CAST("{target_col}" AS INTEGER) = {int(digits)}')
-                        else:
-                            or_parts.append(f'LOWER(CAST("{target_col}" AS VARCHAR)) LIKE \'%{item_clean}%\'')
-
-                # Gender / Jenis Kelamin filter handling
-                elif any(x in col_key for x in ['jenis_kelamin', 'gender', 'jk', 'sex']):
-                    if item_clean in ('laki-laki', 'l', 'pria', 'laki'):
-                        or_parts.append(f'LOWER(CAST("{target_col}" AS VARCHAR)) IN (\'laki-laki\', \'l\', \'pria\')')
-                    elif item_clean in ('perempuan', 'p', 'wanita'):
-                        or_parts.append(f'LOWER(CAST("{target_col}" AS VARCHAR)) IN (\'perempuan\', \'p\', \'wanita\')')
-                    else:
-                        or_parts.append(f'LOWER(CAST("{target_col}" AS VARCHAR)) LIKE \'%{item_clean}%\'')
-
-                # NIK / KK digit prefix or exact match
-                elif any(x in col_key for x in ['nik', 'nomor_induk_kependudukan', 'kk', 'nomor_kartu_keluarga']):
-                    digits = ''.join(c for c in item_str if c.isdigit())
-                    if digits:
-                        or_parts.append(f'CAST("{target_col}" AS VARCHAR) LIKE \'%{digits}%\'')
                     else:
                         or_parts.append(f'LOWER(CAST("{target_col}" AS VARCHAR)) LIKE \'%{item_clean}%\'')
 
@@ -249,7 +310,41 @@ def run_duckdb_query():
             cols_list = list(existing_cols.values())
             select_cols = ", ".join([f'"{c}"' for c in cols_list])
             
-            rows = con.execute(f"SELECT {select_cols} FROM {table_ref}{where_sql} ORDER BY id DESC LIMIT {per_page} OFFSET {offset};").fetchall()
+            order_param = str(params.get('order_by', params.get('sort_by', ''))).lower().strip()
+            salary_col = existing_cols.get('gaji_bulanan', existing_cols.get('gaji', None))
+            usia_col = existing_cols.get('usia', existing_cols.get('umur', None))
+            nama_col = existing_cols.get('nama', existing_cols.get('nama_lengkap', None))
+            
+            if 'gaji' in existing_cols:
+                num_salary = '"gaji"'
+            elif salary_col:
+                num_salary = f'TRY_CAST(REGEXP_REPLACE(CAST("{salary_col}" AS VARCHAR), \'[^0-9.]\', \'\', \'g\') AS DOUBLE)'
+            else:
+                num_salary = 'id'
+
+            if 'umur' in existing_cols:
+                num_usia = '"umur"'
+            elif usia_col:
+                num_usia = f'TRY_CAST(REGEXP_REPLACE(CAST("{usia_col}" AS VARCHAR), \'[^0-9.]\', \'\', \'g\') AS INTEGER)'
+            else:
+                num_usia = 'id'
+
+            if order_param in ('gaji_desc', 'salary_desc', 'max_gaji', 'avg_desc', 'tertinggi'):
+                order_clause = f"{num_salary} DESC NULLS LAST, id DESC"
+            elif order_param in ('gaji_asc', 'salary_asc', 'min_gaji', 'avg_asc', 'terendah'):
+                order_clause = f"{num_salary} ASC NULLS LAST, id ASC"
+            elif order_param in ('usia_desc', 'umur_desc'):
+                order_clause = f"{num_usia} DESC NULLS LAST, id DESC"
+            elif order_param in ('usia_asc', 'umur_asc'):
+                order_clause = f"{num_usia} ASC NULLS LAST, id ASC"
+            elif order_param in ('nama_asc', 'name_asc') and nama_col:
+                order_clause = f'"{nama_col}" ASC, id ASC'
+            elif order_param in ('nama_desc', 'name_desc') and nama_col:
+                order_clause = f'"{nama_col}" DESC, id DESC'
+            else:
+                order_clause = "id DESC"
+
+            rows = con.execute(f"SELECT {select_cols} FROM {table_ref}{where_sql} ORDER BY {order_clause} LIMIT {per_page} OFFSET {offset};").fetchall()
 
             items = []
             for r in rows:
@@ -352,7 +447,14 @@ def run_duckdb_query():
             return
 
         try:
-            num_expr = f'TRY_CAST(REGEXP_REPLACE(CAST("{col_name}" AS VARCHAR), \'[^0-9.]\', \'\', \'g\') AS DOUBLE)'
+            if 'gaji' in existing_cols and col_name in ('gaji', 'gaji_bulanan', 'pendapatan', 'penghasilan', 'salary', 'income'):
+                num_expr = '"gaji"'
+            elif 'umur' in existing_cols and col_name in ('umur', 'usia', 'age'):
+                num_expr = '"umur"'
+            elif 'desil' in existing_cols and col_name in ('desil', 'desil_nasional'):
+                num_expr = '"desil"'
+            else:
+                num_expr = f'TRY_CAST(REGEXP_REPLACE(CAST("{col_name}" AS VARCHAR), \'[^0-9.]\', \'\', \'g\') AS DOUBLE)'
             
             where_not_null = f"{where_sql} AND {num_expr} IS NOT NULL" if where_sql else f" WHERE {num_expr} IS NOT NULL"
             where_gt_zero = f"{where_sql} AND {num_expr} > 0" if where_sql else f" WHERE {num_expr} > 0"
@@ -371,35 +473,11 @@ def run_duckdb_query():
             kk_col = existing_cols.get('nomor_kartu_keluarga', existing_cols.get('no_kk', existing_cols.get('kk', 'kk')))
             nama_col = existing_cols.get('nama', existing_cols.get('nama_lengkap', 'nama'))
 
-            # 1. Distinct Top 5 Values (Peringkat 1 s/d 5 berjenjang dengan angka berbeda)
-            top_vals = [r[0] for r in con.execute(f'SELECT DISTINCT {num_expr} FROM {table_ref}{where_not_null} ORDER BY {num_expr} DESC LIMIT 5;').fetchall()]
-            top_rows = []
-            for v in top_vals:
-                where_v = f"{where_sql} AND {num_expr} = {v}" if where_sql else f" WHERE {num_expr} = {v}"
-                r = con.execute(f'SELECT id, "{nik_col}", "{kk_col}", "{nama_col}", {num_expr} FROM {table_ref}{where_v} ORDER BY id ASC LIMIT 1;').fetchone()
-                if r:
-                    top_rows.append(r)
+            # 1. Distinct Top 5 Values (Peringkat 1 s/d 5 berjenjang dengan angka tertinggi di kelompok terfilter)
+            top_rows = con.execute(f'SELECT id, "{nik_col}", "{kk_col}", "{nama_col}", {num_expr} FROM {table_ref}{where_not_null} ORDER BY {num_expr} DESC NULLS LAST, id ASC LIMIT 5;').fetchall()
 
-            if len(top_rows) < 5:
-                existing_top_ids = [r[0] for r in top_rows]
-                id_filter = f" AND id NOT IN ({','.join(str(i) for i in existing_top_ids)})" if existing_top_ids else ""
-                extra = con.execute(f'SELECT id, "{nik_col}", "{kk_col}", "{nama_col}", {num_expr} FROM {table_ref}{where_not_null}{id_filter} ORDER BY {num_expr} DESC LIMIT {5 - len(top_rows)};').fetchall()
-                top_rows.extend(extra)
-
-            # 2. Distinct Bottom 5 Values (Peringkat 1 s/d 5 terendah berjenjang dengan angka berbeda)
-            bot_vals = [r[0] for r in con.execute(f'SELECT DISTINCT {num_expr} FROM {table_ref}{where_gt_zero} ORDER BY {num_expr} ASC LIMIT 5;').fetchall()]
-            bot_rows = []
-            for v in bot_vals:
-                where_bv = f"{where_sql} AND {num_expr} = {v}" if where_sql else f" WHERE {num_expr} = {v}"
-                r = con.execute(f'SELECT id, "{nik_col}", "{kk_col}", "{nama_col}", {num_expr} FROM {table_ref}{where_bv} ORDER BY id ASC LIMIT 1;').fetchone()
-                if r:
-                    bot_rows.append(r)
-
-            if len(bot_rows) < 5:
-                existing_bot_ids = [r[0] for r in bot_rows]
-                id_bot_filter = f" AND id NOT IN ({','.join(str(i) for i in existing_bot_ids)})" if existing_bot_ids else ""
-                extra_bot = con.execute(f'SELECT id, "{nik_col}", "{kk_col}", "{nama_col}", {num_expr} FROM {table_ref}{where_gt_zero}{id_bot_filter} ORDER BY {num_expr} ASC LIMIT {5 - len(bot_rows)};').fetchall()
-                bot_rows.extend(extra_bot)
+            # 2. Distinct Bottom 5 Values (Peringkat 1 s/d 5 berjenjang dengan angka terendah > 0 di kelompok terfilter)
+            bot_rows = con.execute(f'SELECT id, "{nik_col}", "{kk_col}", "{nama_col}", {num_expr} FROM {table_ref}{where_gt_zero} ORDER BY {num_expr} ASC NULLS LAST, id ASC LIMIT 5;').fetchall()
 
             # 3. Macro Demographics Summary
             demographics = {}
@@ -474,6 +552,141 @@ def run_duckdb_query():
                 print(f"[DUCKDB_PREVIEW_RESULT] {json.dumps({'item': None})}", flush=True)
         except Exception as e:
             print(f"[DUCKDB_ERROR] Preview Query failed: {e}", flush=True)
+
+    elif mode == 'salary_breakdown':
+        group_key = params.get('group_col', '').lower().strip()
+        group_col = existing_cols.get(group_key)
+        if not group_col:
+            for cand in ['jenis_kelamin', 'status_bekerja', 'desil_nasional', 'status_kawin', 'pendidikan', 'kecamatan']:
+                if cand in existing_cols:
+                    group_col = existing_cols[cand]
+                    group_key = cand
+                    break
+        if not group_col and existing_cols:
+            group_col = list(existing_cols.values())[0]
+            group_key = list(existing_cols.keys())[0]
+
+        salary_key = params.get('salary_var', 'gaji_bulanan').lower().strip()
+        salary_col = existing_cols.get(salary_key, existing_cols.get('gaji_bulanan', existing_cols.get('gaji', None)))
+        if not salary_col:
+            for cand in ['penghasilan', 'pendapatan', 'gaji_pokok', 'upah', 'salary', 'income']:
+                if cand in existing_cols:
+                    salary_col = existing_cols[cand]
+                    break
+
+        if not group_col or not salary_col:
+            res = {'group_col': group_key, 'group_label': group_key, 'salary_col': salary_key, 'items': [], 'summary': {}}
+            print(f"[DUCKDB_BREAKDOWN_RESULT] {json.dumps(res)}", flush=True)
+            con.close()
+            return
+
+        try:
+            if 'gaji' in existing_cols and salary_col in ('gaji', 'gaji_bulanan', 'pendapatan', 'penghasilan', 'salary', 'income'):
+                num_expr = '"gaji"'
+            else:
+                num_expr = f'TRY_CAST(REGEXP_REPLACE(CAST("{salary_col}" AS VARCHAR), \'[^0-9.]\', \'\', \'g\') AS DOUBLE)'
+            where_cond = f"{where_sql} AND {num_expr} IS NOT NULL" if where_sql else f" WHERE {num_expr} IS NOT NULL"
+
+            sort_by = params.get('sort_by', 'avg_desc')
+            if sort_by == 'avg_asc':
+                order_clause = "avg_salary ASC"
+            elif sort_by == 'count_desc':
+                order_clause = "subject_count DESC"
+            elif sort_by == 'count_asc':
+                order_clause = "subject_count ASC"
+            elif sort_by == 'sum_desc':
+                order_clause = "total_salary DESC"
+            elif sort_by == 'sum_asc':
+                order_clause = "total_salary ASC"
+            elif sort_by == 'category_asc':
+                order_clause = "category ASC"
+            else:
+                order_clause = "avg_salary DESC"
+
+            limit = int(params.get('limit', 100))
+
+            query = f"""
+                SELECT 
+                    COALESCE(NULLIF(TRIM(CAST("{group_col}" AS VARCHAR)), ''), 'Tidak Terisi') AS category,
+                    COUNT(*) AS subject_count,
+                    ROUND(AVG({num_expr}), 2) AS avg_salary,
+                    MIN({num_expr}) AS min_salary,
+                    MAX({num_expr}) AS max_salary,
+                    SUM({num_expr}) AS total_salary,
+                    ROUND(MEDIAN({num_expr}), 2) AS median_salary
+                FROM {table_ref}
+                {where_cond}
+                GROUP BY 1
+                ORDER BY {order_clause}
+                LIMIT {limit};
+            """
+            rows = con.execute(query).fetchall()
+
+            tot_query = f"""
+                SELECT 
+                    COUNT(*) AS total_count,
+                    ROUND(AVG({num_expr}), 2) AS total_avg,
+                    MIN({num_expr}) AS total_min,
+                    MAX({num_expr}) AS total_max,
+                    SUM({num_expr}) AS grand_sum,
+                    COUNT(DISTINCT COALESCE(NULLIF(TRIM(CAST("{group_col}" AS VARCHAR)), ''), 'Tidak Terisi')) AS distinct_categories
+                FROM {table_ref}
+                {where_cond};
+            """
+            tot_row = con.execute(tot_query).fetchone()
+
+            grand_count = int(tot_row[0] or 0) if tot_row else 0
+            grand_sum = float(tot_row[4] or 0) if tot_row else 0.0
+
+            items = []
+            max_avg_in_items = max([float(r[2] or 0) for r in rows], default=1.0)
+            if max_avg_in_items <= 0:
+                max_avg_in_items = 1.0
+
+            for r in rows:
+                cnt = int(r[1] or 0)
+                avg_val = float(r[2] or 0)
+                min_val = float(r[3] or 0)
+                max_val = float(r[4] or 0)
+                sum_val = float(r[5] or 0)
+                med_val = float(r[6] or 0)
+
+                pct_count = round((cnt / grand_count) * 100, 2) if grand_count > 0 else 0.0
+                pct_sum = round((sum_val / grand_sum) * 100, 2) if grand_sum > 0 else 0.0
+                bar_pct = round((avg_val / max_avg_in_items) * 100, 1)
+
+                items.append({
+                    'category': str(r[0]),
+                    'count': cnt,
+                    'pct_count': pct_count,
+                    'avg': avg_val,
+                    'min': min_val,
+                    'max': max_val,
+                    'sum': sum_val,
+                    'pct_sum': pct_sum,
+                    'median': med_val,
+                    'bar_pct': bar_pct
+                })
+
+            summary = {
+                'total_count': grand_count,
+                'total_avg': float(tot_row[1] or 0) if tot_row else 0.0,
+                'total_min': float(tot_row[2] or 0) if tot_row else 0.0,
+                'total_max': float(tot_row[3] or 0) if tot_row else 0.0,
+                'grand_sum': grand_sum,
+                'category_count': int(tot_row[5] or 0) if tot_row else len(items)
+            }
+
+            res = {
+                'group_col': group_key,
+                'group_label': group_col,
+                'salary_col': salary_col,
+                'items': items,
+                'summary': summary
+            }
+            print(f"[DUCKDB_BREAKDOWN_RESULT] {json.dumps(res)}", flush=True)
+        except Exception as e:
+            print(f"[DUCKDB_ERROR] Breakdown Query failed: {e}", flush=True)
 
     con.close()
 

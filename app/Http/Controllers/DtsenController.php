@@ -218,14 +218,19 @@ class DtsenController extends Controller
         }
 
         $page = (int)$request->input('page', 1);
-        $perPage = 15;
+        $perPage = (int)$request->input('per_page', 15);
+        $isSalaryRoute = $request->routeIs('dtsen.salary') || str_contains($request->path(), 'dtsen/salary');
+        $defaultOrder = $isSalaryRoute ? 'gaji_desc' : 'id_desc';
+        $orderBy = $request->input('order_by', $request->input('salary_sort', $defaultOrder));
+        $effectiveSearch = $search ?: $request->input('salary_search', '');
 
         // Execute Page Query via Pure DuckDB High-Speed Engine
         $duckPageData = $this->runDuckDbQuery('page_data', [
             'page' => $page,
             'per_page' => $perPage,
-            'search' => $search,
+            'search' => $effectiveSearch,
             'quality_status' => $qualityStatus,
+            'order_by' => $orderBy,
             'filters' => $request->all()
         ]) ?? [
             'total_system_rows' => 0,
@@ -375,12 +380,14 @@ class DtsenController extends Controller
 
         // Distinct values for filter dropdowns
         $importColumnDistinctValues = session('import_distinct_values', null);
-        if (!is_array($importColumnDistinctValues) || empty($importColumnDistinctValues)) {
+        if (!is_array($importColumnDistinctValues) || empty($importColumnDistinctValues) || count($importColumnDistinctValues) < 3) {
             $duckDbRes = $this->runDuckDbQuery('distinct_values', [
                 'columns' => array_keys($activeColumnsMap)
             ]);
             $importColumnDistinctValues = $duckDbRes['distinct_map'] ?? [];
-            session(['import_distinct_values' => $importColumnDistinctValues]);
+            if (!empty($importColumnDistinctValues)) {
+                session(['import_distinct_values' => $importColumnDistinctValues]);
+            }
         }
 
         // KPI Metrik via DuckDB
@@ -396,7 +403,7 @@ class DtsenController extends Controller
 
         $duckKpi = $this->runDuckDbQuery('kpi_metrics', [
             'kpi_var' => $kpiTargetVar,
-            'search' => $search,
+            'search' => $effectiveSearch,
             'quality_status' => $qualityStatus,
             'filters' => $request->all()
         ]);
@@ -571,6 +578,192 @@ class DtsenController extends Controller
     public function salaryAnalytics(Request $request)
     {
         $viewData = $this->getSharedAnalyticsData($request);
+
+        // Filter daftar kolom/header yang valid untuk pengelompokan analisis gaji (exclude identifier unik & nominal gaji)
+        $excludedKeys = [
+            'id', 'nik', 'nomor_induk_kependudukan', 'no_kk', 'kk', 'nomor_kartu_keluarga',
+            'created_at', 'updated_at', 'extra_attributes', 'quality_issues', 'nama', 'nama_lengkap',
+            'gaji_bulanan', 'gaji', 'val'
+        ];
+
+        $activeColumnsMap = $viewData['activeColumnsMap'] ?? [];
+        $salaryAvailableDimensions = [];
+        foreach ($activeColumnsMap as $colKey => $colLabel) {
+            if (!in_array(strtolower($colKey), $excludedKeys)) {
+                $salaryAvailableDimensions[$colKey] = $colLabel;
+            }
+        }
+
+        // Tentukan header/dimensi pengelompokan aktif yang dipilih pengguna
+        $defaultGroupCol = 'jenis_kelamin';
+        if (!isset($salaryAvailableDimensions[$defaultGroupCol])) {
+            foreach (['status_bekerja', 'desil_nasional', 'status_kawin', 'pendidikan', 'kecamatan'] as $prefKey) {
+                if (isset($salaryAvailableDimensions[$prefKey])) {
+                    $defaultGroupCol = $prefKey;
+                    break;
+                }
+            }
+            if (!isset($salaryAvailableDimensions[$defaultGroupCol]) && !empty($salaryAvailableDimensions)) {
+                $defaultGroupCol = array_key_first($salaryAvailableDimensions);
+            }
+        }
+
+        $salaryGroupCol = $request->input('salary_group_col', $defaultGroupCol);
+        if (!isset($salaryAvailableDimensions[$salaryGroupCol]) && !empty($salaryAvailableDimensions)) {
+            $salaryGroupCol = array_key_first($salaryAvailableDimensions);
+        }
+
+        $salaryMetricVar = $request->input('salary_metric_var', ($viewData['hasSalaryColumn'] ? 'gaji_bulanan' : 'gaji'));
+        $salarySort = $request->input('salary_sort', 'avg_desc');
+        $salaryLimit = (int)$request->input('salary_limit', 50);
+
+        // Eksekusi DuckDB Salary Breakdown Query
+        $breakdownParams = [
+            'group_col' => $salaryGroupCol,
+            'salary_var' => $salaryMetricVar,
+            'sort_by' => $salarySort,
+            'limit' => $salaryLimit,
+            'search' => $request->input('salary_search', ''),
+            'quality_status' => $request->input('quality_status', 'semua'),
+            'filters' => $request->all()
+        ];
+
+        $salaryBreakdownData = $this->runDuckDbQuery('salary_breakdown', $breakdownParams) ?? [
+            'group_col' => $salaryGroupCol,
+            'group_label' => $salaryAvailableDimensions[$salaryGroupCol] ?? $salaryGroupCol,
+            'salary_col' => $salaryMetricVar,
+            'items' => [],
+            'summary' => ['total_count' => 0, 'total_avg' => 0, 'total_min' => 0, 'total_max' => 0, 'grand_sum' => 0, 'category_count' => 0]
+        ];
+
+        // Ekspor CSV jika diminta pengguna
+        if ($request->input('export') === 'salary_breakdown_csv') {
+            $groupName = $salaryAvailableDimensions[$salaryGroupCol] ?? $salaryGroupCol;
+            $fileName = 'Analisis_Gaji_' . preg_replace('/[^a-zA-Z0-9_-]/', '_', $salaryGroupCol) . '_' . date('Ymd_His') . '.csv';
+            
+            $headers = [
+                'Content-Type' => 'text/csv; charset=UTF-8',
+                'Content-Disposition' => "attachment; filename=\"{$fileName}\"",
+                'Pragma' => 'no-cache',
+                'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+                'Expires' => '0',
+            ];
+
+            return response()->stream(function() use ($salaryBreakdownData, $groupName) {
+                $handle = fopen('php://output', 'w');
+                // UTF-8 BOM untuk Microsoft Excel
+                fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF));
+                fputcsv($handle, [
+                    'Peringkat',
+                    "Kategori ({$groupName})",
+                    'Jumlah Subjek (N)',
+                    'Proporsi Populasi (%)',
+                    'Gaji Rata-Rata (AVG Rp)',
+                    'Gaji Median (Rp)',
+                    'Gaji Minimum (MIN Rp)',
+                    'Gaji Maksimum (MAX Rp)',
+                    'Total Agregat Gaji (SUM Rp)',
+                    'Pangsa Anggaran Gaji (%)'
+                ]);
+
+                foreach ($salaryBreakdownData['items'] as $idx => $it) {
+                    fputcsv($handle, [
+                        $idx + 1,
+                        $it['category'],
+                        $it['count'],
+                        $it['pct_count'] . '%',
+                        $it['avg'],
+                        $it['median'],
+                        $it['min'],
+                        $it['max'],
+                        $it['sum'],
+                        $it['pct_sum'] . '%'
+                    ]);
+                }
+
+                // Baris Ringkasan Grand Total
+                $sum = $salaryBreakdownData['summary'] ?? [];
+                fputcsv($handle, [
+                    'TOTAL',
+                    'Semua Kategori (' . ($sum['category_count'] ?? 0) . ' Kategori)',
+                    $sum['total_count'] ?? 0,
+                    '100%',
+                    $sum['total_avg'] ?? 0,
+                    '-',
+                    $sum['total_min'] ?? 0,
+                    $sum['total_max'] ?? 0,
+                    $sum['grand_sum'] ?? 0,
+                    '100%'
+                ]);
+
+                fclose($handle);
+            }, 200, $headers);
+        }
+
+        $salaryBreakdownItems = $salaryBreakdownData['items'] ?? [];
+        $salaryBreakdownSummary = $salaryBreakdownData['summary'] ?? [];
+
+        // Hitung Kategori Tertinggi & Terendah untuk insight cards
+        $sortedByAvg = collect($salaryBreakdownItems)->sortByDesc('avg')->values();
+        $salaryTopCategory = $sortedByAvg->first() ?: null;
+        $salaryBottomCategory = $sortedByAvg->last() ?: null;
+        $salaryDisparityRatio = ($salaryBottomCategory && ($salaryBottomCategory['avg'] ?? 0) > 0 && $salaryTopCategory) 
+            ? round(($salaryTopCategory['avg'] ?? 0) / $salaryBottomCategory['avg'], 2) 
+            : 1.0;
+
+        $importFilterableColumns = $viewData['importFilterableColumns'] ?? [];
+
+        // Pemilahan dinamis kolom filter primer (5 kolom teratas) & ekstra (kolom sisanya dari dataset)
+        $primaryFilterColumns = [];
+        $extraFilterColumns = [];
+        $preferredPrimaryKeys = ['jenis_kelamin', 'provinsi', 'desil_nasional', 'usia', 'status_bekerja', 'pendidikan'];
+        foreach ($preferredPrimaryKeys as $ppk) {
+            if (isset($importFilterableColumns[$ppk])) {
+                $primaryFilterColumns[$ppk] = $importFilterableColumns[$ppk];
+            }
+        }
+        foreach ($importFilterableColumns as $ifKey => $ifLabel) {
+            if (!isset($primaryFilterColumns[$ifKey])) {
+                if (count($primaryFilterColumns) < 5) {
+                    $primaryFilterColumns[$ifKey] = $ifLabel;
+                } else {
+                    $extraFilterColumns[$ifKey] = $ifLabel;
+                }
+            }
+        }
+
+        // Kolom metadata yang ditampilkan di tabel data (dinamis sesuai yang ada di dataset)
+        $displayMetadataCols = [];
+        $preferredTableCols = ['jenis_kelamin', 'usia', 'desil_nasional', 'provinsi', 'status_bekerja', 'status_kawin'];
+        foreach ($preferredTableCols as $ptk) {
+            if (isset($activeColumnsMap[$ptk])) {
+                $displayMetadataCols[$ptk] = $activeColumnsMap[$ptk];
+            }
+        }
+        foreach ($activeColumnsMap as $acKey => $acLabel) {
+            if (count($displayMetadataCols) >= 6) break;
+            if (!in_array($acKey, $excludedKeys) && !isset($displayMetadataCols[$acKey])) {
+                $displayMetadataCols[$acKey] = $acLabel;
+            }
+        }
+
+        $viewData = array_merge($viewData, compact(
+            'salaryAvailableDimensions',
+            'salaryGroupCol',
+            'salaryMetricVar',
+            'salarySort',
+            'salaryLimit',
+            'salaryBreakdownData',
+            'salaryBreakdownItems',
+            'salaryBreakdownSummary',
+            'salaryTopCategory',
+            'salaryBottomCategory',
+            'salaryDisparityRatio',
+            'primaryFilterColumns',
+            'extraFilterColumns',
+            'displayMetadataCols'
+        ));
+
         return view('dtsen.salary', $viewData);
     }
 
@@ -1305,6 +1498,8 @@ public function clearLogs(Request $request)
             } elseif ($mode === 'preview' && preg_match('/\[DUCKDB_PREVIEW_RESULT\]\s*(\{.*\})/', $output, $m)) {
                 return json_decode($m[1], true);
             } elseif ($mode === 'total_system_rows' && preg_match('/\[DUCKDB_COUNT_RESULT\]\s*(\{.*\})/', $output, $m)) {
+                return json_decode($m[1], true);
+            } elseif ($mode === 'salary_breakdown' && preg_match('/\[DUCKDB_BREAKDOWN_RESULT\]\s*(\{.*\})/', $output, $m)) {
                 return json_decode($m[1], true);
             }
         }
