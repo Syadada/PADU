@@ -70,6 +70,7 @@
                     <input :type="showPass ? 'text' : 'password'" 
                            id="password" 
                            name="password" 
+                           autocomplete="new-password"
                            x-model="password" 
                            required 
                            autofocus
@@ -84,6 +85,7 @@
                     <input :type="showPass ? 'text' : 'password'" 
                            id="password_confirmation" 
                            name="password_confirmation" 
+                           autocomplete="new-password"
                            x-model="password_confirmation" 
                            required 
                            placeholder="Ketik ulang kata sandi baru..." 

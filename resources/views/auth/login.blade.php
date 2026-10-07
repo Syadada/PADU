@@ -130,6 +130,8 @@
                             </span>
                             <input type="email" 
                                    id="email" 
+                                   name="email"
+                                   autocomplete="username"
                                    x-model="email" 
                                    @keydown.enter.prevent="submitEmail()"
                                    :disabled="isLocked || loading"
@@ -217,6 +219,7 @@
                             <input :type="showPassword ? 'text' : 'password'" 
                                    id="password" 
                                    name="password" 
+                                   autocomplete="current-password"
                                    x-ref="passwordInput"
                                    x-model="password" 
                                    required 

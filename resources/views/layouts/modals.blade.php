@@ -3,9 +3,11 @@
 <!-- 1. Modal Konfirmasi Kosongkan Data -->
 <div x-show="showClearModal" 
      x-transition 
-     class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 overflow-y-auto" 
-     style="display: none;">
-    <div @click.away="showClearModal = false" class="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-md p-6 space-y-4 max-h-[88vh] flex flex-col my-auto overflow-y-auto">
+     x-cloak
+     @keydown.escape.window="showClearModal = false"
+     class="padu-modal-backdrop bg-slate-900/60 backdrop-blur-sm p-4 overflow-y-auto" 
+     style="display: none; z-index: 999999 !important;">
+    <div @click.away="showClearModal = false" class="padu-modal-card bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-md p-6 space-y-4 flex flex-col my-auto overflow-y-auto" style="z-index: 1000000 !important; max-height: 88vh !important;">
         <div class="flex items-center gap-3 border-b border-slate-100 pb-3 shrink-0">
             <span class="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center font-bold text-lg">🗑️</span>
             <div>
@@ -33,9 +35,11 @@
 <!-- 2. Modal Opsi Ekspor Data -->
 <div x-show="showExportModal" 
      x-transition 
-     class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 overflow-y-auto" 
-     style="display: none;">
-    <div @click.away="showExportModal = false" class="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-lg p-6 space-y-4 max-h-[88vh] flex flex-col my-auto overflow-y-auto">
+     x-cloak
+     @keydown.escape.window="showExportModal = false"
+     class="padu-modal-backdrop bg-slate-900/60 backdrop-blur-sm p-4 overflow-y-auto" 
+     style="display: none; z-index: 999999 !important;">
+    <div @click.away="showExportModal = false" class="padu-modal-card bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-lg p-6 space-y-4 flex flex-col my-auto overflow-y-auto" style="z-index: 1000000 !important; max-height: 88vh !important;">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3 shrink-0">
             <div class="flex items-center gap-2">
                 <span class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">📤</span>
@@ -57,17 +61,17 @@
 
             <!-- 1. Mode Ekspor Data -->
             <div class="space-y-2">
-                <label class="block text-xs font-bold text-slate-800 uppercase">1. Mode Ekspor Data</label>
+                <div class="text-xs font-bold text-slate-800 uppercase">1. Mode Ekspor Data</div>
                 <div class="space-y-2">
-                    <label class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-blue-50 cursor-pointer flex items-start gap-3 transition-colors">
-                        <input type="radio" name="mode" value="as_is" checked class="mt-0.5 accent-blue-600">
+                    <label for="export_mode_as_is" class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-blue-50 cursor-pointer flex items-start gap-3 transition-colors">
+                        <input type="radio" id="export_mode_as_is" name="mode" value="as_is" aria-label="Mode A: Ekspor As-Is (+ Catatan Error Audit)" checked class="mt-0.5 accent-blue-600">
                         <div>
                             <strong class="block text-xs text-slate-900">📄 Mode A: Ekspor As-Is (+ Catatan Error Audit)</strong>
                             <p class="text-[11px] text-slate-500">Mengekspor seluruh baris data apa adanya ditambah 1 kolom rincian temuan error. Urutan & indeks baris tetap presisi 100%.</p>
                         </div>
                     </label>
-                    <label class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-emerald-50 cursor-pointer flex items-start gap-3 transition-colors">
-                        <input type="radio" name="mode" value="cleaned_only" class="mt-0.5 accent-emerald-600">
+                    <label for="export_mode_cleaned_only" class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-emerald-50 cursor-pointer flex items-start gap-3 transition-colors">
+                        <input type="radio" id="export_mode_cleaned_only" name="mode" value="cleaned_only" aria-label="Mode B: Ekspor Cleaned Only (Data Cacat Dibuang)" class="mt-0.5 accent-emerald-600">
                         <div>
                             <strong class="block text-xs text-slate-900">🟢 Mode B: Ekspor Cleaned Only (Data Cacat Dibuang)</strong>
                             <p class="text-[11px] text-slate-500">Mengekspor hanya baris data yang 🟢 Valid. Disertai kolom <code>Original_Row_Index</code> untuk rekonsiliasi ke master file.</p>
@@ -78,14 +82,14 @@
 
             <!-- 2. Format File -->
             <div class="space-y-1.5 pt-2 border-t border-slate-100">
-                <label class="block text-xs font-bold text-slate-800 uppercase">2. Format Berkas Paket (.ZIP)</label>
+                <div class="text-xs font-bold text-slate-800 uppercase">2. Format Berkas Paket (.ZIP)</div>
                 <div class="grid grid-cols-2 gap-3">
-                    <label class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-emerald-50 cursor-pointer flex flex-col items-center justify-center text-center">
-                        <input type="radio" name="format" value="xlsx" checked class="mb-1 accent-emerald-600">
+                    <label for="export_format_xlsx" class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-emerald-50 cursor-pointer flex flex-col items-center justify-center text-center">
+                        <input type="radio" id="export_format_xlsx" name="format" value="xlsx" aria-label="Format Excel Terbaru (.xlsx)" checked class="mb-1 accent-emerald-600">
                         <span class="text-xs font-bold text-slate-900">🟢 Excel Terbaru (.xlsx)</span>
                     </label>
-                    <label class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-blue-50 cursor-pointer flex flex-col items-center justify-center text-center">
-                        <input type="radio" name="format" value="csv" class="mb-1 accent-blue-600">
+                    <label for="export_format_csv" class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-blue-50 cursor-pointer flex flex-col items-center justify-center text-center">
+                        <input type="radio" id="export_format_csv" name="format" value="csv" aria-label="Format CSV File (.csv)" class="mb-1 accent-blue-600">
                         <span class="text-xs font-bold text-slate-900">📄 CSV File (.csv)</span>
                     </label>
                 </div>
@@ -111,9 +115,11 @@
 <!-- 3. Modal Inspeksi Rincian Baris Data Subjek -->
 <div x-show="showPreviewModal" 
      x-transition 
-     class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 overflow-y-auto" 
-     style="display: none;">
-    <div @click.away="showPreviewModal = false" class="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-2xl p-6 space-y-4 max-h-[88vh] flex flex-col my-auto">
+     x-cloak
+     @keydown.escape.window="showPreviewModal = false"
+     class="padu-modal-backdrop bg-slate-900/60 backdrop-blur-sm p-4 overflow-y-auto" 
+     style="display: none; z-index: 999999 !important;">
+    <div @click.away="showPreviewModal = false" class="padu-modal-card bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-2xl p-6 space-y-4 flex flex-col my-auto" style="z-index: 1000000 !important; max-height: 88vh !important;">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3 shrink-0">
             <div class="flex items-center gap-2">
                 <span class="w-8 h-8 rounded-xl bg-blue-100 text-blue-800 flex items-center justify-center font-bold">📋</span>
@@ -122,7 +128,7 @@
                     <p class="text-[11px] text-slate-500">Detail data individu & relasi aset rumah tangga pengampu</p>
                 </div>
             </div>
-            <button type="button" @click="showPreviewModal = false" class="text-slate-400 hover:text-slate-600 font-bold text-base">✕</button>
+            <button type="button" @click="showPreviewModal = false" class="text-slate-400 hover:text-slate-600 font-bold text-base cursor-pointer">✕</button>
         </div>
 
         <template x-if="previewData">
@@ -216,9 +222,11 @@
 <!-- 4. Modal Realtime Progress Bar & Estimasi Waktu (ETA) -->
 <div x-show="showImportProgressModal" 
      x-transition 
-     class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 backdrop-blur-md p-4" 
-     style="display: none;">
-    <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md p-6 space-y-5">
+     x-cloak
+     @keydown.escape.window="showImportProgressModal = false"
+     class="padu-modal-backdrop bg-slate-900/70 backdrop-blur-md p-4" 
+     style="display: none; z-index: 999999 !important;">
+    <div class="padu-modal-card bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md p-6 space-y-5" style="z-index: 1000000 !important;">
         <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-lg">
                 <svg class="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -264,11 +272,16 @@
 <!-- 5. Modal Console Log System Realtime & Activity Monitor -->
 <div x-show="showLogModal" 
      x-transition 
-     class="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-6 overflow-y-auto" 
-     style="background-color: rgba(2, 6, 23, 0.88) !important; backdrop-filter: blur(8px); display: none;">
-    <div @click.away="showLogModal = false" 
-         class="rounded-2xl shadow-2xl border w-full max-w-4xl p-5 sm:p-6 font-sans text-white relative z-[100000] my-auto flex flex-col max-h-[88vh]" 
-         style="background-color: #0b1329 !important; border: 1px solid #334155 !important;">
+     x-cloak
+     id="padu_log_activity_modal"
+     @keydown.escape.window="closeLogConsole()"
+     @click.self="closeLogConsole()"
+     onclick="if(event.target === this) window.closeLogConsole()"
+     class="padu-modal-backdrop p-3 sm:p-6 overflow-y-auto" 
+     style="background-color: rgba(2, 6, 23, 0.88) !important; backdrop-filter: blur(8px); display: none; z-index: 999999 !important;">
+    <div @click.away="closeLogConsole()" 
+         class="padu-modal-card rounded-2xl shadow-2xl border w-full max-w-4xl p-5 sm:p-6 font-sans text-white my-auto flex flex-col" 
+         style="background-color: #0b1329 !important; border: 1px solid #334155 !important; max-height: 88vh !important; z-index: 1000000 !important;">
         <div class="flex items-center justify-between border-b pb-3 shrink-0" style="border-color: #1e293b !important;">
             <div class="flex items-center gap-3">
                 <span class="w-9 h-9 rounded-xl text-blue-400 flex items-center justify-center font-bold text-base border" style="background-color: rgba(59, 130, 246, 0.15) !important; border-color: rgba(59, 130, 246, 0.3) !important;">📋</span>
@@ -283,7 +296,13 @@
                 <button type="button" @click="fetchLogs()" class="px-3.5 py-1.5 hover:bg-blue-600 font-bold text-xs rounded-xl border flex items-center gap-1.5 transition-colors cursor-pointer" style="background-color: rgba(59, 130, 246, 0.2) !important; color: #93c5fd !important; border-color: rgba(59, 130, 246, 0.4) !important;">
                     <span>🔄</span> Refresh
                 </button>
-                <button type="button" @click="showLogModal = false" title="Tutup Log Console" class="w-8 h-8 rounded-xl font-bold text-sm flex items-center justify-center border transition-all cursor-pointer hover:bg-slate-700" style="background-color: #1e293b !important; color: #cbd5e1 !important; border-color: #334155 !important;">✕</button>
+                <button type="button" 
+                        @click="closeLogConsole()" 
+                        onclick="window.closeLogConsole()"
+                        title="Tutup Log Console" 
+                        class="px-3 py-1.5 rounded-xl font-extrabold text-xs flex items-center gap-1.5 border transition-all cursor-pointer hover:bg-slate-700 bg-slate-800 text-slate-200 border-slate-600">
+                    ✕ Tutup
+                </button>
             </div>
         </div>
 
@@ -292,8 +311,8 @@
             <!-- Toolbar Control Log Console -->
             <div class="flex flex-wrap items-center justify-between gap-3 p-3 rounded-xl border text-xs shrink-0" style="background-color: #020617 !important; border-color: #1e293b !important;">
                 <div class="flex items-center gap-2">
-                    <span class="font-bold" style="color: #cbd5e1 !important;">Filter Level:</span>
-                    <select x-model="logFilter" class="border rounded-xl px-3 py-1.5 text-xs font-bold outline-none cursor-pointer" style="background-color: #0f172a !important; color: #ffffff !important; border-color: #334155 !important;">
+                    <label for="modal_log_filter_level" class="font-bold" style="color: #cbd5e1 !important;">Filter Level:</label>
+                    <select id="modal_log_filter_level" name="modal_log_filter_level" aria-label="Filter Level Log Konsol" x-model="logFilter" class="border rounded-xl px-3 py-1.5 text-xs font-bold outline-none cursor-pointer" style="background-color: #0f172a !important; color: #ffffff !important; border-color: #334155 !important;">
                         <option value="ALL">Semua Level</option>
                         <option value="INFO">INFO</option>
                         <option value="SUCCESS">SUCCESS (Sukses)</option>
@@ -307,6 +326,9 @@
                     <button type="button" @click="cancelCurrentImport()" class="px-3.5 py-1.5 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 shadow-md cursor-pointer border hover:bg-rose-700" style="background-color: #dc2626 !important; color: #ffffff !important; border-color: #ef4444 !important;">
                         <span>🚫</span> Batalkan Injeksi Aktif
                     </button>
+                    <button type="button" @click="copySystemLogs()" class="px-3.5 py-1.5 font-bold text-xs rounded-xl border flex items-center gap-1.5 transition-all cursor-pointer hover:bg-slate-700" style="background-color: #1e293b !important; color: #f1f5f9 !important; border-color: #475569 !important;">
+                        <span>📋</span> Salin Log
+                    </button>
                     <button type="button" @click="downloadSystemLogsTxt()" class="px-3.5 py-1.5 font-bold text-xs rounded-xl border flex items-center gap-1.5 transition-all cursor-pointer hover:bg-emerald-700" style="background-color: #065f46 !important; color: #a7f3d0 !important; border-color: #047857 !important;">
                         <span>📥</span> Ekstrak Log (.txt)
                     </button>
@@ -317,7 +339,7 @@
             </div>
 
             <!-- Box Console Display Log Lines -->
-            <div class="rounded-xl border p-4 font-mono text-xs overflow-y-auto space-y-1.5 scrollbar-thin flex-1 min-h-0" style="background-color: #020617 !important; border-color: #1e293b !important;">
+            <div class="rounded-xl border p-4 font-mono text-xs overflow-y-auto space-y-1.5 flex-1 min-h-[260px] max-h-[55vh]" style="background-color: #020617 !important; border-color: #1e293b !important;">
                 <template x-for="item in filteredLogs" :key="item.id">
                     <div class="flex items-start gap-2 leading-relaxed border-b pb-1" style="border-color: #0f172a !important;">
                         <span class="text-[11px] shrink-0 font-bold" style="color: #94a3b8 !important;" x-text="'[' + item.timestamp + ']'"></span>
@@ -331,7 +353,7 @@
                               }" 
                               x-text="item.level"></span>
                               
-                        <span class="break-all" 
+                        <span class="break-words overflow-hidden" 
                               :class="{
                                   'text-emerald-300': item.level === 'SUCCESS',
                                   'text-blue-200': item.level === 'INFO',
@@ -348,12 +370,20 @@
             </div>
         </div>
 
-        <!-- Footer Stats -->
-        <div class="flex items-center justify-between text-xs border-t pt-3 font-bold shrink-0" style="border-color: #1e293b !important; color: #94a3b8 !important;">
-            <span x-text="'Total ' + logList.length + ' entri log tercatat'"></span>
-            <span class="text-emerald-400 font-bold flex items-center gap-1.5">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Monitor Log Online
-            </span>
+        <!-- Footer Stats & Tombol Tutup -->
+        <div class="flex flex-wrap items-center justify-between gap-3 text-xs border-t pt-3 font-bold shrink-0" style="border-color: #1e293b !important; color: #94a3b8 !important;">
+            <div class="flex items-center gap-3">
+                <span x-text="'Total ' + (logList ? logList.length : 0) + ' entri log tercatat'"></span>
+                <span class="text-emerald-400 font-bold flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Monitor Log Online
+                </span>
+            </div>
+            <button type="button" 
+                    @click="closeLogConsole()" 
+                    onclick="window.closeLogConsole()"
+                    class="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-600 font-extrabold text-xs transition-all cursor-pointer shadow-sm flex items-center gap-1.5">
+                <span>✕</span> Tutup Jendela Log
+            </button>
         </div>
     </div>
 </div>

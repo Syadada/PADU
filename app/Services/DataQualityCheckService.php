@@ -58,19 +58,23 @@ class DataQualityCheckService
         }
 
         // B. Validasi NIK (Nomor Induk Kependudukan)
-        if (empty($nik)) {
+        $rawNik = trim((string)($cIndividu['nomor_induk_kependudukan'] ?? ''));
+        $cleanNik = preg_replace('/\.0+$/', '', $rawNik);
+        if (empty($rawNik)) {
             $status = 'Critical';
             $issues[] = '[CRITICAL] Variabel NIK (Nomor Induk Kependudukan) kosong / belum diisi.';
-        } elseif (strlen($nik) !== 16) {
+        } elseif (!preg_match('/^[0-9]{16}$/', $cleanNik)) {
             $status = 'Critical';
-            $issues[] = "[CRITICAL] NIK tidak valid ('{$nik}'). Panjang harus persis 16 digit angka.";
+            $issues[] = "[CRITICAL] NIK tidak valid ('{$rawNik}'). Harus persis 16 digit angka murni.";
         }
 
         // C. Validasi Nomor Kartu Keluarga (KK) jika ada
         if (!empty($cIndividu['nomor_kartu_keluarga'])) {
-            if (strlen($kk) !== 16) {
+            $rawKk = trim((string)$cIndividu['nomor_kartu_keluarga']);
+            $cleanKk = preg_replace('/\.0+$/', '', $rawKk);
+            if (!preg_match('/^[0-9]{16}$/', $cleanKk)) {
                 $status = 'Critical';
-                $issues[] = "[CRITICAL] Nomor KK tidak valid ('{$kk}'). Panjang harus persis 16 digit angka.";
+                $issues[] = "[CRITICAL] Nomor KK tidak valid ('{$rawKk}'). Harus persis 16 digit angka murni tanpa desimal/titik.";
             }
         }
 

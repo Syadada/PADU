@@ -64,6 +64,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/dtsen/logs/clear', [DtsenController::class, 'clearLogs'])->name('dtsen.logs.clear');
 
 
+    Route::post('/dtsen/upload', [DtsenController::class, 'uploadDatasetFile'])->name('dtsen.upload');
+
     // --- 3. MODUL KHUSUS SUPER ADMINISTRATOR (PIMPINAN & AUDIT BSSN) ---
     Route::middleware('superadmin')->prefix('admin')->name('admin.')->group(function () {
         
@@ -88,6 +90,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/two-factor', [AdminController::class, 'setupTwoFactorIndex'])->name('two-factor');
         Route::post('/two-factor/enable', [AdminController::class, 'enableTwoFactor'])->name('two-factor.enable');
         Route::post('/two-factor/disable', [AdminController::class, 'disableTwoFactor'])->name('two-factor.disable');
+
+        // Standar Metadata BAST & Engine Quality Check (Super Admin Only)
+        Route::get('/metadata', [AdminController::class, 'metadataIndex'])->name('metadata');
+        Route::post('/metadata/train', [AdminController::class, 'trainMetadata'])->name('metadata.train');
+        Route::post('/metadata/simulate', [AdminController::class, 'simulateQualityCheck'])->name('metadata.simulate');
     });
 
 });

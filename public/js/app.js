@@ -10,7 +10,7 @@ function getCsrfToken() {
 
 function paduLayoutApp() {
     return {
-        sidebarOpen: window.innerWidth >= 1024 
+        sidebarOpen: window.innerWidth >= 768 
             ? (localStorage.getItem('padu_sidebar_open') !== 'false') 
             : false,
         isMasked: localStorage.getItem('padu_is_masked') !== 'false',
@@ -49,14 +49,14 @@ function paduLayoutApp() {
 
         toggleSidebar() {
             this.sidebarOpen = !this.sidebarOpen;
-            if (window.innerWidth >= 1024) {
+            if (window.innerWidth >= 768) {
                 localStorage.setItem('padu_sidebar_open', this.sidebarOpen ? 'true' : 'false');
             }
         },
 
         closeSidebar() {
             this.sidebarOpen = false;
-            if (window.innerWidth >= 1024) {
+            if (window.innerWidth >= 768) {
                 localStorage.setItem('padu_sidebar_open', 'false');
             }
         },

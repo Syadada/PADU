@@ -65,12 +65,12 @@
     <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
         <form method="GET" action="{{ route('admin.audit-logs') }}" class="grid grid-cols-1 sm:grid-cols-12 gap-3 text-xs">
             <div class="sm:col-span-3">
-                <label class="block font-bold text-slate-700 mb-1">Cari Kata Kunci / IP / Aktor:</label>
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama, IP, deskripsi..." class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                <label for="audit_search" class="block font-bold text-slate-700 mb-1">Cari Kata Kunci / IP / Aktor:</label>
+                <input type="text" id="audit_search" name="search" aria-label="Cari Kata Kunci, IP, Aktor" value="{{ request('search') }}" placeholder="Cari nama, IP, deskripsi..." class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500">
             </div>
             <div class="sm:col-span-2">
-                <label class="block font-bold text-slate-700 mb-1">Jenis Aksi:</label>
-                <select name="action" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                <label for="audit_action" class="block font-bold text-slate-700 mb-1">Jenis Aksi:</label>
+                <select id="audit_action" name="action" aria-label="Filter Jenis Aksi" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500">
                     <option value="">-- Semua Aksi --</option>
                     @foreach($actionTypes as $act)
                         <option value="{{ $act }}" {{ request('action') === $act ? 'selected' : '' }}>{{ $act }}</option>
@@ -78,8 +78,8 @@
                 </select>
             </div>
             <div class="sm:col-span-2">
-                <label class="block font-bold text-slate-700 mb-1">Status Forensik:</label>
-                <select name="status" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                <label for="audit_status" class="block font-bold text-slate-700 mb-1">Status Forensik:</label>
+                <select id="audit_status" name="status" aria-label="Filter Status Forensik" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500">
                     <option value="">-- Semua Status --</option>
                     <option value="SUCCESS" {{ request('status') === 'SUCCESS' ? 'selected' : '' }}>SUCCESS</option>
                     <option value="WARNING" {{ request('status') === 'WARNING' ? 'selected' : '' }}>WARNING</option>
@@ -87,12 +87,12 @@
                 </select>
             </div>
             <div class="sm:col-span-2">
-                <label class="block font-bold text-slate-700 mb-1">Dari Tanggal:</label>
-                <input type="date" name="date_start" value="{{ request('date_start') }}" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                <label for="audit_date_start" class="block font-bold text-slate-700 mb-1">Dari Tanggal:</label>
+                <input type="date" id="audit_date_start" name="date_start" aria-label="Filter Dari Tanggal" value="{{ request('date_start') }}" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500">
             </div>
             <div class="sm:col-span-2">
-                <label class="block font-bold text-slate-700 mb-1">Sampai Tanggal:</label>
-                <input type="date" name="date_end" value="{{ request('date_end') }}" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                <label for="audit_date_end" class="block font-bold text-slate-700 mb-1">Sampai Tanggal:</label>
+                <input type="date" id="audit_date_end" name="date_end" aria-label="Filter Sampai Tanggal" value="{{ request('date_end') }}" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500">
             </div>
             <div class="sm:col-span-1 flex items-end gap-1">
                 <button type="submit" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors">

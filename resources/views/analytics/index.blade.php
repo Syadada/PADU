@@ -214,17 +214,19 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Smart Search:</label>
+                    <label for="filter_analytics_search" class="block text-xs font-bold text-slate-700 mb-1">Smart Search:</label>
                     <input type="text" 
+                           id="filter_analytics_search"
                            name="search" 
+                           aria-label="Smart Search Pencarian Nama, NIK, Kecamatan, Kelurahan"
                            value="{{ $search }}" 
                            placeholder="Ketik Nama, NIK, Kec, Kel..." 
                            class="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-800 text-sm focus:ring-2 focus:ring-blue-500">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Jenis Kelamin:</label>
-                    <select name="jenis_kelamin" onchange="this.form.submit()" class="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-800 text-sm">
+                    <label for="filter_analytics_jenis_kelamin" class="block text-xs font-bold text-slate-700 mb-1">Jenis Kelamin:</label>
+                    <select id="filter_analytics_jenis_kelamin" name="jenis_kelamin" aria-label="Filter Jenis Kelamin" onchange="this.form.submit()" class="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-800 text-sm">
                         <option value="semua" {{ $jenisKelamin == 'semua' ? 'selected' : '' }}>Semua Kelamin</option>
                         <option value="Laki-laki" {{ $jenisKelamin == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
                         <option value="Perempuan" {{ $jenisKelamin == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
@@ -232,8 +234,8 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Pendidikan:</label>
-                    <select name="pendidikan" onchange="this.form.submit()" class="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-800 text-sm">
+                    <label for="filter_analytics_pendidikan" class="block text-xs font-bold text-slate-700 mb-1">Pendidikan:</label>
+                    <select id="filter_analytics_pendidikan" name="pendidikan" aria-label="Filter Pendidikan Terakhir" onchange="this.form.submit()" class="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-800 text-sm">
                         <option value="semua" {{ $pendidikan == 'semua' ? 'selected' : '' }}>Semua Pendidikan</option>
                         @foreach(['SD','SMP','SMA/K','D3','S1','S2','S3'] as $p)
                             <option value="{{ $p }}" {{ $pendidikan == $p ? 'selected' : '' }}>{{ $p }}</option>
@@ -242,8 +244,8 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Status Kehidupan:</label>
-                    <select name="status_kehidupan" onchange="this.form.submit()" class="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-800 text-sm font-semibold">
+                    <label for="filter_analytics_status_kehidupan" class="block text-xs font-bold text-slate-700 mb-1">Status Kehidupan:</label>
+                    <select id="filter_analytics_status_kehidupan" name="status_kehidupan" aria-label="Filter Status Kehidupan" onchange="this.form.submit()" class="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-800 text-sm font-semibold">
                         <option value="semua" {{ $statusKehidupan == 'semua' ? 'selected' : '' }}>Semua Status</option>
                         <option value="Masih Hidup" {{ $statusKehidupan == 'Masih Hidup' ? 'selected' : '' }}>🟢 Masih Hidup</option>
                         <option value="Meninggal Dunia" {{ $statusKehidupan == 'Meninggal Dunia' ? 'selected' : '' }}>⚫ Meninggal Dunia</option>
@@ -251,8 +253,8 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Umur:</label>
-                    <select name="rentang_usia" onchange="this.form.submit()" class="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-800 text-sm">
+                    <label for="filter_analytics_rentang_usia" class="block text-xs font-bold text-slate-700 mb-1">Umur:</label>
+                    <select id="filter_analytics_rentang_usia" name="rentang_usia" aria-label="Filter Rentang Usia" onchange="this.form.submit()" class="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-800 text-sm">
                         <option value="semua" {{ $rentangUsia == 'semua' ? 'selected' : '' }}>Semua Umur</option>
                         <option value="< 20" {{ $rentangUsia == '< 20' ? 'selected' : '' }}>&lt; 20 Tahun</option>
                         <option value="20-30" {{ $rentangUsia == '20-30' ? 'selected' : '' }}>20 - 30 Tahun</option>
@@ -265,26 +267,26 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2 border-t border-slate-200">
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Acuan Tanggal:</label>
-                    <select name="tgl_jenis" class="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-800 text-sm">
+                    <label for="filter_analytics_tgl_jenis" class="block text-xs font-bold text-slate-700 mb-1">Acuan Tanggal:</label>
+                    <select id="filter_analytics_tgl_jenis" name="tgl_jenis" aria-label="Pilih Acuan Tanggal" class="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-800 text-sm">
                         <option value="created_at" {{ $tglJenis == 'created_at' ? 'selected' : '' }}>Tanggal Ditambahkan (Input)</option>
                         <option value="tanggal_lahir" {{ $tglJenis == 'tanggal_lahir' ? 'selected' : '' }}>Tanggal Lahir</option>
                     </select>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Dari Tanggal:</label>
-                    <input type="date" name="tgl_awal" value="{{ $tglAwal }}" class="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-800 text-sm">
+                    <label for="filter_analytics_tgl_awal" class="block text-xs font-bold text-slate-700 mb-1">Dari Tanggal:</label>
+                    <input type="date" id="filter_analytics_tgl_awal" name="tgl_awal" aria-label="Filter Dari Tanggal" value="{{ $tglAwal }}" class="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-800 text-sm">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Sampai Tanggal:</label>
-                    <input type="date" name="tgl_akhir" value="{{ $tglAkhir }}" class="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-800 text-sm">
+                    <label for="filter_analytics_tgl_akhir" class="block text-xs font-bold text-slate-700 mb-1">Sampai Tanggal:</label>
+                    <input type="date" id="filter_analytics_tgl_akhir" name="tgl_akhir" aria-label="Filter Sampai Tanggal" value="{{ $tglAkhir }}" class="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-800 text-sm">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Urutkan Tampilan:</label>
-                    <select name="urutkan" onchange="this.form.submit()" class="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-800 text-sm font-semibold text-blue-800">
+                    <label for="filter_analytics_urutkan" class="block text-xs font-bold text-slate-700 mb-1">Urutkan Tampilan:</label>
+                    <select id="filter_analytics_urutkan" name="urutkan" aria-label="Urutkan Tampilan Data" onchange="this.form.submit()" class="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-800 text-sm font-semibold text-blue-800">
                         <option value="terbaru" {{ $urutkan == 'terbaru' ? 'selected' : '' }}>🆕 Terbaru Ditambahkan</option>
                         <option value="terlama" {{ $urutkan == 'terlama' ? 'selected' : '' }}>📜 Terlama Ditambahkan</option>
                         <option value="gaji_max" {{ $urutkan == 'gaji_max' ? 'selected' : '' }}>💰 Gaji Tertinggi ➔ Terendah</option>
@@ -493,36 +495,36 @@
                 <h4 class="font-bold text-xs uppercase text-blue-700 border-b border-blue-100 pb-1">1. Data Identitas Diri</h4>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                     <div class="sm:col-span-2">
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap: *</label>
-                        <input type="text" name="nama_lengkap" value="{{ old('nama_lengkap') }}" required placeholder="Contoh: Budi Santoso" 
+                        <label for="add_nama_lengkap" class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap: *</label>
+                        <input type="text" id="add_nama_lengkap" name="nama_lengkap" aria-label="Nama Lengkap" value="{{ old('nama_lengkap') }}" required placeholder="Contoh: Budi Santoso" 
                                class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm font-semibold">
                     </div>
 
                     <div class="sm:col-span-2">
-                        <label class="block text-xs font-bold text-slate-700 mb-1">NIK (16 Digit - Opsional):</label>
-                        <input type="text" name="nik" value="{{ old('nik') }}" maxlength="16" placeholder="Boleh dikosongkan (otomatis dibuatkan NIK)" 
+                        <label for="add_nik" class="block text-xs font-bold text-slate-700 mb-1">NIK (16 Digit - Opsional):</label>
+                        <input type="text" id="add_nik" name="nik" aria-label="NIK 16 Digit" value="{{ old('nik') }}" maxlength="16" placeholder="Boleh dikosongkan (otomatis dibuatkan NIK)" 
                                class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 font-mono text-sm">
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Status Kehidupan: *</label>
-                        <select name="status_kehidupan" required class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm font-bold text-slate-800">
+                        <label for="add_status_kehidupan" class="block text-xs font-bold text-slate-700 mb-1">Status Kehidupan: *</label>
+                        <select id="add_status_kehidupan" name="status_kehidupan" aria-label="Status Kehidupan" required class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm font-bold text-slate-800">
                             <option value="Masih Hidup" selected>🟢 Masih Hidup</option>
                             <option value="Meninggal Dunia">⚫ Meninggal Dunia</option>
                         </select>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Jenis Kelamin: *</label>
-                        <select name="jenis_kelamin" required class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm font-semibold">
+                        <label for="add_jenis_kelamin" class="block text-xs font-bold text-slate-700 mb-1">Jenis Kelamin: *</label>
+                        <select id="add_jenis_kelamin" name="jenis_kelamin" aria-label="Jenis Kelamin" required class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm font-semibold">
                             <option value="Laki-laki">Laki-laki</option>
                             <option value="Perempuan">Perempuan</option>
                         </select>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Pendidikan Terakhir: *</label>
-                        <select name="pendidikan_terakhir" required class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm font-semibold">
+                        <label for="add_pendidikan_terakhir" class="block text-xs font-bold text-slate-700 mb-1">Pendidikan Terakhir: *</label>
+                        <select id="add_pendidikan_terakhir" name="pendidikan_terakhir" aria-label="Pendidikan Terakhir" required class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm font-semibold">
                             <option value="SD">SD</option>
                             <option value="SMP">SMP</option>
                             <option value="SMA/K" selected>SMA/K</option>
@@ -534,15 +536,18 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Tanggal Lahir: *</label>
-                        <input type="date" name="tanggal_lahir" value="1995-05-15" required class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm font-semibold">
+                        <label for="add_tanggal_lahir" class="block text-xs font-bold text-slate-700 mb-1">Tanggal Lahir: *</label>
+                        <input type="date" id="add_tanggal_lahir" name="tanggal_lahir" aria-label="Tanggal Lahir" value="1995-05-15" required class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm font-semibold">
                     </div>
 
                     <div class="sm:col-span-2">
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Gaji Bulanan (Rp): *</label>
+                        <label for="add_formatted_gaji" class="block text-xs font-bold text-slate-700 mb-1">Gaji Bulanan (Rp): *</label>
                         <div class="relative">
                             <span class="absolute left-3 top-2.5 text-xs font-bold text-slate-500">Rp</span>
                             <input type="text" 
+                                   id="add_formatted_gaji"
+                                   name="formatted_gaji_display"
+                                   aria-label="Gaji Bulanan Rupiah"
                                    x-model="formattedGaji"
                                    @input="formatGajiInput($event)"
                                    placeholder="1.000.000" 
@@ -558,38 +563,38 @@
                 <h4 class="font-bold text-xs uppercase text-blue-700 border-b border-blue-100 pb-1">2. Data Alamat & Wilayah Regional</h4>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Provinsi:</label>
-                        <input type="text" name="provinsi" value="DKI Jakarta" placeholder="Contoh: DKI Jakarta" 
+                        <label for="add_provinsi" class="block text-xs font-bold text-slate-700 mb-1">Provinsi:</label>
+                        <input type="text" id="add_provinsi" name="provinsi" aria-label="Provinsi" value="DKI Jakarta" placeholder="Contoh: DKI Jakarta" 
                                class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm">
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Kota / Kabupaten:</label>
-                        <input type="text" name="kota_kabupaten" value="Jakarta Selatan" placeholder="Contoh: Jakarta Selatan" 
+                        <label for="add_kota_kabupaten" class="block text-xs font-bold text-slate-700 mb-1">Kota / Kabupaten:</label>
+                        <input type="text" id="add_kota_kabupaten" name="kota_kabupaten" aria-label="Kota atau Kabupaten" value="Jakarta Selatan" placeholder="Contoh: Jakarta Selatan" 
                                class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm">
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Kecamatan:</label>
-                        <input type="text" name="kecamatan" value="Kebayoran Baru" placeholder="Contoh: Kebayoran Baru" 
+                        <label for="add_kecamatan" class="block text-xs font-bold text-slate-700 mb-1">Kecamatan:</label>
+                        <input type="text" id="add_kecamatan" name="kecamatan" aria-label="Kecamatan" value="Kebayoran Baru" placeholder="Contoh: Kebayoran Baru" 
                                class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm">
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Kelurahan / Desa:</label>
-                        <input type="text" name="kelurahan_desa" value="Senayan" placeholder="Contoh: Senayan" 
+                        <label for="add_kelurahan_desa" class="block text-xs font-bold text-slate-700 mb-1">Kelurahan / Desa:</label>
+                        <input type="text" id="add_kelurahan_desa" name="kelurahan_desa" aria-label="Kelurahan atau Desa" value="Senayan" placeholder="Contoh: Senayan" 
                                class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm">
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">RT / RW:</label>
-                        <input type="text" name="rt_rw" value="RT 003 / RW 005" placeholder="Contoh: RT 003 / RW 005" 
+                        <label for="add_rt_rw" class="block text-xs font-bold text-slate-700 mb-1">RT / RW:</label>
+                        <input type="text" id="add_rt_rw" name="rt_rw" aria-label="RT dan RW" value="RT 003 / RW 005" placeholder="Contoh: RT 003 / RW 005" 
                                class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm">
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Status Pernikahan:</label>
-                        <select name="status_pernikahan" class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm">
+                        <label for="add_status_pernikahan" class="block text-xs font-bold text-slate-700 mb-1">Status Pernikahan:</label>
+                        <select id="add_status_pernikahan" name="status_pernikahan" aria-label="Status Pernikahan" class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm">
                             <option value="Belum Menikah">Belum Menikah</option>
                             <option value="Menikah">Menikah</option>
                             <option value="Cerai">Cerai</option>
@@ -597,14 +602,14 @@
                     </div>
 
                     <div class="sm:col-span-2">
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Alamat Jalan & Nomor Rumah:</label>
-                        <input type="text" name="alamat_lengkap" value="Jl. Sudirman No. 45" placeholder="Contoh: Jl. Sudirman No. 45" 
+                        <label for="add_alamat_lengkap" class="block text-xs font-bold text-slate-700 mb-1">Alamat Jalan & Nomor Rumah:</label>
+                        <input type="text" id="add_alamat_lengkap" name="alamat_lengkap" aria-label="Alamat Jalan dan Nomor Rumah" value="Jl. Sudirman No. 45" placeholder="Contoh: Jl. Sudirman No. 45" 
                                class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm">
                     </div>
 
                     <div class="sm:col-span-2">
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Email (Opsional):</label>
-                        <input type="email" name="email" placeholder="Contoh: budi@gmail.com (Opsional)" 
+                        <label for="add_email" class="block text-xs font-bold text-slate-700 mb-1">Email (Opsional):</label>
+                        <input type="email" id="add_email" name="email" aria-label="Email" autocomplete="email" placeholder="Contoh: budi@gmail.com (Opsional)" 
                                class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm">
                     </div>
                 </div>
@@ -636,30 +641,30 @@
                 <h4 class="font-bold text-xs uppercase text-blue-700 border-b border-blue-100 pb-1">1. Data Diri & Status Kehidupan</h4>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                     <div class="sm:col-span-2">
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap: *</label>
-                        <input type="text" name="nama_lengkap" x-model="editData.nama_lengkap" required 
+                        <label for="edit_nama_lengkap" class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap: *</label>
+                        <input type="text" id="edit_nama_lengkap" name="nama_lengkap" aria-label="Nama Lengkap" x-model="editData.nama_lengkap" required 
                                class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm font-semibold">
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Status Kehidupan: *</label>
-                        <select name="status_kehidupan" x-model="editData.status_kehidupan" required class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm font-bold text-slate-800">
+                        <label for="edit_status_kehidupan" class="block text-xs font-bold text-slate-700 mb-1">Status Kehidupan: *</label>
+                        <select id="edit_status_kehidupan" name="status_kehidupan" aria-label="Status Kehidupan" x-model="editData.status_kehidupan" required class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm font-bold text-slate-800">
                             <option value="Masih Hidup">🟢 Masih Hidup</option>
                             <option value="Meninggal Dunia">⚫ Meninggal Dunia</option>
                         </select>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Jenis Kelamin: *</label>
-                        <select name="jenis_kelamin" x-model="editData.jenis_kelamin" required class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm font-semibold">
+                        <label for="edit_jenis_kelamin" class="block text-xs font-bold text-slate-700 mb-1">Jenis Kelamin: *</label>
+                        <select id="edit_jenis_kelamin" name="jenis_kelamin" aria-label="Jenis Kelamin" x-model="editData.jenis_kelamin" required class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm font-semibold">
                             <option value="Laki-laki">Laki-laki</option>
                             <option value="Perempuan">Perempuan</option>
                         </select>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Pendidikan Terakhir: *</label>
-                        <select name="pendidikan_terakhir" x-model="editData.pendidikan_terakhir" required class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm font-semibold">
+                        <label for="edit_pendidikan_terakhir" class="block text-xs font-bold text-slate-700 mb-1">Pendidikan Terakhir: *</label>
+                        <select id="edit_pendidikan_terakhir" name="pendidikan_terakhir" aria-label="Pendidikan Terakhir" x-model="editData.pendidikan_terakhir" required class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm font-semibold">
                             <option value="SD">SD</option>
                             <option value="SMP">SMP</option>
                             <option value="SMA/K">SMA/K</option>
@@ -671,15 +676,18 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Tanggal Lahir: *</label>
-                        <input type="date" name="tanggal_lahir" x-model="editData.tanggal_lahir" required class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm font-semibold">
+                        <label for="edit_tanggal_lahir" class="block text-xs font-bold text-slate-700 mb-1">Tanggal Lahir: *</label>
+                        <input type="date" id="edit_tanggal_lahir" name="tanggal_lahir" aria-label="Tanggal Lahir" x-model="editData.tanggal_lahir" required class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm font-semibold">
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Gaji Bulanan (Rp): *</label>
+                        <label for="edit_formatted_gaji" class="block text-xs font-bold text-slate-700 mb-1">Gaji Bulanan (Rp): *</label>
                         <div class="relative">
                             <span class="absolute left-3 top-2.5 text-xs font-bold text-slate-500">Rp</span>
                             <input type="text" 
+                                   id="edit_formatted_gaji"
+                                   name="edit_formatted_gaji_display"
+                                   aria-label="Gaji Bulanan Rupiah"
                                    x-model="editFormattedGaji"
                                    @input="formatEditGajiInput($event)"
                                    required
@@ -694,33 +702,33 @@
                 <h4 class="font-bold text-xs uppercase text-blue-700 border-b border-blue-100 pb-1">2. Data Wilayah Regional</h4>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Provinsi:</label>
-                        <input type="text" name="provinsi" x-model="editData.provinsi" class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm">
+                        <label for="edit_provinsi" class="block text-xs font-bold text-slate-700 mb-1">Provinsi:</label>
+                        <input type="text" id="edit_provinsi" name="provinsi" aria-label="Provinsi" x-model="editData.provinsi" class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm">
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Kota / Kabupaten:</label>
-                        <input type="text" name="kota_kabupaten" x-model="editData.kota_kabupaten" class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm">
+                        <label for="edit_kota_kabupaten" class="block text-xs font-bold text-slate-700 mb-1">Kota / Kabupaten:</label>
+                        <input type="text" id="edit_kota_kabupaten" name="kota_kabupaten" aria-label="Kota atau Kabupaten" x-model="editData.kota_kabupaten" class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm">
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Kecamatan:</label>
-                        <input type="text" name="kecamatan" x-model="editData.kecamatan" class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm">
+                        <label for="edit_kecamatan" class="block text-xs font-bold text-slate-700 mb-1">Kecamatan:</label>
+                        <input type="text" id="edit_kecamatan" name="kecamatan" aria-label="Kecamatan" x-model="editData.kecamatan" class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm">
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Kelurahan / Desa:</label>
-                        <input type="text" name="kelurahan_desa" x-model="editData.kelurahan_desa" class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm">
+                        <label for="edit_kelurahan_desa" class="block text-xs font-bold text-slate-700 mb-1">Kelurahan / Desa:</label>
+                        <input type="text" id="edit_kelurahan_desa" name="kelurahan_desa" aria-label="Kelurahan atau Desa" x-model="editData.kelurahan_desa" class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm">
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">RT / RW:</label>
-                        <input type="text" name="rt_rw" x-model="editData.rt_rw" class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm">
+                        <label for="edit_rt_rw" class="block text-xs font-bold text-slate-700 mb-1">RT / RW:</label>
+                        <input type="text" id="edit_rt_rw" name="rt_rw" aria-label="RT dan RW" x-model="editData.rt_rw" class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm">
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Status Pernikahan:</label>
-                        <select name="status_pernikahan" x-model="editData.status_pernikahan" class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm">
+                        <label for="edit_status_pernikahan" class="block text-xs font-bold text-slate-700 mb-1">Status Pernikahan:</label>
+                        <select id="edit_status_pernikahan" name="status_pernikahan" aria-label="Status Pernikahan" x-model="editData.status_pernikahan" class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm">
                             <option value="Belum Menikah">Belum Menikah</option>
                             <option value="Menikah">Menikah</option>
                             <option value="Cerai">Cerai</option>
@@ -728,13 +736,13 @@
                     </div>
 
                     <div class="sm:col-span-2">
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Alamat Jalan & Nomor Rumah:</label>
-                        <input type="text" name="alamat_lengkap" x-model="editData.alamat_lengkap" class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm">
+                        <label for="edit_alamat_lengkap" class="block text-xs font-bold text-slate-700 mb-1">Alamat Jalan & Nomor Rumah:</label>
+                        <input type="text" id="edit_alamat_lengkap" name="alamat_lengkap" aria-label="Alamat Jalan dan Nomor Rumah" x-model="editData.alamat_lengkap" class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm">
                     </div>
 
                     <div class="sm:col-span-2">
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Email:</label>
-                        <input type="email" name="email" x-model="editData.email" class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm">
+                        <label for="edit_email" class="block text-xs font-bold text-slate-700 mb-1">Email:</label>
+                        <input type="email" id="edit_email" name="email" aria-label="Email" autocomplete="email" x-model="editData.email" class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm">
                     </div>
                 </div>
             </div>

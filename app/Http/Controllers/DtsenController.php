@@ -173,9 +173,14 @@ class DtsenController extends Controller
         $filterVal = $request->input('filter_val', '');
 
         // Catat Log Aktivitas jika ada Filter / Pencarian Aktif yang Diterapkan Pengguna
+        $isAuditPage = $request->routeIs('dtsen.audit') || str_contains($request->path(), 'audit');
+
         $activeFilterSummaries = [];
         if (!empty($search)) $activeFilterSummaries[] = "Pencarian NIK/Nama: '{$search}'";
-        if ($qualityStatus !== 'semua') $activeFilterSummaries[] = "Status QC: {$qualityStatus}";
+        // Di halaman audit, status QC default 'error' adalah bawaan modul, bukan filter eksplisit pengguna
+        if ($qualityStatus !== 'semua' && !($isAuditPage && $qualityStatus === 'error')) {
+            $activeFilterSummaries[] = "Status QC: {$qualityStatus}";
+        }
         if ($desil !== 'semua') $activeFilterSummaries[] = "Desil: {$desil}";
         if ($jenisKelamin !== 'semua') $activeFilterSummaries[] = "Jenis Kelamin: {$jenisKelamin}";
         if ($pendidikan !== 'semua') $activeFilterSummaries[] = "Pendidikan: {$pendidikan}";
@@ -186,8 +191,9 @@ class DtsenController extends Controller
             $activeFilterSummaries[] = "Target Variabel KPI: " . $request->input('kpi_var');
         }
 
-        if (!empty($activeFilterSummaries)) {
-            self::logActivity('INFO', 'Penerapan Filter & Filter Tabel: ' . implode(' | ', $activeFilterSummaries));
+        // Hanya catat log jika pengguna benar-benar menerapkan parameter filter aktif
+        if (!empty($activeFilterSummaries) && $request->hasAny(['search', 'filter_col', 'salary_search', 'desil', 'jenis_kelamin', 'pendidikan', 'status_bekerja', 'status_kawin', 'quality_status'])) {
+            self::logActivity('INFO', 'Penerapan Filter Data: ' . implode(' | ', $activeFilterSummaries));
         }
 
         // Scan folder src-dtsen di root folder project
@@ -317,8 +323,10 @@ class DtsenController extends Controller
             $obj = (object)$item;
             $nik = (string)($item['nomor_induk_kependudukan'] ?? $item['nik'] ?? '');
             $nama = (string)($item['nama'] ?? $item['nama_lengkap'] ?? '');
+            $kk = (string)($item['nomor_kartu_keluarga'] ?? $item['no_kk'] ?? $item['kk'] ?? '');
             $obj->masked_nik = strlen($nik) >= 8 ? (substr($nik, 0, 4) . '********' . substr($nik, -4)) : '****************';
             $obj->masked_nama = strlen($nama) >= 2 ? (substr($nama, 0, 2) . str_repeat('*', max(1, strlen($nama) - 2))) : '***';
+            $obj->masked_kk = strlen($kk) >= 8 ? (substr($kk, 0, 4) . '********' . substr($kk, -4)) : '****************';
             
             $issues = $item['quality_issues'] ?? [];
             if (is_string($issues)) {
@@ -533,7 +541,8 @@ class DtsenController extends Controller
             'hasStatusKawin',
             'hasSalaryColumn',
             'srcDtsenFiles',
-            'srcExportFiles'
+            'srcExportFiles',
+            'filteredTotal'
         );
 
         return $viewData;
@@ -772,7 +781,12 @@ class DtsenController extends Controller
      */
     public function issueAudit(Request $request)
     {
+        // Default hanya muat baris data yang bermasalah / anomali
+        if (!$request->filled('quality_status') || $request->input('quality_status') === 'semua') {
+            $request->merge(['quality_status' => 'error']);
+        }
         $viewData = $this->getSharedAnalyticsData($request);
+        $viewData['currentQualityStatus'] = $request->input('quality_status', 'error');
         return view('dtsen.audit', $viewData);
     }
 
@@ -783,6 +797,54 @@ class DtsenController extends Controller
     {
         $viewData = $this->getSharedAnalyticsData($request);
         return view('dtsen.files', $viewData);
+    }
+
+    /**
+     * Unggah berkas dataset baru langsung ke folder src-dtsen/
+     */
+    public function uploadDatasetFile(Request $request)
+    {
+        $request->validate([
+            'dataset_file' => 'required|file',
+        ]);
+
+        try {
+            $file = $request->file('dataset_file');
+            $originalName = $file->getClientOriginalName();
+            $ext = strtolower($file->getClientOriginalExtension());
+
+            if (!in_array($ext, ['csv', 'xlsx', 'xls', 'zip'])) {
+                return back()->with('error', 'Format berkas tidak didukung. Harap unggah berkas CSV, XLSX, XLS, atau ZIP.');
+            }
+
+            $srcDtsenDir = base_path('src-dtsen');
+            if (!is_dir($srcDtsenDir)) {
+                mkdir($srcDtsenDir, 0755, true);
+            }
+
+            // Bersihkan nama berkas agar aman dari directory traversal
+            $safeName = preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', $originalName);
+            $targetPath = $srcDtsenDir . DIRECTORY_SEPARATOR . $safeName;
+
+            // Jika berkas sudah ada, beri timestamp agar tidak menimpa tanpa sengaja
+            if (file_exists($targetPath)) {
+                $baseName = pathinfo($safeName, PATHINFO_FILENAME);
+                $safeName = $baseName . '_' . date('Ymd_His') . '.' . $ext;
+            }
+
+            $file->move($srcDtsenDir, $safeName);
+
+            $userName = \Illuminate\Support\Facades\Auth::check() ? \Illuminate\Support\Facades\Auth::user()->name : 'Pengguna';
+            \App\Services\AuditLogger::log(
+                'DATASET_UPLOADED',
+                "Pengguna '{$userName}' berhasil mengunggah berkas dataset '{$safeName}' ke folder src-dtsen/.",
+                'SUCCESS'
+            );
+
+            return redirect()->route('dtsen.files')->with('success', "Berkas '{$safeName}' berhasil disimpan ke folder src-dtsen/ dan siap untuk diproses!");
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Gagal mengunggah berkas: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -1246,6 +1308,9 @@ class DtsenController extends Controller
             $qualityIssues = json_decode($qualityIssues, true) ?: [$qualityIssues];
         }
 
+        $kk = (string)($row['nomor_kartu_keluarga'] ?? $row['no_kk'] ?? $row['kk'] ?? '-');
+        $maskedKk = strlen($kk) >= 8 ? (substr($kk, 0, 4) . '********' . substr($kk, -4)) : '****************';
+
         return response()->json([
             'success' => true,
             'data' => [
@@ -1254,7 +1319,8 @@ class DtsenController extends Controller
                 'masked_nik' => $maskedNik,
                 'nama' => $nama,
                 'masked_nama' => $maskedNama,
-                'nomor_kartu_keluarga' => $row['nomor_kartu_keluarga'] ?? $row['no_kk'] ?? '-',
+                'nomor_kartu_keluarga' => $kk,
+                'masked_nomor_kartu_keluarga' => $maskedKk,
                 'jenis_kelamin' => $row['jenis_kelamin'] ?? '-',
                 'tanggal_lahir' => $row['tanggal_lahir'] ?? '-',
                 'usia' => ($row['usia'] ?? '-') . ' Tahun',
@@ -1324,6 +1390,18 @@ class DtsenController extends Controller
             }
             $logFile = $logDir . '/dtsen_activity.log';
             $timestamp = date('Y-m-d H:i:s');
+
+            // Pencegahan Spam Duplikasi: Cek apakah baris log terakhir memiliki pesan yang sama persis
+            if (file_exists($logFile) && filesize($logFile) > 0) {
+                $lines = @file($logFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+                if (!empty($lines)) {
+                    $lastLine = end($lines);
+                    if (str_contains($lastLine, "] " . $message)) {
+                        return; // Jangan catat pesan berulang yang sama persis secara berurutan
+                    }
+                }
+            }
+
             $ctxStr = !empty($context) ? ' ' . json_encode($context, JSON_UNESCAPED_SLASHES) : '';
             $line = "[{$timestamp}] [" . strtoupper($level) . "] {$message}{$ctxStr}" . PHP_EOL;
             file_put_contents($logFile, $line, FILE_APPEND);

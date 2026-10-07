@@ -20,6 +20,10 @@ function dtsenDataPageApp(allColKeys = []) {
         openPreview(id) {
             if (typeof window.openPreview === 'function') {
                 window.openPreview(id);
+            } else if (window.paduApp && typeof window.paduApp.openPreview === 'function') {
+                window.paduApp.openPreview(id);
+            } else {
+                window.dispatchEvent(new CustomEvent('open-preview', { detail: { id } }));
             }
         },
 

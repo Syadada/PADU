@@ -149,17 +149,17 @@
 
                         <!-- 1. Mode Ekspor Data -->
                         <div class="space-y-2">
-                            <label class="block text-xs font-bold text-slate-800 uppercase">1. Mode Ekspor Data</label>
+                            <div class="text-xs font-bold text-slate-800 uppercase">1. Mode Ekspor Data</div>
                             <div class="space-y-2">
-                                <label class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-blue-50 cursor-pointer flex items-start gap-3 transition-colors">
-                                    <input type="radio" name="mode" value="as_is" checked class="mt-0.5 accent-blue-600">
+                                <label for="dtsen_export_mode_as_is" class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-blue-50 cursor-pointer flex items-start gap-3 transition-colors">
+                                    <input type="radio" id="dtsen_export_mode_as_is" name="mode" value="as_is" aria-label="Mode A: Ekspor As-Is (+ Catatan Error Audit)" checked class="mt-0.5 accent-blue-600">
                                     <div>
                                         <strong class="block text-xs text-slate-900">📄 Mode A: Ekspor As-Is (+ Catatan Error Audit)</strong>
                                         <p class="text-[11px] text-slate-500">Mengekspor seluruh baris data apa adanya ditambah 1 kolom rincian temuan error. Urutan & indeks baris tetap presisi 100%.</p>
                                     </div>
                                 </label>
-                                <label class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-emerald-50 cursor-pointer flex items-start gap-3 transition-colors">
-                                    <input type="radio" name="mode" value="cleaned_only" class="mt-0.5 accent-emerald-600">
+                                <label for="dtsen_export_mode_cleaned_only" class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-emerald-50 cursor-pointer flex items-start gap-3 transition-colors">
+                                    <input type="radio" id="dtsen_export_mode_cleaned_only" name="mode" value="cleaned_only" aria-label="Mode B: Ekspor Cleaned Only (Data Cacat Dibuang)" class="mt-0.5 accent-emerald-600">
                                     <div>
                                         <strong class="block text-xs text-slate-900">🟢 Mode B: Ekspor Cleaned Only (Data Cacat Dibuang)</strong>
                                         <p class="text-[11px] text-slate-500">Mengekspor hanya baris data yang 🟢 Valid. Disertai kolom <code>Original_Row_Index</code> untuk rekonsiliasi ke master file.</p>
@@ -170,14 +170,14 @@
 
                         <!-- 2. Format File -->
                         <div class="space-y-1.5 pt-2 border-t border-slate-100">
-                            <label class="block text-xs font-bold text-slate-800 uppercase">2. Format Berkas Paket (.ZIP)</label>
+                            <div class="text-xs font-bold text-slate-800 uppercase">2. Format Berkas Paket (.ZIP)</div>
                             <div class="grid grid-cols-2 gap-3">
-                                <label class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-emerald-50 cursor-pointer flex flex-col items-center justify-center text-center">
-                                    <input type="radio" name="format" value="xlsx" checked class="mb-1 accent-emerald-600">
+                                <label for="dtsen_export_format_xlsx" class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-emerald-50 cursor-pointer flex flex-col items-center justify-center text-center">
+                                    <input type="radio" id="dtsen_export_format_xlsx" name="format" value="xlsx" aria-label="Format Excel Terbaru (.xlsx)" checked class="mb-1 accent-emerald-600">
                                     <span class="text-xs font-bold text-slate-900">🟢 Excel Terbaru (.xlsx)</span>
                                 </label>
-                                <label class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-blue-50 cursor-pointer flex flex-col items-center justify-center text-center">
-                                    <input type="radio" name="format" value="csv" class="mb-1 accent-blue-600">
+                                <label for="dtsen_export_format_csv" class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-blue-50 cursor-pointer flex flex-col items-center justify-center text-center">
+                                    <input type="radio" id="dtsen_export_format_csv" name="format" value="csv" aria-label="Format CSV File (.csv)" class="mb-1 accent-blue-600">
                                     <span class="text-xs font-bold text-slate-900">📄 CSV File (.csv)</span>
                                 </label>
                             </div>
@@ -262,18 +262,19 @@
             <form action="{{ route('dtsen.import-local') }}" method="POST" class="space-y-4" x-data="{ selectedFile: '{{ $srcDtsenFiles[0]['name'] }}', isProcessing: false }" @submit="isProcessing = true; startLocalImportSubmit($event)">
                 @csrf
                 <div class="space-y-2.5">
-                    <label class="block text-xs font-bold uppercase tracking-wider" style="color: #cbd5e1 !important;">
+                    <div class="block text-xs font-bold uppercase tracking-wider" style="color: #cbd5e1 !important;">
                         📁 Berkas Tersedia di Folder <code class="font-mono" style="color: #93c5fd !important;">src-dtsen/</code> ({{ count($srcDtsenFiles) }} Berkas Terdeteksi):
-                    </label>
+                    </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                         @foreach($srcDtsenFiles as $f)
-                            <label @click="selectedFile = '{{ $f['name'] }}'" 
+                            <label for="dtsen_selected_file_{{ $loop->index }}"
+                                   @click="selectedFile = '{{ $f['name'] }}'" 
                                    :class="selectedFile === '{{ $f['name'] }}' ? 'selected-card' : ''"
                                    class="file-option-card flex items-start gap-3 relative overflow-hidden group"
                                    style="background-color: #1e293b !important; color: #ffffff !important; border: 1px solid #334155 !important;">
                                 
-                                <input type="radio" name="selected_file" value="{{ $f['name'] }}" x-model="selectedFile" class="mt-1 accent-blue-500">
+                                <input type="radio" id="dtsen_selected_file_{{ $loop->index }}" name="selected_file" value="{{ $f['name'] }}" aria-label="Pilih berkas {{ $f['name'] }}" x-model="selectedFile" class="mt-1 accent-blue-500">
                                 
                                 <div class="space-y-1 min-w-0 flex-1">
                                     <div class="flex items-center gap-2">
@@ -456,16 +457,16 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5 col-span-full">
                         <!-- 1. Text Search (Nama Subjek) -->
                         <div>
-                            <label class="block text-[11px] font-extrabold text-slate-700 uppercase tracking-wider mb-1">Cari Nama Subjek</label>
-                            <input type="text" name="salary_search" value="{{ request('salary_search') }}" placeholder="Ketik nama subjek..." class="w-full text-xs font-medium bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500">
+                            <label for="index_salary_search" class="block text-[11px] font-extrabold text-slate-700 uppercase tracking-wider mb-1">Cari Nama Subjek</label>
+                            <input type="text" id="index_salary_search" name="salary_search" aria-label="Cari Nama Subjek" value="{{ request('salary_search') }}" placeholder="Ketik nama subjek..." class="w-full text-xs font-medium bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
 
                         <!-- 2. Dedicated Dynamic Data-Driven Filter Dropdowns for EVERY Column in the Data Table -->
                         @foreach($importFilterableColumns as $colKey => $colTitle)
                             @if(isset($importColumnDistinctValues[$colKey]) && count($importColumnDistinctValues[$colKey]) > 0)
                                 <div>
-                                    <label class="block text-[11px] font-extrabold text-blue-900 uppercase tracking-wider mb-1">{{ $colTitle }}</label>
-                                    <select name="salary_{{ $colKey }}" class="w-full text-xs font-bold bg-blue-50 border border-blue-300 text-blue-900 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+                                    <label for="index_salary_{{ $colKey }}" class="block text-[11px] font-extrabold text-blue-900 uppercase tracking-wider mb-1">{{ $colTitle }}</label>
+                                    <select id="index_salary_{{ $colKey }}" name="salary_{{ $colKey }}" aria-label="Filter {{ $colTitle }}" class="w-full text-xs font-bold bg-blue-50 border border-blue-300 text-blue-900 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
                                         <option value="semua">Semua {{ $colTitle }}</option>
                                         @foreach($importColumnDistinctValues[$colKey] as $vItem)
                                             <option value="{{ $vItem }}" {{ (request('salary_' . $colKey) == $vItem) ? 'selected' : '' }}>📌 {{ $vItem }}</option>
@@ -610,8 +611,8 @@
                     <input type="hidden" name="filter_col" value="{{ $filterCol }}">
                     <input type="hidden" name="filter_val" value="{{ $filterVal }}">
                     
-                    <label class="text-xs font-bold text-slate-700 whitespace-nowrap">Variabel Target:</label>
-                    <select name="kpi_var" class="text-xs font-bold bg-blue-50 border border-blue-300 rounded-xl px-3 py-2 text-blue-900 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer shadow-sm">
+                    <label for="index_kpi_var" class="text-xs font-bold text-slate-700 whitespace-nowrap">Variabel Target:</label>
+                    <select id="index_kpi_var" name="kpi_var" aria-label="Variabel Target" class="text-xs font-bold bg-blue-50 border border-blue-300 rounded-xl px-3 py-2 text-blue-900 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer shadow-sm">
                         @foreach($activeColumnsMap as $key => $title)
                             <option value="{{ $key }}" {{ $kpiTargetVar === $key ? 'selected' : '' }}>{{ $title }}</option>
                         @endforeach
@@ -912,7 +913,8 @@
             <!-- SEARCH ENGINE DATA TABLE (Pencarian Cepat NIK, KK, Nama, Alamat, Wilayah) -->
             <form method="GET" action="{{ route('dtsen.index') }}#tabel-data" id="dataTableSearchForm" class="flex items-center gap-2">
                 <div class="relative w-full">
-                    <input type="text" name="search" value="{{ $search }}" placeholder="Cari data?..." class="w-full pl-4 pr-16 py-2.5 bg-slate-50 border border-slate-300 text-slate-900 font-bold text-xs rounded-xl outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all shadow-xs">
+                    <label for="dtsen_table_search" class="sr-only">Cari data tabel</label>
+                    <input type="text" id="dtsen_table_search" name="search" value="{{ $search }}" autocomplete="off" aria-label="Cari data NIK, KK, Nama, Alamat, Wilayah" placeholder="Cari data?..." class="w-full pl-4 pr-16 py-2.5 bg-slate-50 border border-slate-300 text-slate-900 font-bold text-xs rounded-xl outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all shadow-xs">
                     @if(!empty($search))
                         <a href="{{ route('dtsen.index') }}#tabel-data" class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-slate-700 font-extrabold text-xs">✕ Clear</a>
                     @endif
@@ -945,7 +947,7 @@
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                                     @foreach($officialIndividuVars as $cKey => $cTitle)
                                         <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:bg-blue-100/60 cursor-pointer text-xs font-bold text-slate-800 transition-colors">
-                                            <input type="checkbox" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                                            <input type="checkbox" id="toggle_idx_col_{{ $cKey }}" name="toggle_col_{{ $cKey }}" aria-label="Tampilkan kolom {{ $cTitle }}" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
                                             <span class="truncate" title="{{ $cTitle }}">{{ $cTitle }}</span>
                                         </label>
                                     @endforeach
@@ -962,7 +964,7 @@
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                                     @foreach($officialKeluargaVars as $cKey => $cTitle)
                                         <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:bg-emerald-100/60 cursor-pointer text-xs font-bold text-slate-800 transition-colors">
-                                            <input type="checkbox" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500">
+                                            <input type="checkbox" id="toggle_idx_col_{{ $cKey }}" name="toggle_col_{{ $cKey }}" aria-label="Tampilkan kolom {{ $cTitle }}" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500">
                                             <span class="truncate" title="{{ $cTitle }}">{{ $cTitle }}</span>
                                         </label>
                                     @endforeach
@@ -982,7 +984,7 @@
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                                     @foreach($extraCols as $cKey => $cTitle)
                                         <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:bg-purple-100/60 cursor-pointer text-xs font-bold text-slate-800 transition-colors">
-                                            <input type="checkbox" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-purple-600 rounded border-slate-300 focus:ring-purple-500">
+                                            <input type="checkbox" id="toggle_idx_col_{{ $cKey }}" name="toggle_col_{{ $cKey }}" aria-label="Tampilkan kolom {{ $cTitle }}" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-purple-600 rounded border-slate-300 focus:ring-purple-500">
                                             <span class="truncate" title="{{ $cTitle }}">{{ $cTitle }}</span>
                                         </label>
                                     @endforeach
@@ -1228,9 +1230,9 @@
                                                             <span>🎂</span> Input Rentang Usia (Min - Max)
                                                         </span>
                                                         <div class="flex items-center gap-1.5">
-                                                            <input type="number" x-model="minAgeVal" min="0" max="120" placeholder="Min" class="w-1/2 text-xs bg-white border border-slate-300 rounded px-2 py-1 outline-none focus:ring-2 focus:ring-blue-500">
+                                                            <input type="number" id="idx_min_age_{{ $colKey }}" name="min_age_{{ $colKey }}" aria-label="Usia Minimum" x-model="minAgeVal" min="0" max="120" placeholder="Min" class="w-1/2 text-xs bg-white border border-slate-300 rounded px-2 py-1 outline-none focus:ring-2 focus:ring-blue-500">
                                                             <span class="text-slate-400 font-bold text-xs">s.d.</span>
-                                                            <input type="number" x-model="maxAgeVal" min="0" max="120" placeholder="Max" class="w-1/2 text-xs bg-white border border-slate-300 rounded px-2 py-1 outline-none focus:ring-2 focus:ring-blue-500">
+                                                            <input type="number" id="idx_max_age_{{ $colKey }}" name="max_age_{{ $colKey }}" aria-label="Usia Maksimum" x-model="maxAgeVal" min="0" max="120" placeholder="Max" class="w-1/2 text-xs bg-white border border-slate-300 rounded px-2 py-1 outline-none focus:ring-2 focus:ring-blue-500">
                                                         </div>
                                                         <button type="button" @click.prevent.stop="addCustomAgeRange()" class="w-full py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg transition-colors shadow-sm cursor-pointer flex items-center justify-center leading-normal">
                                                             + Terapkan Rentang Usia
@@ -1238,23 +1240,29 @@
                                                     </div>
                                                 @endif
 
-                                                 <input type="text" x-model="searchVal" @keydown.enter.prevent.stop="applyFilter({{ json_encode($importColumnDistinctValues[$colKey] ?? []) }})" placeholder="Cari nilai..." class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 outline-none focus:ring-2 focus:ring-blue-500">
+                                                 <input type="text" id="idx_search_val_{{ $colKey }}" name="search_val_{{ $colKey }}" aria-label="Cari nilai {{ $colTitle }}" x-model="searchVal" @keydown.enter.prevent.stop="applyFilter({{ json_encode($importColumnDistinctValues[$colKey] ?? []) }})" placeholder="Cari nilai..." class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 outline-none focus:ring-2 focus:ring-blue-500">
 
                                                 <div class="max-h-56 overflow-y-auto space-y-1 text-xs pr-1 border border-slate-100 rounded-lg p-1" style="max-height: 220px; overflow-y: auto;">
                                                     @if(isset($importColumnDistinctValues[$colKey]) && count($importColumnDistinctValues[$colKey]) > 0)
                                                         <label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-100 cursor-pointer font-bold text-blue-600 border-b border-slate-100 pb-1.5 mb-1">
                                                             <input type="checkbox" 
+                                                                   id="idx_select_all_{{ $colKey }}"
+                                                                   name="select_all_{{ $colKey }}"
+                                                                   aria-label="Pilih atau hapus semua {{ $colTitle }}"
                                                                    :checked="selectedVals.length >= {{ count($importColumnDistinctValues[$colKey]) }}" 
                                                                    @change="selectAll({{ json_encode($importColumnDistinctValues[$colKey]) }})"
                                                                    class="accent-blue-600 rounded cursor-pointer">
                                                             <span>(Pilih / Hapus Semua)</span>
                                                         </label>
 
-                                                        @foreach($importColumnDistinctValues[$colKey] as $dItem)
+                                                        @foreach($importColumnDistinctValues[$colKey] as $dIndex => $dItem)
                                                             <label x-show="!searchVal || {{ json_encode(strtolower($dItem)) }}.includes(searchVal.toLowerCase())"
                                                                    class="flex items-center gap-2 px-2 py-1 rounded hover:bg-blue-50 cursor-pointer font-medium text-slate-700 transition-colors"
                                                                    :class="hasVal({{ json_encode($dItem) }}) ? 'bg-blue-50 font-bold text-blue-900' : ''">
                                                                 <input type="checkbox" 
+                                                                       id="idx_item_{{ $colKey }}_{{ $dIndex }}"
+                                                                       name="filter_{{ $colKey }}[]"
+                                                                       aria-label="{{ $dItem }}"
                                                                        :checked="hasVal({{ json_encode($dItem) }})" 
                                                                        @change="toggleVal({{ json_encode($dItem) }})"
                                                                        class="accent-blue-600 rounded cursor-pointer">
@@ -1314,7 +1322,10 @@
                                                 <span x-show="!isMasked" style="display:none;">{{ $row->$colKey ?? '-' }}</span>
                                             </span>
                                         @elseif($colKey === 'nomor_kartu_keluarga' || $colKey === 'no_kk')
-                                            <span class="font-mono text-slate-800">{{ $row->$colKey ?? '-' }}</span>
+                                            <span class="font-mono text-slate-800">
+                                                <span x-show="isMasked">{{ $row->masked_kk ?? '****************' }}</span>
+                                                <span x-show="!isMasked" style="display:none;">{{ $row->$colKey ?? '-' }}</span>
+                                            </span>
                                         @elseif($colKey === 'nama' || $colKey === 'nama_lengkap')
                                             <span class="font-bold text-slate-900">
                                                 <span x-show="isMasked">{{ $row->masked_nama ?? '***' }}</span>
@@ -1483,147 +1494,7 @@
         </div>
     </div>
 
-    <!-- Modal Realtime Progress Bar & Estimasi Waktu (ETA) -->
-    <div x-show="showImportProgressModal" 
-         x-transition 
-         class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 backdrop-blur-md p-4" 
-         style="display: none;">
-        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md p-6 space-y-5">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-lg">
-                    <svg class="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                </div>
-                <div>
-                    <h3 class="font-extrabold text-slate-900 text-sm">Memproses Impor Data</h3>
-                    <p class="text-xs text-slate-500 font-medium" x-text="importProgressMessage"></p>
-                </div>
-            </div>
-
-            <!-- Realtime Progress Bar -->
-            <div class="space-y-2">
-                <div class="flex justify-between items-center text-xs font-bold">
-                    <span class="text-slate-700" x-text="importProgressPercent + '% Selesai'"></span>
-                    <span class="text-blue-600 font-mono" x-show="importProgressPercent < 100" x-text="'Estimasi sisa waktu: ~' + (importEtaSeconds > 0 ? formatEta(importEtaSeconds) : '5 detik')"></span>
-                    <span class="text-emerald-600 font-mono" x-show="importProgressPercent === 100">Selesai!</span>
-                </div>
-                <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden p-0.5 border border-slate-200">
-                    <div class="h-full bg-blue-600 rounded-full transition-all duration-300 shadow-sm" :style="{ width: importProgressPercent + '%' }"></div>
-                </div>
-            </div>
-
-            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-600 flex items-center justify-between font-mono">
-                <span>Status Pemrosesan:</span>
-                <span class="text-slate-900 font-bold" x-text="importProgressMessage"></span>
-            </div>
-
-            <!-- Tombol Opsi Batalkan Injeksi jika Hang / Stuck -->
-            <div class="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
-                <button type="button" @click="openLogConsole()" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1.5 border border-slate-300 cursor-pointer">
-                    <span>📋</span> Buka Log Monitor
-                </button>
-                <button type="button" @click="cancelCurrentImport()" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer">
-                    <span>🚫</span> Batalkan Injeksi Data
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Console Log System Realtime & Activity Monitor -->
-    <div x-show="showLogModal" 
-         x-transition 
-         class="fixed inset-0 z-[99999] flex items-center justify-center p-4" 
-         style="background-color: rgba(2, 6, 23, 0.88) !important; backdrop-filter: blur(8px); display: none;">
-        <div @click.away="showLogModal = false" 
-             class="rounded-2xl shadow-2xl border w-full max-w-4xl p-6 space-y-4 font-sans text-white relative z-[100000]" 
-             style="background-color: #0b1329 !important; border: 1px solid #334155 !important;">
-            <div class="flex items-center justify-between border-b pb-3" style="border-color: #1e293b !important;">
-                <div class="flex items-center gap-3">
-                    <span class="w-9 h-9 rounded-xl text-blue-400 flex items-center justify-center font-bold text-base border" style="background-color: rgba(59, 130, 246, 0.15) !important; border-color: rgba(59, 130, 246, 0.3) !important;">📋</span>
-                    <div>
-                        <h3 class="font-extrabold text-white text-sm flex items-center gap-2">
-                            Console Log Aktivitas & Monitor System (100% Realtime)
-                        </h3>
-                        <p class="text-[11px] font-medium" style="color: #94a3b8 !important;">Pantau proses injeksi data, agregasi DuckDB, ekspor berkas, dan log pembatalan.</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <button type="button" @click="fetchLogs()" class="px-3.5 py-1.5 hover:bg-blue-600 font-bold text-xs rounded-xl border flex items-center gap-1.5 transition-colors cursor-pointer" style="background-color: rgba(59, 130, 246, 0.2) !important; color: #93c5fd !important; border-color: rgba(59, 130, 246, 0.4) !important;">
-                        <span>🔄</span> Refresh
-                    </button>
-                    <button type="button" @click="showLogModal = false" class="w-8 h-8 rounded-xl font-bold text-sm flex items-center justify-center border transition-all cursor-pointer" style="background-color: #1e293b !important; color: #cbd5e1 !important; border-color: #334155 !important;">✕</button>
-                </div>
-            </div>
-
-            <!-- Toolbar Control Log Console -->
-            <div class="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-xl border text-xs" style="background-color: #020617 !important; border-color: #1e293b !important;">
-                <div class="flex items-center gap-2">
-                    <span class="font-bold" style="color: #cbd5e1 !important;">Filter Level:</span>
-                    <select x-model="logFilter" class="border rounded-xl px-3 py-1.5 text-xs font-bold outline-none cursor-pointer" style="background-color: #0f172a !important; color: #ffffff !important; border-color: #334155 !important;">
-                        <option value="ALL">Semua Level</option>
-                        <option value="INFO">INFO</option>
-                        <option value="SUCCESS">SUCCESS (Sukses)</option>
-                        <option value="WARNING">WARNING (Peringatan)</option>
-                        <option value="CANCEL">CANCEL (Batal)</option>
-                        <option value="ERROR">ERROR (Gagal)</option>
-                    </select>
-                </div>
-
-                <div class="flex items-center gap-2">
-                    <button type="button" @click="cancelCurrentImport()" class="px-3.5 py-1.5 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 shadow-md cursor-pointer border" style="background-color: #dc2626 !important; color: #ffffff !important; border-color: #ef4444 !important;">
-                        <span>🚫</span> Batalkan Injeksi Aktif
-                    </button>
-                    <button type="button" @click="copySystemLogs()" class="px-3.5 py-1.5 font-bold text-xs rounded-xl border flex items-center gap-1.5 transition-all cursor-pointer" style="background-color: #1e293b !important; color: #f1f5f9 !important; border-color: #475569 !important;">
-                        <span>📋</span> Salin Log
-                    </button>
-                    <button type="button" @click="clearSystemLogs()" class="px-3.5 py-1.5 font-bold text-xs rounded-xl border flex items-center gap-1.5 transition-all cursor-pointer" style="background-color: #7f1d1d !important; color: #fecdd3 !important; border-color: #991b1b !important;">
-                        <span>🗑️</span> Bersihkan Log
-                    </button>
-                </div>
-            </div>
-
-            <!-- Box Console Display Log Lines -->
-            <div class="rounded-xl border p-4 font-mono text-xs max-h-[50vh] overflow-y-auto space-y-1.5 scrollbar-thin" style="background-color: #020617 !important; border-color: #1e293b !important;">
-                <template x-for="item in filteredLogs" :key="item.id">
-                    <div class="flex items-start gap-2 leading-relaxed border-b pb-1" style="border-color: #0f172a !important;">
-                        <span class="text-[11px] shrink-0 font-bold" style="color: #94a3b8 !important;" x-text="'[' + item.timestamp + ']'"></span>
-                        
-                        <span class="px-1.5 py-0.5 rounded text-[10px] font-bold tracking-wide shrink-0" 
-                              :class="{
-                                  'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30': item.level === 'SUCCESS',
-                                  'bg-blue-500/20 text-blue-400 border border-blue-500/30': item.level === 'INFO',
-                                  'bg-amber-500/20 text-amber-400 border border-amber-500/30': item.level === 'WARNING' || item.level === 'CANCEL',
-                                  'bg-rose-500/20 text-rose-400 border border-rose-500/30': item.level === 'ERROR'
-                              }" 
-                              x-text="item.level"></span>
-                              
-                        <span class="break-all" 
-                              :class="{
-                                  'text-emerald-300': item.level === 'SUCCESS',
-                                  'text-blue-200': item.level === 'INFO',
-                                  'text-amber-300': item.level === 'WARNING' || item.level === 'CANCEL',
-                                  'text-rose-300': item.level === 'ERROR'
-                              }" 
-                              x-text="item.message"></span>
-                    </div>
-                </template>
-
-                <div x-show="filteredLogs.length === 0" class="py-8 text-center font-sans text-xs font-bold" style="color: #64748b !important;">
-                    Belum ada log aktivitas yang tercatat.
-                </div>
-            </div>
-
-            <div class="flex items-center justify-between text-xs border-t pt-3 font-bold" style="border-color: #1e293b !important; color: #94a3b8 !important;">
-                <span x-text="'Total ' + logList.length + ' entri log tercatat'"></span>
-                <span class="text-emerald-400 font-bold flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Monitor Log Online
-                </span>
-            </div>
-        </div>
-    </div>
-
+    <!-- Modals are globally handled in layouts/modals.blade.php -->
 </div>
 
 <script>

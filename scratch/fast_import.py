@@ -98,7 +98,12 @@ def run_fast_import(csv_path, db_path):
             canonical = f"{canonical}_custom"
         used_cleans.add(canonical)
         norm_map[c] = canonical
-        select_exprs.append(f'"{c}" AS "{canonical}"')
+        if canonical in ('nomor_kartu_keluarga', 'no_kk', 'kk'):
+            select_exprs.append(f"REGEXP_REPLACE(TRIM(CAST(\"{c}\" AS VARCHAR)), '\\.0+$', '') AS \"{canonical}\"")
+        elif canonical in ('nomor_induk_kependudukan', 'nik'):
+            select_exprs.append(f"REGEXP_REPLACE(TRIM(CAST(\"{c}\" AS VARCHAR)), '\\.0+$', '') AS \"{canonical}\"")
+        else:
+            select_exprs.append(f'"{c}" AS "{canonical}"')
 
     select_str = ", ".join(select_exprs)
 
@@ -109,8 +114,8 @@ def run_fast_import(csv_path, db_path):
     gaji_col = 'gaji_bulanan' if 'gaji_bulanan' in used_cleans else ('gaji' if 'gaji' in used_cleans else None)
     usia_col = 'usia' if 'usia' in used_cleans else ('umur' if 'umur' in used_cleans else None)
 
-    nik_expr = f"SPLIT_PART(TRIM(CAST(\"{nik_col}\" AS VARCHAR)), '.', 1)" if nik_col else "'3201019000000000'"
-    kk_expr = f"SPLIT_PART(TRIM(CAST(\"{kk_col}\" AS VARCHAR)), '.', 1)" if kk_col else "'3201012010180000'"
+    nik_expr = f"REGEXP_REPLACE(TRIM(CAST(\"{nik_col}\" AS VARCHAR)), '\\.0+$', '')" if nik_col else "'3201019000000000'"
+    kk_expr = f"REGEXP_REPLACE(TRIM(CAST(\"{kk_col}\" AS VARCHAR)), '\\.0+$', '')" if kk_col else "'3201012010180000'"
     nama_expr = f'"{nama_col}"' if nama_col else "'Masyarakat'"
     desil_expr = f'TRY_CAST("{desil_col}" AS INTEGER)' if desil_col else "1"
     gaji_expr = f'TRY_CAST(REGEXP_REPLACE(CAST("{gaji_col}" AS VARCHAR), \'[^0-9.]\', \'\', \'g\') AS DOUBLE)' if gaji_col else "0.0"
@@ -133,8 +138,8 @@ def run_fast_import(csv_path, db_path):
                 {desil_expr} AS desil,
                 {usia_expr} AS umur,
                 ARRAY_FILTER([
-                    CASE WHEN LENGTH({nik_expr}) != 16 THEN 'Digit NIK tidak valid (harus 16 digit)' ELSE NULL END,
-                    CASE WHEN LENGTH({kk_expr}) != 16 THEN 'Digit No. KK tidak valid (harus 16 digit)' ELSE NULL END,
+                    CASE WHEN NOT REGEXP_MATCHES({nik_expr}, '^[0-9]{16}$') THEN 'Digit NIK tidak valid (harus 16 digit angka murni)' ELSE NULL END,
+                    CASE WHEN NOT REGEXP_MATCHES({kk_expr}, '^[0-9]{16}$') THEN 'Digit No. KK tidak valid (memuat desimal / bukan 16 digit angka murni)' ELSE NULL END,
                     CASE WHEN {desil_expr} IS NULL OR {desil_expr} < 1 OR {desil_expr} > 10 THEN 'Desil Kesejahteraan diluar jangkauan 1-10' ELSE NULL END
                 ], x -> x IS NOT NULL) AS quality_issues
             FROM read_csv_auto('{csv_escaped}', all_varchar=True, ignore_errors=true, sample_size=500)

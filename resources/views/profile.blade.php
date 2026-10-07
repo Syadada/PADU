@@ -172,6 +172,28 @@
                         </div>
                         <span class="text-slate-400 group-hover:text-slate-900 font-bold">&rarr;</span>
                     </a>
+
+                    <a href="{{ route('admin.backup') }}" class="flex items-center justify-between p-3 rounded-xl hover:bg-emerald-50 hover:text-emerald-900 border border-slate-100 transition-colors group">
+                        <div class="flex items-center gap-2.5">
+                            <span class="text-lg">🗜️</span>
+                            <div>
+                                <span class="block text-xs font-bold text-slate-800 group-hover:text-emerald-900">Pencadangan Sistem AES-256</span>
+                                <span class="text-[10px] text-slate-500">Arsip Cadangan & Pemulihan Bencana DRP</span>
+                            </div>
+                        </div>
+                        <span class="text-slate-400 group-hover:text-emerald-600 font-bold">&rarr;</span>
+                    </a>
+
+                    <a href="{{ route('admin.metadata') }}" class="flex items-center justify-between p-3 rounded-xl hover:bg-amber-50 hover:text-amber-900 border border-slate-100 transition-colors group">
+                        <div class="flex items-center gap-2.5">
+                            <span class="text-lg">📋</span>
+                            <div>
+                                <span class="block text-xs font-bold text-slate-800 group-hover:text-amber-900">Metadata & Quality Check (BAST)</span>
+                                <span class="text-[10px] text-slate-500">Kamus Aturan BAST & Training Versi</span>
+                            </div>
+                        </div>
+                        <span class="text-slate-400 group-hover:text-amber-600 font-bold">&rarr;</span>
+                    </a>
                 @else
                     <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-[11px] text-slate-600">
                         <p class="font-bold text-slate-800 mb-1">ℹ️ Hak Akses Operator Data</p>
@@ -220,21 +242,28 @@
                     @csrf
                     
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        <label for="profile_name" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                             Nama Lengkap Resmi <span class="text-rose-500">*</span>
                         </label>
                         <input type="text" 
+                               id="profile_name"
                                name="name" 
+                               aria-label="Nama Lengkap Resmi"
+                               autocomplete="name"
                                value="{{ old('name', $user->name) }}" 
                                required 
                                class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs font-semibold focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        <label for="profile_email" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                             Alamat Surel (Permanen / Terikat)
                         </label>
                         <input type="email" 
+                               id="profile_email"
+                               name="email"
+                               aria-label="Alamat Surel Permanen"
+                               autocomplete="email"
                                value="{{ $user->email }}" 
                                disabled 
                                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-100 text-slate-500 text-xs font-mono font-medium cursor-not-allowed">
@@ -272,11 +301,14 @@
                     @csrf
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        <label for="profile_current_password" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                             Kata Sandi Saat Ini <span class="text-rose-500">*</span>
                         </label>
                         <input type="password" 
+                               id="profile_current_password"
                                name="current_password" 
+                               aria-label="Kata Sandi Saat Ini"
+                               autocomplete="current-password"
                                required 
                                placeholder="Masukkan kata sandi aktif Anda"
                                class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
@@ -284,13 +316,16 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                            <label for="profile_password" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                                 Kata Sandi Baru <span class="text-rose-500">*</span>
                             </label>
                             <div class="relative">
                                 <input :type="showPass ? 'text' : 'password'" 
+                                       id="profile_password"
                                        name="password" 
-                                       x-model="newPassword"
+                                       aria-label="Kata Sandi Baru"
+                                       autocomplete="new-password"
+                                       x-model="newPassword" 
                                        required 
                                        placeholder="Minimal 15 karakter kompleks"
                                        class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors pr-10">
@@ -303,12 +338,15 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                            <label for="profile_password_confirmation" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                                 Konfirmasi Kata Sandi Baru <span class="text-rose-500">*</span>
                             </label>
                             <input :type="showPass ? 'text' : 'password'" 
+                                   id="profile_password_confirmation"
                                    name="password_confirmation" 
-                                   x-model="confirmPassword"
+                                   aria-label="Konfirmasi Kata Sandi Baru"
+                                   autocomplete="new-password"
+                                   x-model="confirmPassword" 
                                    required 
                                    placeholder="Ulangi kata sandi baru"
                                    class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">

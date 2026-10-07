@@ -84,10 +84,18 @@ def build_where_clause(con, table_ref, params):
 
     # 2. Quality status filter
     quality_status = clean_str(params.get('quality_status'))
+    if not quality_status:
+        filters_map_qs = params.get('filters', {})
+        if isinstance(filters_map_qs, dict):
+            quality_status = clean_str(filters_map_qs.get('quality_status'))
+
     if quality_status and quality_status.lower() != 'semua':
         qs_col = existing_cols.get('quality_status', 'quality_status')
-        qs_escaped = quality_status.replace("'", "''")
-        where_clauses.append(f'"{qs_col}" = \'{qs_escaped}\'')
+        if quality_status.lower() in ('error', 'bermasalah', 'anomali', 'issues'):
+            where_clauses.append(f'("{qs_col}" != \'Valid\' AND "{qs_col}" IS NOT NULL)')
+        else:
+            qs_escaped = quality_status.replace("'", "''")
+            where_clauses.append(f'"{qs_col}" = \'{qs_escaped}\'')
 
     # 3. Dynamic multi-checkbox / column filters
     filters_map = params.get('filters', {})

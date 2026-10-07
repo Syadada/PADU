@@ -6,6 +6,7 @@ use App\Models\AuditLog;
 use App\Models\User;
 use App\Services\AuditLogger;
 use App\Services\BackupService;
+use App\Services\BastMetadataQualityService;
 use App\Services\TwoFactorService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -377,5 +378,130 @@ class AdminController extends Controller
         );
 
         return redirect()->route('admin.two-factor')->with('warning', 'Autentikasi Dua Faktor (2FA) telah dinonaktifkan.');
+    }
+
+    /**
+     * Halaman Manajemen Aturan Kualitas & Training BAST Metadata DTSEN
+     * Khusus Hak Akses: Super Administrator
+     */
+    public function metadataIndex(Request $request)
+    {
+        $versionInfo = BastMetadataQualityService::getVersionInfo();
+        $activeRules = BastMetadataQualityService::getActiveRules();
+
+        $keluargaVars = $activeRules['datasets']['keluarga']['variables'] ?? [];
+        $anggotaVars = $activeRules['datasets']['anggota_keluarga']['variables'] ?? [];
+
+        $filterDataset = $request->input('dataset', 'all');
+        $search = strtolower(trim((string)$request->input('search', '')));
+
+        $displayedVars = [];
+        if ($filterDataset === 'keluarga') {
+            $displayedVars = $keluargaVars;
+        } elseif ($filterDataset === 'anggota') {
+            $displayedVars = $anggotaVars;
+        } else {
+            $displayedVars = array_merge(
+                array_map(fn($v) => array_merge($v, ['group' => 'Keluarga']), $keluargaVars),
+                array_map(fn($v) => array_merge($v, ['group' => 'Anggota Keluarga']), $anggotaVars)
+            );
+        }
+
+        if (!empty($search)) {
+            $displayedVars = array_values(array_filter($displayedVars, function($v) use ($search) {
+                return str_contains(strtolower($v['key'] ?? ''), $search)
+                    || str_contains(strtolower($v['label'] ?? ''), $search)
+                    || str_contains(strtolower($v['datatype'] ?? ''), $search)
+                    || str_contains(strtolower($v['definition'] ?? ''), $search);
+            }));
+        }
+
+        return view('admin.metadata', compact(
+            'versionInfo',
+            'activeRules',
+            'keluargaVars',
+            'anggotaVars',
+            'displayedVars',
+            'filterDataset',
+            'search'
+        ));
+    }
+
+    /**
+     * Proses Ingesti & Training Versi BAST Metadata Terbaru
+     */
+    public function trainMetadata(Request $request)
+    {
+        $request->validate([
+            'metadata_file' => 'required|file|max:51200',
+            'version_note' => 'nullable|string|max:100',
+        ]);
+
+        try {
+            $user = Auth::user();
+            $file = $request->file('metadata_file');
+            $customVersion = $request->input('version_note');
+
+            $result = BastMetadataQualityService::trainFromUploadedExcel($file, $customVersion);
+
+            if (!$result['success']) {
+                return back()->with('error', $result['message']);
+            }
+
+            AuditLogger::log(
+                'METADATA_RULES_TRAINED',
+                "Super Admin '{$user->name}' berhasil melatih dan memperbarui aturan BAST DTSEN ({$result['version']}). Total: {$result['total_variables']} variabel.",
+                'SUCCESS'
+            );
+
+            return redirect()->route('admin.metadata')->with('success', "Aturan Kualitas BAST DTSEN Berhasil Diperbarui! Versi: {$result['version']} ({$result['total_variables']} Variabel Terlatih).");
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Gagal memproses berkas metadata: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Simulasi Uji Data Quality Check secara Realtime (AJAX Playground)
+     */
+    public function simulateQualityCheck(Request $request)
+    {
+        $payload = $request->except(['_token']);
+        $evaluation = BastMetadataQualityService::evaluateRow($payload);
+
+        $parsedIssues = [];
+        $criticalCount = 0;
+        $warningCount = 0;
+
+        foreach ($evaluation['issues'] as $rawIssue) {
+            $isCrit = str_contains($rawIssue, '[CRITICAL]');
+            if ($isCrit) {
+                $criticalCount++;
+            } else {
+                $warningCount++;
+            }
+
+            $field = 'Field Data';
+            if (preg_match("/(NIK|Nama|Desil|Usia|variabel '[^']+')/i", $rawIssue, $m)) {
+                $field = str_replace("'", "", $m[1]);
+            }
+
+            $parsedIssues[] = [
+                'level' => $isCrit ? 'CRITICAL' : 'WARNING',
+                'message' => trim(preg_replace('/^\[(CRITICAL|WARNING)\]\s*/', '', $rawIssue)),
+                'field' => $field
+            ];
+        }
+
+        $evaluation['valid'] = $evaluation['is_valid'];
+        $evaluation['status_label'] = $evaluation['status'];
+        $evaluation['checked_count'] = $evaluation['total_tested'];
+        $evaluation['critical_count'] = $criticalCount;
+        $evaluation['warning_count'] = $warningCount;
+        $evaluation['issues'] = $parsedIssues;
+
+        return response()->json([
+            'success' => true,
+            'evaluation' => $evaluation
+        ]);
     }
 }

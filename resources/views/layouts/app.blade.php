@@ -19,6 +19,9 @@
         th, td, span, p, h1, h2, h3, h4, h5, h6, label {
             text-decoration: none !important;
         }
+        [x-cloak] {
+            display: none !important;
+        }
     </style>
     <script defer src="{{ asset('js/alpine.min.js') }}"></script>
 </head>
@@ -173,53 +176,6 @@
                     @endif
                 </a>
 
-            </div>
-
-            <!-- GROUP: PUSAT AKUN & ADMINISTRASI -->
-            <div class="space-y-1.5 pt-3 border-t border-slate-200">
-                <div class="px-2 pb-1 text-[10px] font-black uppercase tracking-wider text-slate-400">
-                    Akun & Administrasi
-                </div>
-
-                <!-- Profil & Akun Pengguna -->
-                <a href="{{ route('profile') }}" 
-                   class="sidebar-nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all {{ request()->routeIs('profile') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 font-black' : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-transparent hover:border-slate-200' }}">
-                    <span class="text-base shrink-0">👤</span>
-                    <div class="min-w-0 flex-1">
-                        <div class="leading-tight truncate">Profil & Akun Saya</div>
-                        <div class="text-[10px] {{ request()->routeIs('profile') ? 'text-white/80' : 'text-slate-400' }} font-normal">Kredensial & Pengaturan</div>
-                    </div>
-                </a>
-
-                @if(auth()->check() && method_exists(auth()->user(), 'isSuperAdmin') && auth()->user()->isSuperAdmin())
-                    <!-- Modul Khusus Super Administrator -->
-                    <a href="{{ route('admin.users') }}" 
-                       class="sidebar-nav-item flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold transition-all {{ request()->routeIs('admin.users') ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30 font-black' : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-transparent hover:border-slate-200' }}">
-                        <span class="text-base shrink-0">👥</span>
-                        <div class="min-w-0 flex-1">
-                            <div class="leading-tight truncate">Direktori Staf / Akun</div>
-                            <div class="text-[10px] {{ request()->routeIs('admin.users') ? 'text-white/80' : 'text-slate-400' }} font-normal">Manajemen Operator</div>
-                        </div>
-                    </a>
-
-                    <a href="{{ route('admin.audit-logs') }}" 
-                       class="sidebar-nav-item flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold transition-all {{ request()->routeIs('admin.audit-logs') ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30 font-black' : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-transparent hover:border-slate-200' }}">
-                        <span class="text-base shrink-0">🛡️</span>
-                        <div class="min-w-0 flex-1">
-                            <div class="leading-tight truncate">Audit Forensik BSSN</div>
-                            <div class="text-[10px] {{ request()->routeIs('admin.audit-logs') ? 'text-white/80' : 'text-slate-400' }} font-normal">Rekaman Log Siber</div>
-                        </div>
-                    </a>
-
-                    <a href="{{ route('admin.backup') }}" 
-                       class="sidebar-nav-item flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold transition-all {{ request()->routeIs('admin.backup') ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30 font-black' : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-transparent hover:border-slate-200' }}">
-                        <span class="text-base shrink-0">🗜️</span>
-                        <div class="min-w-0 flex-1">
-                            <div class="leading-tight truncate">Pencadangan AES-256</div>
-                            <div class="text-[10px] {{ request()->routeIs('admin.backup') ? 'text-white/80' : 'text-slate-400' }} font-normal">Arsip Cadangan DRP</div>
-                        </div>
-                    </a>
-                @endif
             </div>
 
             <!-- GROUP: AKSI CEPAT & ALAT DATA OPERASIONAL -->
@@ -461,6 +417,10 @@
                                             <span style="font-size: 14px;">📱</span>
                                             <span style="font-size: 12px;">Keamanan 2FA TOTP</span>
                                         </a>
+                                        <a href="{{ route('admin.metadata') }}" class="profile-dropdown-link">
+                                            <span style="font-size: 14px;">📋</span>
+                                            <span style="font-size: 12px;">Metadata & Quality Check (BAST)</span>
+                                        </a>
                                     @endif
                                 </div>
 
@@ -551,12 +511,47 @@
 
     <!-- GLOBAL ALPINE LAYOUT APP STATE -->
     <script>
+    // Global bridge fallback untuk tombol detail lintas modul
+    window.openPreview = function(id) {
+        if (window.paduApp && typeof window.paduApp.openPreview === 'function') {
+            window.paduApp.openPreview(id);
+        } else {
+            window.dispatchEvent(new CustomEvent('open-preview', { detail: { id } }));
+        }
+    };
+
+    window.openLogConsole = function() {
+        if (window.paduApp) {
+            window.paduApp.openLogConsole();
+        }
+        const logModal = document.getElementById('padu_log_activity_modal');
+        if (logModal) {
+            logModal.style.removeProperty('display');
+        }
+    };
+
+    window.closeLogConsole = function() {
+        if (window.paduApp) {
+            window.paduApp.closeLogConsole();
+        }
+        const logModal = document.getElementById('padu_log_activity_modal');
+        if (logModal) {
+            logModal.style.setProperty('display', 'none', 'important');
+        }
+    };
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' || e.key === 'Esc') {
+            window.closeLogConsole();
+        }
+    });
+
     function paduLayoutApp() {
         return {
-            sidebarOpen: window.innerWidth >= 1024 
+            sidebarOpen: window.innerWidth >= 768 
                 ? (localStorage.getItem('padu_sidebar_open') !== 'false') 
                 : false,
-            isMobile: window.innerWidth < 1024,
+            isMobile: window.innerWidth < 768,
             isMasked: localStorage.getItem('padu_is_masked') !== 'false',
             showExportModal: false,
             showClearModal: false,
@@ -583,9 +578,17 @@
             },
 
             init() {
+                window.paduApp = this;
+                window.openPreview = (id) => this.openPreview(id);
+                window.closeLogConsole = () => this.closeLogConsole();
+                window.addEventListener('open-preview', (e) => {
+                    const targetId = (e && e.detail && (e.detail.id || e.detail)) ? (e.detail.id || e.detail) : e;
+                    this.openPreview(targetId);
+                });
+
                 window.addEventListener('resize', () => {
                     const wasMobile = this.isMobile;
-                    this.isMobile = window.innerWidth < 1024;
+                    this.isMobile = window.innerWidth < 768;
                     if (wasMobile !== this.isMobile && !this.isMobile) {
                         this.sidebarOpen = localStorage.getItem('padu_sidebar_open') !== 'false';
                     }
@@ -640,6 +643,10 @@
 
             openLogConsole() {
                 this.showLogModal = true;
+                const logModal = document.getElementById('padu_log_activity_modal');
+                if (logModal) {
+                    logModal.style.removeProperty('display');
+                }
                 this.fetchLogs();
                 if (this.logPollingInterval) clearInterval(this.logPollingInterval);
                 this.logPollingInterval = setInterval(() => {
@@ -649,6 +656,18 @@
                         clearInterval(this.logPollingInterval);
                     }
                 }, 2000);
+            },
+
+            closeLogConsole() {
+                this.showLogModal = false;
+                if (this.logPollingInterval) {
+                    clearInterval(this.logPollingInterval);
+                    this.logPollingInterval = null;
+                }
+                const logModal = document.getElementById('padu_log_activity_modal');
+                if (logModal) {
+                    logModal.style.setProperty('display', 'none', 'important');
+                }
             },
 
             async fetchLogs() {
@@ -699,6 +718,40 @@
                 URL.revokeObjectURL(url);
             },
 
+            copySystemLogs() {
+                if (!this.filteredLogs || this.filteredLogs.length === 0) {
+                    alert('Belum ada log aktivitas untuk disalin.');
+                    return;
+                }
+                const text = this.filteredLogs.map(l => `[${l.timestamp}] [${l.level}] ${l.message}`).join('\n');
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text).then(() => {
+                        alert('Berhasil menyalin log aktivitas ke clipboard!');
+                    }).catch(() => {
+                        this.fallbackCopyText(text);
+                    });
+                } else {
+                    this.fallbackCopyText(text);
+                }
+            },
+
+            fallbackCopyText(text) {
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    alert('Berhasil menyalin log aktivitas ke clipboard!');
+                } catch (err) {
+                    alert('Gagal menyalin log aktivitas.');
+                }
+                document.body.removeChild(textArea);
+            },
+
             async cancelCurrentImport() {
                 if (!confirm('⚠️ Batalkan proses injeksi dataset ke database?\n\nSemua proses impor yang sedang berjalan akan dihentikan.')) {
                     return;
@@ -724,15 +777,29 @@
                 }
             },
 
-            openPreview(id) {
-                fetch('/dtsen/preview/' + id)
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success) {
-                            this.previewData = data.data;
-                            this.showPreviewModal = true;
+            async openPreview(id) {
+                if (!id) return;
+                try {
+                    const res = await fetch('/dtsen/preview/' + id, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
                         }
                     });
+                    if (!res.ok) {
+                        throw new Error(`HTTP ${res.status}`);
+                    }
+                    const data = await res.json();
+                    if (data && data.success && data.data) {
+                        this.previewData = data.data;
+                        this.showPreviewModal = true;
+                    } else {
+                        alert(data.message || 'Data tidak ditemukan.');
+                    }
+                } catch (err) {
+                    console.error('Gagal memuat rincian baris:', err);
+                    alert('Gagal memuat rincian data: ' + err.message);
+                }
             },
 
             async startLocalImportSubmit(e) {

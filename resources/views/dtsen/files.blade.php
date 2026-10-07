@@ -70,7 +70,51 @@
         </div>
     @endif
 
-    <!-- 2. PEMILIH & INGESTI BERKAS DARI FOLDER src-dtsen/ -->
+    <!-- 2. UNGGAH DATASET BARU KE src-dtsen/ -->
+    <div class="p-6 rounded-2xl shadow-sm bg-white text-slate-900 border border-emerald-200 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-emerald-100 pb-3">
+            <div class="flex items-center gap-2.5">
+                <span class="p-2 rounded-xl bg-emerald-100 text-emerald-800 font-bold text-base">📤</span>
+                <div>
+                    <h3 class="text-xs font-black uppercase tracking-wider text-emerald-950 flex items-center gap-1.5">
+                        <span>UNGGAH DATASET BARU KE FOLDER</span>
+                        <code class="px-2 py-0.5 rounded font-mono text-xs bg-emerald-50 text-emerald-800 border border-emerald-200">src-dtsen/</code>
+                    </h3>
+                    <p class="text-[11px] text-slate-600">
+                        Unggah berkas data baru langsung dari peramban web. Berkas otomatis disimpan ke direktori <code class="font-mono text-emerald-900 font-bold">src-dtsen/</code> dan siap diproses.
+                    </p>
+                </div>
+            </div>
+            <span class="text-[10px] font-black uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3 py-1 rounded-xl border border-emerald-200 self-start sm:self-auto">
+                CSV / XLSX / XLS / ZIP
+            </span>
+        </div>
+
+        <form action="{{ route('dtsen.upload') }}" method="POST" enctype="multipart/form-data" class="space-y-3"
+              x-data="{ fileName: '', uploading: false }" @submit="uploading = true">
+            @csrf
+            <div class="flex flex-col md:flex-row items-center gap-3">
+                <div class="flex-1 w-full relative">
+                    <label for="dataset_file" class="sr-only">Pilih Berkas Dataset Baru</label>
+                    <input type="file" id="dataset_file" name="dataset_file" required accept=".csv,.xlsx,.xls,.zip"
+                           aria-label="Pilih Berkas Dataset Baru"
+                           @change="fileName = $event.target.files[0]?.name || ''"
+                           class="w-full text-xs text-slate-700 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 file:cursor-pointer p-1.5 border border-slate-300 rounded-xl bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                </div>
+                <button type="submit" :disabled="uploading"
+                        class="w-full md:w-auto px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-400 text-white font-bold text-xs rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0">
+                    <span x-show="!uploading">📥 Unggah ke src-dtsen/</span>
+                    <span x-show="uploading">Mengunggah berkas...</span>
+                </button>
+            </div>
+            <div class="flex items-center justify-between text-[11px] text-slate-500 font-medium">
+                <span>⚡ Mendukung file besar CSV jutaan baris & ZIP terkompresi. Nama berkas otomatis diamankan dari karakter berbahaya.</span>
+                <span x-show="fileName" class="font-mono font-bold text-emerald-700" x-text="'File dipilih: ' + fileName"></span>
+            </div>
+        </form>
+    </div>
+
+    <!-- 3. PEMILIH & INGESTI BERKAS DARI FOLDER src-dtsen/ -->
     <div id="import-section" class="p-6 rounded-2xl shadow-sm bg-white text-slate-900 border border-slate-200 space-y-5">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-100 pb-4">
             <div class="space-y-1">
@@ -94,17 +138,18 @@
             <form action="{{ route('dtsen.import-local') }}" method="POST" class="space-y-4" x-data="{ selectedFile: '{{ $srcDtsenFiles[0]['name'] }}', isProcessing: false }" @submit="isProcessing = true; startLocalImportSubmit($event)">
                 @csrf
                 <div class="space-y-2.5">
-                    <label class="block text-xs font-black uppercase tracking-wider text-slate-700">
+                    <div class="block text-xs font-black uppercase tracking-wider text-slate-700">
                         📁 Berkas Tersedia di Folder <code class="font-mono text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200">src-dtsen/</code> ({{ count($srcDtsenFiles) }} Berkas Terdeteksi):
-                    </label>
+                    </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                         @foreach($srcDtsenFiles as $f)
-                            <label @click="selectedFile = '{{ $f['name'] }}'" 
+                            <label for="selected_file_{{ $loop->index }}"
+                                   @click="selectedFile = '{{ $f['name'] }}'" 
                                    :class="selectedFile === '{{ $f['name'] }}' ? 'ring-2 ring-blue-600 bg-blue-50/90 border-blue-500 shadow-xs' : 'bg-slate-50 border-slate-200 hover:bg-slate-100 hover:border-slate-300'"
                                    class="flex items-start gap-3 p-3.5 rounded-xl border cursor-pointer transition-all">
                                 
-                                <input type="radio" name="selected_file" value="{{ $f['name'] }}" x-model="selectedFile" class="mt-1 accent-blue-600">
+                                <input type="radio" id="selected_file_{{ $loop->index }}" name="selected_file" value="{{ $f['name'] }}" aria-label="Pilih berkas {{ $f['name'] }}" x-model="selectedFile" class="mt-1 accent-blue-600">
                                 
                                 <div class="space-y-1 min-w-0 flex-1">
                                     <div class="flex items-center gap-2">

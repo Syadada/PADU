@@ -143,6 +143,7 @@
                         <input type="text" 
                                id="recovery_key" 
                                name="recovery_key" 
+                               autocomplete="off"
                                x-ref="recoveryInput"
                                x-model="recoveryKey"
                                @input="formatRecoveryKey()"

@@ -109,9 +109,9 @@
 
                 <!-- Manual Secret Key -->
                 <div class="pt-2">
-                    <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-600 mb-1.5">
+                    <div class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-600 mb-1.5">
                         Atau Masukkan Kunci Rahasia Manual:
-                    </label>
+                    </div>
                     <div class="flex items-center gap-2">
                         <div class="flex-1 p-2.5 rounded-xl font-mono text-xs text-slate-900 font-black tracking-widest text-center select-all border border-slate-200 bg-white/90 shadow-sm" x-text="secret"></div>
                         <button type="button" 
@@ -200,6 +200,7 @@
                             <input type="text" 
                                    id="code" 
                                    name="code" 
+                                   autocomplete="one-time-code"
                                    maxlength="6" 
                                    x-model="code"
                                    @input="formatCode()"
@@ -252,8 +253,8 @@
 
                 <form x-show="showDisableForm" x-cloak action="{{ route('admin.two-factor.disable') }}" method="POST" class="max-w-md space-y-3 p-4 rounded-xl border border-rose-200 bg-rose-50/70">
                     @csrf
-                    <p class="text-xs font-bold text-rose-950">Konfirmasi Kata Sandi Akun untuk Menonaktifkan 2FA:</p>
-                    <input type="password" name="current_password" required placeholder="Masukkan kata sandi saat ini..." class="glass-input w-full px-3 py-2 text-xs font-semibold">
+                    <label for="disable_2fa_current_password" class="block text-xs font-bold text-rose-950">Konfirmasi Kata Sandi Akun untuk Menonaktifkan 2FA:</label>
+                    <input type="password" id="disable_2fa_current_password" name="current_password" aria-label="Konfirmasi Kata Sandi Akun untuk Menonaktifkan 2FA" autocomplete="current-password" required placeholder="Masukkan kata sandi saat ini..." class="glass-input w-full px-3 py-2 text-xs font-semibold">
                     <div class="flex items-center gap-2 pt-1">
                         <button type="submit" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-sm">
                             Konfirmasi Nonaktifkan

@@ -89,7 +89,7 @@
                     <span class="font-bold text-slate-500 text-[11px] uppercase tracking-wider">Filter Cepat:</span>
                     
                     <!-- Desil Filter -->
-                    <select name="desil" class="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 font-bold text-xs cursor-pointer outline-none focus:border-blue-500">
+                    <select id="filter_desil" name="desil" aria-label="Filter Berdasarkan Desil" class="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 font-bold text-xs cursor-pointer outline-none focus:border-blue-500">
                         <option value="semua" {{ $desil === 'semua' ? 'selected' : '' }}>Semua Desil</option>
                         @for($d = 1; $d <= 10; $d++)
                             <option value="{{ $d }}" {{ (string)$desil === (string)$d ? 'selected' : '' }}>Desil {{ $d }}</option>
@@ -97,7 +97,7 @@
                     </select>
 
                     <!-- QC Status Filter -->
-                    <select name="quality_status" class="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 font-bold text-xs cursor-pointer outline-none focus:border-blue-500">
+                    <select id="filter_quality_status" name="quality_status" aria-label="Filter Berdasarkan Status Quality Check" class="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 font-bold text-xs cursor-pointer outline-none focus:border-blue-500">
                         <option value="semua" {{ $qualityStatus === 'semua' ? 'selected' : '' }}>Semua Status QC</option>
                         <option value="Valid" {{ $qualityStatus === 'Valid' ? 'selected' : '' }}>🟢 Hanya Valid</option>
                         <option value="Warning" {{ $qualityStatus === 'Warning' ? 'selected' : '' }}>🟡 Hanya Warning</option>
@@ -123,7 +123,11 @@
             </form>
 
             <!-- MODAL POPUP ATUR KOLOM TABEL (58 VARIABEL) -->
-            <div x-show="showColumnModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs p-3 sm:p-6 flex items-center justify-center">
+            <div x-show="showColumnModal" 
+                 x-cloak 
+                 @keydown.escape.window="showColumnModal = false"
+                 class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs p-3 sm:p-6 flex items-center justify-center"
+                 style="display: none;">
                 <div @click.away="showColumnModal = false" class="bg-white rounded-2xl max-w-4xl w-full p-5 sm:p-6 space-y-4 shadow-2xl border border-slate-200 my-auto flex flex-col max-h-[88vh]">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-3 shrink-0">
                         <div>
@@ -145,7 +149,7 @@
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                                     @foreach($officialIndividuVars as $cKey => $cTitle)
                                         <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:bg-blue-100/60 cursor-pointer text-xs font-bold text-slate-800 transition-colors">
-                                            <input type="checkbox" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                                            <input type="checkbox" id="toggle_col_{{ $cKey }}" name="toggle_col_{{ $cKey }}" aria-label="Tampilkan kolom {{ $cTitle }}" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
                                             <span class="truncate" title="{{ $cTitle }}">{{ $cTitle }}</span>
                                         </label>
                                     @endforeach
@@ -162,7 +166,7 @@
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                                     @foreach($officialKeluargaVars as $cKey => $cTitle)
                                         <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:bg-emerald-100/60 cursor-pointer text-xs font-bold text-slate-800 transition-colors">
-                                            <input type="checkbox" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500">
+                                            <input type="checkbox" id="toggle_col_{{ $cKey }}" name="toggle_col_{{ $cKey }}" aria-label="Tampilkan kolom {{ $cTitle }}" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500">
                                             <span class="truncate" title="{{ $cTitle }}">{{ $cTitle }}</span>
                                         </label>
                                     @endforeach
@@ -182,7 +186,7 @@
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                                     @foreach($extraCols as $cKey => $cTitle)
                                         <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:bg-purple-100/60 cursor-pointer text-xs font-bold text-slate-800 transition-colors">
-                                            <input type="checkbox" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-purple-600 rounded border-slate-300 focus:ring-purple-500">
+                                            <input type="checkbox" id="toggle_col_{{ $cKey }}" name="toggle_col_{{ $cKey }}" aria-label="Tampilkan kolom {{ $cTitle }}" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-purple-600 rounded border-slate-300 focus:ring-purple-500">
                                             <span class="truncate" title="{{ $cTitle }}">{{ $cTitle }}</span>
                                         </label>
                                     @endforeach
@@ -489,9 +493,9 @@
                                                         <div class="pt-1.5 border-t border-blue-200">
                                                             <span class="font-bold text-blue-900 text-[10px] block mb-1">Rentang Usia Kustom:</span>
                                                             <div class="flex items-center gap-1.5">
-                                                                <input type="number" x-model="minVal" min="0" max="120" placeholder="Min" class="w-1/2 text-xs bg-white border border-slate-300 rounded px-2 py-1 outline-none focus:ring-2 focus:ring-blue-500">
+                                                                <input type="number" id="min_age_{{ $colKey }}" name="min_age_{{ $colKey }}" aria-label="Usia Minimum" x-model="minVal" min="0" max="120" placeholder="Min" class="w-1/2 text-xs bg-white border border-slate-300 rounded px-2 py-1 outline-none focus:ring-2 focus:ring-blue-500">
                                                                 <span class="text-slate-400 font-bold text-xs">s.d.</span>
-                                                                <input type="number" x-model="maxVal" min="0" max="120" placeholder="Max" class="w-1/2 text-xs bg-white border border-slate-300 rounded px-2 py-1 outline-none focus:ring-2 focus:ring-blue-500">
+                                                                <input type="number" id="max_age_{{ $colKey }}" name="max_age_{{ $colKey }}" aria-label="Usia Maksimum" x-model="maxVal" min="0" max="120" placeholder="Max" class="w-1/2 text-xs bg-white border border-slate-300 rounded px-2 py-1 outline-none focus:ring-2 focus:ring-blue-500">
                                                             </div>
                                                             <button type="button" @click.prevent.stop="applyRange()" class="mt-1.5 w-full py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg transition-colors shadow-sm cursor-pointer flex items-center justify-center leading-normal">
                                                                 + Terapkan Rentang Usia
@@ -527,9 +531,9 @@
                                                         <div class="pt-1.5 border-t border-emerald-200">
                                                             <span class="font-bold text-emerald-900 text-[10px] block mb-1">Rentang Nominal Kustom:</span>
                                                             <div class="flex items-center gap-1.5">
-                                                                <input type="number" x-model="minVal" placeholder="Min Rp" class="w-1/2 text-xs bg-white border border-slate-300 rounded px-2 py-1 outline-none focus:ring-2 focus:ring-emerald-500">
+                                                                <input type="number" id="min_sal_{{ $colKey }}" name="min_sal_{{ $colKey }}" aria-label="Gaji Minimum" x-model="minVal" placeholder="Min Rp" class="w-1/2 text-xs bg-white border border-slate-300 rounded px-2 py-1 outline-none focus:ring-2 focus:ring-emerald-500">
                                                                 <span class="text-slate-400 font-bold text-xs">-</span>
-                                                                <input type="number" x-model="maxVal" placeholder="Max Rp" class="w-1/2 text-xs bg-white border border-slate-300 rounded px-2 py-1 outline-none focus:ring-2 focus:ring-emerald-500">
+                                                                <input type="number" id="max_sal_{{ $colKey }}" name="max_sal_{{ $colKey }}" aria-label="Gaji Maksimum" x-model="maxVal" placeholder="Max Rp" class="w-1/2 text-xs bg-white border border-slate-300 rounded px-2 py-1 outline-none focus:ring-2 focus:ring-emerald-500">
                                                             </div>
                                                             <button type="button" @click.prevent.stop="applyRange()" class="mt-1.5 w-full py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition-colors shadow-sm cursor-pointer flex items-center justify-center leading-normal">
                                                                 + Terapkan Rentang Gaji
@@ -592,7 +596,7 @@
 
                                                 <!-- KOTAK PENCARIAN TEKS FLEKSIBEL -->
                                                 <div>
-                                                    <input type="text" x-model="searchVal" 
+                                                    <input type="text" id="search_val_{{ $colKey }}" name="search_val_{{ $colKey }}" aria-label="Cari pilihan {{ $colTitle }}" x-model="searchVal" 
                                                            @keydown.enter.prevent.stop="applyFilter({{ json_encode($importColumnDistinctValues[$colKey] ?? []) }})" 
                                                            placeholder="@if($isIdentity)Ketik digit {{ strtolower($colTitle) }}...@elseif($isFreeText)Ketik {{ strtolower($colTitle) }}...@elseCari pilihan {{ strtolower($colTitle) }}...@endif" 
                                                            class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 outline-none focus:ring-2 focus:ring-blue-500">
@@ -606,17 +610,23 @@
                                                     @if(isset($importColumnDistinctValues[$colKey]) && count($importColumnDistinctValues[$colKey]) > 0)
                                                         <label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-100 cursor-pointer font-bold text-blue-600 border-b border-slate-100 pb-1.5 mb-1">
                                                             <input type="checkbox" 
+                                                                   id="select_all_{{ $colKey }}"
+                                                                   name="select_all_{{ $colKey }}"
+                                                                   aria-label="Pilih atau hapus semua {{ $colTitle }}"
                                                                    :checked="selectedVals.length >= {{ count($importColumnDistinctValues[$colKey]) }}" 
                                                                    @change="selectAll({{ json_encode($importColumnDistinctValues[$colKey]) }})"
                                                                    class="accent-blue-600 rounded cursor-pointer">
                                                             <span>(Pilih / Hapus Semua)</span>
                                                         </label>
 
-                                                        @foreach($importColumnDistinctValues[$colKey] as $dItem)
+                                                        @foreach($importColumnDistinctValues[$colKey] as $dIndex => $dItem)
                                                             <label x-show="!searchVal || {{ json_encode(strtolower($dItem)) }}.includes(searchVal.toLowerCase())"
                                                                    class="flex items-center gap-2 px-2 py-1 rounded hover:bg-blue-50 cursor-pointer font-medium text-slate-700 transition-colors"
                                                                    :class="hasVal({{ json_encode($dItem) }}) ? 'bg-blue-50 font-bold text-blue-900' : ''">
                                                                 <input type="checkbox" 
+                                                                       id="item_{{ $colKey }}_{{ $dIndex }}"
+                                                                       name="filter_{{ $colKey }}[]"
+                                                                       aria-label="{{ $dItem }}"
                                                                        :checked="hasVal({{ json_encode($dItem) }})" 
                                                                        @change="toggleVal({{ json_encode($dItem) }})"
                                                                        class="accent-blue-600 rounded cursor-pointer">

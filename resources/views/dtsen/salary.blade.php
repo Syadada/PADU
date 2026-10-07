@@ -183,7 +183,7 @@
                         @foreach($importFilterableColumns as $colKey => $colTitle)
                             <div x-show="isFilterActive('{{ $colKey }}')" class="relative">
                                 <div class="flex items-center justify-between mb-1">
-                                    <label class="block text-[11px] font-extrabold text-slate-700 uppercase tracking-wider truncate" title="{{ $colTitle }}">
+                                    <label for="salary_{{ $colKey }}" class="block text-[11px] font-extrabold text-slate-700 uppercase tracking-wider truncate cursor-pointer" title="{{ $colTitle }}">
                                         @if(str_contains($colKey, 'kelamin') || str_contains($colKey, 'gender')) 👩‍🦰
                                         @elseif(str_contains($colKey, 'provinsi') || str_contains($colKey, 'wilayah') || str_contains($colKey, 'daerah')) 📍
                                         @elseif(str_contains($colKey, 'desil')) 💎
@@ -202,7 +202,7 @@
 
                                 @if(in_array($colKey, ['usia', 'umur', 'age']))
                                     <!-- Khusus Kolom Usia / Umur -->
-                                    <select name="salary_{{ $colKey }}" @change="submitFilterForm()" class="w-full text-xs font-bold bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+                                    <select id="salary_{{ $colKey }}" name="salary_{{ $colKey }}" aria-label="Filter {{ $colTitle }}" @change="submitFilterForm()" class="w-full text-xs font-bold bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
                                         <option value="semua">Semua {{ $colTitle }}</option>
                                         <option value="balita" {{ (request('salary_' . $colKey) == 'balita') ? 'selected' : '' }}>👶 Balita (< 6 Thn)</option>
                                         <option value="anak" {{ (request('salary_' . $colKey) == 'anak') ? 'selected' : '' }}>🧒 Usia Sekolah (6-17 Thn)</option>
@@ -214,7 +214,7 @@
                                     </select>
                                 @elseif(isset($importColumnDistinctValues[$colKey]) && count($importColumnDistinctValues[$colKey]) > 0 && count($importColumnDistinctValues[$colKey]) <= 100)
                                     <!-- Kolom dengan Nilai Unik dari Dataset -->
-                                    <select name="salary_{{ $colKey }}" @change="submitFilterForm()" class="w-full text-xs font-bold bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+                                    <select id="salary_{{ $colKey }}" name="salary_{{ $colKey }}" aria-label="Filter {{ $colTitle }}" @change="submitFilterForm()" class="w-full text-xs font-bold bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
                                         <option value="semua">Semua {{ $colTitle }}</option>
                                         @foreach($importColumnDistinctValues[$colKey] as $vItem)
                                             <option value="{{ $vItem }}" {{ (request('salary_' . $colKey) == $vItem) ? 'selected' : '' }}>
@@ -224,17 +224,17 @@
                                     </select>
                                 @else
                                     <!-- Input Bebas untuk Kolom Teks / Wilayah -->
-                                    <input type="text" name="salary_{{ $colKey }}" value="{{ request('salary_' . $colKey) }}" placeholder="Cari {{ $colTitle }}..." class="w-full text-xs font-medium bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 outline-none focus:ring-2 focus:ring-blue-500">
+                                    <input type="text" id="salary_{{ $colKey }}" name="salary_{{ $colKey }}" aria-label="Cari {{ $colTitle }}" value="{{ request('salary_' . $colKey) }}" placeholder="Cari {{ $colTitle }}..." class="w-full text-xs font-medium bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 outline-none focus:ring-2 focus:ring-blue-500">
                                 @endif
                             </div>
                         @endforeach
 
                         <!-- Kolom Urutkan Hasil (Sort By) -->
                         <div>
-                            <label class="block text-[11px] font-extrabold text-emerald-900 uppercase tracking-wider mb-1">
+                            <label for="salary_sort" class="block text-[11px] font-extrabold text-emerald-900 uppercase tracking-wider mb-1">
                                 👑 Urutkan Hasil
                             </label>
-                            <select name="salary_sort" @change="submitFilterForm()" class="w-full text-xs font-extrabold bg-emerald-50 border-2 border-emerald-400 text-emerald-950 rounded-xl px-2.5 py-2 outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer">
+                            <select id="salary_sort" name="salary_sort" aria-label="Urutkan Hasil" @change="submitFilterForm()" class="w-full text-xs font-extrabold bg-emerald-50 border-2 border-emerald-400 text-emerald-950 rounded-xl px-2.5 py-2 outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer">
                                 <option value="gaji_desc" {{ (request('salary_sort', 'gaji_desc') == 'gaji_desc') ? 'selected' : '' }}>👑 Gaji Tertinggi (MAX ↓)</option>
                                 <option value="gaji_asc" {{ (request('salary_sort') == 'gaji_asc') ? 'selected' : '' }}>📉 Gaji Terendah (MIN ↑)</option>
                                 <option value="nama_asc" {{ (request('salary_sort') == 'nama_asc') ? 'selected' : '' }}>👤 Nama Subjek (A-Z)</option>
@@ -248,9 +248,9 @@
                     <!-- Row 2: QUICK ADD HEADER DROPDOWN & SUBMIT BUTTON -->
                     <div class="p-3 bg-slate-50/80 rounded-xl border border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-3">
                         <div class="flex flex-wrap items-center gap-2 flex-1">
-                            <span class="text-xs font-bold text-slate-700 whitespace-nowrap">➕ Tambah Header Filter:</span>
+                            <label for="salary_quick_add_header" class="text-xs font-bold text-slate-700 whitespace-nowrap cursor-pointer">➕ Tambah Header Filter:</label>
                             <!-- Dropdown Pilih Header Apa Saja untuk Ditambahkan ke Filter di Atas -->
-                            <select @change="addFilterFromSelect($event.target.value); $event.target.value = ''" 
+                            <select id="salary_quick_add_header" name="salary_quick_add_header" aria-label="Tambah Header Filter" @change="addFilterFromSelect($event.target.value); $event.target.value = ''" 
                                     class="text-xs font-bold bg-white border border-slate-300 text-blue-700 rounded-lg px-2.5 py-1.5 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer min-w-[200px]">
                                 <option value="">-- Pilih Header untuk Ditambahkan --</option>
                                 @foreach($importFilterableColumns as $optKey => $optTitle)
@@ -264,7 +264,8 @@
 
                         <!-- Pencarian Nama / NIK & Tombol Cari -->
                         <div class="flex items-center gap-2 shrink-0">
-                            <input type="text" name="salary_search" value="{{ request('salary_search') }}" placeholder="Cari nama atau NIK..." class="text-xs font-medium bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 outline-none focus:ring-2 focus:ring-blue-500 w-48">
+                            <label for="salary_search_input" class="sr-only">Cari nama atau NIK</label>
+                            <input type="text" id="salary_search_input" name="salary_search" value="{{ request('salary_search') }}" autocomplete="off" aria-label="Cari nama atau NIK" placeholder="Cari nama atau NIK..." class="text-xs font-medium bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 outline-none focus:ring-2 focus:ring-blue-500 w-48">
                             <a href="{{ route('dtsen.salary') }}" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all">
                                 🔄 Reset
                             </a>
@@ -303,7 +304,7 @@
                                     @foreach($officialIndividuVars as $cKey => $cTitle)
                                         @if(isset($importFilterableColumns[$cKey]))
                                             <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:bg-blue-100/60 cursor-pointer text-xs font-bold text-slate-800 transition-colors">
-                                                <input type="checkbox" :checked="isFilterActive('{{ $cKey }}')" @change="toggleFilter('{{ $cKey }}')" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                                                <input type="checkbox" id="toggle_filter_{{ $cKey }}" name="toggle_filter_{{ $cKey }}" aria-label="Aktifkan filter {{ $cTitle }}" :checked="isFilterActive('{{ $cKey }}')" @change="toggleFilter('{{ $cKey }}')" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
                                                 <span class="truncate" title="{{ $cTitle }}">{{ $cTitle }}</span>
                                             </label>
                                         @endif
@@ -322,7 +323,7 @@
                                     @foreach($officialKeluargaVars as $cKey => $cTitle)
                                         @if(isset($importFilterableColumns[$cKey]))
                                             <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:bg-emerald-100/60 cursor-pointer text-xs font-bold text-slate-800 transition-colors">
-                                                <input type="checkbox" :checked="isFilterActive('{{ $cKey }}')" @change="toggleFilter('{{ $cKey }}')" class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500">
+                                                <input type="checkbox" id="toggle_filter_{{ $cKey }}" name="toggle_filter_{{ $cKey }}" aria-label="Aktifkan filter {{ $cTitle }}" :checked="isFilterActive('{{ $cKey }}')" @change="toggleFilter('{{ $cKey }}')" class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500">
                                                 <span class="truncate" title="{{ $cTitle }}">{{ $cTitle }}</span>
                                             </label>
                                         @endif
@@ -343,7 +344,7 @@
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                                     @foreach($extraCols as $cKey => $cTitle)
                                         <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 cursor-pointer text-xs font-bold text-slate-800 transition-colors">
-                                            <input type="checkbox" :checked="isFilterActive('{{ $cKey }}')" @change="toggleFilter('{{ $cKey }}')" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                                            <input type="checkbox" id="toggle_filter_{{ $cKey }}" name="toggle_filter_{{ $cKey }}" aria-label="Aktifkan filter {{ $cTitle }}" :checked="isFilterActive('{{ $cKey }}')" @change="toggleFilter('{{ $cKey }}')" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
                                             <span class="truncate" title="{{ $cTitle }}">{{ $cTitle }}</span>
                                         </label>
                                     @endforeach
@@ -394,7 +395,7 @@
                                     @foreach($officialIndividuVars as $cKey => $cTitle)
                                         @if(in_array($cKey, $selectableColKeys))
                                             <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:bg-blue-100/60 cursor-pointer text-xs font-bold text-slate-800 transition-colors">
-                                                <input type="checkbox" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                                                <input type="checkbox" id="toggle_salary_col_{{ $cKey }}" name="toggle_col_{{ $cKey }}" aria-label="Tampilkan kolom {{ $cTitle }}" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
                                                 <span class="truncate" title="{{ $cTitle }}">{{ $cTitle }}</span>
                                             </label>
                                         @endif
@@ -413,7 +414,7 @@
                                     @foreach($officialKeluargaVars as $cKey => $cTitle)
                                         @if(in_array($cKey, $selectableColKeys))
                                             <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:bg-emerald-100/60 cursor-pointer text-xs font-bold text-slate-800 transition-colors">
-                                                <input type="checkbox" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500">
+                                                <input type="checkbox" id="toggle_salary_col_{{ $cKey }}" name="toggle_col_{{ $cKey }}" aria-label="Tampilkan kolom {{ $cTitle }}" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500">
                                                 <span class="truncate" title="{{ $cTitle }}">{{ $cTitle }}</span>
                                             </label>
                                         @endif
@@ -434,7 +435,7 @@
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                                     @foreach($extraTableCols as $cKey)
                                         <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 cursor-pointer text-xs font-bold text-slate-800 transition-colors">
-                                            <input type="checkbox" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                                            <input type="checkbox" id="toggle_salary_col_{{ $cKey }}" name="toggle_col_{{ $cKey }}" aria-label="Tampilkan kolom {{ $activeColumnsMap[$cKey] ?? $cKey }}" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
                                             <span class="truncate" title="{{ $activeColumnsMap[$cKey] ?? $cKey }}">{{ $activeColumnsMap[$cKey] ?? $cKey }}</span>
                                         </label>
                                     @endforeach
@@ -468,7 +469,7 @@
                         </h3>
                         @if(!empty($activeFiltersList))
                             <p class="text-[11px] text-emerald-800 font-bold flex items-center gap-1">
-                                <span>🎯</span> Dihitung khusus dari <strong>{{ number_format($filteredTotal) }} subjek</strong> yang memenuhi seluruh filter aktif Anda.
+                                <span>🎯</span> Dihitung khusus dari <strong>{{ number_format($filteredTotal ?? $records->total() ?? 0) }} subjek</strong> yang memenuhi seluruh filter aktif Anda.
                             </p>
                         @else
                             <p class="text-[11px] text-slate-500 font-medium">
@@ -479,7 +480,7 @@
                     <div class="flex items-center gap-2">
                         @if(!empty($activeFiltersList))
                             <span class="px-2.5 py-1 rounded-xl bg-emerald-100 text-emerald-900 text-xs font-extrabold border border-emerald-300 shadow-2xs">
-                                🎯 {{ number_format($filteredTotal) }} Subjek Terfilter
+                                🎯 {{ number_format($filteredTotal ?? $records->total() ?? 0) }} Subjek Terfilter
                             </span>
                         @else
                             <span class="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold border border-slate-200">
@@ -552,6 +553,74 @@
                         <p class="text-xs font-medium text-purple-700 truncate">
                             Total perputaran gaji kelompok
                         </p>
+                    </div>
+                </div>
+
+                <!-- Smart Response Finansial & Disparitas Upah -->
+                @php
+                    $finMax = (float)($gajiMax ?? 0);
+                    $finMin = (float)($gajiMin ?? 0);
+                    $finAvg = (float)($gajiAvg ?? 0);
+                    $finGap = max(0, $finMax - $finMin);
+                    $finRatioAvg = $finAvg > 0 ? round($finMax / $finAvg, 1) : 1;
+                    $nSubjekGaji = (int)($gajiCount ?? 0);
+                @endphp
+                <div class="p-4 rounded-xl border border-emerald-200 bg-gradient-to-r from-emerald-50/70 via-teal-50/40 to-slate-50 space-y-3">
+                    <div class="flex items-center justify-between flex-wrap gap-2">
+                        <div class="flex items-center gap-2">
+                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-emerald-600 text-white text-xs font-black shadow-xs">💵</span>
+                            <span class="text-xs font-black uppercase tracking-wider text-emerald-950">
+                                Keterangan Ringkasan Gaji & Pendapatan Warga
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-2 text-[10px] font-mono font-bold text-emerald-900">
+                            <span class="px-2.5 py-0.5 rounded bg-white border border-emerald-300">Selisih Gaji Tertinggi - Terendah: Rp {{ number_format($finGap, 0, ',', '.') }}</span>
+                            <span class="px-2.5 py-0.5 rounded bg-white border border-emerald-300">Gaji Teratas vs Rerata: {{ $finRatioAvg }}x lipat</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
+                        <div class="p-2.5 rounded-lg bg-white/95 border border-emerald-200 shadow-2xs space-y-0.5">
+                            <span class="text-[10px] text-emerald-800 font-bold block">Gaji Paling Tinggi</span>
+                            <strong class="font-mono text-emerald-700 text-sm block">Rp {{ number_format($finMax, 0, ',', '.') }}</strong>
+                            <p class="text-[10px] text-slate-500 truncate">{{ $gajiMaxSubjek->nama ?? '-' }} (NIK: {{ $gajiMaxSubjek->masked_nik ?? '-' }})</p>
+                        </div>
+                        <div class="p-2.5 rounded-lg bg-white/95 border border-blue-200 shadow-2xs space-y-0.5">
+                            <span class="text-[10px] text-blue-800 font-bold block">Rata-Rata Penghasilan Warga</span>
+                            <strong class="font-mono text-blue-700 text-sm block">Rp {{ number_format($finAvg, 0, ',', '.') }}</strong>
+                            <p class="text-[10px] text-slate-500">Dihitung dari {{ number_format($nSubjekGaji) }} pekerja tercatat</p>
+                        </div>
+                        <div class="p-2.5 rounded-lg bg-white/95 border border-amber-200 shadow-2xs space-y-0.5">
+                            <span class="text-[10px] text-amber-800 font-bold block">Gaji Paling Rendah</span>
+                            <strong class="font-mono text-amber-700 text-sm block">Rp {{ number_format($finMin, 0, ',', '.') }}</strong>
+                            <p class="text-[10px] text-slate-500 truncate">{{ $gajiMinSubjek->nama ?? '-' }} (NIK: {{ $gajiMinSubjek->masked_nik ?? '-' }})</p>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-white/95 rounded-lg border border-slate-200 text-xs text-slate-700 space-y-2 leading-relaxed">
+                        <p class="flex items-start gap-1.5">
+                            <span class="text-emerald-600 font-bold shrink-0">📌</span>
+                            <span>
+                                <strong>Kondisi Gaji:</strong> Rata-rata penghasilan warga yang bekerja berada di angka <strong>Rp {{ number_format($finAvg, 0, ',', '.') }} per bulan</strong>. 
+                                @if($finRatioAvg >= 5)
+                                    Perbedaan pendapatan antara gaji tertinggi dan terendah tergolong sangat jauh (jomplang).
+                                @else
+                                    Tingkat pendapatan antar pekerja tergolong wajar dan relatif seimbang.
+                                @endif
+                                @if(!empty($activeFiltersList))
+                                    (Dihitung khusus dari <strong>{{ number_format($filteredTotal ?? 0) }} subjek terfilter</strong>).
+                                @endif
+                            </span>
+                        </p>
+                        <div class="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-950 text-xs space-y-1">
+                            <div class="font-extrabold flex items-center gap-1.5 text-emerald-900">
+                                <span>💡</span> Solusi & Saran Kebijakan Kesejahteraan:
+                            </div>
+                            <ul class="list-disc list-inside space-y-0.5 text-[11px] text-emerald-900 font-medium pl-1">
+                                <li><strong>Bantuan Pekerja Bergaji Rendah:</strong> Warga dengan gaji di bawah rata-rata (Rp {{ number_format($finMin, 0, ',', '.') }} s/d Rp {{ number_format($finAvg, 0, ',', '.') }}) perlu dibantu dengan subsidi sembako atau jaring pengaman agar kebutuhan dapur aman.</li>
+                                <li><strong>Pastikan Upah Layak:</strong> Koordinasikan dengan dinas ketenagakerjaan setempat agar pengusaha membayarkan gaji yang layak sesuai standar upah minimum wilayah (UMR/UMK).</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
