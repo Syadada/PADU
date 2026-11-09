@@ -7,7 +7,7 @@
     <div class="p-5 sm:p-6 bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="space-y-1">
             <div class="flex items-center gap-2">
-                <span class="p-2 rounded-xl bg-indigo-50 text-indigo-600 text-lg font-bold">📊</span>
+                <span class="p-2 rounded-xl bg-indigo-50 text-indigo-600 text-lg font-bold flex items-center justify-center"><i class="fi fi-rr-chart-pie-alt"></i></span>
                 <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">
                     Dashboard Indikator Kunci (KPI) & Demografi DTSEN 2026
                 </h2>
@@ -22,10 +22,10 @@
 
         <div class="flex items-center gap-2 shrink-0">
             <a href="{{ route('dtsen.salary') }}" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer">
-                <span>💵</span> Buka Analisis Finansial Gaji
+                <i class="fi fi-rr-dollar"></i> <span>Buka Analisis Finansial Gaji</span>
             </a>
             <a href="{{ route('dtsen.data') }}" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer">
-                <span>📋</span> Master Data
+                <i class="fi fi-rr-table"></i> <span>Master Data</span>
             </a>
         </div>
     </div>
@@ -33,7 +33,7 @@
     @if(($totalSystemRows ?? $totalRows) === 0)
         <!-- Keadaan Kosong -->
         <div class="p-12 bg-white rounded-2xl border-2 border-dashed border-slate-200 text-center space-y-4">
-            <div class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center text-3xl mx-auto font-bold shadow-xs">📊</div>
+            <div class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center text-3xl mx-auto font-bold shadow-xs"><i class="fi fi-rr-chart-pie-alt"></i></div>
             <div class="space-y-1">
                 <h3 class="font-extrabold text-slate-900 text-base">Belum Ada Dataset yang Dimuat</h3>
                 <p class="text-xs text-slate-500 max-w-md mx-auto">
@@ -42,7 +42,7 @@
             </div>
             <div class="pt-2">
                 <a href="{{ route('dtsen.files') }}" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition-all inline-flex items-center gap-2 cursor-pointer">
-                    <span>⚡</span> Buka Manajemen Berkas
+                    <i class="fi fi-rr-bolt"></i> <span>Buka Manajemen Berkas</span>
                 </a>
             </div>
         </div>
@@ -52,7 +52,7 @@
         <div class="space-y-3">
             <div class="flex items-center justify-between">
                 <h3 class="text-xs font-black uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                    <span>🏛️</span> Indikator Kunci Makro Kependudukan (Nasional / Satker)
+                    <i class="fi fi-rr-bank"></i> <span>Indikator Kunci Makro Kependudukan</span> (Nasional / Satker)
                 </h3>
                 <span class="text-[11px] font-bold text-slate-400 font-mono">{{ number_format($totalRows) }} Jiwa Terdata</span>
             </div>
@@ -61,7 +61,7 @@
                 <!-- Kartu 1: Total Populasi -->
                 <div class="kpi-stat-card p-5 rounded-2xl text-white shadow-sm space-y-2 min-w-0" style="background: linear-gradient(135deg, #1e3a8a 0%, #1e1b4b 100%) !important;">
                     <div class="flex items-center justify-between text-xs font-extrabold uppercase tracking-wider text-blue-200">
-                        <span class="truncate">👥 Total Populasi</span>
+                        <span class="truncate flex items-center gap-1.5"><i class="fi fi-rr-users text-blue-600"></i> Total Populasi</span>
                         <span class="px-2 py-0.5 rounded text-[10px] font-black bg-blue-500/30 border border-blue-400/40 text-blue-100">DATASET</span>
                     </div>
                     <div class="kpi-stat-value text-white font-mono" title="{{ number_format($totalRows) }} Jiwa">
@@ -76,7 +76,7 @@
                 <!-- Kartu 2: Rasio Gender -->
                 <div class="kpi-stat-card p-5 rounded-2xl text-white shadow-sm space-y-2 min-w-0" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;">
                     <div class="flex items-center justify-between text-xs font-extrabold uppercase tracking-wider text-sky-200">
-                        <span class="truncate">⚖️ Rasio Jenis Kelamin</span>
+                        <span class="truncate flex items-center gap-1.5"><i class="fi fi-rr-scale text-indigo-600"></i> Rasio Jenis Kelamin</span>
                         <span class="px-2 py-0.5 rounded text-[10px] font-black bg-sky-500/30 border border-sky-400/40 text-sky-100">GENDER</span>
                     </div>
                     <div class="kpi-stat-value text-white font-mono" title="{{ $demographics['gender_ratio'] ?? '50% : 50%' }}">
@@ -90,7 +90,7 @@
                 <!-- Kartu 3: Rata-Rata Usia -->
                 <div class="kpi-stat-card p-5 rounded-2xl text-white shadow-sm space-y-2 min-w-0" style="background: linear-gradient(135deg, #d97706 0%, #b45309 100%) !important;">
                     <div class="flex items-center justify-between text-xs font-extrabold uppercase tracking-wider text-amber-200">
-                        <span class="truncate">🎂 Rata-Rata Usia</span>
+                        <span class="truncate flex items-center gap-1.5"><i class="fi fi-rr-cake-birthday text-amber-600"></i> Rata-Rata Usia</span>
                         <span class="px-2 py-0.5 rounded text-[10px] font-black bg-amber-500/30 border border-amber-400/40 text-amber-100">DEMOGRAFI</span>
                     </div>
                     <div class="kpi-stat-value text-white font-mono" title="{{ $demographics['age']['avg_age'] ?? 50.0 }} Tahun">
@@ -105,7 +105,7 @@
                 <!-- Kartu 4: Partisipasi Kerja -->
                 <div class="kpi-stat-card p-5 rounded-2xl text-white shadow-sm space-y-2 min-w-0" style="background: linear-gradient(135deg, #059669 0%, #065f46 100%) !important;">
                     <div class="flex items-center justify-between text-xs font-extrabold uppercase tracking-wider text-emerald-200">
-                        <span class="truncate">💼 Partisipasi Kerja</span>
+                        <span class="truncate flex items-center gap-1.5"><i class="fi fi-rr-briefcase text-emerald-600"></i> Partisipasi Kerja</span>
                         <span class="px-2 py-0.5 rounded text-[10px] font-black bg-emerald-500/30 border border-emerald-400/40 text-emerald-100">KETENAGAKERJAAN</span>
                     </div>
                     <div class="kpi-stat-value text-white font-mono" title="{{ $demographics['employment_rate'] ?? '33.3%' }}">
@@ -132,26 +132,26 @@
             <div class="p-4 rounded-xl border border-blue-100 bg-gradient-to-r from-blue-50/70 via-slate-50 to-indigo-50/70 space-y-2.5">
                 <div class="flex items-center justify-between flex-wrap gap-2">
                     <div class="flex items-center gap-2">
-                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-blue-600 text-white text-xs font-black shadow-xs">📝</span>
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-blue-600 text-white text-xs font-black shadow-xs"><i class="fi fi-rr-edit"></i></span>
                         <span class="text-xs font-black uppercase tracking-wider text-blue-950">
                             Keterangan Ringkasan Data Penduduk
                         </span>
                     </div>
                     <div class="flex items-center gap-2 text-[10px] font-mono font-bold text-slate-600">
-                        <span class="px-2.5 py-0.5 rounded bg-white border border-slate-200">🏠 1 Keluarga: Rata-rata ~{{ $avgPerKk }} Orang</span>
-                        <span class="px-2.5 py-0.5 rounded bg-white border border-slate-200">⚖️ Warga: {{ round(($gLaki/$gTotal)*100) }}% Pria &bull; {{ round(($gPerem/$gTotal)*100) }}% Wanita</span>
+                        <span class="px-2.5 py-0.5 rounded bg-white border border-slate-200 flex items-center gap-1"><i class="fi fi-rr-home text-blue-600"></i> 1 Keluarga: Rata-rata ~{{ $avgPerKk }} Orang</span>
+                        <span class="px-2.5 py-0.5 rounded bg-white border border-slate-200 flex items-center gap-1"><i class="fi fi-rr-scale text-indigo-600"></i> Warga: {{ round(($gLaki/$gTotal)*100) }}% Pria &bull; {{ round(($gPerem/$gTotal)*100) }}% Wanita</span>
                     </div>
                 </div>
                 <div class="p-3 bg-white/95 rounded-lg border border-slate-200 text-xs text-slate-700 space-y-2 leading-relaxed">
                     <p class="flex items-start gap-1.5">
-                        <span class="text-blue-600 font-bold shrink-0">👥</span>
+                        <span class="text-blue-600 font-bold shrink-0"><i class="fi fi-rr-users"></i></span>
                         <span>
                             <strong>Kondisi Saat Ini:</strong> Ada sebanyak <strong>{{ number_format($popJiwa) }} warga</strong> yang terdata dalam <strong>{{ number_format($popKk) }} keluarga (KK)</strong>. Perbandingan jumlah pria dan wanita tergolong seimbang. Dari seluruh warga, sebanyak <strong>{{ number_format($empCount) }} orang ({{ $demographics['employment_rate'] ?? '33.3%' }})</strong> sudah aktif bekerja dan punya penghasilan, sedangkan sisanya merupakan anak sekolah, ibu rumah tangga, lansia, atau yang sedang mencari kerja.
                         </span>
                     </p>
                     <div class="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-950 text-xs space-y-1">
                         <div class="font-extrabold flex items-center gap-1.5 text-emerald-900">
-                            <span>💡</span> Solusi & Tindakan yang Disarankan:
+                            <i class="fi fi-rr-bulb text-amber-500"></i> <span>Solusi & Tindakan yang Disarankan:</span>
                         </div>
                         <ul class="list-disc list-inside space-y-0.5 text-[11px] text-emerald-900 font-medium pl-1">
                             <li><strong>Bantuan Sembako & PKH:</strong> Utamakan keluarga yang memiliki banyak tanggungan (di atas rata-rata {{ ceil($avgPerKk) }} orang per KK) agar kebutuhan pokok dapur selalu tercukupi.</li>
@@ -170,7 +170,7 @@
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                     <div>
                         <h4 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
-                            <span>🏷️</span> Sebaran 10 Desil Kesejahteraan Sosial (Regsosek / DTSEN)
+                            <i class="fi fi-rr-tag"></i> <span>Sebaran 10 Desil Kesejahteraan Sosial</span> (Regsosek / DTSEN)
                         </h4>
                         <p class="text-xs text-slate-500">
                             Distribusi tingkat desil kemiskinan ekstrem (Desil 1) hingga kelompok sejahtera (Desil 10).
@@ -282,14 +282,14 @@
                             <div class="flex items-center justify-between flex-wrap gap-2">
                                 <div class="flex items-center gap-2">
                                     <span class="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-indigo-600 text-white text-xs font-black shadow-xs">
-                                        ✨
+                                        <i class="fi fi-rr-sparkles"></i>
                                     </span>
                                     <span class="text-xs font-black uppercase tracking-wider text-indigo-950">
                                         Keterangan: Kebijakan & Sebaran Kesejahteraan
                                     </span>
                                 </div>
                                 <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold font-mono {{ $isUniform ? 'bg-indigo-100 text-indigo-800 border border-indigo-200' : 'bg-amber-100 text-amber-800 border border-amber-200' }}">
-                                    {{ $isUniform ? '🎯 Kuantil Nasional Seimbang (~10% per desil)' : '📊 Distribusi Asimetris / Terfilter' }}
+                                    {{ $isUniform ? 'Kuantil Nasional Seimbang (~10% per desil)' : 'Distribusi Asimetris / Terfilter' }}
                                 </span>
                             </div>
 
@@ -346,7 +346,7 @@
                                     </div>
                                     <div class="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-950 text-xs space-y-1">
                                         <div class="font-extrabold flex items-center gap-1.5 text-emerald-900">
-                                            <span>💡</span> Solusi Pembagian Bantuan Tepat Sasaran:
+                                            <i class="fi fi-rr-bulb text-amber-500"></i> <span>Solusi Pembagian Bantuan Tepat Sasaran:</span>
                                         </div>
                                         <ul class="list-disc list-inside space-y-0.5 text-[11px] text-emerald-900 font-medium pl-1">
                                             <li><strong>Bansos Rutin (PKH & Sembako):</strong> Wajib difokuskan untuk <strong>Desil 1 & 2 ({{ number_format($dBansosPrioritas) }} orang)</strong> agar bebas dari kemiskinan ekstrem.</li>
@@ -356,7 +356,7 @@
                                     </div>
                                 @else
                                     <div class="flex items-start gap-2">
-                                        <span class="text-indigo-600 font-bold shrink-0 mt-0.5">📊</span>
+                                        <span class="text-indigo-600 font-bold shrink-0 mt-0.5"><i class="fi fi-rr-chart-pie-alt"></i></span>
                                         <div class="space-y-1">
                                             <p>
                                                 <strong>Hasil Penyaringan Data:</strong> Warga paling banyak berada di <strong>{{ $maxDesilItem['name'] ?? '-' }}</strong> yaitu sebanyak <strong>{{ number_format($maxDesilItem['count'] ?? 0) }} orang</strong>.
@@ -372,7 +372,7 @@
                                     </div>
                                     <div class="p-2.5 rounded-lg bg-blue-50 border border-blue-200 text-blue-950 text-xs space-y-1">
                                         <div class="font-extrabold flex items-center gap-1.5 text-blue-900">
-                                            <span>💡</span> Solusi untuk Wilayah Ini:
+                                            <i class="fi fi-rr-bulb text-amber-500"></i> <span>Solusi untuk Wilayah Ini:</span>
                                         </div>
                                         <p class="text-[11px] text-blue-900 font-medium">
                                             Gunakan data ini untuk mengajukan kuota bantuan sosial tambahan langsung ke dinas sosial terkait jika wilayah ini terbukti padat warga pra-sejahtera.
@@ -389,7 +389,7 @@
             <div class="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-4">
                 <div class="border-b border-slate-100 pb-3">
                     <h4 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
-                        <span>👶</span> Komposisi Kelompok Usia
+                        <i class="fi fi-rr-users"></i> <span>Komposisi Kelompok Usia</span>
                     </h4>
                     <p class="text-xs text-slate-500">Proporsi piramida usia produktif vs non-produktif.</p>
                 </div>
@@ -464,11 +464,11 @@
                     <div class="p-3.5 rounded-xl border border-cyan-100 bg-gradient-to-r from-cyan-50/70 via-sky-50/40 to-blue-50/70 space-y-2.5">
                         <div class="flex items-center justify-between flex-wrap gap-2">
                             <div class="flex items-center gap-1.5">
-                                <span class="inline-flex items-center justify-center w-5 h-5 rounded-md bg-cyan-600 text-white text-[11px] font-black shadow-2xs">✨</span>
+                                <span class="inline-flex items-center justify-center w-5 h-5 rounded-md bg-cyan-600 text-white text-[11px] font-black shadow-2xs"><i class="fi fi-rr-sparkles"></i></span>
                                 <span class="text-xs font-black uppercase tracking-wider text-cyan-950">Keterangan: Analisis Komposisi Usia</span>
                             </div>
                             <span class="px-2 py-0.5 rounded text-[10px] font-extrabold font-mono {{ $hasBonusDemografi ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-amber-100 text-amber-800 border border-amber-200' }}">
-                                {{ $hasBonusDemografi ? '⚡ Bonus Demografi' : '⚖️ Beban Ketergantungan' }}
+                                {{ $hasBonusDemografi ? 'Bonus Demografi' : 'Beban Ketergantungan' }}
                             </span>
                         </div>
 
@@ -495,7 +495,7 @@
                             </p>
                             <div class="p-2 rounded-lg bg-cyan-50 border border-cyan-200 text-cyan-950 text-[11px] space-y-0.5">
                                 <div class="font-bold flex items-center gap-1 text-cyan-900">
-                                    <span>💡</span> Solusi & Tindakan yang Disarankan:
+                                    <i class="fi fi-rr-bulb text-amber-500"></i> <span>Solusi & Tindakan yang Disarankan:</span>
                                 </div>
                                 <div class="text-cyan-900 font-medium">
                                     @if($hasBonusDemografi)
@@ -518,7 +518,7 @@
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
                 <div class="space-y-1">
                     <h3 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
-                        <span>🎯</span> Eksplorasi Metrik & Peringkat Bebas per Variabel: 
+                        <i class="fi fi-rr-bullseye"></i> <span>Eksplorasi Metrik & Peringkat Bebas per Variabel:</span> 
                         <span class="text-blue-700 font-black">{{ $activeColumnsMap[$kpiTargetVar] ?? $kpiTargetVar }}</span>
                     </h3>
                     <p class="text-xs text-slate-500">
@@ -531,7 +531,7 @@
                     <label for="kpi_var" class="text-xs font-bold text-slate-700 whitespace-nowrap">Ganti Variabel:</label>
                     <select name="kpi_var" id="kpi_var" aria-label="Ganti Variabel Target KPI" onchange="this.form.submit()" class="text-xs font-extrabold bg-blue-50 border border-blue-300 rounded-xl px-3 py-2 text-blue-900 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer shadow-sm">
                         @foreach($activeColumnsMap as $key => $title)
-                            <option value="{{ $key }}" {{ $kpiTargetVar === $key ? 'selected' : '' }}>📌 {{ $title }}</option>
+                            <option value="{{ $key }}" {{ $kpiTargetVar === $key ? 'selected' : '' }}>{{ $title }}</option>
                         @endforeach
                     </select>
                 </form>
@@ -580,7 +580,7 @@
                     <div class="flex items-center justify-between border-b border-slate-200 pb-2">
                         <div>
                             <h4 class="font-extrabold text-xs text-slate-800 uppercase flex items-center gap-1.5">
-                                <span>🏆</span> Top 5 Peringkat Teratas (Maksimum)
+                                <i class="fi fi-rr-trophy"></i> <span>Top 5 Peringkat Teratas (Maksimum)</span>
                             </h4>
                             <p class="text-[10px] text-slate-500 font-medium">5 tingkatan nilai tertinggi berjenjang dengan subjek representatif.</p>
                         </div>
@@ -629,7 +629,7 @@
                     <div class="flex items-center justify-between border-b border-slate-200 pb-2">
                         <div>
                             <h4 class="font-extrabold text-xs text-slate-800 uppercase flex items-center gap-1.5">
-                                <span>📉</span> 5 Peringkat Terbawah (Minimum)
+                                <i class="fi fi-rr-caret-down"></i> <span>5 Peringkat Terbawah (Minimum)</span>
                             </h4>
                             <p class="text-[10px] text-slate-500 font-medium">5 tingkatan nilai terendah berjenjang dengan subjek representatif.</p>
                         </div>
@@ -688,7 +688,7 @@
                 <div class="p-4 rounded-xl border border-purple-100 bg-gradient-to-r from-purple-50/70 via-indigo-50/40 to-slate-50 space-y-3">
                     <div class="flex items-center justify-between flex-wrap gap-2">
                         <div class="flex items-center gap-2">
-                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-purple-600 text-white text-xs font-black shadow-xs">✨</span>
+                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-purple-600 text-white text-xs font-black shadow-xs"><i class="fi fi-rr-sparkles"></i></span>
                             <span class="text-xs font-black uppercase tracking-wider text-purple-950">
                                 Keterangan: Analisis Disparitas & Peringkat {{ $varLabel }}
                             </span>
@@ -725,7 +725,7 @@
 
                     <div class="p-3 bg-white/95 rounded-lg border border-slate-200 text-xs text-slate-700 space-y-2 leading-relaxed">
                         <p class="flex items-start gap-1.5">
-                            <span class="text-purple-600 font-bold shrink-0">📊</span>
+                            <span class="text-purple-600 font-bold shrink-0"><i class="fi fi-rr-chart-pie-alt"></i></span>
                             <span>
                                 <strong>Penjelasan Sederhana:</strong> Nilai paling tinggi berada di angka <strong>{{ number_format($numMax) }}</strong>, atau sekitar <strong>{{ $ratioMaxAvg }} kali lipat</strong> di atas rata-rata warga umum ({{ number_format($numAvg) }}). 
                                 @if($ratioMaxAvg > 5)
@@ -737,7 +737,7 @@
                         </p>
                         <div class="p-2.5 rounded-lg bg-purple-50 border border-purple-200 text-purple-950 text-xs space-y-1">
                             <div class="font-extrabold flex items-center gap-1.5 text-purple-900">
-                                <span>💡</span> Solusi & Tindakan Lapangan:
+                                <i class="fi fi-rr-bulb text-amber-500"></i> <span>Solusi & Tindakan Lapangan:</span>
                             </div>
                             <p class="text-[11px] text-purple-900 font-medium">
                                 @if($ratioMaxAvg > 5)

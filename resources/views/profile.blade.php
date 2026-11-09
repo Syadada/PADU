@@ -97,7 +97,7 @@
                     <div>
                         <h2 class="text-lg font-extrabold text-slate-900 leading-tight">{{ $user->name }}</h2>
                         <span class="inline-flex items-center gap-1 mt-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider border {{ $user->isSuperAdmin() ? 'bg-amber-50 text-amber-700 border-amber-300' : 'bg-blue-50 text-blue-700 border-blue-300' }}">
-                            {{ $user->isSuperAdmin() ? '👑 Super Administrator' : '👤 Operator Data' }}
+                            <i class="fi {{ $user->isSuperAdmin() ? 'fi-rr-crown text-amber-500' : 'fi-rr-user text-blue-500' }}"></i> {{ $user->isSuperAdmin() ? 'Super Administrator' : 'Operator Data' }}
                         </span>
                     </div>
                 </div>
@@ -112,7 +112,7 @@
                         <div class="mt-1 flex items-center gap-2">
                             @if($user->two_factor_enabled)
                                 <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                                    📱 2FA TOTP Aktif
+                                    <i class="fi fi-rr-smartphone text-emerald-600"></i> 2FA TOTP Aktif
                                 </span>
                             @else
                                 <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-300">
@@ -142,7 +142,7 @@
                 @if(auth()->user()->isSuperAdmin())
                     <a href="{{ route('admin.users') }}" class="flex items-center justify-between p-3 rounded-xl hover:bg-purple-50 hover:text-purple-900 border border-slate-100 transition-colors group">
                         <div class="flex items-center gap-2.5">
-                            <span class="text-lg">👥</span>
+                            <span class="text-lg"><i class="fi fi-rr-users"></i></span>
                             <div>
                                 <span class="block text-xs font-bold text-slate-800 group-hover:text-purple-900">Kelola Direktori Staf</span>
                                 <span class="text-[10px] text-slate-500">Tambah akun, edit, reset kata sandi staf</span>
@@ -153,7 +153,7 @@
 
                     <a href="{{ route('admin.two-factor') }}" class="flex items-center justify-between p-3 rounded-xl hover:bg-blue-50 hover:text-blue-900 border border-slate-100 transition-colors group">
                         <div class="flex items-center gap-2.5">
-                            <span class="text-lg">📱</span>
+                            <span class="text-lg"><i class="fi fi-rr-smartphone"></i></span>
                             <div>
                                 <span class="block text-xs font-bold text-slate-800 group-hover:text-blue-900">Pengaturan 2FA TOTP</span>
                                 <span class="text-[10px] text-slate-500">Aplikasi Authenticator ponsel pintar</span>
@@ -164,7 +164,7 @@
 
                     <a href="{{ route('admin.audit-logs') }}" class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-100 hover:text-slate-900 border border-slate-100 transition-colors group">
                         <div class="flex items-center gap-2.5">
-                            <span class="text-lg">📜</span>
+                            <span class="text-lg"><i class="fi fi-rr-document-signed"></i></span>
                             <div>
                                 <span class="block text-xs font-bold text-slate-800 group-hover:text-slate-900">Jejak Audit Forensik</span>
                                 <span class="text-[10px] text-slate-500">Audit trail kepatuhan BSSN</span>
@@ -175,7 +175,7 @@
 
                     <a href="{{ route('admin.backup') }}" class="flex items-center justify-between p-3 rounded-xl hover:bg-emerald-50 hover:text-emerald-900 border border-slate-100 transition-colors group">
                         <div class="flex items-center gap-2.5">
-                            <span class="text-lg">🗜️</span>
+                            <span class="text-lg"><i class="fi fi-rr-compress"></i></span>
                             <div>
                                 <span class="block text-xs font-bold text-slate-800 group-hover:text-emerald-900">Pencadangan Sistem AES-256</span>
                                 <span class="text-[10px] text-slate-500">Arsip Cadangan & Pemulihan Bencana DRP</span>
@@ -186,7 +186,7 @@
 
                     <a href="{{ route('admin.metadata') }}" class="flex items-center justify-between p-3 rounded-xl hover:bg-amber-50 hover:text-amber-900 border border-slate-100 transition-colors group">
                         <div class="flex items-center gap-2.5">
-                            <span class="text-lg">📋</span>
+                            <span class="text-lg"><i class="fi fi-rr-table"></i></span>
                             <div>
                                 <span class="block text-xs font-bold text-slate-800 group-hover:text-amber-900">Metadata & Quality Check (BAST)</span>
                                 <span class="text-[10px] text-slate-500">Kamus Aturan BAST & Training Versi</span>
@@ -231,7 +231,7 @@
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-5">
                 <div class="border-b border-slate-100 pb-4">
                     <h2 class="text-lg font-black text-slate-900 flex items-center gap-2">
-                        <span>✏️ Ubah Informasi Profil Mandiri</span>
+                        <i class="fi fi-rr-edit"></i> <span>Ubah Informasi Profil Mandiri</span>
                     </h2>
                     <p class="text-xs text-slate-500 mt-0.5">
                         Perbarui nama tampilan resmi Anda di sistem. Sesuai aturan kepatuhan, surel dan peran hanya dapat dimodifikasi oleh Super Administrator.
@@ -268,7 +268,7 @@
                                disabled 
                                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-100 text-slate-500 text-xs font-mono font-medium cursor-not-allowed">
                         <span class="text-[10px] text-slate-400 mt-1 block">
-                            🔒 Surel digunakan untuk identifikasi digital forensik dan tidak dapat diubah secara mandiri.
+                            <i class="fi fi-rr-lock text-slate-500"></i> Surel digunakan untuk identifikasi digital forensik dan tidak dapat diubah secara mandiri.
                         </span>
                     </div>
 
@@ -289,7 +289,7 @@
                             Wajib BSSN
                         </span>
                         <h2 class="text-lg font-black text-slate-900">
-                            🔑 Ubah Kata Sandi Akun
+                            <i class="fi fi-rr-key"></i> Ubah Kata Sandi Akun
                         </h2>
                     </div>
                     <p class="text-xs text-slate-500 mt-0.5">
@@ -366,27 +366,27 @@
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                             <div class="flex items-center gap-2" :class="checks.length ? 'text-emerald-600 font-bold' : 'text-slate-400'">
-                                <span x-text="checks.length ? '✓' : '○'"></span>
+                                <span x-text="checks.length ? 'Patuh' : 'Belum'"></span>
                                 <span>Minimal 15 karakter</span>
                             </div>
                             <div class="flex items-center gap-2" :class="checks.upper ? 'text-emerald-600 font-bold' : 'text-slate-400'">
-                                <span x-text="checks.upper ? '✓' : '○'"></span>
+                                <span x-text="checks.upper ? 'Patuh' : 'Belum'"></span>
                                 <span>Huruf Besar (A-Z)</span>
                             </div>
                             <div class="flex items-center gap-2" :class="checks.lower ? 'text-emerald-600 font-bold' : 'text-slate-400'">
-                                <span x-text="checks.lower ? '✓' : '○'"></span>
+                                <span x-text="checks.lower ? 'Patuh' : 'Belum'"></span>
                                 <span>Huruf Kecil (a-z)</span>
                             </div>
                             <div class="flex items-center gap-2" :class="checks.number ? 'text-emerald-600 font-bold' : 'text-slate-400'">
-                                <span x-text="checks.number ? '✓' : '○'"></span>
+                                <span x-text="checks.number ? 'Patuh' : 'Belum'"></span>
                                 <span>Angka Numerik (0-9)</span>
                             </div>
                             <div class="flex items-center gap-2" :class="checks.symbol ? 'text-emerald-600 font-bold' : 'text-slate-400'">
-                                <span x-text="checks.symbol ? '✓' : '○'"></span>
+                                <span x-text="checks.symbol ? 'Patuh' : 'Belum'"></span>
                                 <span>Simbol Khusus (!@#$%^&*)</span>
                             </div>
                             <div class="flex items-center gap-2" :class="passwordsMatch ? 'text-emerald-600 font-bold' : 'text-slate-400'">
-                                <span x-text="passwordsMatch ? '✓' : '○'"></span>
+                                <span x-text="passwordsMatch ? 'Cocok' : 'Belum'"></span>
                                 <span>Konfirmasi Sandi Cocok</span>
                             </div>
                         </div>

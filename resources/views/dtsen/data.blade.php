@@ -7,7 +7,7 @@
     <div class="p-5 sm:p-6 bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="space-y-1">
             <div class="flex items-center gap-2">
-                <span class="p-2 rounded-xl bg-blue-50 text-blue-600 text-lg font-bold">📋</span>
+                <span class="p-2 rounded-xl bg-blue-50 text-blue-600 text-lg font-bold flex items-center justify-center"><i class="fi fi-rr-table"></i></span>
                 <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">
                     Tabel Master Data Terpadu (58 Variabel DTSEN 2026)
                 </h2>
@@ -25,7 +25,7 @@
             <button type="button" 
                     @click="showColumnModal = true" 
                     class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl border border-slate-300 shadow-xs transition-all flex items-center gap-1.5 cursor-pointer">
-                <span>🎛️</span> Atur Kolom (<span x-text="visibleCols.length"></span>/{{ count($activeColumnsMap) }})
+                <i class="fi fi-rr-settings-sliders"></i> <span>Atur Kolom</span> (<span x-text="visibleCols.length"></span>/{{ count($activeColumnsMap) }})
             </button>
             
             <!-- Ekspor Data Modal Trigger -->
@@ -33,13 +33,13 @@
                     @click="showExportModal = true" 
                     class="px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-xs rounded-xl border border-emerald-300 shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
                     @if($totalRows === 0) disabled title="Belum ada data untuk diekspor" @endif>
-                <span>📤</span> Ekspor (.ZIP)
+                <i class="fi fi-rr-upload"></i> <span>Ekspor (.ZIP)</span>
             </button>
 
             <!-- Reset Filter -->
             <a href="{{ route('dtsen.data') }}" 
                class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl border border-slate-300 shadow-xs transition-all flex items-center gap-1.5 cursor-pointer">
-                <span>🔄</span> Reset Filter
+                <i class="fi fi-rr-refresh"></i> <span>Reset Filter</span>
             </a>
         </div>
     </div>
@@ -47,16 +47,16 @@
     @if(($totalSystemRows ?? $totalRows) === 0)
         <!-- Keadaan Kosong (Belum Ada Data) -->
         <div class="p-12 bg-white rounded-2xl border-2 border-dashed border-slate-200 text-center space-y-4">
-            <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-3xl mx-auto font-bold shadow-xs">📂</div>
+            <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-3xl mx-auto font-bold shadow-xs"><i class="fi fi-rr-folder"></i></div>
             <div class="space-y-1">
                 <h3 class="font-extrabold text-slate-900 text-base">Belum Ada Dataset yang Dimuat</h3>
                 <p class="text-xs text-slate-500 max-w-md mx-auto">
-                    Silakan buka menu <strong>📁 Manajemen Berkas</strong> di sidebar kiri untuk memilih dan mengimpor file CSV/Excel dari folder <code>src-dtsen/</code>.
+                    Silakan buka menu <strong><i class="fi fi-rr-folder"></i> Berkas</strong> di sidebar kiri untuk memilih dan mengimpor file CSV/Excel dari folder <code>src-dtsen/</code>.
                 </p>
             </div>
             <div class="pt-2">
                 <a href="{{ route('dtsen.files') }}" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition-all inline-flex items-center gap-2 cursor-pointer">
-                    <span>⚡</span> Buka Manajemen Berkas
+                    <i class="fi fi-rr-bolt"></i> <span>Buka Berkas</span>
                 </a>
             </div>
         </div>
@@ -73,14 +73,14 @@
                                value="{{ $search }}" 
                                placeholder="Cari NIK, KK, Nama Lengkap, atau Wilayah domisili..." 
                                class="w-full pl-10 pr-20 py-2.5 bg-slate-50 border border-slate-300 text-slate-900 font-bold text-xs rounded-xl outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all shadow-xs">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 text-sm">🔍</span>
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 text-sm"><i class="fi fi-rr-search"></i></span>
                         @if(!empty($search))
-                            <a href="{{ route('dtsen.data') }}#tabel-data" class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-slate-700 font-extrabold text-xs">✕ Clear</a>
+                            <a href="{{ route('dtsen.data') }}#tabel-data" class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-slate-700 font-extrabold text-xs"><i class="fi fi-rr-cross-small"></i> Clear</a>
                         @endif
                     </div>
 
                     <button type="submit" class="w-full sm:w-auto px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl shadow-sm transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer">
-                        <span>⚡</span> Cari Data
+                        <i class="fi fi-rr-search"></i> <span>Cari Data</span>
                     </button>
                 </div>
 
@@ -99,9 +99,9 @@
                     <!-- QC Status Filter -->
                     <select id="filter_quality_status" name="quality_status" aria-label="Filter Berdasarkan Status Quality Check" class="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 font-bold text-xs cursor-pointer outline-none focus:border-blue-500">
                         <option value="semua" {{ $qualityStatus === 'semua' ? 'selected' : '' }}>Semua Status QC</option>
-                        <option value="Valid" {{ $qualityStatus === 'Valid' ? 'selected' : '' }}>🟢 Hanya Valid</option>
-                        <option value="Warning" {{ $qualityStatus === 'Warning' ? 'selected' : '' }}>🟡 Hanya Warning</option>
-                        <option value="Critical" {{ $qualityStatus === 'Critical' ? 'selected' : '' }}>🔴 Hanya Critical</option>
+                        <option value="Valid" {{ $qualityStatus === 'Valid' ? 'selected' : '' }}>Hanya Valid</option>
+                        <option value="Warning" {{ $qualityStatus === 'Warning' ? 'selected' : '' }}>Hanya Warning</option>
+                        <option value="Critical" {{ $qualityStatus === 'Critical' ? 'selected' : '' }}>Hanya Critical</option>
                     </select>
 
                     @php
@@ -116,7 +116,7 @@
 
                     @if(!empty($search) || $desil !== 'semua' || $qualityStatus !== 'semua' || $hasCustomColFilters)
                         <a href="{{ route('dtsen.data') }}#tabel-data" class="px-2.5 py-1.5 rounded-lg bg-rose-50 text-rose-700 border border-rose-200 font-bold text-[11px] hover:bg-rose-100 transition-colors flex items-center gap-1 shadow-2xs">
-                            <span>✕</span> Hapus Semua Filter
+                            <i class="fi fi-rr-cross-small"></i> <span>Hapus Semua Filter</span>
                         </a>
                     @endif
                 </div>
@@ -132,7 +132,7 @@
                     <div class="flex items-center justify-between border-b border-slate-100 pb-3 shrink-0">
                         <div>
                             <h3 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
-                                <span>⚙️</span> Pengatur Tampilan Kolom Tabel (58 Variabel DTSEN)
+                                <i class="fi fi-rr-settings-sliders"></i> <span>Pengatur Tampilan Kolom Tabel (58 Variabel DTSEN)</span>
                             </h3>
                             <p class="text-xs text-slate-500">Centang atau hilangkan centang untuk memilih kolom yang ingin ditampilkan pada tabel.</p>
                         </div>
@@ -144,7 +144,7 @@
                         @if(!empty($officialIndividuVars))
                             <div class="p-3 bg-blue-50/60 rounded-xl border border-blue-200 space-y-2">
                                 <h4 class="text-xs font-black uppercase text-blue-900 flex items-center gap-1.5 border-b border-blue-200 pb-1.5">
-                                    👤 Set Data Anggota Keluarga / Individu ({{ count($officialIndividuVars) }} Variabel)
+                                    <i class="fi fi-rr-user"></i> Set Data Anggota Keluarga / Individu ({{ count($officialIndividuVars) }} Variabel)
                                 </h4>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                                     @foreach($officialIndividuVars as $cKey => $cTitle)
@@ -161,7 +161,7 @@
                         @if(!empty($officialKeluargaVars))
                             <div class="p-3 bg-emerald-50/60 rounded-xl border border-emerald-200 space-y-2">
                                 <h4 class="text-xs font-black uppercase text-emerald-900 flex items-center gap-1.5 border-b border-emerald-200 pb-1.5">
-                                    🏠 Set Data Keluarga ({{ count($officialKeluargaVars) }} Variabel)
+                                    <i class="fi fi-rr-home"></i> Set Data Keluarga ({{ count($officialKeluargaVars) }} Variabel)
                                 </h4>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                                     @foreach($officialKeluargaVars as $cKey => $cTitle)
@@ -181,7 +181,7 @@
                         @if(!empty($extraCols))
                             <div class="p-3 bg-purple-50/60 rounded-xl border border-purple-200 space-y-2">
                                 <h4 class="text-xs font-black uppercase text-purple-900 flex items-center gap-1.5 border-b border-purple-200 pb-1.5">
-                                    📌 Variabel Berkas CSV / Tambahan ({{ count($extraCols) }} Variabel)
+                                    <i class="fi fi-rr-thumbtack"></i> Variabel Berkas CSV / Tambahan ({{ count($extraCols) }} Variabel)
                                 </h4>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                                     @foreach($extraCols as $cKey => $cTitle)
@@ -197,7 +197,7 @@
 
                     <div class="pt-3 flex items-center justify-between border-t border-slate-100 shrink-0">
                         <button type="button" @click="resetCols()" class="text-xs font-black hover:text-blue-800 transition-colors cursor-pointer text-blue-600">
-                            🔄 Tampilkan Semua Kolom
+                            <i class="fi fi-rr-refresh"></i> Tampilkan Semua Kolom
                         </button>
                         <button type="button" @click="showColumnModal = false" class="px-6 py-2.5 rounded-xl font-black text-xs shadow-md transition-all cursor-pointer bg-slate-900 text-white">
                             Selesai & Simpan
@@ -206,15 +206,261 @@
                 </div>
             </div>
 
+            <!-- Modal Filter Kolom Pivot Terpusat (Anti-Offscreen, 520px Max Width, & Pinned Footer) -->
+            <div x-show="showFilterModal" 
+                 x-transition:enter="transition ease-out duration-150"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition ease-in duration-100"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 @keydown.escape.window="closeColumnFilter()"
+                 class="padu-filter-overlay"
+                 style="position: fixed; inset: 0; z-index: 99999; display: flex; align-items: center; justify-content: center; background-color: rgba(15, 23, 42, 0.65); padding: 1rem; backdrop-filter: blur(4px);" 
+                 x-cloak>
+                
+                <!-- Backdrop Click to Close -->
+                <div style="position: absolute; inset: 0;" @click="closeColumnFilter()"></div>
+
+                <!-- Modal Dialog Container (Strictly 520px Width Max & Centered) -->
+                <div @click.stop 
+                     class="padu-filter-card" 
+                     style="position: relative; z-index: 100000; width: 100%; max-width: 520px; max-height: 85vh; background: #ffffff; border-radius: 1rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35); border: 1px solid #e2e8f0; display: flex; flex-direction: column; overflow: hidden; margin: auto;">
+                    
+                    <!-- Pinned Header -->
+                    <div class="padu-filter-header" style="padding: 1rem 1.25rem; background: #f8fafc; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <span class="w-9 h-9 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center text-sm font-black shrink-0">
+                                <i class="fi fi-rr-filter"></i>
+                            </span>
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[10px] font-black uppercase tracking-wider text-slate-500">Filter Kolom Tabel</span>
+                                    <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-mono" x-text="activeFilterType"></span>
+                                </div>
+                                <h3 class="text-sm font-black text-slate-900 truncate" x-text="activeFilterTitle"></h3>
+                            </div>
+                        </div>
+                        <button type="button" @click="closeColumnFilter()" class="w-8 h-8 rounded-xl hover:bg-slate-200 text-slate-400 hover:text-slate-700 flex items-center justify-center text-lg font-black transition-colors cursor-pointer">
+                            &times;
+                        </button>
+                    </div>
+
+                    <!-- Scrollable Body with graceful height constraints -->
+                    <div class="padu-filter-body" style="flex: 1 1 auto; overflow-y: auto; max-height: calc(85vh - 140px); padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: 0.875rem;">
+                        
+                        <!-- QC Presets -->
+                        <template x-if="activeFilterType === 'qc'">
+                            <div class="space-y-1.5">
+                                <span class="text-[11px] font-bold text-slate-600 block">Pilih Status Validitas:</span>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <button type="button" @click="setSingleFilterVal('Valid')" class="p-2.5 rounded-xl border border-emerald-300 bg-emerald-50/70 hover:bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-all">
+                                        <i class="fi fi-rr-check"></i> Valid
+                                    </button>
+                                    <button type="button" @click="setSingleFilterVal('Warning')" class="p-2.5 rounded-xl border border-amber-300 bg-amber-50/70 hover:bg-amber-100 text-amber-800 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-all">
+                                        <i class="fi fi-rr-triangle-warning"></i> Warning
+                                    </button>
+                                    <button type="button" @click="setSingleFilterVal('Critical')" class="p-2.5 rounded-xl border border-rose-300 bg-rose-50/70 hover:bg-rose-100 text-rose-800 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-all">
+                                        <i class="fi fi-rr-cross-circle"></i> Critical
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
+
+                        <!-- Age Presets & Range -->
+                        <template x-if="activeFilterType === 'age'">
+                            <div class="bg-blue-50/80 p-3 rounded-xl border border-blue-200 space-y-2 text-xs">
+                                <span class="font-extrabold text-blue-900 text-[11px] uppercase tracking-wide flex items-center gap-1">
+                                    <i class="fi fi-rr-cake-birthday"></i> <span>Preset Rentang Usia Cepat</span>
+                                </span>
+                                <div class="grid grid-cols-2 gap-1.5">
+                                    <button type="button" @click="setSingleFilterVal('< 5')" class="px-2 py-1.5 bg-white hover:bg-blue-100 border border-blue-300 rounded-lg text-xs font-bold text-blue-800 transition-colors cursor-pointer text-center">
+                                        &lt; 5 Thn (Balita)
+                                    </button>
+                                    <button type="button" @click="setSingleFilterVal('5 - 17')" class="px-2 py-1.5 bg-white hover:bg-blue-100 border border-blue-300 rounded-lg text-xs font-bold text-blue-800 transition-colors cursor-pointer text-center">
+                                        5 - 17 Thn (Anak)
+                                    </button>
+                                    <button type="button" @click="setSingleFilterVal('18 - 40')" class="px-2 py-1.5 bg-white hover:bg-blue-100 border border-blue-300 rounded-lg text-xs font-bold text-blue-800 transition-colors cursor-pointer text-center">
+                                        18 - 40 Thn (Pemuda)
+                                    </button>
+                                    <button type="button" @click="setSingleFilterVal('41 - 59')" class="px-2 py-1.5 bg-white hover:bg-blue-100 border border-blue-300 rounded-lg text-xs font-bold text-blue-800 transition-colors cursor-pointer text-center">
+                                        41 - 59 Thn (Dewasa)
+                                    </button>
+                                    <button type="button" @click="setSingleFilterVal('>= 60')" class="col-span-2 px-2 py-1.5 bg-white hover:bg-blue-100 border border-blue-300 rounded-lg text-xs font-bold text-blue-800 transition-colors cursor-pointer text-center">
+                                        &ge; 60 Thn (Lansia)
+                                    </button>
+                                </div>
+                                <div class="pt-2 border-t border-blue-200">
+                                    <span class="font-bold text-blue-900 text-[10px] block mb-1">Rentang Usia Kustom:</span>
+                                    <div class="flex items-center gap-2">
+                                        <input type="number" x-model="filterMinVal" min="0" max="120" placeholder="Min" class="w-1/2 text-xs bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 outline-none focus:ring-2 focus:ring-blue-500">
+                                        <span class="text-slate-400 font-bold text-xs">s.d.</span>
+                                        <input type="number" x-model="filterMaxVal" min="0" max="120" placeholder="Max" class="w-1/2 text-xs bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 outline-none focus:ring-2 focus:ring-blue-500">
+                                        <button type="button" @click="applyFilterRange()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg transition-colors cursor-pointer shrink-0">
+                                            Set
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+
+                        <!-- Salary Presets & Range -->
+                        <template x-if="activeFilterType === 'salary'">
+                            <div class="bg-emerald-50/80 p-3 rounded-xl border border-emerald-200 space-y-2 text-xs">
+                                <span class="font-extrabold text-emerald-900 text-[11px] uppercase tracking-wide flex items-center gap-1">
+                                    <i class="fi fi-rr-dollar"></i> <span>Preset Rentang Gaji Cepat</span>
+                                </span>
+                                <div class="grid grid-cols-2 gap-1.5">
+                                    <button type="button" @click="setSingleFilterVal('< 1.5 Juta')" class="px-2 py-1.5 bg-white hover:bg-emerald-100 border border-emerald-300 rounded-lg text-xs font-bold text-emerald-800 transition-colors cursor-pointer text-center">
+                                        &lt; Rp 1.5 Juta
+                                    </button>
+                                    <button type="button" @click="setSingleFilterVal('1.5 - 3 Juta')" class="px-2 py-1.5 bg-white hover:bg-emerald-100 border border-emerald-300 rounded-lg text-xs font-bold text-emerald-800 transition-colors cursor-pointer text-center">
+                                        Rp 1.5 - 3 Juta
+                                    </button>
+                                    <button type="button" @click="setSingleFilterVal('3 - 5 Juta')" class="px-2 py-1.5 bg-white hover:bg-emerald-100 border border-emerald-300 rounded-lg text-xs font-bold text-emerald-800 transition-colors cursor-pointer text-center">
+                                        Rp 3 - 5 Juta
+                                    </button>
+                                    <button type="button" @click="setSingleFilterVal('5 - 10 Juta')" class="px-2 py-1.5 bg-white hover:bg-emerald-100 border border-emerald-300 rounded-lg text-xs font-bold text-emerald-800 transition-colors cursor-pointer text-center">
+                                        Rp 5 - 10 Juta
+                                    </button>
+                                    <button type="button" @click="setSingleFilterVal('> 10 Juta')" class="col-span-2 px-2 py-1.5 bg-white hover:bg-emerald-100 border border-emerald-300 rounded-lg text-xs font-bold text-emerald-800 transition-colors cursor-pointer text-center">
+                                        &gt; Rp 10 Juta
+                                    </button>
+                                </div>
+                                <div class="pt-2 border-t border-emerald-200">
+                                    <span class="font-bold text-emerald-900 text-[10px] block mb-1">Rentang Nominal Kustom:</span>
+                                    <div class="flex items-center gap-2">
+                                        <input type="number" x-model="filterMinVal" placeholder="Min Rp" class="w-1/2 text-xs bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 outline-none focus:ring-2 focus:ring-emerald-500">
+                                        <span class="text-slate-400 font-bold text-xs">-</span>
+                                        <input type="number" x-model="filterMaxVal" placeholder="Max Rp" class="w-1/2 text-xs bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 outline-none focus:ring-2 focus:ring-emerald-500">
+                                        <button type="button" @click="applyFilterRange()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition-colors cursor-pointer shrink-0">
+                                            Set
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+
+                        <!-- Desil Presets -->
+                        <template x-if="activeFilterType === 'desil'">
+                            <div class="bg-amber-50/80 p-3 rounded-xl border border-amber-200 space-y-2 text-xs">
+                                <span class="font-extrabold text-amber-900 text-[11px] uppercase tracking-wide flex items-center gap-1">
+                                    <i class="fi fi-rr-stats"></i> <span>Preset Desil Kesejahteraan</span>
+                                </span>
+                                <div class="grid grid-cols-2 gap-1.5">
+                                    <button type="button" @click="setSingleFilterVal('1')" class="px-2 py-1.5 bg-white hover:bg-rose-100 border border-rose-300 rounded-lg text-xs font-bold text-rose-800 transition-colors cursor-pointer text-center">
+                                        Desil 1 (Sangat Miskin)
+                                    </button>
+                                    <button type="button" @click="setSingleFilterVal('1 - 4')" class="px-2 py-1.5 bg-white hover:bg-amber-100 border border-amber-300 rounded-lg text-xs font-bold text-amber-800 transition-colors cursor-pointer text-center">
+                                        Desil 1 - 4 (Bansos)
+                                    </button>
+                                    <button type="button" @click="setSingleFilterVal('5 - 7')" class="px-2 py-1.5 bg-white hover:bg-blue-100 border border-blue-300 rounded-lg text-xs font-bold text-blue-800 transition-colors cursor-pointer text-center">
+                                        Desil 5 - 7 (Menengah)
+                                    </button>
+                                    <button type="button" @click="setSingleFilterVal('8 - 10')" class="px-2 py-1.5 bg-white hover:bg-emerald-100 border border-emerald-300 rounded-lg text-xs font-bold text-emerald-800 transition-colors cursor-pointer text-center">
+                                        Desil 8 - 10 (Mampu)
+                                    </button>
+                                </div>
+                                <div class="pt-2 border-t border-amber-200">
+                                    <span class="font-bold text-amber-900 text-[10px] block mb-1">Pilih Angka Desil:</span>
+                                    <div class="grid grid-cols-5 gap-1">
+                                        <template x-for="d in [1,2,3,4,5,6,7,8,9,10]" :key="d">
+                                            <button type="button" @click="toggleFilterVal(String(d))" 
+                                                    class="py-1 rounded-lg text-xs font-black transition-colors cursor-pointer border"
+                                                    :class="hasFilterVal(String(d)) ? 'bg-amber-600 text-white border-amber-600 shadow-xs' : 'bg-white hover:bg-amber-100 text-slate-700 border-slate-200'"
+                                                    x-text="'D' + d">
+                                            </button>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+
+                        <!-- Gender Presets -->
+                        <template x-if="activeFilterType === 'gender'">
+                            <div class="grid grid-cols-2 gap-2 text-xs">
+                                <button type="button" @click="setSingleFilterVal('Laki-laki')" class="p-2.5 rounded-xl border border-blue-300 bg-blue-50/70 hover:bg-blue-100 text-blue-900 text-xs font-black flex items-center justify-center gap-1.5 cursor-pointer transition-all">
+                                    <i class="fi fi-rr-user"></i> Laki-laki
+                                </button>
+                                <button type="button" @click="setSingleFilterVal('Perempuan')" class="p-2.5 rounded-xl border border-pink-300 bg-pink-50/70 hover:bg-pink-100 text-pink-900 text-xs font-black flex items-center justify-center gap-1.5 cursor-pointer transition-all">
+                                    <i class="fi fi-rr-user"></i> Perempuan
+                                </button>
+                            </div>
+                        </template>
+
+                        <!-- Search input box -->
+                        <div class="relative">
+                            <input type="text" 
+                                   x-model="filterSearchVal" 
+                                   @keydown.enter.prevent="applyActiveFilter()"
+                                   :placeholder="'Cari / filter kata kunci ' + activeFilterTitle + '...'"
+                                   class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 pl-9 pr-8 outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+                            <i class="fi fi-rr-search absolute left-3 top-3 text-slate-400 text-xs"></i>
+                            <button type="button" x-show="filterSearchVal" @click="filterSearchVal = ''" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 text-sm font-bold cursor-pointer">
+                                &times;
+                            </button>
+                        </div>
+
+                        <!-- Distinct Values Checkbox List (Strictly Contained with 220px max-height scroll) -->
+                        <div class="padu-filter-list" style="max-height: 220px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 0.75rem; background: #ffffff;">
+                            <div class="p-2.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs font-bold text-slate-700 sticky top-0 z-10">
+                                <button type="button" @click="selectAllFilterVals()" class="text-blue-600 hover:text-blue-800 flex items-center gap-1.5 cursor-pointer">
+                                    <i class="fi fi-rr-check-double"></i>
+                                    <span x-text="filterSelectedVals.length >= filterDistinctValues.length && filterDistinctValues.length > 0 ? 'Batalkan Semua' : 'Pilih Semua (' + filterDistinctValues.length + ')'"></span>
+                                </button>
+                                <span class="text-[11px] font-mono text-slate-500" x-text="filterSelectedVals.length + ' dipilih'"></span>
+                            </div>
+
+                            <div style="padding: 0.5rem; display: flex; flex-direction: column; gap: 0.25rem;">
+                                <template x-for="(item, idx) in filterDistinctValues.filter(v => !filterSearchVal || String(v).toLowerCase().includes(filterSearchVal.toLowerCase()))" :key="idx">
+                                    <label class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg hover:bg-blue-50 cursor-pointer font-medium text-slate-800 transition-colors"
+                                           :class="hasFilterVal(item) ? 'bg-blue-50/90 font-bold text-blue-900 border border-blue-200' : 'border border-transparent'">
+                                        <input type="checkbox" 
+                                               :checked="hasFilterVal(item)" 
+                                               @change="toggleFilterVal(item)"
+                                               class="accent-blue-600 rounded cursor-pointer w-4 h-4">
+                                        <span class="truncate text-xs" x-text="item"></span>
+                                    </label>
+                                </template>
+
+                                <div x-show="filterDistinctValues.length === 0" class="py-6 text-center text-slate-400 text-xs">
+                                    <i class="fi fi-rr-info text-base block mb-1"></i>
+                                    Filter teks fleksibel aktif. Ketik nilai di kolom input di atas lalu tekan Terapkan.
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Pinned Footer: ALWAYS 100% visible -->
+                    <div class="padu-filter-footer" style="padding: 0.875rem 1.25rem; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-shrink: 0;">
+                        <button type="button" @click="clearActiveFilter()" class="px-3.5 py-2 text-xs font-bold text-rose-600 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer border border-rose-200 flex items-center gap-1.5">
+                            <i class="fi fi-rr-trash"></i> <span>Reset Filter</span>
+                        </button>
+                        <div class="flex items-center gap-2">
+                            <button type="button" @click="closeColumnFilter()" class="px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-200 rounded-xl transition-colors cursor-pointer">
+                                Batal
+                            </button>
+                            <button type="button" @click="applyActiveFilter()" class="px-5 py-2 text-xs font-black bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-md transition-all flex items-center gap-1.5 cursor-pointer">
+                                <i class="fi fi-rr-check"></i>
+                                <span>Terapkan Filter</span>
+                                <span x-show="filterSelectedVals.length > 0" class="px-1.5 py-0.2 rounded-full bg-white text-emerald-800 font-extrabold text-[10px]" x-text="filterSelectedVals.length"></span>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
             <!-- TABEL MASTER ADAPTIF DENGAN STICKY HEADER -->
-            <div class="overflow-x-auto overflow-y-auto max-h-[70vh] min-h-[420px] border border-slate-200 rounded-xl relative shadow-xs scrollbar-thin">
+            <div class="overflow-x-auto border border-slate-200 rounded-xl relative shadow-xs scrollbar-thin min-h-[380px]">
                 <table class="w-full text-left border-collapse min-w-max">
                     <thead class="sticky top-0 z-20 bg-slate-100 shadow-xs">
                         <tr class="bg-slate-100 border-b border-slate-200">
                             <th class="px-4 py-3 text-xs font-bold text-slate-700 uppercase tracking-wider bg-slate-100">No</th>
                             
-                            <!-- QC Status Header dengan Filter Pivot Dropdown -->
-                            <th class="px-4 py-3 text-xs font-bold text-slate-700 uppercase tracking-wider bg-slate-100 relative group">
+                            <!-- QC Status Header dengan Trigger Filter Modal -->
+                            <th class="px-4 py-3 text-xs font-bold text-slate-700 uppercase tracking-wider bg-slate-100">
                                 <div class="flex items-center justify-between gap-2">
                                     <span>QC Status</span>
                                     @php
@@ -224,89 +470,19 @@
                                             fn($v) => $v !== '' && $v !== 'semua'
                                         ));
                                     @endphp
-                                    <div class="relative" x-data="{ 
-                                        open: false, 
-                                        searchVal: '',
-                                        selectedVals: {{ json_encode($initialQs) }},
-                                        hasVal(val) {
-                                            if (val === null || val === undefined) return false;
-                                            const target = String(val).trim().toLowerCase();
-                                            return this.selectedVals.some(v => String(v).trim().toLowerCase() === target);
-                                        },
-                                        toggleVal(val) {
-                                            if (this.hasVal(val)) {
-                                                const target = String(val).trim().toLowerCase();
-                                                this.selectedVals = this.selectedVals.filter(v => String(v).trim().toLowerCase() !== target);
-                                            } else {
-                                                this.selectedVals.push(val);
-                                            }
-                                        },
-                                        applyFilter() {
-                                            const url = new URL(window.location.href);
-                                            if (this.selectedVals.length > 0) {
-                                                url.searchParams.set('quality_status', this.selectedVals.join(','));
-                                            } else {
-                                                url.searchParams.delete('quality_status');
-                                            }
-                                            url.searchParams.set('page', '1');
-                                            url.hash = 'tabel-data';
-                                            this.open = false;
-                                            window.location.href = url.toString();
-                                        },
-                                        clearFilter() {
-                                            this.selectedVals = [];
-                                            this.searchVal = '';
-                                            const url = new URL(window.location.href);
-                                            url.searchParams.delete('quality_status');
-                                            url.searchParams.set('page', '1');
-                                            url.hash = 'tabel-data';
-                                            this.open = false;
-                                            window.location.href = url.toString();
-                                        }
-                                    }">
-                                        <button type="button" @click.stop="open = !open" 
-                                                class="px-1.5 py-0.5 rounded transition-colors flex items-center gap-1 cursor-pointer"
-                                                :class="selectedVals.length > 0 ? 'bg-blue-600 text-white font-extrabold text-[10px] shadow-xs' : 'text-slate-400 hover:bg-slate-200 hover:text-slate-700'"
-                                                title="Filter QC Status">
-                                            <span class="text-[10px]">🔽</span>
-                                            <span x-show="selectedVals.length > 0" class="text-[10px] font-black" x-text="selectedVals.length"></span>
-                                        </button>
-
-                                        <div x-show="open" @click.outside="open = false" x-cloak 
-                                             class="absolute left-0 top-full mt-1.5 w-56 bg-white rounded-xl shadow-2xl border border-slate-200 p-3 z-50 space-y-2.5 text-slate-800 normal-case tracking-normal">
-                                            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
-                                                <span class="font-extrabold text-[11px] text-blue-900 uppercase">Filter: QC Status</span>
-                                                <button type="button" @click="open = false" class="text-slate-400 hover:text-slate-600 font-bold text-base cursor-pointer">&times;</button>
-                                            </div>
-                                            @php $qcItems = ['Valid', 'Warning', 'Critical']; @endphp
-                                            <div class="space-y-1 text-xs border border-slate-100 rounded-lg p-1">
-                                                @foreach($qcItems as $qItem)
-                                                    <label class="flex items-center gap-2 px-2 py-1 rounded hover:bg-blue-50 cursor-pointer font-medium text-slate-700 transition-colors"
-                                                           :class="hasVal('{{ $qItem }}') ? 'bg-blue-50 font-bold text-blue-900' : ''">
-                                                        <input type="checkbox" 
-                                                               :checked="hasVal('{{ $qItem }}')" 
-                                                               @change="toggleVal('{{ $qItem }}')"
-                                                               class="accent-blue-600 rounded cursor-pointer">
-                                                        <span class="truncate text-xs">
-                                                            @if($qItem === 'Valid') 🟢 Valid @elseif($qItem === 'Warning') 🟡 Warning @else 🔴 Critical @endif
-                                                        </span>
-                                                    </label>
-                                                @endforeach
-                                            </div>
-                                            <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
-                                                <button type="button" @click.prevent.stop="clearFilter()" class="px-2.5 py-1.5 text-[11px] font-bold text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer">
-                                                    Reset
-                                                </button>
-                                                <button type="button" @click.prevent.stop="applyFilter()" class="px-3.5 py-1.5 text-xs font-black bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-sm transition-all flex items-center gap-1 cursor-pointer">
-                                                    <span>✓</span> Terapkan <span x-show="selectedVals.length > 0" x-text="'(' + selectedVals.length + ')'"></span>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <button type="button" 
+                                            @click="openColumnFilter('quality_status', 'QC Status', 'qc', ['Valid', 'Warning', 'Critical'], {{ json_encode($initialQs) }})" 
+                                            class="px-1.5 py-0.5 rounded transition-colors flex items-center gap-1 cursor-pointer {{ count($initialQs) > 0 ? 'bg-blue-600 text-white font-extrabold text-[10px] shadow-xs' : 'text-slate-400 hover:bg-slate-200 hover:text-slate-700' }}"
+                                            title="Filter QC Status">
+                                        <i class="fi fi-rr-angle-small-down text-[11px]"></i>
+                                        @if(count($initialQs) > 0)
+                                            <span class="text-[10px] font-black">{{ count($initialQs) }}</span>
+                                        @endif
+                                    </button>
                                 </div>
                             </th>
 
-                            <!-- Header Kolom Dinamis dengan Popover Filter Pivot Excel (Tersedia untuk Seluruh Variabel) -->
+                            <!-- Header Kolom Dinamis dengan Trigger Filter Modal Pivot Excel -->
                             @foreach($activeColumnsMap as $colKey => $colTitle)
                                 @php
                                     $reqVal = request($colKey);
@@ -335,330 +511,32 @@
                                     ));
 
                                     $lowerColKey = strtolower($colKey);
-                                    $isAge = in_array($lowerColKey, ['usia', 'umur', 'age']) || str_contains($lowerColKey, 'usia') || str_contains($lowerColKey, 'umur');
-                                    $isSalary = in_array($lowerColKey, ['gaji', 'gaji_bulanan', 'pendapatan', 'penghasilan', 'salary', 'income']) || str_contains($lowerColKey, 'gaji') || str_contains($lowerColKey, 'pendapatan');
-                                    $isDesil = str_contains($lowerColKey, 'desil');
-                                    $isGender = in_array($lowerColKey, ['jenis_kelamin', 'gender', 'jk', 'sex']);
-                                    $isIdentity = in_array($lowerColKey, ['nik', 'nomor_induk_kependudukan', 'kk', 'nomor_kartu_keluarga', 'no_nik', 'no_kk', 'id_pelanggan_pln', 'no_telepon', 'nomor_telepon']);
-                                    $isFreeText = in_array($lowerColKey, ['nama', 'nama_lengkap', 'alamat', 'nama_ibu_kandung', 'catatan', 'keterangan']);
+                                    $filterType = 'general';
+                                    if (in_array($lowerColKey, ['usia', 'umur', 'age']) || str_contains($lowerColKey, 'usia') || str_contains($lowerColKey, 'umur')) {
+                                        $filterType = 'age';
+                                    } elseif (in_array($lowerColKey, ['gaji', 'gaji_bulanan', 'pendapatan', 'penghasilan', 'salary', 'income']) || str_contains($lowerColKey, 'gaji') || str_contains($lowerColKey, 'pendapatan')) {
+                                        $filterType = 'salary';
+                                    } elseif (str_contains($lowerColKey, 'desil')) {
+                                        $filterType = 'desil';
+                                    } elseif (in_array($lowerColKey, ['jenis_kelamin', 'gender', 'jk', 'sex'])) {
+                                        $filterType = 'gender';
+                                    } elseif (in_array($lowerColKey, ['nik', 'nomor_induk_kependudukan', 'kk', 'nomor_kartu_keluarga', 'no_nik', 'no_kk', 'id_pelanggan_pln', 'no_telepon', 'nomor_telepon'])) {
+                                        $filterType = 'identity';
+                                    }
                                 @endphp
                                 <th x-show="isColVisible('{{ $colKey }}')" class="px-4 py-3 text-xs font-bold text-slate-700 tracking-wider whitespace-nowrap relative group bg-slate-100">
                                     <div class="flex items-center justify-between gap-2">
                                         <span class="{{ count($initialSelectedArr) > 0 ? 'text-blue-700 font-extrabold' : '' }}">{{ $colTitle }}</span>
 
-                                        <!-- Tombol Filter Pivot AutoFilter Excel Fleksibel Sesuai Header -->
-                                        <div class="relative" x-data="{ 
-                                            open: false, 
-                                            searchVal: {{ json_encode(!empty($initialSelectedArr) && count($initialSelectedArr) === 1 ? (string)$initialSelectedArr[0] : '') }},
-                                            minVal: '',
-                                            maxVal: '',
-                                            selectedVals: {{ json_encode($initialSelectedArr) }},
-                                            hasVal(val) {
-                                                if (val === null || val === undefined) return false;
-                                                const target = String(val).trim().toLowerCase();
-                                                return this.selectedVals.some(v => String(v).trim().toLowerCase() === target);
-                                            },
-                                            toggleVal(val) {
-                                                if (this.hasVal(val)) {
-                                                    const target = String(val).trim().toLowerCase();
-                                                    this.selectedVals = this.selectedVals.filter(v => String(v).trim().toLowerCase() !== target);
-                                                } else {
-                                                    this.selectedVals.push(val);
-                                                }
-                                            },
-                                            setSingle(val) {
-                                                this.selectedVals = [val];
-                                                this.applyFilter();
-                                            },
-                                            applyRange() {
-                                                let min = parseInt(this.minVal);
-                                                let max = parseInt(this.maxVal);
-                                                let rangeStr = '';
-                                                if (!isNaN(min) && !isNaN(max)) {
-                                                    rangeStr = min + ' - ' + max;
-                                                } else if (!isNaN(min)) {
-                                                    rangeStr = '> ' + (min - 1);
-                                                } else if (!isNaN(max)) {
-                                                    rangeStr = '< ' + (max + 1);
-                                                }
-                                                if (rangeStr) {
-                                                    this.selectedVals = [rangeStr];
-                                                    this.applyFilter();
-                                                }
-                                            },
-                                            selectAll(items) {
-                                                if (this.selectedVals.length >= items.length) {
-                                                    this.selectedVals = [];
-                                                } else {
-                                                    this.selectedVals = [...items];
-                                                }
-                                            },
-                                            applyFilter(allItems = []) {
-                                                const textQuery = this.searchVal.trim();
-                                                if (textQuery !== '') {
-                                                    if (this.selectedVals.length === 0) {
-                                                        this.selectedVals = [textQuery];
-                                                    } else if (!this.selectedVals.some(v => v.toLowerCase() === textQuery.toLowerCase())) {
-                                                        this.selectedVals.push(textQuery);
-                                                    }
-                                                }
-                                                const url = new URL(window.location.href);
-                                                if (this.selectedVals.length > 0) {
-                                                    url.searchParams.set('{{ $colKey }}', this.selectedVals.join(','));
-                                                } else {
-                                                    url.searchParams.delete('{{ $colKey }}');
-                                                }
-                                                url.searchParams.set('page', '1');
-                                                url.hash = 'tabel-data';
-                                                this.open = false;
-                                                window.location.href = url.toString();
-                                            },
-                                            clearFilter() {
-                                                this.selectedVals = [];
-                                                this.searchVal = '';
-                                                this.minVal = '';
-                                                this.maxVal = '';
-                                                const url = new URL(window.location.href);
-                                                url.searchParams.delete('{{ $colKey }}');
-                                                @if(isset($synonymsMap[$colKey]))
-                                                    @foreach($synonymsMap[$colKey] as $syn)
-                                                        url.searchParams.delete('{{ $syn }}');
-                                                    @endforeach
-                                                @endif
-                                                url.searchParams.set('page', '1');
-                                                url.hash = 'tabel-data';
-                                                this.open = false;
-                                                window.location.href = url.toString();
-                                            }
-                                        }">
-                                            <button type="button" @click.stop="open = !open" 
-                                                    class="px-1.5 py-0.5 rounded transition-all flex items-center gap-1 cursor-pointer"
-                                                    :class="selectedVals.length > 0 ? 'bg-blue-600 text-white font-extrabold text-[10px] shadow-sm' : 'text-slate-400 hover:bg-slate-200 hover:text-slate-700'"
-                                                    title="Filter Kolom {{ $colTitle }}">
-                                                <span class="text-[10px]">🔽</span>
-                                                <span x-show="selectedVals.length > 0" class="text-[10px] font-black bg-white text-blue-900 px-1 py-0.2 rounded-full" x-text="selectedVals.length"></span>
-                                            </button>
-
-                                            <!-- Popover Dropdown Filter Pivot Excel Multi-Select Fleksibel Sesuai Header -->
-                                            <div x-show="open" @click.outside="open = false" x-cloak 
-                                                 class="absolute top-full mt-1.5 w-80 bg-white rounded-xl shadow-2xl border border-slate-200 p-3.5 z-50 space-y-2.5 text-slate-800 normal-case tracking-normal {{ $loop->index > 3 ? 'right-0' : 'left-0' }}">
-                                                <div class="flex items-center justify-between border-b border-slate-100 pb-2">
-                                                    <div>
-                                                        <span class="font-extrabold text-xs text-blue-900 uppercase">Filter: {{ $colTitle }}</span>
-                                                        <p class="text-[10px] text-slate-400 font-medium">
-                                                            @if($isAge)
-                                                                Rentang Usia / Umur
-                                                            @elseif($isSalary)
-                                                                Rentang Finansial / Pendapatan
-                                                            @elseif($isDesil)
-                                                                Tingkat Kesejahteraan (Desil 1 - 10)
-                                                            @elseif($isGender)
-                                                                Kategori Jenis Kelamin
-                                                            @elseif($isIdentity)
-                                                                Nomor / Digit Identitas Unik
-                                                            @elseif($isFreeText)
-                                                                Pencarian Teks Bebas
-                                                            @else
-                                                                Pilihan Kategori Multi-Select
-                                                            @endif
-                                                        </p>
-                                                    </div>
-                                                    <button type="button" @click="open = false" class="text-slate-400 hover:text-slate-600 font-bold text-base cursor-pointer p-0.5">&times;</button>
-                                                </div>
-
-                                                <!-- FILTER SPESIFIK: USIA / UMUR -->
-                                                @if($isAge)
-                                                    <div class="bg-blue-50/80 p-2.5 rounded-lg border border-blue-200 space-y-2 text-xs">
-                                                        <span class="font-extrabold text-blue-900 text-[11px] uppercase tracking-wide flex items-center gap-1">
-                                                            <span>🎂</span> Preset Rentang Usia Cepat
-                                                        </span>
-                                                        <div class="grid grid-cols-2 gap-1.5">
-                                                            <button type="button" @click.prevent.stop="setSingle('< 5')" class="px-2 py-1 bg-white hover:bg-blue-100 border border-blue-300 rounded text-[11px] font-semibold text-blue-800 transition-colors text-center cursor-pointer">
-                                                                &lt; 5 Thn (Balita)
-                                                            </button>
-                                                            <button type="button" @click.prevent.stop="setSingle('5 - 17')" class="px-2 py-1 bg-white hover:bg-blue-100 border border-blue-300 rounded text-[11px] font-semibold text-blue-800 transition-colors text-center cursor-pointer">
-                                                                5 - 17 Thn (Anak)
-                                                            </button>
-                                                            <button type="button" @click.prevent.stop="setSingle('18 - 40')" class="px-2 py-1 bg-white hover:bg-blue-100 border border-blue-300 rounded text-[11px] font-semibold text-blue-800 transition-colors text-center cursor-pointer">
-                                                                18 - 40 Thn (Pemuda)
-                                                            </button>
-                                                            <button type="button" @click.prevent.stop="setSingle('41 - 59')" class="px-2 py-1 bg-white hover:bg-blue-100 border border-blue-300 rounded text-[11px] font-semibold text-blue-800 transition-colors text-center cursor-pointer">
-                                                                41 - 59 Thn (Dewasa)
-                                                            </button>
-                                                            <button type="button" @click.prevent.stop="setSingle('>= 60')" class="col-span-2 px-2 py-1 bg-white hover:bg-blue-100 border border-blue-300 rounded text-[11px] font-semibold text-blue-800 transition-colors text-center cursor-pointer">
-                                                                &ge; 60 Thn (Lansia)
-                                                            </button>
-                                                        </div>
-
-                                                        <div class="pt-1.5 border-t border-blue-200">
-                                                            <span class="font-bold text-blue-900 text-[10px] block mb-1">Rentang Usia Kustom:</span>
-                                                            <div class="flex items-center gap-1.5">
-                                                                <input type="number" id="min_age_{{ $colKey }}" name="min_age_{{ $colKey }}" aria-label="Usia Minimum" x-model="minVal" min="0" max="120" placeholder="Min" class="w-1/2 text-xs bg-white border border-slate-300 rounded px-2 py-1 outline-none focus:ring-2 focus:ring-blue-500">
-                                                                <span class="text-slate-400 font-bold text-xs">s.d.</span>
-                                                                <input type="number" id="max_age_{{ $colKey }}" name="max_age_{{ $colKey }}" aria-label="Usia Maksimum" x-model="maxVal" min="0" max="120" placeholder="Max" class="w-1/2 text-xs bg-white border border-slate-300 rounded px-2 py-1 outline-none focus:ring-2 focus:ring-blue-500">
-                                                            </div>
-                                                            <button type="button" @click.prevent.stop="applyRange()" class="mt-1.5 w-full py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg transition-colors shadow-sm cursor-pointer flex items-center justify-center leading-normal">
-                                                                + Terapkan Rentang Usia
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                @endif
-
-                                                <!-- FILTER SPESIFIK: GAJI / PENDAPATAN / PENGHASILAN -->
-                                                @if($isSalary)
-                                                    <div class="bg-emerald-50/80 p-2.5 rounded-lg border border-emerald-200 space-y-2 text-xs">
-                                                        <span class="font-extrabold text-emerald-900 text-[11px] uppercase tracking-wide flex items-center gap-1">
-                                                            <span>💵</span> Preset Rentang Gaji Cepat
-                                                        </span>
-                                                        <div class="grid grid-cols-2 gap-1.5">
-                                                            <button type="button" @click.prevent.stop="setSingle('< 1.5 Juta')" class="px-2 py-1 bg-white hover:bg-emerald-100 border border-emerald-300 rounded text-[11px] font-semibold text-emerald-800 transition-colors text-center cursor-pointer">
-                                                                &lt; Rp 1.5 Juta
-                                                            </button>
-                                                            <button type="button" @click.prevent.stop="setSingle('1.5 - 3 Juta')" class="px-2 py-1 bg-white hover:bg-emerald-100 border border-emerald-300 rounded text-[11px] font-semibold text-emerald-800 transition-colors text-center cursor-pointer">
-                                                                Rp 1.5 - 3 Juta
-                                                            </button>
-                                                            <button type="button" @click.prevent.stop="setSingle('3 - 5 Juta')" class="px-2 py-1 bg-white hover:bg-emerald-100 border border-emerald-300 rounded text-[11px] font-semibold text-emerald-800 transition-colors text-center cursor-pointer">
-                                                                Rp 3 - 5 Juta
-                                                            </button>
-                                                            <button type="button" @click.prevent.stop="setSingle('5 - 10 Juta')" class="px-2 py-1 bg-white hover:bg-emerald-100 border border-emerald-300 rounded text-[11px] font-semibold text-emerald-800 transition-colors text-center cursor-pointer">
-                                                                Rp 5 - 10 Juta
-                                                            </button>
-                                                            <button type="button" @click.prevent.stop="setSingle('> 10 Juta')" class="col-span-2 px-2 py-1 bg-white hover:bg-emerald-100 border border-emerald-300 rounded text-[11px] font-semibold text-emerald-800 transition-colors text-center cursor-pointer">
-                                                                &gt; Rp 10 Juta
-                                                            </button>
-                                                        </div>
-
-                                                        <div class="pt-1.5 border-t border-emerald-200">
-                                                            <span class="font-bold text-emerald-900 text-[10px] block mb-1">Rentang Nominal Kustom:</span>
-                                                            <div class="flex items-center gap-1.5">
-                                                                <input type="number" id="min_sal_{{ $colKey }}" name="min_sal_{{ $colKey }}" aria-label="Gaji Minimum" x-model="minVal" placeholder="Min Rp" class="w-1/2 text-xs bg-white border border-slate-300 rounded px-2 py-1 outline-none focus:ring-2 focus:ring-emerald-500">
-                                                                <span class="text-slate-400 font-bold text-xs">-</span>
-                                                                <input type="number" id="max_sal_{{ $colKey }}" name="max_sal_{{ $colKey }}" aria-label="Gaji Maksimum" x-model="maxVal" placeholder="Max Rp" class="w-1/2 text-xs bg-white border border-slate-300 rounded px-2 py-1 outline-none focus:ring-2 focus:ring-emerald-500">
-                                                            </div>
-                                                            <button type="button" @click.prevent.stop="applyRange()" class="mt-1.5 w-full py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition-colors shadow-sm cursor-pointer flex items-center justify-center leading-normal">
-                                                                + Terapkan Rentang Gaji
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                @endif
-
-                                                <!-- FILTER SPESIFIK: DESIL KESEJAHTERAAN -->
-                                                @if($isDesil)
-                                                    <div class="bg-amber-50/80 p-2.5 rounded-lg border border-amber-200 space-y-2 text-xs">
-                                                        <span class="font-extrabold text-amber-900 text-[11px] uppercase tracking-wide flex items-center gap-1">
-                                                            <span>📊</span> Preset Tingkat Desil
-                                                        </span>
-                                                        <div class="grid grid-cols-2 gap-1.5">
-                                                            <button type="button" @click.prevent.stop="setSingle('1')" class="px-2 py-1 bg-white hover:bg-rose-100 border border-rose-300 rounded text-[11px] font-semibold text-rose-800 transition-colors text-center cursor-pointer">
-                                                                🔴 Desil 1 (Sangat Miskin)
-                                                            </button>
-                                                            <button type="button" @click.prevent.stop="setSingle('1 - 4')" class="px-2 py-1 bg-white hover:bg-amber-100 border border-amber-300 rounded text-[11px] font-semibold text-amber-800 transition-colors text-center cursor-pointer">
-                                                                🟠 Desil 1-4 (Bansos)
-                                                            </button>
-                                                            <button type="button" @click.prevent.stop="setSingle('5 - 7')" class="px-2 py-1 bg-white hover:bg-blue-100 border border-blue-300 rounded text-[11px] font-semibold text-blue-800 transition-colors text-center cursor-pointer">
-                                                                🔵 Desil 5-7 (Menengah)
-                                                            </button>
-                                                            <button type="button" @click.prevent.stop="setSingle('8 - 10')" class="px-2 py-1 bg-white hover:bg-emerald-100 border border-emerald-300 rounded text-[11px] font-semibold text-emerald-800 transition-colors text-center cursor-pointer">
-                                                                🟢 Desil 8-10 (Mampu)
-                                                            </button>
-                                                        </div>
-                                                        <div class="pt-1.5 border-t border-amber-200">
-                                                            <span class="font-bold text-amber-900 text-[10px] block mb-1">Pilih Angka Desil:</span>
-                                                            <div class="grid grid-cols-5 gap-1">
-                                                                @for($d = 1; $d <= 10; $d++)
-                                                                    <button type="button" @click.prevent.stop="toggleVal('{{ $d }}')" 
-                                                                            class="py-1 rounded text-xs font-black transition-colors cursor-pointer border"
-                                                                            :class="hasVal('{{ $d }}') ? 'bg-amber-600 text-white border-amber-600 shadow-xs' : 'bg-white hover:bg-amber-100 text-slate-700 border-slate-200'">
-                                                                        D{{ $d }}
-                                                                    </button>
-                                                                @endfor
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                @endif
-
-                                                <!-- FILTER SPESIFIK: JENIS KELAMIN -->
-                                                @if($isGender)
-                                                    <div class="bg-indigo-50/80 p-2.5 rounded-lg border border-indigo-200 space-y-1.5 text-xs">
-                                                        <span class="font-extrabold text-indigo-900 text-[11px] uppercase tracking-wide flex items-center gap-1">
-                                                            <span>🚻</span> Pilihan Cepat Jenis Kelamin
-                                                        </span>
-                                                        <div class="grid grid-cols-2 gap-2">
-                                                            <button type="button" @click.prevent.stop="setSingle('Laki-laki')" class="px-2.5 py-1.5 bg-white hover:bg-blue-100 border border-blue-300 rounded-lg text-xs font-bold text-blue-900 transition-colors text-center cursor-pointer">
-                                                                👨 Laki-laki
-                                                            </button>
-                                                            <button type="button" @click.prevent.stop="setSingle('Perempuan')" class="px-2.5 py-1.5 bg-white hover:bg-pink-100 border border-pink-300 rounded-lg text-xs font-bold text-pink-900 transition-colors text-center cursor-pointer">
-                                                                👩 Perempuan
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                @endif
-
-                                                <!-- KOTAK PENCARIAN TEKS FLEKSIBEL -->
-                                                <div>
-                                                    <input type="text" id="search_val_{{ $colKey }}" name="search_val_{{ $colKey }}" aria-label="Cari pilihan {{ $colTitle }}" x-model="searchVal" 
-                                                           @keydown.enter.prevent.stop="applyFilter({{ json_encode($importColumnDistinctValues[$colKey] ?? []) }})" 
-                                                           placeholder="@if($isIdentity)Ketik digit {{ strtolower($colTitle) }}...@elseif($isFreeText)Ketik {{ strtolower($colTitle) }}...@elseCari pilihan {{ strtolower($colTitle) }}...@endif" 
-                                                           class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 outline-none focus:ring-2 focus:ring-blue-500">
-                                                    @if($isFreeText || $isIdentity)
-                                                        <p class="text-[10px] text-slate-400 mt-1 italic">💡 Tekan Enter atau klik Terapkan untuk memfilter baris yang memuat teks/digit ini.</p>
-                                                    @endif
-                                                </div>
-
-                                                <!-- DAFTAR PILIHAN CHECKBOX NILAI UNIK (DISTINCT VALUES) -->
-                                                <div class="max-h-52 overflow-y-auto space-y-1 text-xs pr-1 border border-slate-100 rounded-lg p-1">
-                                                    @if(isset($importColumnDistinctValues[$colKey]) && count($importColumnDistinctValues[$colKey]) > 0)
-                                                        <label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-100 cursor-pointer font-bold text-blue-600 border-b border-slate-100 pb-1.5 mb-1">
-                                                            <input type="checkbox" 
-                                                                   id="select_all_{{ $colKey }}"
-                                                                   name="select_all_{{ $colKey }}"
-                                                                   aria-label="Pilih atau hapus semua {{ $colTitle }}"
-                                                                   :checked="selectedVals.length >= {{ count($importColumnDistinctValues[$colKey]) }}" 
-                                                                   @change="selectAll({{ json_encode($importColumnDistinctValues[$colKey]) }})"
-                                                                   class="accent-blue-600 rounded cursor-pointer">
-                                                            <span>(Pilih / Hapus Semua)</span>
-                                                        </label>
-
-                                                        @foreach($importColumnDistinctValues[$colKey] as $dIndex => $dItem)
-                                                            <label x-show="!searchVal || {{ json_encode(strtolower($dItem)) }}.includes(searchVal.toLowerCase())"
-                                                                   class="flex items-center gap-2 px-2 py-1 rounded hover:bg-blue-50 cursor-pointer font-medium text-slate-700 transition-colors"
-                                                                   :class="hasVal({{ json_encode($dItem) }}) ? 'bg-blue-50 font-bold text-blue-900' : ''">
-                                                                <input type="checkbox" 
-                                                                       id="item_{{ $colKey }}_{{ $dIndex }}"
-                                                                       name="filter_{{ $colKey }}[]"
-                                                                       aria-label="{{ $dItem }}"
-                                                                       :checked="hasVal({{ json_encode($dItem) }})" 
-                                                                       @change="toggleVal({{ json_encode($dItem) }})"
-                                                                       class="accent-blue-600 rounded cursor-pointer">
-                                                                <span class="truncate text-xs">{{ $dItem }}</span>
-                                                            </label>
-                                                        @endforeach
-
-                                                        <!-- Tombol jika mengetik teks yang tidak ada di daftar checkbox -->
-                                                        <div x-show="searchVal.trim() !== '' && !{{ json_encode(array_map('strtolower', $importColumnDistinctValues[$colKey])) }}.includes(searchVal.trim().toLowerCase())" class="pt-1 border-t border-slate-100">
-                                                            <button type="button" @click.prevent.stop="applyFilter()" class="w-full text-left px-2 py-1 rounded bg-blue-50 text-blue-700 hover:bg-blue-100 font-bold text-[11px] transition-colors cursor-pointer flex items-center gap-1">
-                                                                <span>🔍</span> Terapkan Filter Teks: "<span x-text="searchVal.trim()"></span>"
-                                                            </button>
-                                                        </div>
-                                                    @else
-                                                        <div class="px-2 py-3 text-center text-slate-400 text-xs">
-                                                            <p class="font-medium">Filter teks fleksibel aktif.</p>
-                                                            <p class="text-[10px] mt-0.5">Ketik nilai pencarian pada kolom input di atas lalu tekan Terapkan.</p>
-                                                        </div>
-                                                    @endif
-                                                </div>
-
-                                                <!-- TOMBOL AKSI BAWAH: RESET & TERAPKAN -->
-                                                <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
-                                                    <button type="button" @click.prevent.stop="clearFilter()" class="px-2.5 py-1.5 text-[11px] font-bold text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer">
-                                                        Reset
-                                                    </button>
-                                                    <button type="button" @click.prevent.stop="applyFilter({{ json_encode($importColumnDistinctValues[$colKey] ?? []) }})" class="px-3.5 py-1.5 text-xs font-black bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-sm transition-all flex items-center gap-1 cursor-pointer">
-                                                        <span>✓</span> Terapkan <span x-show="selectedVals.length > 0" x-text="'(' + selectedVals.length + ')'"></span>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <button type="button" 
+                                                @click="openColumnFilter('{{ $colKey }}', '{{ addslashes($colTitle) }}', '{{ $filterType }}', {{ json_encode($importColumnDistinctValues[$colKey] ?? []) }}, {{ json_encode($initialSelectedArr) }})" 
+                                                class="px-1.5 py-0.5 rounded transition-all flex items-center gap-1 cursor-pointer {{ count($initialSelectedArr) > 0 ? 'bg-blue-600 text-white font-extrabold text-[10px] shadow-sm' : 'text-slate-400 hover:bg-slate-200 hover:text-slate-700' }}"
+                                                title="Filter Kolom {{ $colTitle }}">
+                                            <i class="fi fi-rr-angle-small-down text-[11px]"></i>
+                                            @if(count($initialSelectedArr) > 0)
+                                                <span class="text-[10px] font-black bg-white text-blue-900 px-1 py-0.2 rounded-full">{{ count($initialSelectedArr) }}</span>
+                                            @endif
+                                        </button>
                                     </div>
                                 </th>
                             @endforeach
@@ -677,15 +555,15 @@
                                         $tooltipStr = !empty($errList) ? implode(' | ', $errList) : '';
                                     @endphp
                                     @if($row->quality_status === 'Valid' && $errCount === 0)
-                                        <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px] whitespace-nowrap">🟢 Valid</span>
+                                        <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px] whitespace-nowrap flex items-center gap-1"><i class="fi fi-rr-check"></i> Valid</span>
                                     @elseif($errCount >= 3)
-                                        <span class="px-2.5 py-0.5 rounded-full bg-rose-600 text-white font-black text-[10px] whitespace-nowrap shadow-xs" title="{{ $tooltipStr }}">🔴 {{ $errCount }} EROR TERDETEKSI</span>
+                                        <span class="px-2.5 py-0.5 rounded-full bg-rose-600 text-white font-black text-[10px] whitespace-nowrap shadow-xs flex items-center gap-1" title="{{ $tooltipStr }}"><i class="fi fi-rr-cross-circle"></i> {{ $errCount }} EROR TERDETEKSI</span>
                                     @elseif($errCount == 2)
-                                        <span class="px-2.5 py-0.5 rounded-full bg-rose-500 text-white font-bold text-[10px] whitespace-nowrap" title="{{ $tooltipStr }}">🔴 2 EROR</span>
+                                        <span class="px-2.5 py-0.5 rounded-full bg-rose-500 text-white font-bold text-[10px] whitespace-nowrap flex items-center gap-1" title="{{ $tooltipStr }}"><i class="fi fi-rr-cross-circle"></i> 2 EROR</span>
                                     @elseif($row->quality_status === 'Warning')
-                                        <span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold text-[10px] whitespace-nowrap" title="{{ $tooltipStr }}">🟡 Warning (1 Eror)</span>
+                                        <span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold text-[10px] whitespace-nowrap flex items-center gap-1" title="{{ $tooltipStr }}"><i class="fi fi-rr-triangle-warning"></i> Warning (1 Eror)</span>
                                     @else
-                                        <span class="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 font-bold text-[10px] whitespace-nowrap" title="{{ $tooltipStr }}">🔴 Critical (1 Eror)</span>
+                                        <span class="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 font-bold text-[10px] whitespace-nowrap flex items-center gap-1" title="{{ $tooltipStr }}"><i class="fi fi-rr-cross-circle"></i> Critical (1 Eror)</span>
                                     @endif
                                 </td>
 
@@ -727,7 +605,7 @@
 
                                 <td class="px-4 py-3 text-xs text-center whitespace-nowrap">
                                     <button type="button" @click="openPreview({{ $row->id }})" class="px-2.5 py-1 bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 font-bold text-[11px] rounded-lg shadow-sm cursor-pointer inline-flex items-center gap-1 transition-all">
-                                        <span>👁</span> Detail
+                                        <i class="fi fi-rr-eye"></i> <span>Detail</span>
                                     </button>
                                 </td>
                             </tr>
@@ -735,14 +613,14 @@
                             <tr>
                                 <td colspan="{{ count($activeColumnsMap) + 3 }}" class="px-4 py-16 text-center">
                                     <div class="space-y-3 max-w-md mx-auto py-6">
-                                        <div class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center text-2xl font-bold mx-auto shadow-xs">🔍</div>
+                                        <div class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center text-2xl font-bold mx-auto shadow-xs"><i class="fi fi-rr-search"></i></div>
                                         <div class="space-y-1">
                                             <h4 class="font-extrabold text-sm text-slate-800">Tidak ada data yang sesuai dengan kriteria</h4>
                                             <p class="text-xs text-slate-500 font-medium">Coba sesuaikan kata kunci pencarian atau bersihkan filter.</p>
                                         </div>
                                         <div class="pt-2">
                                             <a href="{{ route('dtsen.data') }}" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-sm transition-all inline-flex items-center gap-1.5 cursor-pointer">
-                                                <span>🔄</span> Reset Semua Filter
+                                                <i class="fi fi-rr-refresh"></i> <span>Reset Semua Filter</span>
                                             </a>
                                         </div>
                                     </div>
@@ -757,7 +635,7 @@
             <div class="flex flex-col lg:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-200/80">
                 <div class="text-xs text-slate-600 flex flex-wrap items-center gap-2">
                     <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 border border-blue-200 font-extrabold shadow-2xs">
-                        <span>📄</span>
+                        <i class="fi fi-rr-document"></i>
                         <span>Halaman {{ number_format($records->currentPage()) }} dari {{ number_format($records->lastPage()) }} Halaman</span>
                     </span>
                     <span class="text-slate-300 font-bold hidden sm:inline">&bull;</span>

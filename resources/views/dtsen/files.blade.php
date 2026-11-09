@@ -7,7 +7,7 @@
     <div class="p-5 sm:p-6 bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="space-y-1">
             <div class="flex items-center gap-2">
-                <span class="p-2 rounded-xl bg-blue-50 text-blue-600 text-lg font-bold">📁</span>
+                <span class="p-2 rounded-xl bg-blue-50 text-blue-600 text-lg font-bold flex items-center justify-center"><i class="fi fi-rr-folder"></i></span>
                 <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">
                     Manajemen Berkas Data & Ingesti Cepat
                 </h2>
@@ -22,11 +22,11 @@
 
         <div class="flex flex-wrap items-center gap-2 shrink-0">
             <a href="{{ route('dtsen.files') }}" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl border border-slate-300 shadow-xs transition-all flex items-center gap-1.5 cursor-pointer">
-                <span>🔄</span> Refresh Berkas
+                <i class="fi fi-rr-refresh"></i> <span>Refresh Berkas</span>
             </a>
             @if(isset($totalRows) && $totalRows > 0)
                 <a href="{{ route('dtsen.data') }}" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer">
-                    <span>📋</span> Buka Tabel Master
+                    <i class="fi fi-rr-table"></i> <span>Buka Tabel Master</span>
                 </a>
             @endif
         </div>
@@ -37,7 +37,7 @@
         <div id="export-files-section" class="p-6 rounded-2xl space-y-4 shadow-sm bg-white text-slate-900 border border-emerald-200">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-emerald-100 pb-3">
                 <div class="flex items-center gap-2.5">
-                    <span class="p-2 rounded-xl bg-emerald-100 text-emerald-800 font-bold text-base">📦</span>
+                    <span class="p-2 rounded-xl bg-emerald-100 text-emerald-800 font-bold text-base flex items-center justify-center"><i class="fi fi-rr-box"></i></span>
                     <div>
                         <h4 class="text-xs font-black uppercase tracking-wider text-emerald-950">
                             BERKAS HASIL EKSPOR TERSEDIA DI FOLDER <code class="px-2 py-0.5 rounded font-mono text-xs bg-emerald-50 text-emerald-800 border border-emerald-200">src-export/</code>
@@ -55,14 +55,14 @@
                     <div class="p-3.5 rounded-xl space-y-2 bg-slate-50 border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/30 transition-all">
                         <div class="flex items-center justify-between gap-2">
                             <span class="text-xs font-bold truncate font-mono text-slate-900" title="{{ $exFile['name'] }}">
-                                📦 {{ $exFile['name'] }}
+                                <i class="fi fi-rr-box text-emerald-600"></i> {{ $exFile['name'] }}
                             </span>
                         </div>
                         <div class="flex items-center justify-between text-[11px] font-mono pt-1.5 border-t border-slate-200 text-slate-600">
                             <span class="px-2 py-0.5 rounded font-bold bg-white text-emerald-800 border border-emerald-200">
                                 {{ $exFile['size_formatted'] }}
                             </span>
-                            <span class="text-slate-600">📅 {{ $exFile['modified_at'] }}</span>
+                            <span class="text-slate-600 flex items-center gap-1"><i class="fi fi-rr-calendar"></i> {{ $exFile['modified_at'] }}</span>
                         </div>
                     </div>
                 @endforeach
@@ -74,7 +74,7 @@
     <div class="p-6 rounded-2xl shadow-sm bg-white text-slate-900 border border-emerald-200 space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-emerald-100 pb-3">
             <div class="flex items-center gap-2.5">
-                <span class="p-2 rounded-xl bg-emerald-100 text-emerald-800 font-bold text-base">📤</span>
+                <span class="p-2 rounded-xl bg-emerald-100 text-emerald-800 font-bold text-base flex items-center justify-center"><i class="fi fi-rr-upload"></i></span>
                 <div>
                     <h3 class="text-xs font-black uppercase tracking-wider text-emerald-950 flex items-center gap-1.5">
                         <span>UNGGAH DATASET BARU KE FOLDER</span>
@@ -103,12 +103,12 @@
                 </div>
                 <button type="submit" :disabled="uploading"
                         class="w-full md:w-auto px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-400 text-white font-bold text-xs rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0">
-                    <span x-show="!uploading">📥 Unggah ke src-dtsen/</span>
+                    <span x-show="!uploading" class="flex items-center gap-1.5"><i class="fi fi-rr-upload"></i> Unggah ke src-dtsen/</span>
                     <span x-show="uploading">Mengunggah berkas...</span>
                 </button>
             </div>
             <div class="flex items-center justify-between text-[11px] text-slate-500 font-medium">
-                <span>⚡ Mendukung file besar CSV jutaan baris & ZIP terkompresi. Nama berkas otomatis diamankan dari karakter berbahaya.</span>
+                <span class="flex items-center gap-1"><i class="fi fi-rr-bolt text-amber-500"></i> Mendukung file besar CSV jutaan baris & ZIP terkompresi. Nama berkas otomatis diamankan dari karakter berbahaya.</span>
                 <span x-show="fileName" class="font-mono font-bold text-emerald-700" x-text="'File dipilih: ' + fileName"></span>
             </div>
         </form>
@@ -119,7 +119,7 @@
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-100 pb-4">
             <div class="space-y-1">
                 <div class="flex items-center gap-2">
-                    <span class="p-2 rounded-xl bg-blue-50 text-blue-600 text-lg font-bold">⚡</span>
+                    <span class="p-2 rounded-xl bg-blue-50 text-blue-600 text-lg font-bold flex items-center justify-center"><i class="fi fi-rr-bolt"></i></span>
                     <h3 class="text-sm font-black uppercase tracking-wider text-slate-900">
                         PILIH & PROSES DATA DARI FOLDER <code class="px-2 py-0.5 rounded font-mono text-xs bg-blue-50 text-blue-800 border border-blue-200">src-dtsen/</code>
                     </h3>
@@ -130,41 +130,61 @@
             </div>
             
             <a href="{{ route('dtsen.files') }}" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 shrink-0 self-start md:self-auto cursor-pointer border border-blue-600">
-                <span>🔄</span> Refresh Folder src-dtsen
+                <i class="fi fi-rr-refresh"></i> <span>Refresh Folder src-dtsen</span>
             </a>
         </div>
 
         @if(!empty($srcDtsenFiles) && count($srcDtsenFiles) > 0)
-            <form action="{{ route('dtsen.import-local') }}" method="POST" class="space-y-4" x-data="{ selectedFile: '{{ $srcDtsenFiles[0]['name'] }}', isProcessing: false }" @submit="isProcessing = true; startLocalImportSubmit($event)">
+            <form action="{{ route('dtsen.import-local') }}" method="POST" class="space-y-4" x-data="{ selectedFile: '{{ !empty($activeDatasetFile) ? $activeDatasetFile : ($srcDtsenFiles[0]['name'] ?? '') }}', isProcessing: false }" @submit="isProcessing = true; startLocalImportSubmit($event)">
                 @csrf
                 <div class="space-y-2.5">
                     <div class="block text-xs font-black uppercase tracking-wider text-slate-700">
-                        📁 Berkas Tersedia di Folder <code class="font-mono text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200">src-dtsen/</code> ({{ count($srcDtsenFiles) }} Berkas Terdeteksi):
+                        <i class="fi fi-rr-folder"></i> Berkas Tersedia di Folder <code class="font-mono text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200">src-dtsen/</code> ({{ count($srcDtsenFiles) }} Berkas Terdeteksi):
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                         @foreach($srcDtsenFiles as $f)
+                            @php
+                                $isActiveThisFile = (isset($totalRows) && $totalRows > 0 && ($f['name'] === ($activeDatasetFile ?? '')));
+                            @endphp
                             <label for="selected_file_{{ $loop->index }}"
                                    @click="selectedFile = '{{ $f['name'] }}'" 
-                                   :class="selectedFile === '{{ $f['name'] }}' ? 'ring-2 ring-blue-600 bg-blue-50/90 border-blue-500 shadow-xs' : 'bg-slate-50 border-slate-200 hover:bg-slate-100 hover:border-slate-300'"
-                                   class="flex items-start gap-3 p-3.5 rounded-xl border cursor-pointer transition-all">
+                                   :class="selectedFile === '{{ $f['name'] }}' ? '{{ $isActiveThisFile ? 'ring-3 ring-emerald-500 bg-emerald-50 border-emerald-500 shadow-md' : 'ring-2 ring-blue-600 bg-blue-50/90 border-blue-500 shadow-xs' }}' : '{{ $isActiveThisFile ? 'bg-emerald-50 border-emerald-500 ring-2 ring-emerald-500/30 shadow-sm' : 'bg-slate-50 border-slate-200 hover:bg-slate-100 hover:border-slate-300' }}'"
+                                   class="flex items-start gap-3.5 p-4 rounded-xl border cursor-pointer transition-all relative {{ $isActiveThisFile ? 'border-2 border-emerald-500 bg-emerald-50 shadow-md shadow-emerald-500/10' : '' }}"
+                                   style="{{ $isActiveThisFile ? 'background: #ecfdf5 !important; border: 2px solid #10b981 !important;' : '' }}">
                                 
-                                <input type="radio" id="selected_file_{{ $loop->index }}" name="selected_file" value="{{ $f['name'] }}" aria-label="Pilih berkas {{ $f['name'] }}" x-model="selectedFile" class="mt-1 accent-blue-600">
+                                <input type="radio" id="selected_file_{{ $loop->index }}" name="selected_file" value="{{ $f['name'] }}" aria-label="Pilih berkas {{ $f['name'] }}" x-model="selectedFile" class="mt-1.5 {{ $isActiveThisFile ? 'accent-emerald-600' : 'accent-blue-600' }}">
                                 
-                                <div class="space-y-1 min-w-0 flex-1">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-base shrink-0">
-                                            @if($f['extension'] === 'csv' || $f['extension'] === 'txt') 📄 @elseif($f['extension'] === 'xlsx' || $f['extension'] === 'xls') 🟢 @else 📁 @endif
-                                        </span>
-                                        <strong class="text-xs font-extrabold truncate block text-slate-900" title="{{ $f['name'] }}">
-                                            {{ $f['name'] }}
-                                        </strong>
+                                <div class="space-y-1.5 min-w-0 flex-1">
+                                    <div class="flex items-center justify-between gap-2">
+                                        <div class="flex items-center gap-2 min-w-0">
+                                            <span class="text-base shrink-0">
+                                                @if($f['extension'] === 'csv' || $f['extension'] === 'txt') <i class="fi fi-rr-file-spreadsheet text-blue-500"></i> @elseif($f['extension'] === 'xlsx' || $f['extension'] === 'xls') <i class="fi fi-rr-file-excel text-emerald-600"></i> @else <i class="fi fi-rr-folder text-amber-500"></i> @endif
+                                            </span>
+                                            <strong class="text-xs font-black truncate block {{ $isActiveThisFile ? 'text-emerald-950 font-black' : 'text-slate-900' }}" title="{{ $f['name'] }}">
+                                                {{ $f['name'] }}
+                                            </strong>
+                                        </div>
+                                        @if($isActiveThisFile)
+                                            <span class="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-600 text-white flex items-center gap-1.5 shadow-sm shrink-0">
+                                                <span class="w-2 h-2 rounded-full bg-emerald-200 animate-pulse"></span>
+                                                <i class="fi fi-rr-check-circle"></i> SEDANG DIGUNAKAN
+                                            </span>
+                                        @endif
                                     </div>
-                                    <div class="flex items-center gap-3 text-[11px] font-mono pt-1 text-slate-500">
-                                        <span class="px-2 py-0.5 rounded font-bold bg-white text-slate-700 border border-slate-300 shadow-2xs">
+
+                                    @if($isActiveThisFile)
+                                        <div class="text-[11px] font-bold text-emerald-800 flex items-center gap-1.5 pt-0.5">
+                                            <i class="fi fi-rr-database text-emerald-600 font-bold"></i>
+                                            <span>Dataset aktif di database &bull; <strong>{{ number_format($totalRows) }}</strong> baris data dimuat</span>
+                                        </div>
+                                    @endif
+
+                                    <div class="flex items-center gap-3 text-[11px] font-mono pt-0.5 text-slate-500">
+                                        <span class="px-2 py-0.5 rounded font-bold {{ $isActiveThisFile ? 'bg-emerald-100 text-emerald-900 border border-emerald-300' : 'bg-white text-slate-700 border border-slate-300' }} shadow-2xs">
                                             {{ $f['size_formatted'] }}
                                         </span>
-                                        <span class="text-slate-600">📅 {{ $f['modified_at'] }}</span>
+                                        <span class="text-slate-600 flex items-center gap-1"><i class="fi fi-rr-calendar"></i> {{ $f['modified_at'] }}</span>
                                     </div>
                                 </div>
                             </label>
@@ -174,7 +194,7 @@
 
                 <div class="pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-slate-100">
                     <div class="text-xs flex items-center gap-2 text-slate-700 font-bold">
-                        <span>📍 Berkas Terpilih:</span>
+                        <span class="flex items-center gap-1"><i class="fi fi-rr-marker text-blue-600"></i> Berkas Terpilih:</span>
                         <code class="px-2.5 py-1 rounded font-mono text-xs bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold" x-text="'src-dtsen/' + selectedFile"></code>
                     </div>
 
@@ -194,7 +214,7 @@
             <!-- Keadaan Kosong jika belum ada file di folder src-dtsen -->
             <div class="p-8 rounded-xl border border-dashed border-slate-300 bg-slate-50 text-center space-y-3">
                 <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center text-xl mx-auto font-bold">
-                    📁
+                    <i class="fi fi-rr-folder"></i>
                 </div>
                 <div class="space-y-1">
                     <h4 class="text-sm font-bold text-slate-900">Folder <code class="text-amber-800 bg-amber-50 px-1 rounded border border-amber-200 font-mono">src-dtsen/</code> Masih Kosong</h4>
@@ -209,7 +229,7 @@
                 </div>
                 <div>
                     <a href="{{ route('dtsen.files') }}" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition-all inline-flex items-center gap-1.5 cursor-pointer">
-                        <span>🔄</span> Cek Ulang Folder src-dtsen
+                        <i class="fi fi-rr-refresh"></i> <span>Cek Ulang Folder src-dtsen</span>
                     </a>
                 </div>
             </div>
@@ -221,7 +241,7 @@
         <!-- Template Download Card -->
         <div class="p-5 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-3">
             <div class="flex items-center gap-2.5 border-b border-slate-100 pb-3">
-                <span class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm">📥</span>
+                <span class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm"><i class="fi fi-rr-download"></i></span>
                 <div>
                     <h4 class="font-extrabold text-slate-900 text-xs uppercase tracking-wider">Format Master 58 Variabel DTSEN 2026</h4>
                     <p class="text-[11px] text-slate-500">Unduh format acuan kolom resmi BPS & Bappenas</p>
@@ -232,10 +252,10 @@
             </p>
             <div class="grid grid-cols-2 gap-2 pt-1">
                 <a href="{{ route('dtsen.template', ['format' => 'xlsx']) }}" class="p-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-center text-xs font-bold transition-all flex items-center justify-center gap-2">
-                    <span>🟢</span> Unduh Excel (.xlsx)
+                    <i class="fi fi-rr-file-excel text-emerald-600"></i> <span>Unduh Excel (.xlsx)</span>
                 </a>
                 <a href="{{ route('dtsen.template', ['format' => 'csv']) }}" class="p-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 text-center text-xs font-bold transition-all flex items-center justify-center gap-2">
-                    <span>📄</span> Unduh CSV (.csv)
+                    <i class="fi fi-rr-file-spreadsheet text-blue-600"></i> <span>Unduh CSV (.csv)</span>
                 </a>
             </div>
         </div>
@@ -243,7 +263,7 @@
         <!-- Danger Zone: Reset / Kosongkan Database -->
         <div class="p-5 bg-white rounded-2xl border border-rose-200 shadow-sm space-y-3">
             <div class="flex items-center gap-2.5 border-b border-rose-100 pb-3">
-                <span class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-sm">🗑️</span>
+                <span class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-sm"><i class="fi fi-rr-trash"></i></span>
                 <div>
                     <h4 class="font-extrabold text-rose-900 text-xs uppercase tracking-wider">Pembersihan Total Dataset</h4>
                     <p class="text-[11px] text-rose-600">Kosongkan database incase salah unggah berkas</p>
@@ -257,7 +277,7 @@
                         @click="showClearModal = true" 
                         class="w-full p-3 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer"
                         @if(($totalSystemRows ?? $totalRows) === 0) disabled title="Sistem sudah bersih" @endif>
-                    <span>🗑️</span> Kosongkan Seluruh Dataset
+                    <i class="fi fi-rr-trash"></i> <span>Kosongkan Seluruh Dataset</span>
                 </button>
             </div>
         </div>

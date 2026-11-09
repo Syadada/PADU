@@ -7,7 +7,7 @@
     <div class="card-simple p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="space-y-1">
             <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-                <span>📊</span> Selamat Datang di PADU v1.02 (Pengolah & Analisis Data Terpadu)
+                <i class="fi fi-rr-apps"></i> <span>Selamat Datang di PADU</span> v1.02 (Pengolah & Analisis Data Terpadu)
             </h2>
             <p class="text-sm text-slate-600">
                 Hitung statistik (Jumlah, Max, Min, Rata-rata), umur detail (Tahun & Bulan), status kehidupan, serta kelola data hingga tingkat RT/RW.
@@ -18,19 +18,19 @@
         <div class="flex flex-wrap items-center gap-2">
             <button @click="showAddModal = true" 
                     class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5">
-                ✍️ Input Data Baru
+                <i class="fi fi-rr-edit"></i> Input Data Baru
             </button>
 
             <button @click="showExportModal = true" 
                     class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-sm transition-all flex items-center gap-1.5">
-                📥 Unduh CSV
+                <i class="fi fi-rr-download"></i> Unduh CSV
             </button>
 
             <form action="{{ route('analytics.generate') }}" method="POST" class="inline">
                 @csrf
                 <button type="submit" 
                         class="px-4 py-2.5 rounded-xl bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 font-medium text-xs shadow-sm transition-all flex items-center gap-1.5">
-                    ⚡ Demo (+120 Data)
+                    <i class="fi fi-rr-bolt"></i> Demo (+120 Data)
                 </button>
             </form>
         </div>
@@ -42,15 +42,15 @@
         <div class="card-simple p-5 border-l-4 border-l-blue-600">
             <div class="flex items-center justify-between text-slate-500 text-xs font-bold uppercase">
                 <span>Jumlah Total Warga</span>
-                <span class="text-lg">👥</span>
+                <span class="text-lg"><i class="fi fi-rr-users"></i></span>
             </div>
             <div class="mt-2 flex items-baseline gap-2">
                 <span class="text-3xl font-extrabold text-slate-900">{{ number_format($totalRecord, 0, ',', '.') }}</span>
                 <span class="text-sm font-medium text-slate-600">Orang</span>
             </div>
             <div class="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-xs font-semibold">
-                <span class="text-emerald-700">🟢 {{ $totalMasihHidup }} Masih Hidup</span>
-                <span class="text-slate-600">⚫ {{ $totalMeninggal }} Meninggal</span>
+                <span class="text-emerald-700 flex items-center gap-1"><i class="fi fi-rr-check-circle"></i> {{ $totalMasihHidup }} Masih Hidup</span>
+                <span class="text-slate-600 flex items-center gap-1"><i class="fi fi-rr-circle"></i> {{ $totalMeninggal }} Meninggal</span>
             </div>
         </div>
 
@@ -58,7 +58,7 @@
         <div class="card-simple p-5 border-l-4 border-l-emerald-500">
             <div class="flex items-center justify-between text-slate-500 text-xs font-bold uppercase">
                 <span>Gaji Tertinggi (Max)</span>
-                <span class="text-lg">💰</span>
+                <span class="text-lg"><i class="fi fi-rr-dollar"></i></span>
             </div>
             <div class="mt-2">
                 <span class="text-2xl font-bold text-emerald-700">
@@ -79,7 +79,7 @@
         <div class="card-simple p-5 border-l-4 border-l-amber-500">
             <div class="flex items-center justify-between text-slate-500 text-xs font-bold uppercase">
                 <span>Gaji Terendah (Min)</span>
-                <span class="text-lg">📉</span>
+                <span class="text-lg"><i class="fi fi-rr-chart-line-down"></i></span>
             </div>
             <div class="mt-2">
                 <span class="text-2xl font-bold text-amber-700">
@@ -100,7 +100,7 @@
         <div class="card-simple p-5 border-l-4 border-l-purple-600">
             <div class="flex items-center justify-between text-slate-500 text-xs font-bold uppercase">
                 <span>Gaji Rata-Rata (Average)</span>
-                <span class="text-lg">📊</span>
+                <span class="text-lg"><i class="fi fi-rr-chart-pie-alt"></i></span>
             </div>
             <div class="mt-2">
                 <span class="text-2xl font-bold text-purple-700">Rp {{ number_format($nilaiRataRata, 0, ',', '.') }}</span>
@@ -114,7 +114,7 @@
         <!-- Kelompok 1: Jenis Kelamin -->
         <div class="card-simple p-5 space-y-3">
             <h3 class="font-bold text-slate-900 border-b border-slate-200 pb-2 flex items-center gap-2">
-                <span>👨‍👩‍👧‍👦</span> Jenis Kelamin
+                <i class="fi fi-rr-users"></i> <span>Jenis Kelamin</span>
             </h3>
             <div class="space-y-2">
                 @foreach($breakdownJK as $jk)
@@ -134,7 +134,7 @@
         <!-- Kelompok 2: Pendidikan Terakhir -->
         <div class="card-simple p-5 space-y-3">
             <h3 class="font-bold text-slate-900 border-b border-slate-200 pb-2 flex items-center gap-2">
-                <span>🎓</span> Pendidikan Terakhir
+                <i class="fi fi-rr-graduation-cap"></i> <span>Pendidikan Terakhir</span>
             </h3>
             <div class="space-y-2 max-h-56 overflow-y-auto pr-1">
                 @foreach($breakdownPendidikan as $pend)
@@ -149,7 +149,7 @@
         <!-- Kelompok 3: Kelompok Umur -->
         <div class="card-simple p-5 space-y-3">
             <h3 class="font-bold text-slate-900 border-b border-slate-200 pb-2 flex items-center gap-2">
-                <span>🎂</span> Kelompok Umur / Usia
+                <i class="fi fi-rr-cake-birthday"></i> <span>Kelompok Umur / Usia</span>
             </h3>
             <div class="space-y-2">
                 @foreach($breakdownUsia as $rentang => $jumlahUsia)
@@ -173,9 +173,9 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-3">
             <div>
                 <h3 class="font-bold text-slate-900 text-lg flex items-center gap-2 flex-wrap">
-                    <span>📋 Tabel Data & Fitur CRUD Wilayah</span>
+                    <i class="fi fi-rr-table"></i> <span>Tabel Data & Fitur CRUD Wilayah</span>
                     <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800 border border-blue-200">
-                        📄 Halaman {{ $records->currentPage() }} dari {{ $records->lastPage() }}
+                        <i class="fi fi-rr-document"></i> Halaman {{ $records->currentPage() }} dari {{ $records->lastPage() }}
                     </span>
                 </h3>
                 <p class="text-xs text-slate-500">
@@ -187,11 +187,11 @@
             <div class="flex items-center gap-2 bg-slate-100 p-1 rounded-xl border border-slate-200">
                 <a href="{{ route('analytics.index', array_merge(request()->query(), ['status_trash' => 'aktif'])) }}#tabel-data"
                    class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 {{ $statusTrash === 'aktif' ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-600 hover:text-slate-900' }}">
-                    <span>📋 Data Aktif</span>
+                    <i class="fi fi-rr-table"></i> <span>Data Aktif</span>
                 </a>
                 <a href="{{ route('analytics.index', array_merge(request()->query(), ['status_trash' => 'sampah'])) }}#tabel-data"
                    class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 {{ $statusTrash === 'sampah' ? 'bg-rose-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900' }}">
-                    <span>🗑️ Tempat Sampah</span>
+                    <i class="fi fi-rr-trash"></i> <span>Tempat Sampah</span>
                     @if($totalSampah > 0)
                         <span class="px-1.5 py-0.5 text-[10px] rounded-full {{ $statusTrash === 'sampah' ? 'bg-white text-rose-700' : 'bg-rose-200 text-rose-800' }}">{{ $totalSampah }}</span>
                     @endif
@@ -202,7 +202,7 @@
         @if($statusTrash === 'sampah')
             <div class="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                    <span>⚠️</span>
+                    <i class="fi fi-rr-triangle-warning text-amber-500"></i>
                     <span><strong>Area Tempat Sampah (Soft Delete):</strong> Data yang berusia lebih dari <strong>1 minggu (7 hari)</strong> akan otomatis dihapus permanen oleh sistem.</span>
                 </div>
             </div>
@@ -247,8 +247,8 @@
                     <label for="filter_analytics_status_kehidupan" class="block text-xs font-bold text-slate-700 mb-1">Status Kehidupan:</label>
                     <select id="filter_analytics_status_kehidupan" name="status_kehidupan" aria-label="Filter Status Kehidupan" onchange="this.form.submit()" class="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-800 text-sm font-semibold">
                         <option value="semua" {{ $statusKehidupan == 'semua' ? 'selected' : '' }}>Semua Status</option>
-                        <option value="Masih Hidup" {{ $statusKehidupan == 'Masih Hidup' ? 'selected' : '' }}>🟢 Masih Hidup</option>
-                        <option value="Meninggal Dunia" {{ $statusKehidupan == 'Meninggal Dunia' ? 'selected' : '' }}>⚫ Meninggal Dunia</option>
+                        <option value="Masih Hidup" {{ $statusKehidupan == 'Masih Hidup' ? 'selected' : '' }}>Masih Hidup</option>
+                        <option value="Meninggal Dunia" {{ $statusKehidupan == 'Meninggal Dunia' ? 'selected' : '' }}>Meninggal Dunia</option>
                     </select>
                 </div>
 
@@ -288,11 +288,11 @@
                     <label for="filter_analytics_urutkan" class="block text-xs font-bold text-slate-700 mb-1">Urutkan Tampilan:</label>
                     <select id="filter_analytics_urutkan" name="urutkan" aria-label="Urutkan Tampilan Data" onchange="this.form.submit()" class="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-800 text-sm font-semibold text-blue-800">
                         <option value="terbaru" {{ $urutkan == 'terbaru' ? 'selected' : '' }}>🆕 Terbaru Ditambahkan</option>
-                        <option value="terlama" {{ $urutkan == 'terlama' ? 'selected' : '' }}>📜 Terlama Ditambahkan</option>
-                        <option value="gaji_max" {{ $urutkan == 'gaji_max' ? 'selected' : '' }}>💰 Gaji Tertinggi ➔ Terendah</option>
-                        <option value="gaji_min" {{ $urutkan == 'gaji_min' ? 'selected' : '' }}>📉 Gaji Terendah ➔ Tertinggi</option>
-                        <option value="usia_tua" {{ $urutkan == 'usia_tua' ? 'selected' : '' }}>👴 Usia Tertua ➔ Termuda</option>
-                        <option value="usia_muda" {{ $urutkan == 'usia_muda' ? 'selected' : '' }}>👶 Usia Termuda ➔ Tertua</option>
+                        <option value="terlama" {{ $urutkan == 'terlama' ? 'selected' : '' }}>Terlama Ditambahkan</option>
+                        <option value="gaji_max" {{ $urutkan == 'gaji_max' ? 'selected' : '' }}>Gaji Tertinggi -> Terendah</option>
+                        <option value="gaji_min" {{ $urutkan == 'gaji_min' ? 'selected' : '' }}>Gaji Terendah -> Tertinggi</option>
+                        <option value="usia_tua" {{ $urutkan == 'usia_tua' ? 'selected' : '' }}>Usia Tertua -> Termuda</option>
+                        <option value="usia_muda" {{ $urutkan == 'usia_muda' ? 'selected' : '' }}>Usia Termuda -> Tertua</option>
                     </select>
                 </div>
             </div>
@@ -306,7 +306,7 @@
                     <div></div>
                 @endif
                 <button type="submit" class="px-5 py-2 rounded-lg bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs shadow-sm">
-                    🔍 Tetapkan Filter
+                    <i class="fi fi-rr-search"></i> Tetapkan Filter
                 </button>
             </div>
         </form>
@@ -347,11 +347,11 @@
                             <td class="px-4 py-3.5 whitespace-nowrap">
                                 @if($rec->status_kehidupan === 'Meninggal Dunia')
                                     <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-800 text-white inline-flex items-center gap-1 shadow-sm">
-                                        ⚫ Meninggal
+                                        <span class="flex items-center gap-1"><i class="fi fi-rr-circle text-slate-500"></i> Meninggal</span>
                                     </span>
                                 @else
                                     <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 inline-flex items-center gap-1">
-                                        🟢 Masih Hidup
+                                        <span class="flex items-center gap-1"><i class="fi fi-rr-check-circle text-emerald-600"></i> Masih Hidup</span>
                                     </span>
                                 @endif
                             </td>
@@ -390,7 +390,7 @@
 
                             <!-- Wilayah Lengkap -->
                             <td class="px-4 py-3.5 text-xs text-slate-700 font-medium max-w-[220px] truncate whitespace-nowrap" title="{{ $rec->wilayah_lengkap }}">
-                                📍 {{ $rec->wilayah_lengkap }}
+                                <i class="fi fi-rr-marker text-blue-500"></i> {{ $rec->wilayah_lengkap }}
                             </td>
 
                             <!-- Tanggal Ditambahkan -->
@@ -413,7 +413,7 @@
                                         <form action="{{ route('analytics.restore', $rec->id) }}" method="POST" class="inline">
                                             @csrf
                                             <button type="submit" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm" title="Pulihkan Data">
-                                                ♻️ Pulihkan
+                                                <i class="fi fi-rr-refresh"></i> Pulihkan
                                             </button>
                                         </form>
 
@@ -421,25 +421,25 @@
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-sm" title="Hapus Selamanya">
-                                                ❌ Permanen
+                                                <i class="fi fi-rr-cross-circle"></i> Permanen
                                             </button>
                                         </form>
                                     @else
                                         <button @click="openPreview({{ $rec->id }})" 
                                                 class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm" title="Lihat Detail">
-                                            🔍 Detail
+                                            <i class="fi fi-rr-eye"></i> Detail
                                         </button>
 
                                         <button @click="openEditModal({{ $rec->id }})" 
                                                 class="px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold shadow-sm" title="Edit Data">
-                                            ✏️ Edit
+                                            <i class="fi fi-rr-edit"></i> Edit
                                         </button>
 
                                         <form action="{{ route('analytics.destroy', $rec->id) }}" method="POST" class="inline" onsubmit="return confirm('Pindahkan data ke tempat sampah? (Bisa dipulihkan dalam 7 hari)')">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="px-2.5 py-1 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-700 border border-rose-300 text-xs font-bold shadow-sm" title="Pindahkan ke Tempat Sampah">
-                                                🗑️ Hapus
+                                                <i class="fi fi-rr-trash"></i> Hapus
                                             </button>
                                         </form>
                                     @endif
@@ -450,9 +450,9 @@
                         <tr>
                             <td colspan="10" class="px-4 py-12 text-center text-slate-500 font-medium">
                                 <div class="space-y-2">
-                                    <span class="text-4xl block">📭</span>
+                                    <span class="text-4xl block text-slate-400"><i class="fi fi-rr-inbox"></i></span>
                                     <p class="font-bold text-slate-700 text-base">Belum ada data di dalam database.</p>
-                                    <p class="text-xs text-slate-500">Klik tombol <strong>"✍️ Input Data Baru"</strong> di atas atau tekan <strong>"⚡ Demo (+120 Data)"</strong> untuk mengisi sampel data otomatis.</p>
+                                    <p class="text-xs text-slate-500">Klik tombol <strong>"<i class="fi fi-rr-edit"></i> Input Data Baru"</strong> di atas atau tekan <strong>"<i class="fi fi-rr-bolt"></i> Demo (+120 Data)"</strong> untuk mengisi sampel data otomatis.</p>
                                 </div>
                             </td>
                         </tr>
@@ -464,7 +464,7 @@
         <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-200 text-xs text-slate-600 font-medium">
             <div class="flex items-center gap-2 flex-wrap">
                 <span class="px-2.5 py-1 rounded-lg bg-blue-100 text-blue-900 font-bold border border-blue-200">
-                    📄 Halaman {{ $records->currentPage() }} dari {{ $records->lastPage() }}
+                    <i class="fi fi-rr-document"></i> Halaman {{ $records->currentPage() }} dari {{ $records->lastPage() }}
                 </span>
                 <span>
                     Menampilkan <strong>{{ $records->firstItem() ?? 0 }}</strong> – <strong>{{ $records->lastItem() ?? 0 }}</strong> dari <strong>{{ $records->total() }}</strong> Data
@@ -486,9 +486,9 @@
             @csrf
             <div class="flex items-center justify-between border-b border-slate-200 pb-3">
                 <h3 class="font-bold text-slate-900 text-lg flex items-center gap-2">
-                    ✍️ Form Input Data Orang & Wilayah Lengkap
+                    <i class="fi fi-rr-edit"></i> Form Input Data Orang & Wilayah Lengkap
                 </h3>
-                <button type="button" @click="showAddModal = false" class="text-slate-400 hover:text-slate-700 font-bold text-xl px-2">✕</button>
+                <button type="button" @click="showAddModal = false" class="text-slate-400 hover:text-slate-700 font-bold text-xl px-2 flex items-center"><i class="fi fi-rr-cross"></i></button>
             </div>
 
             <div class="space-y-3">
@@ -509,8 +509,8 @@
                     <div>
                         <label for="add_status_kehidupan" class="block text-xs font-bold text-slate-700 mb-1">Status Kehidupan: *</label>
                         <select id="add_status_kehidupan" name="status_kehidupan" aria-label="Status Kehidupan" required class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm font-bold text-slate-800">
-                            <option value="Masih Hidup" selected>🟢 Masih Hidup</option>
-                            <option value="Meninggal Dunia">⚫ Meninggal Dunia</option>
+                            <option value="Masih Hidup" selected><span class="flex items-center gap-1"><i class="fi fi-rr-check-circle text-emerald-600"></i> Masih Hidup</span></option>
+                            <option value="Meninggal Dunia"><span class="flex items-center gap-1"><i class="fi fi-rr-circle text-slate-500"></i> Meninggal</span> Dunia</option>
                         </select>
                     </div>
 
@@ -632,9 +632,9 @@
             @csrf
             <div class="flex items-center justify-between border-b border-slate-200 pb-3">
                 <h3 class="font-bold text-slate-900 text-lg flex items-center gap-2">
-                    ✏️ Edit Data Perorangan & Status Kehidupan (#<span x-text="editData.id"></span>)
+                    <i class="fi fi-rr-edit"></i> Edit Data Perorangan & Status Kehidupan (#<span x-text="editData.id"></span>)
                 </h3>
-                <button type="button" @click="showEditModal = false" class="text-slate-400 hover:text-slate-700 font-bold text-xl px-2">✕</button>
+                <button type="button" @click="showEditModal = false" class="text-slate-400 hover:text-slate-700 font-bold text-xl px-2 flex items-center"><i class="fi fi-rr-cross"></i></button>
             </div>
 
             <div class="space-y-3">
@@ -649,8 +649,8 @@
                     <div>
                         <label for="edit_status_kehidupan" class="block text-xs font-bold text-slate-700 mb-1">Status Kehidupan: *</label>
                         <select id="edit_status_kehidupan" name="status_kehidupan" aria-label="Status Kehidupan" x-model="editData.status_kehidupan" required class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm font-bold text-slate-800">
-                            <option value="Masih Hidup">🟢 Masih Hidup</option>
-                            <option value="Meninggal Dunia">⚫ Meninggal Dunia</option>
+                            <option value="Masih Hidup"><span class="flex items-center gap-1"><i class="fi fi-rr-check-circle text-emerald-600"></i> Masih Hidup</span></option>
+                            <option value="Meninggal Dunia"><span class="flex items-center gap-1"><i class="fi fi-rr-circle text-slate-500"></i> Meninggal</span> Dunia</option>
                         </select>
                     </div>
 
@@ -762,16 +762,16 @@
         <div class="bg-white max-w-xl w-full rounded-2xl p-6 border border-slate-200 shadow-xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between border-b border-slate-200 pb-3">
                 <h3 class="font-bold text-slate-900 text-lg">
-                    👤 Detail Data Perorangan (#<span x-text="previewData.id"></span>)
+                    <i class="fi fi-rr-user"></i> Detail Data Perorangan (#<span x-text="previewData.id"></span>)
                 </h3>
                 <div class="flex items-center gap-2">
                     <button @click="modalIsMasked = !modalIsMasked" 
                             class="px-3 py-1 rounded-lg text-xs font-bold transition-all border flex items-center gap-1 shadow-sm"
                             :class="modalIsMasked ? 'bg-amber-100 text-amber-900 border-amber-300' : 'bg-emerald-100 text-emerald-900 border-emerald-300'">
-                        <span x-show="modalIsMasked">🔓 Buka Sensor</span>
-                        <span x-show="!modalIsMasked">🔒 Sensor</span>
+                        <span x-show="modalIsMasked" class="flex items-center gap-1"><i class="fi fi-rr-unlock"></i> Buka Sensor</span>
+                        <span x-show="!modalIsMasked" class="flex items-center gap-1"><i class="fi fi-rr-lock"></i> Sensor</span>
                     </button>
-                    <button @click="showPreviewModal = false" class="text-slate-400 hover:text-slate-700 text-xl font-bold px-2">✕</button>
+                    <button @click="showPreviewModal = false" class="text-slate-400 hover:text-slate-700 text-xl font-bold px-2 flex items-center"><i class="fi fi-rr-cross"></i></button>
                 </div>
             </div>
 
@@ -789,7 +789,7 @@
                     <div>
                         <span class="px-3 py-1 rounded-full text-xs font-bold shadow-sm"
                               :class="previewData.status_kehidupan === 'Meninggal Dunia' ? 'bg-slate-800 text-white' : 'bg-emerald-100 text-emerald-800'">
-                            <span x-text="previewData.status_kehidupan === 'Meninggal Dunia' ? '⚫ Meninggal Dunia' : '🟢 Masih Hidup'"></span>
+                            <span x-text="previewData.status_kehidupan === 'Meninggal Dunia' ? '<span class="flex items-center gap-1"><i class="fi fi-rr-circle text-slate-500"></i> Meninggal</span> Dunia' : '<span class="flex items-center gap-1"><i class="fi fi-rr-check-circle text-emerald-600"></i> Masih Hidup</span>'"></span>
                         </span>
                     </div>
                 </div>
@@ -815,7 +815,7 @@
                 </div>
 
                 <div class="p-3.5 bg-blue-50/60 rounded-xl border border-blue-200 space-y-2">
-                    <span class="text-xs font-bold text-blue-900 uppercase block border-b border-blue-200 pb-1">📍 Rincian Wilayah Alamat</span>
+                    <span class="text-xs font-bold text-blue-900 uppercase block border-b border-blue-200 pb-1 flex items-center gap-1"><i class="fi fi-rr-marker text-blue-600"></i> Rincian Wilayah Alamat</span>
                     <div class="grid grid-cols-2 gap-2 text-xs">
                         <div>
                             <span class="text-slate-500 block">Provinsi:</span>
@@ -850,7 +850,7 @@
 
                 <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
                     <span class="text-xs font-bold text-slate-500 uppercase">Waktu Input:</span>
-                    <p class="text-xs text-slate-800 font-bold" x-text="'📅 Tanggal Ditambahkan: ' + previewData.waktu_dibuat"></p>
+                    <p class="text-xs text-slate-800 font-bold" x-text="'Tanggal Ditambahkan: ' + previewData.waktu_dibuat"></p>
                     <p class="text-xs text-slate-600" x-text="'Email: ' + (modalIsMasked ? previewData.masked_email : previewData.email)"></p>
                 </div>
             </div>
@@ -885,11 +885,11 @@
             <div class="flex items-center justify-between border-b border-slate-200 pb-3">
                 <div>
                     <h3 class="font-bold text-slate-900 text-lg flex items-center gap-2">
-                        📥 Pengaturan & Pilihan Kolom Ekspor CSV
+                        <i class="fi fi-rr-download"></i> Pengaturan & Pilihan Kolom Ekspor CSV
                     </h3>
                     <p class="text-xs text-slate-500">Tentukan privasi sensor dan centang kolom data yang ingin di-ekspor</p>
                 </div>
-                <button type="button" @click="showExportModal = false" class="text-slate-400 hover:text-slate-700 font-bold text-xl px-2">✕</button>
+                <button type="button" @click="showExportModal = false" class="text-slate-400 hover:text-slate-700 font-bold text-xl px-2 flex items-center"><i class="fi fi-rr-cross"></i></button>
             </div>
 
             <!-- Langkah 1: Pilih Mode Sensor / Privasi -->
@@ -900,7 +900,7 @@
                            :class="exportMode === 'masked' ? 'bg-emerald-50 border-emerald-500' : 'bg-slate-50 border-slate-200 hover:border-slate-300'">
                         <input type="radio" name="mode" value="masked" x-model="exportMode" class="mt-0.5 text-emerald-600 focus:ring-emerald-500">
                         <div>
-                            <span class="font-bold text-slate-900 text-xs block">🔒 Disensor (Masked)</span>
+                            <span class="font-bold text-slate-900 text-xs block flex items-center gap-1"><i class="fi fi-rr-lock"></i> Disensor (Masked)</span>
                             <span class="text-[11px] text-slate-600 block">Sembunyikan NIK, Nama & Alamat demi privasi (UU PDP).</span>
                         </div>
                     </label>
@@ -909,7 +909,7 @@
                            :class="exportMode === 'unmasked' ? 'bg-amber-50 border-amber-500' : 'bg-slate-50 border-slate-200 hover:border-slate-300'">
                         <input type="radio" name="mode" value="unmasked" x-model="exportMode" class="mt-0.5 text-amber-600 focus:ring-amber-500">
                         <div>
-                            <span class="font-bold text-slate-900 text-xs block">🔓 Berkas Asli (Unmasked)</span>
+                            <span class="font-bold text-slate-900 text-xs block flex items-center gap-1"><i class="fi fi-rr-unlock"></i> Berkas Asli (Unmasked)</span>
                             <span class="text-[11px] text-slate-600 block">Ekspor data mentah utuh tanpa sensor.</span>
                         </div>
                     </label>
@@ -922,11 +922,11 @@
                     <h4 class="font-bold text-xs uppercase text-blue-700">2. Pilih Kolom Data Yang Ingin Di-Ekspor</h4>
                     <div class="flex items-center gap-2">
                         <button type="button" @click="selectAllCols()" class="text-[11px] font-bold text-blue-700 hover:text-blue-900 transition-colors">
-                            ☑️ Pilih Semua
+                            <i class="fi fi-rr-checkbox"></i> Pilih Semua
                         </button>
                         <span class="text-slate-300 text-xs">•</span>
                         <button type="button" @click="deselectAllCols()" class="text-[11px] font-bold text-rose-700 hover:text-rose-900 transition-colors">
-                            ☐ Hapus Semua
+                            <i class="fi fi-rr-square"></i> Hapus Semua
                         </button>
                     </div>
                 </div>
@@ -954,7 +954,7 @@
                     <button type="submit" 
                             :disabled="selectedColumns.length === 0"
                             class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5">
-                        📥 Unduh Berkas CSV Sesuai Pilihan
+                        <i class="fi fi-rr-download"></i> Unduh Berkas CSV Sesuai Pilihan
                     </button>
                 </div>
             </div>

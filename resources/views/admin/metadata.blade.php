@@ -8,13 +8,13 @@
         <div>
             <div class="flex flex-wrap items-center gap-2">
                 <span class="px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider rounded-md bg-purple-500/15 text-purple-800 border border-purple-400/30">
-                    👑 Khusus Super Administrator
+                    <i class="fi fi-rr-crown text-amber-400"></i> Khusus Super Administrator
                 </span>
                 <span class="px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider rounded-md bg-blue-500/15 text-blue-800 border border-blue-400/30">
-                    📋 BAST DTSEN Versi 3/2026
+                    <i class="fi fi-rr-document"></i> BAST DTSEN Versi 3/2026
                 </span>
                 <span class="px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider rounded-md bg-emerald-500/15 text-emerald-800 border border-emerald-400/30">
-                    ⚡ 100 Standar Variabel Terverifikasi
+                    <i class="fi fi-rr-bolt text-blue-400"></i> 100 Standar Variabel Terverifikasi
                 </span>
             </div>
             <h1 class="text-2xl font-black text-slate-900 mt-2 flex items-center gap-2">
@@ -27,10 +27,10 @@
 
         <div class="flex items-center gap-2 shrink-0">
             <a href="#simulator-section" class="px-4 py-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 font-bold text-xs border border-purple-200 transition-all flex items-center gap-1.5 shadow-xs">
-                <span>🔬</span> Uji Simulator QC
+                <i class="fi fi-rr-flask"></i> <span>Uji Simulator QC</span>
             </a>
             <a href="#training-section" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5">
-                <span>📥</span> Latih Versi Baru
+                <i class="fi fi-rr-download"></i> <span>Latih Versi Baru</span>
             </a>
         </div>
     </div>
@@ -39,7 +39,7 @@
     @if(session('success'))
         <div class="p-4 rounded-xl border border-emerald-300 text-emerald-900 text-xs font-semibold flex items-center gap-2 shadow-sm"
              style="background: rgba(209, 250, 229, 0.9);">
-            <span class="text-base">✅</span>
+            <i class="fi fi-rr-check-circle text-emerald-600"></i>
             <span>{{ session('success') }}</span>
         </div>
     @endif
@@ -47,7 +47,7 @@
     @if(session('error'))
         <div class="p-4 rounded-xl border border-rose-300 text-rose-900 text-xs font-semibold flex items-center gap-2 shadow-sm"
              style="background: rgba(254, 226, 226, 0.9);">
-            <span class="text-base">✕</span>
+            <i class="fi fi-rr-cross text-rose-600"></i>
             <span>{{ session('error') }}</span>
         </div>
     @endif
@@ -58,7 +58,7 @@
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
             <div class="flex items-center justify-between">
                 <span class="text-[10px] font-black uppercase tracking-wider text-slate-400">Versi Metadata Aktif</span>
-                <span class="w-7 h-7 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-xs">📑</span>
+                <span class="w-7 h-7 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-xs"><i class="fi fi-rr-folders"></i></span>
             </div>
             <div class="text-lg font-black text-slate-900 tracking-tight">{{ $versionInfo['version'] }}</div>
             <div class="text-[11px] text-slate-500 font-medium truncate" title="{{ $versionInfo['title'] }}">
@@ -70,7 +70,7 @@
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
             <div class="flex items-center justify-between">
                 <span class="text-[10px] font-black uppercase tracking-wider text-slate-400">Total Variabel Standar</span>
-                <span class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xs">📊</span>
+                <span class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xs"><i class="fi fi-rr-chart-pie-alt"></i></span>
             </div>
             <div class="text-lg font-black text-slate-900 tracking-tight">{{ $versionInfo['total_variables'] }} Variabel</div>
             <div class="text-[11px] text-blue-700 font-semibold flex items-center gap-1.5">
@@ -84,7 +84,7 @@
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
             <div class="flex items-center justify-between">
                 <span class="text-[10px] font-black uppercase tracking-wider text-slate-400">Engine Quality Check</span>
-                <span class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-xs">⚡</span>
+                <span class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-xs"><i class="fi fi-rr-bolt"></i></span>
             </div>
             <div class="flex items-center gap-2">
                 <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -99,7 +99,7 @@
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
             <div class="flex items-center justify-between">
                 <span class="text-[10px] font-black uppercase tracking-wider text-slate-400">Waktu Terakhir Dilatih</span>
-                <span class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-xs">🕒</span>
+                <span class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-xs"><i class="fi fi-rr-clock"></i></span>
             </div>
             <div class="text-sm font-black text-slate-900 truncate tracking-tight">{{ $versionInfo['last_trained_at'] }}</div>
             <div class="text-[11px] text-amber-700 font-medium">
@@ -113,7 +113,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-100 pb-4">
             <div class="flex items-center gap-3">
                 <span class="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-black text-lg shrink-0">
-                    🚀
+                    <i class="fi fi-rr-rocket-lunch text-purple-600"></i>
                 </span>
                 <div>
                     <h2 class="text-base font-black text-slate-900">
@@ -129,7 +129,7 @@
             </span>
         </div>
 
-        <form action="{{ route('admin.metadata.train') }}" method="POST" enctype="multipart/form-data" class="space-y-4" onsubmit="return confirm('⚠️ Anda akan melatih ulang kamus aturan BAST sistem dengan berkas baru ini. Lanjutkan?');">
+        <form action="{{ route('admin.metadata.train') }}" method="POST" enctype="multipart/form-data" class="space-y-4" onsubmit="return confirm('Anda akan melatih ulang kamus aturan BAST sistem dengan berkas baru ini. Lanjutkan?');">
             @csrf
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -160,11 +160,11 @@
 
             <div class="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 bg-purple-50/50 p-3.5 rounded-xl border border-purple-100">
                 <div class="text-[11px] text-purple-900 font-medium flex items-center gap-2">
-                    <span>💡</span>
+                    <i class="fi fi-rr-bulb text-amber-500"></i>
                     <span>Proses pelatihan memakan waktu ~1 detik dan akan mengkompilasi batasan tipe data, panjang string, dan opsi kategori.</span>
                 </div>
                 <button type="submit" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0">
-                    <span>⚡</span> Latih & Terapkan Skema Baru
+                    <i class="fi fi-rr-bolt"></i> <span>Latih & Terapkan Skema Baru</span>
                 </button>
             </div>
         </form>
@@ -175,7 +175,7 @@
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
             <div>
                 <h3 class="text-sm font-black uppercase tracking-wider text-slate-900 flex items-center gap-2">
-                    <span>📖</span> Kamus Data Resmi BAST DTSEN ({{ count($displayedVars) }} Variabel)
+                    <i class="fi fi-rr-book"></i> <span>Kamus Data Resmi BAST DTSEN</span> ({{ count($displayedVars) }} Variabel)
                 </h3>
                 <p class="text-xs text-slate-500 font-medium">
                     Daftar seluruh variabel standar, tipe data acuan BPS, serta ketentuan kode klasifikasi.
@@ -204,8 +204,8 @@
                     <input type="hidden" name="dataset" value="{{ $filterDataset }}">
                     <input type="text" name="search" value="{{ $search }}" autocomplete="off" placeholder="Cari variabel / kolom..."
                            class="text-xs px-3 py-1.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-purple-500 w-44">
-                    <button type="submit" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs border border-slate-300 cursor-pointer">
-                        🔍
+                    <button type="submit" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs border border-slate-300 cursor-pointer flex items-center">
+                        <i class="fi fi-rr-search"></i>
                     </button>
                     @if(!empty($search))
                         <a href="{{ route('admin.metadata', ['dataset' => $filterDataset]) }}" class="px-2 py-1.5 text-xs text-rose-600 font-bold hover:underline">
@@ -296,7 +296,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
             <div class="flex items-center gap-3">
                 <span class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-black text-lg shrink-0">
-                    🔬
+                    <i class="fi fi-rr-flask"></i>
                 </span>
                 <div>
                     <h3 class="text-base font-black text-slate-900">
@@ -308,7 +308,7 @@
                 </div>
             </div>
             <button type="button" @click="loadSampleData()" class="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs border border-slate-300 cursor-pointer">
-                🧪 Muat Sampel Uji Coba
+                <i class="fi fi-rr-flask"></i> Muat Sampel Uji Coba
             </button>
         </div>
 
@@ -316,7 +316,7 @@
             <!-- Form Uji Coba Kolom Kunci -->
             <div class="space-y-4">
                 <div class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                    <span>📝</span> Parameter Masukan Baris Data:
+                    <i class="fi fi-rr-edit"></i> <span>Parameter Masukan Baris Data:</span>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
@@ -355,7 +355,7 @@
                 <div class="pt-2">
                     <button type="button" @click="runSimulation()" :disabled="simulating"
                             class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer">
-                        <span x-show="!simulating">⚡ Jalankan Evaluasi Quality Check BAST</span>
+                        <span x-show="!simulating" class="flex items-center gap-1.5"><i class="fi fi-rr-bolt"></i> Jalankan Evaluasi Quality Check BAST</span>
                         <span x-show="simulating">Memeriksa terhadap 100 aturan...</span>
                     </button>
                 </div>
@@ -364,7 +364,7 @@
             <!-- Panel Hasil Evaluasi Realtime -->
             <div class="space-y-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
                 <div class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center justify-between">
-                    <span>📊 Hasil Evaluasi Engine BAST:</span>
+                    <span class="flex items-center gap-1.5"><i class="fi fi-rr-chart-pie-alt"></i> Hasil Evaluasi Engine BAST:</span>
                     <span x-show="result" class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase"
                           :class="result?.valid ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-rose-100 text-rose-800 border border-rose-300'"
                           x-text="result?.status_label"></span>
@@ -372,7 +372,7 @@
 
                 <!-- Template Placeholder -->
                 <div x-show="!result" class="text-center py-12 text-slate-400 space-y-2">
-                    <div class="text-3xl">🔍</div>
+                    <div class="text-3xl text-slate-400"><i class="fi fi-rr-search"></i></div>
                     <div class="text-xs font-semibold">Klik "Jalankan Evaluasi" untuk melihat diagnosa integritas baris.</div>
                 </div>
 
@@ -397,7 +397,7 @@
                     <div class="space-y-2 max-h-60 overflow-y-auto pr-1">
                         <template x-if="result?.issues?.length === 0">
                             <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-2">
-                                <span>✅</span> Seluruh nilai variabel 100% patuh terhadap standar BAST Metadata DTSEN!
+                                <i class="fi fi-rr-check-circle text-emerald-600"></i> <span>Seluruh nilai variabel 100% patuh terhadap standar BAST Metadata DTSEN!</span>
                             </div>
                         </template>
 

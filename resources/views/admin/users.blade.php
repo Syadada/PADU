@@ -23,7 +23,7 @@
                     Tata Kelola Staf (RBAC)
                 </span>
                 <span class="px-2.5 py-1 text-xs font-bold bg-blue-100 text-blue-800 border border-blue-300 rounded-lg">
-                    🛡️ Admin-Assisted Reset
+                    <i class="fi fi-rr-shield-check"></i> Admin-Assisted Reset
                 </span>
             </div>
             <h1 class="text-2xl font-black text-slate-900 mt-2 flex items-center gap-2">
@@ -35,14 +35,14 @@
         </div>
 
         <div class="flex items-center gap-2 text-xs font-bold text-slate-500 bg-slate-50 px-4 py-2 rounded-xl border border-slate-200">
-            <span>👥 Total Pengguna: {{ count($users) }}</span>
+            <span class="flex items-center gap-1.5"><i class="fi fi-rr-users"></i> Total Pengguna: {{ count($users) }}</span>
         </div>
     </div>
 
     <!-- Alert Notifikasi Reset Berhasil -->
     @if(session('success') && !session('temp_password'))
         <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-semibold flex items-center gap-2">
-            <span>✅</span>
+            <i class="fi fi-rr-check-circle text-emerald-600"></i>
             <span>{{ session('success') }}</span>
         </div>
     @endif
@@ -66,7 +66,7 @@
                     @foreach($users as $u)
                         <tr class="hover:bg-slate-50/80 transition-colors">
                             <td class="py-3.5 px-4 font-bold text-slate-900 flex items-center gap-2">
-                                <span class="text-base">{{ $u->isSuperAdmin() ? '👑' : '👤' }}</span>
+                                <span class="text-base"><i class="fi {{ $u->isSuperAdmin() ? 'fi-rr-crown text-amber-500' : 'fi-rr-user text-blue-500' }}"></i></span>
                                 <span>{{ $u->name }}</span>
                             </td>
                             <td class="py-3.5 px-4 font-mono text-slate-600">
@@ -80,22 +80,22 @@
                             <td class="py-3.5 px-4">
                                 @if($u->isLocked())
                                     <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-300 animate-pulse">
-                                        🔒 TERKUNCI ({{ ceil($u->remainingLockoutSeconds() / 60) }} mnt)
+                                        <i class="fi fi-rr-lock text-rose-600"></i> TERKUNCI ({{ ceil($u->remainingLockoutSeconds() / 60) }} mnt)
                                     </span>
                                 @elseif($u->first_login)
                                     <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
-                                        ⚠️ Wajib Reset Sandi
+                                        <i class="fi fi-rr-triangle-warning text-amber-500"></i> Wajib Reset Sandi
                                     </span>
                                 @else
                                     <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                                        ✓ Aktif
+                                        <i class="fi fi-rr-check-circle text-emerald-600"></i> Aktif
                                     </span>
                                 @endif
                             </td>
                             <td class="py-3.5 px-4">
                                 @if($u->two_factor_enabled)
                                     <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                                        📱 2FA Aktif
+                                        <i class="fi fi-rr-smartphone text-emerald-600"></i> 2FA Aktif
                                     </span>
                                 @else
                                     <span class="text-slate-400 text-xs">Nonaktif</span>
@@ -116,17 +116,17 @@
                                         <form action="{{ route('admin.users.unlock', $u->id) }}" method="POST" onsubmit="return confirm('Buka kunci akun ini sekarang?');">
                                             @csrf
                                             <button type="submit" class="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold transition-colors">
-                                                🔓 Buka Kunci
+                                                <i class="fi fi-rr-unlock"></i> Buka Kunci
                                             </button>
                                         </form>
                                     @endif
 
                                     <!-- Reset Sandi Khusus Operator -->
                                     @if($u->isOperator())
-                                        <form action="{{ route('admin.users.reset-password', $u->id) }}" method="POST" onsubmit="return confirm('⚠️ Reset kata sandi staf ini? Sistem akan membuat sandi sementara baru minimal 15 karakter.');">
+                                        <form action="{{ route('admin.users.reset-password', $u->id) }}" method="POST" onsubmit="return confirm('Reset kata sandi staf ini? Sistem akan membuat sandi sementara baru minimal 15 karakter.');">
                                             @csrf
                                             <button type="submit" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold border border-slate-300 transition-colors">
-                                                🔑 Reset Sandi
+                                                <i class="fi fi-rr-key"></i> Reset Sandi
                                             </button>
                                         </form>
                                     @else
@@ -147,10 +147,10 @@
         <div class="rounded-2xl max-w-lg w-full p-6 space-y-5 border border-slate-700 shadow-2xl text-white" style="background-color: #0f172a !important;" @click.outside="showResetModal = false">
             <div class="flex items-center justify-between border-b border-slate-800 pb-3">
                 <div class="flex items-center gap-2 text-emerald-400 font-bold text-base">
-                    <span class="text-xl">✅</span>
+                    <span class="text-xl text-emerald-600"><i class="fi fi-rr-check-circle"></i></span>
                     <span>Kata Sandi Sementara Berhasil Dibuat</span>
                 </div>
-                <button @click="showResetModal = false" class="text-slate-400 hover:text-white font-bold">✕</button>
+                <button @click="showResetModal = false" class="text-slate-400 hover:text-white font-bold flex items-center"><i class="fi fi-rr-cross"></i></button>
             </div>
 
             <div class="p-3.5 rounded-xl bg-blue-500/10 border border-blue-500/30 text-blue-300 text-xs leading-relaxed space-y-1">

@@ -27,14 +27,14 @@
             </div>
             <h1 class="force-reset-title">Wajib Pembaruan Kata Sandi</h1>
             <p class="force-reset-sub">
-                🛡️ Standar Keamanan Siber BSSN No. 4/2021 (Min. 15 Karakter)
+                <i class="fi fi-rr-shield-check"></i> Standar Keamanan Siber BSSN No. 4/2021 (Min. 15 Karakter)
             </p>
         </div>
 
         <div class="auth-card">
 
             <div class="force-reset-notice">
-                <strong>⚠️ Inisialisasi Keamanan Akun Pertama Kali:</strong><br>
+                <i class="fi fi-rr-triangle-warning text-amber-500"></i> <strong>Inisialisasi Keamanan Akun Pertama Kali:</strong><br>
                 Sesuai regulasi keamanan BSSN, Anda diwajibkan menyetel kata sandi baru berstandar enterprise (panjang minimal 15 karakter) sebelum dapat mengakses data aplikasi.
             </div>
 
@@ -100,27 +100,27 @@
 
                     <div class="force-reset-checklist-grid">
                         <div class="checklist-item" :class="hasMinLen ? 'item-valid' : 'item-invalid'">
-                            <span x-text="hasMinLen ? '✓' : '○'"></span>
+                            <span x-text="hasMinLen ? 'Patuh' : 'Belum'"></span>
                             <span>Min. 15 Karakter (<span x-text="password.length"></span>/15)</span>
                         </div>
                         <div class="checklist-item" :class="hasUpper ? 'item-valid' : 'item-invalid'">
-                            <span x-text="hasUpper ? '✓' : '○'"></span>
+                            <span x-text="hasUpper ? 'Patuh' : 'Belum'"></span>
                             <span>Huruf Besar (A-Z)</span>
                         </div>
                         <div class="checklist-item" :class="hasLower ? 'item-valid' : 'item-invalid'">
-                            <span x-text="hasLower ? '✓' : '○'"></span>
+                            <span x-text="hasLower ? 'Patuh' : 'Belum'"></span>
                             <span>Huruf Kecil (a-z)</span>
                         </div>
                         <div class="checklist-item" :class="hasNumber ? 'item-valid' : 'item-invalid'">
-                            <span x-text="hasNumber ? '✓' : '○'"></span>
+                            <span x-text="hasNumber ? 'Patuh' : 'Belum'"></span>
                             <span>Angka (0-9)</span>
                         </div>
                         <div class="checklist-item" :class="hasSymbol ? 'item-valid' : 'item-invalid'">
-                            <span x-text="hasSymbol ? '✓' : '○'"></span>
+                            <span x-text="hasSymbol ? 'Patuh' : 'Belum'"></span>
                             <span>Simbol (@$!%*#?&...)</span>
                         </div>
                         <div class="checklist-item" :class="isMatch && password ? 'item-valid' : 'item-invalid'">
-                            <span x-text="isMatch && password ? '✓' : '○'"></span>
+                            <span x-text="isMatch && password ? 'Cocok' : 'Belum'"></span>
                             <span>Sandi Cocok</span>
                         </div>
                     </div>

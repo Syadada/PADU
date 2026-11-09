@@ -8,6 +8,9 @@
 # Tidak diperlukan instalasi `pip install` tambahan untuk fungsi utama.
 # =====================================================================
 
+# Pustaka utama untuk akselerasi query OLAP & analitik kecepatan tinggi:
+duckdb>=0.9.0
+
 # Pustaka opsional untuk akselerasi impor & membaca file Excel (.xlsx / .csv):
 pandas>=2.0.0
 pyarrow>=14.0.0

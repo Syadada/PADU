@@ -60,6 +60,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dtsen/import-progress', [DtsenController::class, 'getImportProgress'])->name('dtsen.import-progress');
     Route::post('/dtsen/cancel-import', [DtsenController::class, 'cancelImport'])->name('dtsen.cancel-import');
     Route::get('/dtsen/logs', [DtsenController::class, 'getLogs'])->name('dtsen.logs');
+    Route::get('/dtsen/activity-logs', [DtsenController::class, 'activityLogsPage'])->name('dtsen.activity-logs');
     Route::get('/dtsen/logs/download', [DtsenController::class, 'downloadLogs'])->name('dtsen.logs.download');
     Route::post('/dtsen/logs/clear', [DtsenController::class, 'clearLogs'])->name('dtsen.logs.clear');
 

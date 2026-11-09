@@ -66,7 +66,7 @@
                 <div class="twofa-alert-error space-y-1">
                     @foreach($errors->all() as $error)
                         <div class="flex items-start gap-1.5">
-                            <span class="font-bold">✕</span>
+                            <i class="fi fi-rr-cross"></i>
                             <span>{{ $error }}</span>
                         </div>
                     @endforeach
@@ -118,7 +118,7 @@
 
                 <div class="mt-5 pt-3.5 border-t border-slate-200 text-center">
                     <button type="button" @click="switchToRecovery()" class="text-[11px] font-bold text-amber-700 hover:text-amber-900 transition-colors cursor-pointer">
-                        🔑 HP Hilang / Rusak? Gunakan Master Recovery Key Brankas
+                        <i class="fi fi-rr-key"></i> HP Hilang / Rusak? Gunakan Master Recovery Key Brankas
                     </button>
                 </div>
             </div>
@@ -127,7 +127,7 @@
             <div x-show="mode === 'recovery'" x-cloak>
                 <div class="twofa-alert-warning text-xs leading-relaxed space-y-1">
                     <p class="font-extrabold flex items-center gap-1.5 text-amber-900">
-                        <span>🛑</span> <span>PROSEDUR PEMULIHAN DARURAT BSSN:</span>
+                        <i class="fi fi-rr-shield-exclamation text-rose-600"></i> <span>PROSEDUR PEMULIHAN DARURAT BSSN:</span>
                     </p>
                     <p class="text-[11px] text-amber-800">
                         Masukkan <strong>Master Recovery Key</strong> dari lembar fisik bersegel di brankas Pimpinan. Jika diverifikasi benar, <strong>perangkat 2FA lama langsung dihanguskan (auto-revoke)</strong> demi keamanan.

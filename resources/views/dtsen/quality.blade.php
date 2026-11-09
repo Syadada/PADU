@@ -7,7 +7,7 @@
     <div class="p-5 sm:p-6 bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="space-y-1">
             <div class="flex items-center gap-2">
-                <span class="p-2 rounded-xl bg-amber-50 text-amber-600 text-lg font-bold">🧮</span>
+                <span class="p-2 rounded-xl bg-amber-50 text-amber-600 text-lg font-bold flex items-center justify-center"><i class="fi fi-rr-shield-check"></i></span>
                 <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">
                     Metrik Kualitas Data & Evaluasi Adaptif (QC)
                 </h2>
@@ -22,10 +22,10 @@
 
         <div class="flex items-center gap-2 shrink-0">
             <a href="{{ route('dtsen.audit') }}" class="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs rounded-xl border border-rose-200 shadow-xs transition-all flex items-center gap-1.5 cursor-pointer">
-                <span>⚠️</span> Lihat Audit Temuan Error ({{ $criticalCount + $warningCount }})
+                <i class="fi fi-rr-triangle-warning"></i> <span>Lihat Audit Temuan Error</span> ({{ $criticalCount + $warningCount }})
             </a>
             <a href="{{ route('dtsen.data') }}" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer">
-                <span>📋</span> Buka Tabel Master
+                <i class="fi fi-rr-table"></i> <span>Buka Tabel Master</span>
             </a>
         </div>
     </div>
@@ -33,7 +33,7 @@
     @if(($totalSystemRows ?? $totalRows) === 0)
         <!-- Keadaan Kosong -->
         <div class="p-12 bg-white rounded-2xl border-2 border-dashed border-slate-200 text-center space-y-4">
-            <div class="w-16 h-16 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center text-3xl mx-auto font-bold shadow-xs">🧮</div>
+            <div class="w-16 h-16 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center text-3xl mx-auto font-bold shadow-xs"><i class="fi fi-rr-shield-check"></i></div>
             <div class="space-y-1">
                 <h3 class="font-extrabold text-slate-900 text-base">Belum Ada Dataset untuk Dievaluasi</h3>
                 <p class="text-xs text-slate-500 max-w-md mx-auto">
@@ -42,7 +42,7 @@
             </div>
             <div class="pt-2">
                 <a href="{{ route('dtsen.files') }}" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition-all inline-flex items-center gap-2 cursor-pointer">
-                    <span>⚡</span> Unggah File Dataset
+                    <i class="fi fi-rr-upload"></i> <span>Unggah File Dataset</span>
                 </a>
             </div>
         </div>
@@ -51,7 +51,7 @@
         <div class="p-6 rounded-2xl bg-amber-50/90 border-2 border-amber-300 text-amber-950 shadow-sm space-y-5">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-amber-200 pb-3">
                 <div class="flex items-center gap-2">
-                    <span class="text-xl">📊</span>
+                    <span class="text-xl"><i class="fi fi-rr-chart-pie-alt"></i></span>
                     <div>
                         <h3 class="font-black text-amber-950 text-sm uppercase tracking-wide">
                             Ringkasan Integritas & Kepatuhan Dataset
@@ -84,19 +84,19 @@
                     <strong class="text-base sm:text-lg lg:text-xl font-black text-blue-900 font-mono truncate" title="{{ number_format($totalKk) }}">{{ number_format($totalKk) }}</strong>
                 </div>
                 <div class="p-3 bg-emerald-100/90 rounded-xl border border-emerald-300 text-center shadow-xs flex flex-col justify-between min-w-0 overflow-hidden">
-                    <span class="block text-[11px] font-bold text-emerald-800 uppercase truncate">🟢 Data Valid</span>
+                    <span class="block text-[11px] font-bold text-emerald-800 uppercase truncate flex items-center gap-1.5"><i class="fi fi-rr-check-circle text-emerald-600"></i> Data Valid</span>
                     <strong class="text-base sm:text-lg lg:text-xl font-black text-emerald-950 font-mono truncate" title="{{ number_format($validCount) }}">{{ number_format($validCount) }}</strong>
                 </div>
                 <div class="p-3 bg-amber-100/90 rounded-xl border border-amber-300 text-center shadow-xs flex flex-col justify-between min-w-0 overflow-hidden">
-                    <span class="block text-[11px] font-bold text-amber-900 uppercase truncate">🟡 Missing Value</span>
+                    <span class="block text-[11px] font-bold text-amber-900 uppercase truncate flex items-center gap-1.5"><i class="fi fi-rr-info text-amber-600"></i> Missing Value</span>
                     <strong class="text-base sm:text-lg lg:text-xl font-black text-amber-950 font-mono truncate" title="{{ number_format($warningCount) }}">{{ number_format($warningCount) }}</strong>
                 </div>
                 <div class="p-3 bg-rose-100/90 rounded-xl border border-rose-300 text-center shadow-xs flex flex-col justify-between min-w-0 overflow-hidden">
-                    <span class="block text-[11px] font-bold text-rose-800 uppercase truncate">🔴 Critical Error</span>
+                    <span class="block text-[11px] font-bold text-rose-800 uppercase truncate flex items-center gap-1.5"><i class="fi fi-rr-cross-circle text-rose-600"></i> Critical Error</span>
                     <strong class="text-base sm:text-lg lg:text-xl font-black text-rose-950 font-mono truncate" title="{{ number_format($criticalCount) }}">{{ number_format($criticalCount) }}</strong>
                 </div>
                 <div class="p-3 bg-purple-100/90 rounded-xl border border-purple-300 text-center shadow-xs flex flex-col justify-between min-w-0 overflow-hidden">
-                    <span class="block text-[11px] font-bold text-purple-900 uppercase truncate">⚠️ Multi-Error (3+)</span>
+                    <span class="block text-[11px] font-bold text-purple-900 uppercase truncate flex items-center gap-1.5"><i class="fi fi-rr-triangle-warning text-purple-600"></i> Multi-Error (3+)</span>
                     <strong class="text-base sm:text-lg lg:text-xl font-black text-purple-950 font-mono truncate" title="{{ number_format($multiErrorCount ?? 0) }}">{{ number_format($multiErrorCount ?? 0) }}</strong>
                 </div>
             </div>
@@ -125,7 +125,7 @@
 
             <div class="pt-2 text-xs leading-relaxed text-amber-900/90 font-medium">
                 <p>
-                    <strong>📌 Standar Pemeriksaan Kualitas Data DTSEN 2026:</strong> Seluruh dataset diuji terhadap integritas format NIK & KK (16 digit angka), rentang valid desil kesejahteraan (1 s.d. 10), konsistensi hubungan keluarga, dan kelengkapan 58 variabel master.
+                    <i class="fi fi-rr-thumbtack text-amber-600"></i> <strong>Standar Pemeriksaan Kualitas Data DTSEN 2026:</strong> Seluruh dataset diuji terhadap integritas format NIK & KK (16 digit angka), rentang valid desil kesejahteraan (1 s.d. 10), konsistensi hubungan keluarga, dan kelengkapan 58 variabel master.
                 </p>
             </div>
         </div>
@@ -136,7 +136,7 @@
             <!-- PILAR 1: KEPENDUDUKAN & DEMOGRAFI -->
             <div class="p-5 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-3">
                 <div class="flex items-center gap-2.5 border-b border-slate-100 pb-3">
-                    <span class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm">👤</span>
+                    <span class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm"><i class="fi fi-rr-user"></i></span>
                     <div>
                         <h4 class="font-extrabold text-slate-900 text-xs uppercase tracking-wider">1. Data Kependudukan & Demografi</h4>
                         <p class="text-[11px] text-slate-500">NIK, KK, Nama Lengkap, Tanggal Lahir, Status Hubungan</p>
@@ -145,7 +145,7 @@
                 <ul class="space-y-2 text-xs text-slate-700">
                     <li class="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-100">
                         <span>Pemeriksaan NIK 16 Digit:</span>
-                        <span class="font-bold text-emerald-700">🟢 Terverifikasi BPS</span>
+                        <span class="font-bold text-emerald-700 flex items-center gap-1"><i class="fi fi-rr-check-circle text-emerald-600"></i> Terverifikasi BPS</span>
                     </li>
                     <li class="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-100">
                         <span>Relasi Nomor KK Individu:</span>
@@ -153,7 +153,7 @@
                     </li>
                     <li class="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-100">
                         <span>Dynamic PII Masking:</span>
-                        <span class="font-bold text-emerald-700">🔒 Aktif (Standar UU PDP)</span>
+                        <span class="font-bold text-emerald-700 flex items-center gap-1"><i class="fi fi-rr-lock text-emerald-600"></i> Aktif (Standar UU PDP)</span>
                     </li>
                 </ul>
             </div>
@@ -161,7 +161,7 @@
             <!-- PILAR 2: SOSIAL EKONOMI & KESEJAHTERAAN -->
             <div class="p-5 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-3">
                 <div class="flex items-center gap-2.5 border-b border-slate-100 pb-3">
-                    <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm">💰</span>
+                    <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm"><i class="fi fi-rr-dollar"></i></span>
                     <div>
                         <h4 class="font-extrabold text-slate-900 text-xs uppercase tracking-wider">2. Kesejahteraan & Desil Nasional</h4>
                         <p class="text-[11px] text-slate-500">Desil 1-10, PBI Nasional, PBI Pemda, Finansial</p>
@@ -170,7 +170,7 @@
                 <ul class="space-y-2 text-xs text-slate-700">
                     <li class="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-100">
                         <span>Rentang Nilai Desil:</span>
-                        <span class="font-bold text-emerald-700">🟢 Desil 1 s.d. 10 Valid</span>
+                        <span class="font-bold text-emerald-700 flex items-center gap-1"><i class="fi fi-rr-check-circle text-emerald-600"></i> Desil 1 s.d. 10 Valid</span>
                     </li>
                     <li class="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-100">
                         <span>Bantuan Sosial PBI:</span>
@@ -179,7 +179,7 @@
                     <li class="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-100">
                         <span>Variabel Gaji / Penghasilan:</span>
                         <span class="font-bold {{ !empty($hasSalaryColumn) ? 'text-emerald-700' : 'text-slate-500' }}">
-                            {{ !empty($hasSalaryColumn) ? '🟢 Terdeteksi' : '⚪ Opsional (Tidak Tersedia)' }}
+                            {{ !empty($hasSalaryColumn) ? 'Terdeteksi' : 'Opsional (Tidak Tersedia)' }}
                         </span>
                     </li>
                 </ul>
@@ -188,7 +188,7 @@
             <!-- PILAR 3: PENDIDIKAN & KETENAGAKERJAAN -->
             <div class="p-5 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-3">
                 <div class="flex items-center gap-2.5 border-b border-slate-100 pb-3">
-                    <span class="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-sm">🎓</span>
+                    <span class="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-sm"><i class="fi fi-rr-graduation-cap"></i></span>
                     <div>
                         <h4 class="font-extrabold text-slate-900 text-xs uppercase tracking-wider">3. Pendidikan & Ketenagakerjaan</h4>
                         <p class="text-[11px] text-slate-500">Partisipasi Sekolah, Jenjang, Status Bekerja, Lapangan Usaha</p>
@@ -213,7 +213,7 @@
             <!-- PILAR 4: PERUMAHAN, SANITASI & ASET -->
             <div class="p-5 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-3">
                 <div class="flex items-center gap-2.5 border-b border-slate-100 pb-3">
-                    <span class="w-8 h-8 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center font-bold text-sm">🏠</span>
+                    <span class="w-8 h-8 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center font-bold text-sm"><i class="fi fi-rr-home"></i></span>
                     <div>
                         <h4 class="font-extrabold text-slate-900 text-xs uppercase tracking-wider">4. Perumahan, Sanitasi & Aset</h4>
                         <p class="text-[11px] text-slate-500">Status Kepemilikan, Air Minum, Listrik PLN, Fasilitas BAB, Aset</p>

@@ -183,8 +183,11 @@ class BastMetadataQualityService
             $status = 'Critical';
             $issues[] = '[CRITICAL] NIK kosong / belum terisi.';
         } else {
-            $cleanNik = preg_replace('/\.0+$/', '', (string)$nikVal);
-            if (!preg_match('/^[0-9]{16}$/', $cleanNik)) {
+            $rawNik = trim((string)$nikVal);
+            if (preg_match('/[\.,]/', $rawNik)) {
+                $status = 'Critical';
+                $issues[] = "[CRITICAL] NIK '{$nikVal}' tidak valid. Mengandung tanda titik atau koma (format desimal / cacat data). Harus 16 digit angka murni.";
+            } elseif (!preg_match('/^[0-9]{16}$/', $rawNik)) {
                 $status = 'Critical';
                 $issues[] = "[CRITICAL] NIK '{$nikVal}' tidak valid. Harus persis 16 digit angka murni.";
             }
@@ -193,10 +196,13 @@ class BastMetadataQualityService
         // 2. EVALUASI NOMOR KARTU KELUARGA (KK)
         $kkVal = $cleanRow['nomor_kartu_keluarga'] ?? ($cleanRow['no_kk'] ?? ($cleanRow['kk'] ?? null));
         if ($kkVal !== null && $kkVal !== '') {
-            $cleanKk = preg_replace('/\.0+$/', '', (string)$kkVal);
-            if (!preg_match('/^[0-9]{16}$/', $cleanKk)) {
+            $rawKk = trim((string)$kkVal);
+            if (preg_match('/[\.,]/', $rawKk)) {
                 $status = 'Critical';
-                $issues[] = "[CRITICAL] Nomor KK '{$kkVal}' tidak valid. Harus persis 16 digit angka murni (tanpa titik desimal).";
+                $issues[] = "[CRITICAL] Nomor KK '{$kkVal}' tidak valid. Mengandung tanda titik atau koma (format desimal / cacat data). Harus 16 digit angka murni.";
+            } elseif (!preg_match('/^[0-9]{16}$/', $rawKk)) {
+                $status = 'Critical';
+                $issues[] = "[CRITICAL] Nomor KK '{$kkVal}' tidak valid. Harus persis 16 digit angka murni.";
             }
         }
 
@@ -206,12 +212,13 @@ class BastMetadataQualityService
             $status = 'Critical';
             $issues[] = '[CRITICAL] Nama lengkap kosong.';
         } else {
-            if (preg_match('/[0-9]/', (string)$namaVal)) {
+            $rawNama = trim((string)$namaVal);
+            if (preg_match('/[0-9]/', $rawNama)) {
                 $status = 'Critical';
-                $issues[] = "[CRITICAL] Nama '{$namaVal}' tidak valid (mengandung angka).";
-            } elseif (!preg_match('/^[a-zA-Z\s\.\,\'\-]+$/u', (string)$namaVal)) {
+                $issues[] = "[CRITICAL] Nama '{$namaVal}' tidak valid (mengandung angka/digit).";
+            } elseif (!preg_match('/^[a-zA-Z\s\.\,\'\-]+$/u', $rawNama)) {
                 $status = 'Critical';
-                $issues[] = "[CRITICAL] Nama '{$namaVal}' tidak valid (mengandung karakter simbol ilegal).";
+                $issues[] = "[CRITICAL] Nama '{$namaVal}' tidak valid (mengandung karakter simbol khusus).";
             }
         }
 

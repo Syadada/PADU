@@ -250,6 +250,51 @@ class DtsenController extends Controller
 
         $totalSystemRows = (int)($duckPageData['total_system_rows'] ?? 0);
 
+        $activeDatasetFile = null;
+        if ($totalSystemRows > 0) {
+            // 1. Baca metadata persisten dari active_dataset.json
+            $activeMetaFile = database_path('active_dataset.json');
+            if (file_exists($activeMetaFile)) {
+                $metaJson = @json_decode(file_get_contents($activeMetaFile), true);
+                if (!empty($metaJson['active_dataset_file'])) {
+                    $activeDatasetFile = $metaJson['active_dataset_file'];
+                }
+            }
+
+            // 2. Baca dari Cache atau Session jika metadata JSON belum ada
+            if (empty($activeDatasetFile)) {
+                $activeDatasetFile = session('active_dataset_file') 
+                    ?? \Illuminate\Support\Facades\Cache::get('active_dataset_file') 
+                    ?? session('uploaded_file_metrics.original_name');
+            }
+
+            // 3. Deteksi Cerdas Berdasarkan Jumlah Baris Aktual (Bukan sembarang ambil file urutan pertama!)
+            if (empty($activeDatasetFile) && !empty($srcDtsenFiles)) {
+                foreach ($srcDtsenFiles as $sf) {
+                    $sName = strtolower($sf['name']);
+                    if ($totalSystemRows >= 900000 && $totalSystemRows <= 1100000 && (str_contains($sName, '1_juta') || str_contains($sName, '1juta') || str_contains($sName, '1m'))) {
+                        $activeDatasetFile = $sf['name'];
+                        break;
+                    } elseif ($totalSystemRows >= 12000000 && (str_contains($sName, '13_juta') || str_contains($sName, '13juta') || str_contains($sName, '13m'))) {
+                        $activeDatasetFile = $sf['name'];
+                        break;
+                    } elseif ($totalSystemRows >= 45000 && $totalSystemRows <= 55000 && str_contains($sName, '50k')) {
+                        $activeDatasetFile = $sf['name'];
+                        break;
+                    } elseif ($totalSystemRows <= 600 && str_contains($sName, '500')) {
+                        $activeDatasetFile = $sf['name'];
+                        break;
+                    }
+                }
+            }
+
+            // Simpan sinkronisasi agar seluruh request konsisten
+            if (!empty($activeDatasetFile)) {
+                session(['active_dataset_file' => $activeDatasetFile]);
+                \Illuminate\Support\Facades\Cache::forever('active_dataset_file', $activeDatasetFile);
+            }
+        }
+
         if ($totalSystemRows === 0) {
             $activeColumnsMap = [];
         } else {
@@ -542,7 +587,8 @@ class DtsenController extends Controller
             'hasSalaryColumn',
             'srcDtsenFiles',
             'srcExportFiles',
-            'filteredTotal'
+            'filteredTotal',
+            'activeDatasetFile'
         );
 
         return $viewData;
@@ -899,6 +945,7 @@ class DtsenController extends Controller
 
         session([
             'uploaded_headers' => $uploadedHeaders,
+            'active_dataset_file' => $fileName,
             'uploaded_file_metrics' => [
                 'original_name' => $fileName,
                 'file_size_formatted' => DtsenImportService::formatBytes($fileSize),
@@ -908,6 +955,12 @@ class DtsenController extends Controller
                 'uploaded_at' => date('Y-m-d H:i:s'),
             ]
         ]);
+        \Illuminate\Support\Facades\Cache::forever('active_dataset_file', $fileName);
+        @file_put_contents(database_path('active_dataset.json'), json_encode([
+            'active_dataset_file' => $fileName,
+            'total_rows' => $totalSystemRows ?? $fileSize ?? 0,
+            'imported_at' => date('Y-m-d H:i:s')
+        ]));
     }
 
     /**
@@ -945,6 +998,13 @@ class DtsenController extends Controller
 
         try {
             $result = DtsenImportService::parseAndImportFile($file->getRealPath(), $extension, $originalName, $fileSize);
+            session(['active_dataset_file' => $originalName]);
+            \Illuminate\Support\Facades\Cache::forever('active_dataset_file', $originalName);
+            @file_put_contents(database_path('active_dataset.json'), json_encode([
+                'active_dataset_file' => $originalName,
+                'total_rows' => $result['total_rows'] ?? 0,
+                'imported_at' => date('Y-m-d H:i:s')
+            ]));
             return redirect()->route('dtsen.index')->with('success', "Berhasil mengimpor & kalkulasi " . number_format($result['total_rows']) . " baris data! ({$result['inserted']} baru, {$result['updated']} diperbarui, {$result['invalid']} terdeteksi warning/critical).");
         } catch (\Exception $e) {
             return redirect()->route('dtsen.index')->with('error', "Gagal mengimpor file: " . $e->getMessage());
@@ -1123,6 +1183,13 @@ class DtsenController extends Controller
 
         try {
             $result = DtsenImportService::parseAndImportFile($fullPath, $extension, $fileName, $fileSize);
+            session(['active_dataset_file' => $fileName]);
+            \Illuminate\Support\Facades\Cache::forever('active_dataset_file', $fileName);
+            @file_put_contents(database_path('active_dataset.json'), json_encode([
+                'active_dataset_file' => $fileName,
+                'total_rows' => $result['total_rows'] ?? 0,
+                'imported_at' => date('Y-m-d H:i:s')
+            ]));
             $msg = "Berhasil mengimpor & kalkulasi " . number_format($result['total_rows']) . " baris data dari folder 'src-dtsen/{$fileName}'! ({$result['invalid']} temuan warning/critical).";
             self::logActivity('SUCCESS', $msg);
             if ($request->ajax() || $request->wantsJson()) {
@@ -1349,6 +1416,8 @@ class DtsenController extends Controller
     public function generateDemo()
     {
         $count = DtsenImportService::generateDemoData(100);
+        session(['active_dataset_file' => 'demo_dtsen_sample.csv']);
+        \Illuminate\Support\Facades\Cache::forever('active_dataset_file', 'demo_dtsen_sample.csv');
         return redirect()->route('dtsen.index')->with('success', "Berhasil membuat {$count} data demo (100 baris dengan 30 error)!");
     }
 
@@ -1372,7 +1441,15 @@ class DtsenController extends Controller
             Demographic::query()->delete();
         }
 
-        session(['uploaded_headers' => null, 'uploaded_file_metrics' => null, 'dataset_summary_stats' => null, 'import_distinct_values' => null]);
+        session([
+            'uploaded_headers' => null, 
+            'uploaded_file_metrics' => null, 
+            'dataset_summary_stats' => null, 
+            'import_distinct_values' => null,
+            'active_dataset_file' => null
+        ]);
+        \Illuminate\Support\Facades\Cache::forget('active_dataset_file');
+        @unlink(database_path('active_dataset.json'));
         self::logActivity('SUCCESS', 'Seluruh data dataset di sistem berhasil dikosongkan.');
 
         return redirect()->route('dtsen.index')->with('success', 'Seluruh data dataset berhasil dikosongkan.');
@@ -1463,6 +1540,10 @@ class DtsenController extends Controller
      */
     public function getLogs(Request $request)
     {
+        if (!$request->wantsJson() && !$request->ajax()) {
+            return redirect()->route('dtsen.activity-logs');
+        }
+
         $logFile = storage_path('logs/dtsen_activity.log');
         $logs = [];
 
@@ -1500,9 +1581,108 @@ class DtsenController extends Controller
     }
 
     /**
-     * Kosongkan berkas log aktivitas sistem di web
+     * Halaman Utama Log Aktivitas Sistem (Tema Mengikuti Folder Formulir)
      */
-        /**
+    public function activityLogsPage(Request $request)
+    {
+        $logFile = storage_path('logs/dtsen_activity.log');
+        $allLogs = [];
+
+        if (!file_exists($logFile)) {
+            self::logActivity('INFO', 'Sistem PADU Analytics beroperasi dalam mode 100% Offline.');
+        }
+
+        if (file_exists($logFile)) {
+            $lines = file($logFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            foreach ($lines as $idx => $line) {
+                if (preg_match('/^\[(.*?)\]\s*\[(.*?)\]\s*(.*)$/', $line, $m)) {
+                    $allLogs[] = [
+                        'id' => $idx + 1,
+                        'timestamp' => $m[1],
+                        'level' => strtoupper(trim($m[2])),
+                        'message' => trim($m[3]),
+                    ];
+                } else {
+                    $allLogs[] = [
+                        'id' => $idx + 1,
+                        'timestamp' => date('Y-m-d H:i:s'),
+                        'level' => 'INFO',
+                        'message' => $line,
+                    ];
+                }
+            }
+        }
+
+        // Urutkan dari yang terbaru ke terlama
+        $allLogs = array_reverse($allLogs);
+
+        // Hitung statistik ringkas (KPI)
+        $totalLogs = count($allLogs);
+        $todayDate = date('Y-m-d');
+        $todayCount = 0;
+        $successCount = 0;
+        $warningCount = 0;
+        $errorCount = 0;
+        $infoCount = 0;
+
+        foreach ($allLogs as $l) {
+            if (str_starts_with($l['timestamp'], $todayDate)) {
+                $todayCount++;
+            }
+            if ($l['level'] === 'SUCCESS') $successCount++;
+            elseif ($l['level'] === 'WARNING' || $l['level'] === 'CANCEL') $warningCount++;
+            elseif ($l['level'] === 'ERROR') $errorCount++;
+            elseif ($l['level'] === 'INFO') $infoCount++;
+        }
+
+        // Filter Level & Pencarian Kata Kunci
+        $levelFilter = strtoupper(trim($request->input('level', 'ALL')));
+        $search = trim($request->input('search', ''));
+
+        $filtered = collect($allLogs)->filter(function ($item) use ($levelFilter, $search) {
+            if ($levelFilter !== 'ALL' && $levelFilter !== '') {
+                if ($levelFilter === 'WARNING') {
+                    if ($item['level'] !== 'WARNING' && $item['level'] !== 'CANCEL') return false;
+                } elseif ($item['level'] !== $levelFilter) {
+                    return false;
+                }
+            }
+            if (!empty($search)) {
+                $keyword = mb_strtolower($search);
+                if (!str_contains(mb_strtolower($item['message']), $keyword) &&
+                    !str_contains(mb_strtolower($item['timestamp']), $keyword) &&
+                    !str_contains(mb_strtolower($item['level']), $keyword)) {
+                    return false;
+                }
+            }
+            return true;
+        });
+
+        // Pagination 25 entri per halaman
+        $page = max(1, (int) $request->input('page', 1));
+        $perPage = 25;
+        $paginatedLogs = new \Illuminate\Pagination\LengthAwarePaginator(
+            $filtered->forPage($page, $perPage)->values(),
+            $filtered->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        return view('dtsen.activity-logs', [
+            'logs' => $paginatedLogs,
+            'totalLogs' => $totalLogs,
+            'todayCount' => $todayCount,
+            'successCount' => $successCount,
+            'warningCount' => $warningCount,
+            'errorCount' => $errorCount,
+            'infoCount' => $infoCount,
+            'levelFilter' => $levelFilter,
+            'search' => $search,
+        ]);
+    }
+
+    /**
      * Unduh Berkas Log Aktivitas Sistem
      */
     public function downloadLogs()
@@ -1517,13 +1697,17 @@ class DtsenController extends Controller
         ]);
     }
 
-public function clearLogs(Request $request)
+    public function clearLogs(Request $request)
     {
         $logFile = storage_path('logs/dtsen_activity.log');
         if (file_exists($logFile)) {
             @unlink($logFile);
         }
         self::logActivity('INFO', 'Log aktivitas sistem telah dibersihkan oleh pengguna.');
+
+        if (!$request->wantsJson() && !$request->ajax()) {
+            return redirect()->route('dtsen.activity-logs')->with('success', 'Seluruh catatan log aktivitas sistem berhasil dibersihkan.');
+        }
 
         return response()->json([
             'success' => true,

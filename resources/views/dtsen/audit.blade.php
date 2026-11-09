@@ -11,7 +11,7 @@
     <div class="p-5 sm:p-6 bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="space-y-1">
             <div class="flex items-center gap-2">
-                <span class="p-2 rounded-xl bg-rose-50 text-rose-600 text-lg font-bold">⚠️</span>
+                <span class="p-2 rounded-xl bg-rose-50 text-rose-600 text-lg font-bold flex items-center justify-center"><i class="fi fi-rr-triangle-warning"></i></span>
                 <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">
                     Tabel Data Temuan Error & Anomali
                 </h2>
@@ -27,10 +27,10 @@
         <div class="flex flex-wrap items-center gap-2 shrink-0">
             <!-- Unduh Laporan Error CSV -->
             <a href="{{ route('dtsen.export-errors') }}" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer">
-                <span>📥</span> Unduh Laporan Error (.CSV)
+                <i class="fi fi-rr-download"></i> <span>Unduh Laporan Error (.CSV)</span>
             </a>
             <a href="{{ route('dtsen.data') }}" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 cursor-pointer">
-                <span>📋</span> Buka Master Data Lengkap
+                <i class="fi fi-rr-table"></i> <span>Buka Master Data Lengkap</span>
             </a>
         </div>
     </div>
@@ -38,7 +38,7 @@
     @if(($totalSystemRows ?? $totalRows) === 0)
         <!-- Keadaan Kosong (Belum Ada Data) -->
         <div class="p-12 bg-white rounded-2xl border-2 border-dashed border-slate-200 text-center space-y-4">
-            <div class="w-16 h-16 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center text-3xl mx-auto font-bold shadow-xs">⚠️</div>
+            <div class="w-16 h-16 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center text-3xl mx-auto font-bold shadow-xs"><i class="fi fi-rr-triangle-warning"></i></div>
             <div class="space-y-1">
                 <h3 class="font-extrabold text-slate-900 text-base">Belum Ada Dataset yang Dimuat</h3>
                 <p class="text-xs text-slate-500 max-w-md mx-auto">
@@ -47,23 +47,23 @@
             </div>
             <div class="pt-2">
                 <a href="{{ route('dtsen.files') }}" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition-all inline-flex items-center gap-2 cursor-pointer">
-                    <span>⚡</span> Buka Manajemen Berkas
+                    <i class="fi fi-rr-bolt"></i> <span>Buka Manajemen Berkas</span>
                 </a>
             </div>
         </div>
     @elseif($totalErrors === 0)
         <!-- Keadaan Sempurna (0 Eror) -->
         <div class="p-12 bg-white rounded-2xl border border-emerald-200 text-center space-y-4 shadow-xs">
-            <div class="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-3xl mx-auto font-bold shadow-xs">🎉</div>
+            <div class="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-3xl mx-auto font-bold shadow-xs"><i class="fi fi-rr-sparkles"></i></div>
             <div class="space-y-1">
                 <h3 class="font-extrabold text-emerald-950 text-base">Luar Biasa! Tidak Ditemukan Error Data</h3>
                 <p class="text-xs text-emerald-700 max-w-md mx-auto">
-                    Seluruh <strong>{{ number_format($totalRows) }} baris data</strong> dinyatakan 🟢 <strong>100% Valid</strong> dan memenuhi standar integritas BPS-Bappenas DTSEN 2026.
+                    Seluruh <strong>{{ number_format($totalRows) }} baris data</strong> dinyatakan <strong>100% Valid</strong> dan memenuhi standar integritas BPS-Bappenas DTSEN 2026.
                 </p>
             </div>
             <div class="pt-2">
                 <a href="{{ route('dtsen.data') }}" class="px-5 py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs shadow-md transition-all inline-flex items-center gap-2 cursor-pointer">
-                    <span>📋</span> Jelajahi Tabel Master Data
+                    <i class="fi fi-rr-table"></i> <span>Jelajahi Tabel Master Data</span>
                 </a>
             </div>
         </div>
@@ -84,11 +84,11 @@
                         </a>
                         <a href="{{ route('dtsen.audit', array_merge(request()->except(['page', 'quality_status']), ['quality_status' => 'Critical'])) }}" 
                            class="px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all {{ $currStatus === 'Critical' ? 'bg-rose-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900' }}">
-                            🔴 Critical ({{ number_format($criticalCount) }})
+                            <i class="fi fi-rr-cross-circle text-rose-600"></i> Critical ({{ number_format($criticalCount) }})
                         </a>
                         <a href="{{ route('dtsen.audit', array_merge(request()->except(['page', 'quality_status']), ['quality_status' => 'Warning'])) }}" 
                            class="px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all {{ $currStatus === 'Warning' ? 'bg-amber-500 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900' }}">
-                            🟡 Warning ({{ number_format($warningCount) }})
+                            <i class="fi fi-rr-triangle-warning text-amber-500"></i> Warning ({{ number_format($warningCount) }})
                         </a>
                     </div>
                 </div>
@@ -99,7 +99,7 @@
                     <form method="GET" action="{{ route('dtsen.audit') }}" class="flex items-center gap-1.5">
                         <input type="hidden" name="quality_status" value="{{ $currStatus }}">
                         <div class="flex items-center bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 focus-within:ring-2 focus-within:ring-blue-500 focus-within:bg-white transition-all shadow-sm">
-                            <span class="text-slate-400 text-xs mr-2 shrink-0 select-none">🔍</span>
+                            <span class="text-slate-400 text-xs mr-2 shrink-0 select-none"><i class="fi fi-rr-search"></i></span>
                             <input type="text" 
                                    name="search" 
                                    id="audit_search_input"
@@ -122,7 +122,7 @@
                     <button type="button" 
                             @click="isMasked = !isMasked" 
                             class="px-3 py-1.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer">
-                        <span x-text="isMasked ? '👁️ Buka Sensor' : '🔒 Sensor NIK/Nama'">🔒 Sensor NIK/Nama</span>
+                        <span x-text="isMasked ? 'Buka Sensor' : 'Sensor NIK/Nama'">Sensor NIK/Nama</span>
                     </button>
                 </div>
             </div>
@@ -166,11 +166,11 @@
                                 <td class="py-3 px-3 text-center whitespace-nowrap">
                                     @if($isCrit)
                                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-100 text-rose-800 border border-rose-300">
-                                            🔴 CRITICAL
+                                            <i class="fi fi-rr-cross-circle"></i> CRITICAL
                                         </span>
                                     @else
                                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-100 text-amber-800 border border-amber-300">
-                                            🟡 WARNING
+                                            <i class="fi fi-rr-triangle-warning"></i> WARNING
                                         </span>
                                     @endif
                                 </td>
@@ -206,7 +206,7 @@
                                         @forelse($issues as $iss)
                                             @if(!empty($iss))
                                                 <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium {{ $isCrit ? 'bg-rose-50 text-rose-800 border border-rose-200' : 'bg-amber-50 text-amber-800 border border-amber-200' }}">
-                                                    <span>⚠️</span> {{ $iss }}
+                                                    <i class="fi fi-rr-triangle-warning text-rose-600"></i> <span>{{ $iss }}</span>
                                                 </span>
                                             @endif
                                         @empty
@@ -220,14 +220,14 @@
                                     <button type="button" 
                                             @click="openPreview({{ $row->id ?? 0 }})" 
                                             class="px-2.5 py-1 bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 font-bold text-[11px] rounded-lg shadow-2xs cursor-pointer inline-flex items-center gap-1 transition-all">
-                                        <span>👁️</span> Inspeksi
+                                        <i class="fi fi-rr-eye"></i> <span>Inspeksi</span>
                                     </button>
                                 </td>
                             </tr>
                         @empty
                             <tr>
                                 <td colspan="8" class="py-12 text-center text-slate-400">
-                                    <div class="text-3xl mb-2">🔍</div>
+                                    <div class="text-3xl mb-2 text-slate-400"><i class="fi fi-rr-search"></i></div>
                                     <p class="font-bold text-slate-700 text-sm">Tidak Ada Baris Error yang Sesuai dengan Kriteria</p>
                                     <p class="text-xs text-slate-500 mt-1">Coba sesuaikan kata kunci pencarian atau ubah filter tingkat masalah di atas.</p>
                                 </td>
@@ -252,29 +252,29 @@
                 <div class="p-4 rounded-xl border border-rose-100 bg-gradient-to-r from-rose-50/70 via-slate-50 to-amber-50/70 space-y-2.5">
                     <div class="flex items-center justify-between flex-wrap gap-2">
                         <div class="flex items-center gap-2">
-                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-rose-600 text-white text-xs font-black shadow-xs">📝</span>
+                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-rose-600 text-white text-xs font-black shadow-xs"><i class="fi fi-rr-edit"></i></span>
                             <span class="text-xs font-black uppercase tracking-wider text-rose-950">
                                 Keterangan & Panduan Penanganan Data Error
                             </span>
                         </div>
                         <span class="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 text-[10px] font-extrabold font-mono border border-rose-200">
-                            ⚠️ Wajib Ditindaklanjuti
+                            <i class="fi fi-rr-triangle-warning text-rose-600"></i> Wajib Ditindaklanjuti
                         </span>
                     </div>
 
                     <div class="p-3 bg-white/95 rounded-lg border border-slate-200 text-xs text-slate-700 space-y-2 leading-relaxed">
                         <p class="flex items-start gap-1.5">
-                            <span class="text-rose-600 font-bold shrink-0">📌</span>
+                            <span class="text-rose-600 font-bold shrink-0"><i class="fi fi-rr-thumbtack"></i></span>
                             <span>
-                                <strong>Apa Arti Data di Tabel Ini?</strong> Tabel ini khusus menyaring data warga yang memiliki cacat administrasi, seperti <u>nomor NIK/KK kurang dari 16 angka, nomor KK memuat desimal/titik, desil di luar rentang 1–10, atau nama memuat simbol</u>. Data berstatus 🔴 <strong>Critical</strong> <strong>wajib ditahan dan tidak boleh diajukan untuk pencairan bansos</strong> agar bantuan tidak gagal transfer atau menyalahi audit BPK.
+                                <strong>Apa Arti Data di Tabel Ini?</strong> Tabel ini khusus menyaring data warga yang memiliki cacat administrasi, seperti <u>nomor NIK/KK kurang dari 16 angka, nomor KK memuat desimal/titik, desil di luar rentang 1–10, atau nama memuat simbol</u>. Data berstatus <strong>Critical</strong> <strong>wajib ditahan dan tidak boleh diajukan untuk pencairan bansos</strong> agar bantuan tidak gagal transfer atau menyalahi audit BPK.
                             </span>
                         </p>
                         <div class="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-950 text-xs space-y-1">
                             <div class="font-extrabold flex items-center gap-1.5 text-emerald-900">
-                                <span>💡</span> Solusi & Langkah Perbaikan Mudah:
+                                <i class="fi fi-rr-bulb text-amber-500"></i> <span>Solusi & Langkah Perbaikan Mudah:</span>
                             </div>
                             <ul class="list-disc list-inside space-y-0.5 text-[11px] text-emerald-900 font-medium pl-1">
-                                <li><strong>Klik Tombol "👁️ Inspeksi":</strong> Tekan tombol inspeksi pada baris bersangkutan untuk melihat seluruh isi kolom dan menemukan letak cacat datanya.</li>
+                                <li><strong>Klik Tombol "Inspeksi":</strong> Tekan tombol inspeksi pada baris bersangkutan untuk melihat seluruh isi kolom dan menemukan letak cacat datanya.</li>
                                 <li><strong>Cocokkan Dokumen Fisik:</strong> Jika nomor KK memuat desimal (contoh: <code>.5</code> akibat salah format Excel), buka kartu keluarga fisik warga untuk mengoreksi angka aslinya.</li>
                                 <li><strong>Unduh Laporan Error (.CSV):</strong> Klik tombol hitam di kanan atas untuk mencetak atau mendownload daftar warga error ini agar petugas verifikator lapangan dapat melakukan cek pintu-ke-pintu (verval).</li>
                             </ul>

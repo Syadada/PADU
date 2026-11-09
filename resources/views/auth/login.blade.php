@@ -164,13 +164,13 @@
                             <button type="button" 
                                     @click="fillAccount('superadmin@padu.local', 'PasswordSuperAdmin2026!')" 
                                     class="demo-chip">
-                                <span class="chip-role">👑 Super Administrator</span>
+                                <span class="chip-role"><i class="fi fi-rr-crown"></i> Super Administrator</span>
                                 <span class="chip-email">superadmin@padu.local</span>
                             </button>
                             <button type="button" 
                                     @click="fillAccount('operator@padu.local', 'PasswordOperator2026!')" 
                                     class="demo-chip">
-                                <span class="chip-role">👤 Operator Data</span>
+                                <span class="chip-role"><i class="fi fi-rr-user"></i> Operator Data</span>
                                 <span class="chip-email">operator@padu.local</span>
                             </button>
                         </div>
@@ -184,7 +184,7 @@
                     <div class="user-detect-box">
                         <div class="user-detect-info">
                             <div class="user-avatar" :class="userInfo && userInfo.role === 'superadmin' ? 'avatar-superadmin' : (email === 'superadmin@padu.local' ? 'avatar-superadmin' : 'avatar-operator')">
-                                <span x-text="userInfo && userInfo.role === 'superadmin' ? '👑' : (email === 'superadmin@padu.local' ? '👑' : '👤')"></span>
+                                <span x-text="userInfo && userInfo.role === 'superadmin' ? 'Super Admin' : (email === 'superadmin@padu.local' ? 'Super Admin' : 'Operator')"></span>
                             </div>
                             <div>
                                 <div class="user-name" x-text="userInfo ? userInfo.name : (email === 'superadmin@padu.local' ? 'Super Administrator (Pimpinan)' : 'Operator Data DTSEN')"></div>

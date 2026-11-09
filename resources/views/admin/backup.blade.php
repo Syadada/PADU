@@ -19,7 +19,7 @@
                     Per BSSN No. 11/2024
                 </span>
                 <span class="px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider rounded-md bg-emerald-500/15 text-emerald-800 border border-emerald-400/30">
-                    🔒 Enkripsi ZIP AES-256 & SHA-256
+                    <i class="fi fi-rr-lock"></i> Enkripsi ZIP AES-256 & SHA-256
                 </span>
             </div>
             <h1 class="text-2xl font-black text-slate-900 mt-2 flex items-center gap-2">
@@ -31,10 +31,10 @@
         </div>
 
         <!-- Tombol Buat Backup Instan -->
-        <form action="{{ route('admin.backup.create') }}" method="POST" onsubmit="return confirm('⚠️ Buat arsip cadangan sistem terenkripsi AES-256 sekarang?');">
+        <form action="{{ route('admin.backup.create') }}" method="POST" onsubmit="return confirm('Buat arsip cadangan sistem terenkripsi AES-256 sekarang?');">
             @csrf
             <button type="submit" class="btn-primary-blue px-5 py-3 rounded-xl text-xs font-bold shadow-md flex items-center gap-2 cursor-pointer transition-all hover:scale-105 active:scale-95">
-                <span class="text-base">💾</span>
+                <i class="fi fi-rr-disk"></i>
                 <span>Buat Cadangan Baru (AES-256)</span>
             </button>
         </form>
@@ -44,7 +44,7 @@
     @if(session('success'))
         <div class="p-4 rounded-xl border border-emerald-300 text-emerald-900 text-xs font-semibold flex items-center gap-2 shadow-sm"
              style="background: rgba(209, 250, 229, 0.9);">
-            <span class="text-base">✅</span>
+            <i class="fi fi-rr-check-circle text-emerald-600"></i>
             <span>{{ session('success') }}</span>
         </div>
     @endif
@@ -52,7 +52,7 @@
     @if(session('error'))
         <div class="p-4 rounded-xl border border-rose-300 text-rose-900 text-xs font-semibold flex items-center gap-2 shadow-sm"
              style="background: rgba(254, 226, 226, 0.9);">
-            <span class="text-base">✕</span>
+            <i class="fi fi-rr-cross text-rose-600"></i>
             <span>{{ session('error') }}</span>
         </div>
     @endif
@@ -72,14 +72,14 @@
             <button type="button" 
                     @click="printDisasterSheet()" 
                     class="px-3.5 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold border border-amber-500 shadow-md transition-all flex items-center gap-1.5 cursor-pointer shrink-0 hover:scale-105 active:scale-95">
-                <span>🖨️</span>
+                <i class="fi fi-rr-print"></i>
                 <span x-text="hasPrintedDisaster ? 'Cetak Ulang Lembar DRP' : 'Cetak Lembar Brankas DRP'"></span>
             </button>
         </div>
 
         <div class="p-3 rounded-xl bg-amber-50/90 border border-amber-200 text-xs leading-relaxed text-amber-950 font-medium space-y-1">
             <p class="font-extrabold text-amber-900 flex items-center gap-1.5">
-                <span>⚠️</span> <span>PERBEDAAN FUNGSIONAL KRUSIAL:</span>
+                <i class="fi fi-rr-triangle-warning text-amber-500"></i> <span>PERBEDAAN FUNGSIONAL KRUSIAL:</span>
             </p>
             <p class="text-[11px] leading-relaxed">
                 Kunci ini <strong>BUKAN untuk verifikasi login 2FA HP</strong>. Kunci ini digunakan secara eksklusif apabila <strong>komputer server kantor rusak fisik / motherboard terbakar</strong> sehingga seluruh folder aplikasi harus dipindahkan ke PC server pengganti yang baru via skrip konsol <code>restore_hardware_bind.bat</code>.
@@ -95,7 +95,7 @@
                     PADU-••••-••••-••••-••••
                 </div>
                 <div class="text-[11px] text-amber-900 font-semibold leading-relaxed flex items-center justify-center gap-1.5">
-                    <span>🔒</span>
+                    <i class="fi fi-rr-lock"></i>
                     <span>Kode disembunyikan demi keamanan. Klik tombol <strong>"Cetak Lembar Brankas DRP"</strong> di atas untuk mencetak dokumen fisik berisikan kode ini.</span>
                 </div>
             </div>
@@ -109,14 +109,14 @@
                      draggable="false"
                      x-text="disasterKey"></div>
                 <p class="text-[10px] text-emerald-800 font-bold text-center">
-                    ✅ Dokumen brankas DRP telah dicetak & kode terbuka di layar
+                    <i class="fi fi-rr-check-circle text-emerald-600"></i> Dokumen brankas DRP telah dicetak & kode terbuka di layar
                 </p>
             </div>
         </div>
 
         <!-- Banner Anti-Copy Sesuai Instruksi User & Mitigasi BSSN -->
         <div class="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-[11px] text-rose-900 leading-relaxed font-semibold flex items-start gap-2 shadow-xs">
-            <span class="text-sm shrink-0">🔒</span>
+            <span class="text-sm shrink-0"><i class="fi fi-rr-lock"></i></span>
             <span><strong>Proteksi Anti-Copy Aktif:</strong> Demi standar mitigasi siber BSSN terhadap malware <em>clipboard sniffer</em>, Kunci Pemulihan Bencana ini <strong class="text-rose-950 font-black">TIDAK DAPAT DISALIN</strong> ke clipboard komputer. Kunci wajib dicatat secara manual dengan pulpen atau dicetak ke lembar fisik amplop brankas.</span>
         </div>
     </div>
@@ -125,7 +125,7 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
         <div class="glass-card-dark p-5 space-y-2">
             <div class="flex items-center gap-2 font-bold text-amber-400">
-                <span>🔐</span>
+                <i class="fi fi-rr-key"></i>
                 <span>Enkripsi AES-256 Otomatis</span>
             </div>
             <p class="text-slate-300 leading-relaxed text-[11px]">
@@ -134,7 +134,7 @@
         </div>
         <div class="glass-card-dark p-5 space-y-2">
             <div class="flex items-center gap-2 font-bold text-sky-400">
-                <span>🛡️</span>
+                <i class="fi fi-rr-shield-check"></i>
                 <span>Integritas Hash SHA-256</span>
             </div>
             <p class="text-slate-300 leading-relaxed text-[11px]">
@@ -143,7 +143,7 @@
         </div>
         <div class="glass-card-dark p-5 space-y-2">
             <div class="flex items-center gap-2 font-bold text-emerald-400">
-                <span>🏛️</span>
+                <i class="fi fi-rr-bank"></i>
                 <span>Prinsip Kedaulatan Mandiri</span>
             </div>
             <p class="text-slate-300 leading-relaxed text-[11px]">
@@ -156,7 +156,7 @@
     <div class="glass-card overflow-hidden">
         <div class="p-4 border-b border-slate-200/80 flex items-center justify-between">
             <h2 class="font-extrabold text-sm text-slate-800 flex items-center gap-2">
-                <span>📦</span>
+                <i class="fi fi-rr-box"></i>
                 <span>Daftar Berkas Cadangan Tersimpan (Offline Local Storage)</span>
             </h2>
             <span class="text-xs text-slate-500 font-bold bg-slate-100 px-2.5 py-1 rounded-lg">Total: {{ count($backups) }} berkas</span>
@@ -177,7 +177,7 @@
                     @forelse($backups as $b)
                         <tr class="hover:bg-slate-50/80 transition-colors">
                             <td class="py-3.5 px-4 font-mono font-bold text-slate-900 flex items-center gap-2">
-                                <span class="text-amber-500">🗜️</span>
+                                <span class="text-amber-500"><i class="fi fi-rr-compress"></i></span>
                                 <span>{{ $b['filename'] }}</span>
                             </td>
                             <td class="py-3.5 px-4 font-mono text-slate-600 whitespace-nowrap">
@@ -214,14 +214,14 @@
         <div class="modal-content-glass space-y-4">
             <div class="flex items-center justify-between border-b border-slate-200/80 pb-3">
                 <div class="flex items-center gap-2 text-emerald-600 font-bold text-base">
-                    <span class="text-xl">✅</span>
+                    <span class="text-xl text-emerald-600"><i class="fi fi-rr-check-circle"></i></span>
                     <span>Arsip Cadangan AES-256 Selesai Dibuat</span>
                 </div>
-                <button type="button" @click="showPassModal = false" class="text-slate-400 hover:text-slate-700 font-bold cursor-pointer">✕</button>
+                <button type="button" @click="showPassModal = false" class="text-slate-400 hover:text-slate-700 font-bold cursor-pointer flex items-center"><i class="fi fi-rr-cross"></i></button>
             </div>
 
             <div class="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs leading-relaxed space-y-1">
-                <p class="font-bold text-amber-950">⚠️ PENTING: CATAT ATAU SIMPAN KATA SANDI INI SEKARANG!</p>
+                <p class="font-bold text-amber-950 flex items-center gap-1.5"><i class="fi fi-rr-triangle-warning text-amber-600"></i> PENTING: CATAT ATAU SIMPAN KATA SANDI INI SEKARANG!</p>
                 <p>
                     Kata sandi enkripsi berkas ZIP ini digenerate secara acak 20 karakter berkekuatan tinggi dan <strong>hanya ditampilkan sekali ini saja</strong>.
                 </p>
@@ -247,7 +247,7 @@
 
             <div class="pt-3 text-right border-t border-slate-200/80">
                 <button type="button" @click="showPassModal = false" class="btn-primary-blue px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer">
-                    Saya Sudah Menyimpan Sandi Ini ✓
+                    Saya Sudah Menyimpan Sandi Ini <i class="fi fi-rr-check"></i>
                 </button>
             </div>
         </div>

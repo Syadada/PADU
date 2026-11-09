@@ -39,7 +39,8 @@ scratch/*.txt
 scratch/*.html
 scratch/script_*
 ~$*
-src-export/*.zip
+src-export/*
+!src-export/.gitkeep
 python/
 python_portable.zip
 

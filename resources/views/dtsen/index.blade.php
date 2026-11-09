@@ -52,7 +52,7 @@
     <div class="p-6 bg-white rounded-2xl border border-slate-400 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="space-y-1">
             <h2 class="text-xl font-extrabold text-slate-900 flex items-center gap-2">
-                <span class="p-2 rounded-xl bg-blue-50 text-blue-600 text-lg">📊</span> Dashboard Analitik & Quality Test (DTSEN 2026)
+                <span class="p-2 rounded-xl bg-blue-50 text-blue-600 text-lg flex items-center justify-center"><i class="fi fi-rr-apps"></i></span> Dashboard Analitik & Quality Test (DTSEN 2026)
             </h2>
             <p class="text-xs text-slate-500 font-medium">
                 Pengolahan Data Adaptif File CSV/XLSX, Relasi Otomatis KK-Individu, & Pengecekan Kualitas Standar Validasi Data.
@@ -60,23 +60,23 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-2.5 shrink-0" x-data="{ showExportModal: false, showTemplateModal: false, showClearModal: false }">
-            <button type="button" @click="openLogConsole()" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-black font-bold text-xs shadow-md transition-all flex items-center gap-2 border border-slate-700 whitespace-nowrap shrink-0 cursor-pointer">
-                <span>📋</span> Log Aktivitas System <span x-show="logCount > 0" class="px-2 py-0.5 rounded-full bg-blue-600 text-white text-[10px] font-bold" x-text="logCount"></span>
-            </button>
+            <a href="{{ route('dtsen.activity-logs') }}" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md transition-all flex items-center gap-2 border border-slate-700 whitespace-nowrap shrink-0 cursor-pointer text-decoration-none">
+                <i class="fi fi-rr-list-check"></i> <span>Log Aktivitas System</span> <span x-show="logCount > 0" class="px-2 py-0.5 rounded-full bg-blue-600 text-white text-[10px] font-bold" x-text="logCount"></span>
+            </a>
 
             @if($totalRows > 0)
                 <button @click="showExportModal = true" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer">
-                    <span>📤</span> Ekspor Data Paket (.ZIP)
+                    <i class="fi fi-rr-upload"></i> <span>Ekspor Data Paket (.ZIP)</span>
                 </button>
                 <button @click="showClearModal = true" class="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-sm transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer">
-                    <span>🗑️</span> Kosongkan Data
+                    <i class="fi fi-rr-trash"></i> <span>Kosongkan Data</span>
                 </button>
             @endif
 
             <!-- Dropdown Format Template Data -->
             <div class="relative shrink-0">
                 <button @click="showTemplateModal = !showTemplateModal" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all flex items-center gap-1.5 border border-slate-200 whitespace-nowrap cursor-pointer">
-                    <span>⬇️</span> Template Data ▾
+                    <i class="fi fi-rr-download"></i> <span>Template Data</span> <i class="fi fi-rr-angle-small-down"></i>
                 </button>
                 <div x-show="showTemplateModal" 
                      @click.away="showTemplateModal = false" 
@@ -84,10 +84,10 @@
                      class="absolute right-0 mt-2 w-52 bg-white rounded-2xl shadow-xl border border-slate-200 z-50 py-1.5 text-xs font-bold text-slate-700 space-y-0.5" 
                      style="display: none;">
                     <a href="{{ route('dtsen.template', ['format' => 'xlsx']) }}" class="block px-4 py-2.5 hover:bg-emerald-50 text-slate-900 flex items-center gap-2 transition-colors">
-                        <span>🟢</span> Template Excel (.xlsx)
+                        <i class="fi fi-rr-file-excel text-emerald-600"></i> <span>Template Excel (.xlsx)</span>
                     </a>
                     <a href="{{ route('dtsen.template', ['format' => 'csv']) }}" class="block px-4 py-2.5 hover:bg-blue-50 text-slate-900 flex items-center gap-2 transition-colors">
-                        <span>📄</span> Template CSV (.csv)
+                        <i class="fi fi-rr-file-spreadsheet text-blue-600"></i> <span>Template CSV (.csv)</span>
                     </a>
                 </div>
             </div>
@@ -99,7 +99,7 @@
                  style="display: none;">
                 <div @click.away="showClearModal = false" class="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-md p-6 space-y-4">
                     <div class="flex items-center gap-3 border-b border-slate-100 pb-3">
-                        <span class="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center font-bold text-lg">🗑️</span>
+                        <span class="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center font-bold text-lg"><i class="fi fi-rr-trash"></i></span>
                         <div>
                             <h3 class="font-extrabold text-slate-900 text-sm">Konfirmasi Kosongkan Data</h3>
                             <p class="text-[11px] text-slate-500">Hapus seluruh data di sistem incase salah upload file</p>
@@ -107,7 +107,7 @@
                     </div>
 
                     <div class="p-3.5 bg-rose-50 rounded-xl border border-rose-200 text-xs text-rose-900 space-y-1">
-                        <p><strong>⚠️ Perhatian:</strong> Tindakan ini akan menghapus <strong>{{ number_format($totalRows) }} baris data</strong> yang saat ini ada di sistem. Sistem akan dikosongkan secara total agar Anda bisa mengunggah file yang benar.</p>
+                        <p><i class="fi fi-rr-triangle-warning text-rose-600"></i> <strong>Perhatian:</strong> Tindakan ini akan menghapus <strong>{{ number_format($totalRows) }} baris data</strong> yang saat ini ada di sistem. Sistem akan dikosongkan secara total agar Anda bisa mengunggah file yang benar.</p>
                     </div>
 
                     <form action="{{ route('dtsen.clear') }}" method="POST" class="pt-2 flex items-center justify-end gap-2 border-t border-slate-100">
@@ -116,7 +116,7 @@
                             Batal
                         </button>
                         <button type="submit" class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer">
-                            <span>🗑️</span> Ya, Kosongkan Sekarang
+                            <i class="fi fi-rr-trash"></i> <span>Ya, Kosongkan Sekarang</span>
                         </button>
                     </form>
                 </div>
@@ -130,13 +130,13 @@
                 <div @click.away="showExportModal = false" class="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-lg p-6 space-y-4">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                         <div class="flex items-center gap-2">
-                            <span class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">📤</span>
+                            <span class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold"><i class="fi fi-rr-upload"></i></span>
                             <div>
                                 <h3 class="font-extrabold text-slate-900 text-sm">Opsi Ekspor Data DTSEN 2026</h3>
                                 <p class="text-[11px] text-slate-500">Pilih mode ekspor dan format berkas yang diinginkan</p>
                             </div>
                         </div>
-                        <button type="button" @click="showExportModal = false" class="text-slate-400 hover:text-slate-600 font-bold text-base">✕</button>
+                        <button type="button" @click="showExportModal = false" class="text-slate-400 hover:text-slate-600 font-bold text-base flex items-center"><i class="fi fi-rr-cross"></i></button>
                     </div>
 
                     <form action="{{ route('dtsen.export') }}" method="GET" class="space-y-4">
@@ -154,15 +154,15 @@
                                 <label for="dtsen_export_mode_as_is" class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-blue-50 cursor-pointer flex items-start gap-3 transition-colors">
                                     <input type="radio" id="dtsen_export_mode_as_is" name="mode" value="as_is" aria-label="Mode A: Ekspor As-Is (+ Catatan Error Audit)" checked class="mt-0.5 accent-blue-600">
                                     <div>
-                                        <strong class="block text-xs text-slate-900">📄 Mode A: Ekspor As-Is (+ Catatan Error Audit)</strong>
+                                        <strong class="block text-xs text-slate-900 flex items-center gap-1.5"><i class="fi fi-rr-document text-blue-600"></i> Mode A: Ekspor As-Is (+ Catatan Error Audit)</strong>
                                         <p class="text-[11px] text-slate-500">Mengekspor seluruh baris data apa adanya ditambah 1 kolom rincian temuan error. Urutan & indeks baris tetap presisi 100%.</p>
                                     </div>
                                 </label>
                                 <label for="dtsen_export_mode_cleaned_only" class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-emerald-50 cursor-pointer flex items-start gap-3 transition-colors">
                                     <input type="radio" id="dtsen_export_mode_cleaned_only" name="mode" value="cleaned_only" aria-label="Mode B: Ekspor Cleaned Only (Data Cacat Dibuang)" class="mt-0.5 accent-emerald-600">
                                     <div>
-                                        <strong class="block text-xs text-slate-900">🟢 Mode B: Ekspor Cleaned Only (Data Cacat Dibuang)</strong>
-                                        <p class="text-[11px] text-slate-500">Mengekspor hanya baris data yang 🟢 Valid. Disertai kolom <code>Original_Row_Index</code> untuk rekonsiliasi ke master file.</p>
+                                        <strong class="block text-xs text-slate-900 flex items-center gap-1.5"><i class="fi fi-rr-check-circle text-emerald-600"></i> Mode B: Ekspor Cleaned Only (Data Cacat Dibuang)</strong>
+                                        <p class="text-[11px] text-slate-500">Mengekspor hanya baris data yang Valid. Disertai kolom <code>Original_Row_Index</code> untuk rekonsiliasi ke master file.</p>
                                     </div>
                                 </label>
                             </div>
@@ -174,19 +174,19 @@
                             <div class="grid grid-cols-2 gap-3">
                                 <label for="dtsen_export_format_xlsx" class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-emerald-50 cursor-pointer flex flex-col items-center justify-center text-center">
                                     <input type="radio" id="dtsen_export_format_xlsx" name="format" value="xlsx" aria-label="Format Excel Terbaru (.xlsx)" checked class="mb-1 accent-emerald-600">
-                                    <span class="text-xs font-bold text-slate-900">🟢 Excel Terbaru (.xlsx)</span>
+                                    <span class="text-xs font-bold text-slate-900 flex items-center gap-1.5"><i class="fi fi-rr-file-excel text-emerald-600"></i> Excel Terbaru (.xlsx)</span>
                                 </label>
                                 <label for="dtsen_export_format_csv" class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-blue-50 cursor-pointer flex flex-col items-center justify-center text-center">
                                     <input type="radio" id="dtsen_export_format_csv" name="format" value="csv" aria-label="Format CSV File (.csv)" class="mb-1 accent-blue-600">
-                                    <span class="text-xs font-bold text-slate-900">📄 CSV File (.csv)</span>
+                                    <span class="text-xs font-bold text-slate-900 flex items-center gap-1.5"><i class="fi fi-rr-file-spreadsheet text-blue-600"></i> CSV File (.csv)</span>
                                 </label>
                             </div>
                         </div>
 
                         <!-- Catatan Penting Paket Dual File & Auto Reset -->
                         <div class="p-3 bg-amber-500 rounded-xl border border-amber-200 text-[11px] text-amber-900 space-y-1">
-                            <p><strong>📦 Lokasi Hasil Ekspor:</strong> Paket berkas (.ZIP) akan diekspor & disimpan langsung di folder <code class="text-blue-900 font-mono font-bold">src-export/</code> di root project (bebas memori & anti crash browser).</p>
-                            <p><strong>🧹 Auto-Purge Reset:</strong> Setelah ekspor selesai, data sistem dikosongkan agar bersih untuk pemrosesan file berikutnya.</p>
+                            <p><i class="fi fi-rr-folder"></i> <strong>Lokasi Hasil Ekspor:</strong> Paket berkas (.ZIP) akan diekspor & disimpan langsung di folder <code class="text-blue-900 font-mono font-bold">src-export/</code> di root project (bebas memori & anti crash browser).</p>
+                            <p><i class="fi fi-rr-broom"></i> <strong>Auto-Purge Reset:</strong> Setelah ekspor selesai, data sistem dikosongkan agar bersih untuk pemrosesan file berikutnya.</p>
                         </div>
 
                         <div class="pt-3 flex items-center justify-end gap-2 border-t border-slate-100">
@@ -194,7 +194,7 @@
                                 Batal
                             </button>
                             <button type="submit" @click="showExportModal = false" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer">
-                                <span>📥</span> Ekspor Langsung ke Folder src-export/
+                                <i class="fi fi-rr-download"></i> <span>Ekspor Langsung ke Folder src-export/</span>
                             </button>
                         </div>
                     </form>
@@ -208,7 +208,7 @@
         <div class="p-5 rounded-2xl space-y-3 shadow-md card-dark-slate" style="background-color: #0f172a !important; color: #ffffff !important; border: 1px solid #065f46 !important;">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                    <span class="p-1.5 rounded-xl text-emerald-400 font-bold text-sm" style="background-color: rgba(16, 185, 129, 0.2) !important;">📦</span>
+                    <span class="p-1.5 rounded-xl text-emerald-400 font-bold text-sm flex items-center justify-center" style="background-color: rgba(16, 185, 129, 0.2) !important;"><i class="fi fi-rr-box"></i></span>
                     <h4 class="text-xs font-black uppercase tracking-wider" style="color: #6ee7b7 !important;">
                         BERKAS HASIL EKSPOR TERSEDIA DI FOLDER <code class="px-2 py-0.5 rounded font-mono text-xs" style="background-color: #064e3b !important; color: #a7f3d0 !important; border: 1px solid #047857 !important;">src-export/</code>
                     </h4>
@@ -223,14 +223,14 @@
                     <div class="p-3.5 rounded-xl space-y-1.5" style="background-color: #1e293b !important; border: 1px solid #334155 !important;">
                         <div class="flex items-center justify-between gap-2">
                             <span class="text-xs font-bold truncate font-mono" style="color: #a7f3d0 !important;" title="{{ $exFile['name'] }}">
-                                📦 {{ $exFile['name'] }}
+                                <i class="fi fi-rr-box text-emerald-400"></i> {{ $exFile['name'] }}
                             </span>
                         </div>
                         <div class="flex items-center justify-between text-[11px] font-mono pt-1 border-t" style="border-color: #334155 !important; color: #94a3b8 !important;">
                             <span class="px-2 py-0.5 rounded font-bold" style="background-color: #020617 !important; color: #f59e0b !important; border: 1px solid #334155 !important;">
                                 {{ $exFile['size_formatted'] }}
                             </span>
-                            <span style="color: #cbd5e1 !important;">📅 {{ $exFile['modified_at'] }}</span>
+                            <span style="color: #cbd5e1 !important;"><i class="fi fi-rr-calendar"></i> {{ $exFile['modified_at'] }}</span>
                         </div>
                     </div>
                 @endforeach
@@ -243,7 +243,7 @@
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b pb-4" style="border-color: #334155 !important;">
             <div class="space-y-1">
                 <div class="flex items-center gap-2">
-                    <span class="p-2 rounded-xl text-blue-400 text-lg" style="background-color: rgba(59, 130, 246, 0.2);">⚡</span>
+                    <span class="p-2 rounded-xl text-blue-400 text-lg flex items-center justify-center" style="background-color: rgba(59, 130, 246, 0.2);"><i class="fi fi-rr-bolt"></i></span>
                     <h3 class="text-sm font-black uppercase tracking-wider" style="color: #ffffff !important;">
                         PILIH & PROSES DATA DARI FOLDER <code class="px-2 py-0.5 rounded font-mono text-xs" style="background-color: #1e3a8a !important; color: #93c5fd !important; border: 1px solid #1d4ed8 !important;">src-dtsen/</code>
                     </h3>
@@ -254,42 +254,52 @@
             </div>
             
             <a href="{{ route('dtsen.index') }}" class="btn-refresh-folder px-4 py-2 rounded-xl text-white text-xs font-bold transition-all shadow-md flex items-center gap-1.5 shrink-0 self-start md:self-auto cursor-pointer" style="background-color: #0284c7 !important; color: #ffffff !important; border: 1px solid #0369a1 !important;">
-                <span>🔄</span> Refresh Folder src-dtsen
+                <i class="fi fi-rr-refresh"></i> <span>Refresh Folder src-dtsen</span>
             </a>
         </div>
 
         @if(!empty($srcDtsenFiles) && count($srcDtsenFiles) > 0)
-            <form action="{{ route('dtsen.import-local') }}" method="POST" class="space-y-4" x-data="{ selectedFile: '{{ $srcDtsenFiles[0]['name'] }}', isProcessing: false }" @submit="isProcessing = true; startLocalImportSubmit($event)">
+            <form action="{{ route('dtsen.import-local') }}" method="POST" class="space-y-4" x-data="{ selectedFile: '{{ !empty($activeDatasetFile) ? $activeDatasetFile : ($srcDtsenFiles[0]['name'] ?? '') }}', isProcessing: false }" @submit="isProcessing = true; startLocalImportSubmit($event)">
                 @csrf
                 <div class="space-y-2.5">
                     <div class="block text-xs font-bold uppercase tracking-wider" style="color: #cbd5e1 !important;">
-                        📁 Berkas Tersedia di Folder <code class="font-mono" style="color: #93c5fd !important;">src-dtsen/</code> ({{ count($srcDtsenFiles) }} Berkas Terdeteksi):
+                        <i class="fi fi-rr-folder"></i> Berkas Tersedia di Folder <code class="font-mono" style="color: #93c5fd !important;">src-dtsen/</code> ({{ count($srcDtsenFiles) }} Berkas Terdeteksi):
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                         @foreach($srcDtsenFiles as $f)
+                            @php
+                                $isActiveThisFile = (isset($totalRows) && $totalRows > 0 && ($f['name'] === ($activeDatasetFile ?? '')));
+                            @endphp
                             <label for="dtsen_selected_file_{{ $loop->index }}"
                                    @click="selectedFile = '{{ $f['name'] }}'" 
                                    :class="selectedFile === '{{ $f['name'] }}' ? 'selected-card' : ''"
-                                   class="file-option-card flex items-start gap-3 relative overflow-hidden group"
-                                   style="background-color: #1e293b !important; color: #ffffff !important; border: 1px solid #334155 !important;">
+                                   class="file-option-card flex items-start gap-3 relative overflow-hidden group {{ $isActiveThisFile ? 'ring-2 ring-emerald-400 border-emerald-500' : '' }}"
+                                   style="background-color: {{ $isActiveThisFile ? '#064e3b' : '#1e293b' }} !important; color: #ffffff !important; border: 1px solid {{ $isActiveThisFile ? '#10b981' : '#334155' }} !important;">
                                 
                                 <input type="radio" id="dtsen_selected_file_{{ $loop->index }}" name="selected_file" value="{{ $f['name'] }}" aria-label="Pilih berkas {{ $f['name'] }}" x-model="selectedFile" class="mt-1 accent-blue-500">
                                 
                                 <div class="space-y-1 min-w-0 flex-1">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-base">
-                                            @if($f['extension'] === 'csv' || $f['extension'] === 'txt') 📄 @elseif($f['extension'] === 'xlsx' || $f['extension'] === 'xls') 🟢 @else 📁 @endif
-                                        </span>
-                                        <strong class="text-xs font-bold truncate block group-hover:text-blue-300 transition-colors" style="color: #ffffff !important;" title="{{ $f['name'] }}">
-                                            {{ $f['name'] }}
-                                        </strong>
+                                    <div class="flex items-center justify-between gap-2">
+                                        <div class="flex items-center gap-2 min-w-0">
+                                            <span class="text-base shrink-0">
+                                                @if($f['extension'] === 'csv' || $f['extension'] === 'txt') <i class="fi fi-rr-file-spreadsheet text-blue-400"></i> @elseif($f['extension'] === 'xlsx' || $f['extension'] === 'xls') <i class="fi fi-rr-file-excel text-emerald-400"></i> @else <i class="fi fi-rr-folder text-amber-400"></i> @endif
+                                            </span>
+                                            <strong class="text-xs font-bold truncate block group-hover:text-blue-300 transition-colors" style="color: #ffffff !important;" title="{{ $f['name'] }}">
+                                                {{ $f['name'] }}
+                                            </strong>
+                                        </div>
+                                        @if($isActiveThisFile)
+                                            <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-500 text-slate-950 flex items-center gap-1 shadow-2xs shrink-0">
+                                                <i class="fi fi-rr-check-circle"></i> SEDANG DIGUNAKAN
+                                            </span>
+                                        @endif
                                     </div>
                                     <div class="flex items-center gap-3 text-[11px] font-mono pt-1" style="color: #94a3b8 !important;">
                                         <span class="file-size-badge" style="background-color: #020617 !important; color: #f59e0b !important; border: 1px solid #334155 !important;">
                                             {{ $f['size_formatted'] }}
                                         </span>
-                                        <span>📅 {{ $f['modified_at'] }}</span>
+                                        <span><i class="fi fi-rr-calendar"></i> {{ $f['modified_at'] }}</span>
                                     </div>
                                 </div>
                             </label>
@@ -299,7 +309,7 @@
 
                 <div class="pt-3 flex flex-col sm:flex-row items-center justify-between gap-3 border-t" style="border-color: #334155 !important;">
                     <div class="text-xs flex items-center gap-2" style="color: #cbd5e1 !important;">
-                        <span>📍 Berkas Terpilih:</span>
+                        <span><i class="fi fi-rr-marker"></i> Berkas Terpilih:</span>
                         <code class="px-2.5 py-1 rounded font-mono text-xs" style="background-color: #020617 !important; color: #34d399 !important; border: 1px solid #334155 !important;" x-text="'src-dtsen/' + selectedFile"></code>
                     </div>
 
@@ -319,7 +329,7 @@
             <!-- Keadaan Kosong jika belum ada file di folder src-dtsen -->
             <div class="p-8 rounded-xl border border-dashed border-slate-700 bg-slate-800/40 text-center space-y-3">
                 <div class="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xl mx-auto font-bold">
-                    📁
+                    <i class="fi fi-rr-folder"></i>
                 </div>
                 <div class="space-y-1">
                     <h4 class="text-sm font-bold text-white">Folder <code class="text-amber-300 font-mono">src-dtsen/</code> Masih Kosong</h4>
@@ -334,7 +344,7 @@
                 </div>
                 <div>
                     <a href="{{ route('dtsen.index') }}" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-md transition-all inline-flex items-center gap-1.5 cursor-pointer">
-                        <span>🔄</span> Refresh Folder src-dtsen
+                        <i class="fi fi-rr-refresh"></i> <span>Refresh Folder src-dtsen</span>
                     </a>
                 </div>
             </div>
@@ -344,21 +354,21 @@
     <!-- Alert Notifikasi Flash Session -->
     @if(session('success'))
         <div class="p-4 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-900 font-bold text-xs flex items-center gap-2">
-            <span>✅</span> {{ session('success') }}
+            <i class="fi fi-rr-check-circle text-emerald-600"></i> <span>{{ session('success') }}</span>
         </div>
     @endif
     @if(session('error'))
         <div class="p-4 rounded-xl bg-rose-100 border border-rose-300 text-rose-900 font-bold text-xs flex items-center gap-2">
-            <span>❌</span> {{ session('error') }}
+            <i class="fi fi-rr-cross-circle text-rose-600"></i> <span>{{ session('error') }}</span>
         </div>
     @endif
 
     @if(($totalSystemRows ?? $totalRows) === 0)
         <!-- KETIKA SISTEM KOSONG (0 BARIS DATA) -> BERSIH TOTAL TANPA MENGHASILKAN HEADER KOSONG APA PUN -->
         <div class="p-12 bg-white rounded-2xl border-2 border-dashed border-slate-200 text-center space-y-3">
-            <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-2xl mx-auto font-bold">📂</div>
+            <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-2xl mx-auto font-bold"><i class="fi fi-rr-folder"></i></div>
             <h3 class="font-extrabold text-slate-900 text-base">Sistem Dalam Keadaan Bersih (Belum Ada File Data)</h3>
-            <p class="text-xs text-slate-500 max-w-md mx-auto">Silakan unggah berkas berformat <strong>.csv</strong> atau <strong>.xlsx</strong> menggunakan form di atas, atau klik tombol <strong>⚡ Demo Data (100 Baris / 30 Error)</strong> untuk memulai pengujian.</p>
+            <p class="text-xs text-slate-500 max-w-md mx-auto">Silakan unggah berkas berformat <strong>.csv</strong> atau <strong>.xlsx</strong> menggunakan form di atas, atau klik tombol <strong><i class="fi fi-rr-bolt"></i> Demo Data (100 Baris / 30 Error)</strong> untuk memulai pengujian.</p>
         </div>
     @else
         <!-- KARTU WARNA KUNING: METRIK STATISTIK & STANDAR VALIDASI DATA -->
@@ -366,7 +376,7 @@
             <div>
                 <div class="flex items-center justify-between border-b border-amber-200 pb-3 mb-3">
                     <h3 class="font-black text-amber-900 text-sm flex items-center gap-2 uppercase tracking-wide">
-                        <span>🧮</span> Ringkasan Metrik Kualitas Data & Evaluasi Adaptif
+                        <i class="fi fi-rr-shield-check"></i> <span>Ringkasan Metrik Kualitas Data & Evaluasi Adaptif</span>
                     </h3>
                     <span class="px-3 py-1 bg-amber-200/80 text-amber-900 rounded-full font-bold text-xs">
                         Metrik Adaptif File Upload
@@ -388,19 +398,19 @@
                         <strong class="text-xl font-black text-blue-900">{{ number_format($totalKk) }}</strong>
                     </div>
                     <div class="p-3 bg-emerald-100/90 rounded-xl border border-emerald-300 text-center">
-                        <span class="block text-[11px] font-bold text-emerald-800 uppercase">🟢 Data Valid</span>
+                        <span class="block text-[11px] font-bold text-emerald-800 uppercase flex items-center gap-1.5"><i class="fi fi-rr-check-circle text-emerald-600"></i> Data Valid</span>
                         <strong class="text-xl font-black text-emerald-950">{{ number_format($validCount) }}</strong>
                     </div>
                     <div class="p-3 bg-amber-100/90 rounded-xl border border-amber-300 text-center">
-                        <span class="block text-[11px] font-bold text-amber-900 uppercase">🟡 Missing Value</span>
+                        <span class="block text-[11px] font-bold text-amber-900 uppercase flex items-center gap-1.5"><i class="fi fi-rr-info text-amber-600"></i> Missing Value</span>
                         <strong class="text-xl font-black text-amber-950">{{ number_format($warningCount) }}</strong>
                     </div>
                     <div class="p-3 bg-rose-100/90 rounded-xl border border-rose-300 text-center">
-                        <span class="block text-[11px] font-bold text-rose-800 uppercase">🔴 Critical Error</span>
+                        <span class="block text-[11px] font-bold text-rose-800 uppercase flex items-center gap-1.5"><i class="fi fi-rr-cross-circle text-rose-600"></i> Critical Error</span>
                         <strong class="text-xl font-black text-rose-950">{{ number_format($criticalCount) }}</strong>
                     </div>
                     <div class="p-3 bg-purple-100/90 rounded-xl border border-purple-300 text-center">
-                        <span class="block text-[11px] font-bold text-purple-900 uppercase">⚠️ Multi-Error (3+)</span>
+                        <span class="block text-[11px] font-bold text-purple-900 uppercase flex items-center gap-1.5"><i class="fi fi-rr-triangle-warning text-purple-600"></i> Multi-Error (3+)</span>
                         <strong class="text-xl font-black text-purple-950">{{ number_format($multiErrorCount ?? 0) }}</strong>
                     </div>
                 </div>
@@ -408,7 +418,7 @@
 
             <div class="pt-3 border-t border-amber-200/80 text-xs leading-relaxed text-amber-900/90 space-y-1.5 font-medium">
                 <p>
-                    <strong>📌 Catatan Validasi & Relasi Standar Data:</strong> Berdasarkan standar pemeriksaan kualitas data DTSEN 2026, data diolah melalui pengecekan format (NIK & KK 16 digit), keabsahan nilai desil (1 s.d. 10), serta kelengkapan isian.
+                    <i class="fi fi-rr-thumbtack text-blue-600"></i> <strong>Catatan Validasi & Relasi Standar Data:</strong> Berdasarkan standar pemeriksaan kualitas data DTSEN 2026, data diolah melalui pengecekan format (NIK & KK 16 digit), keabsahan nilai desil (1 s.d. 10), serta kelengkapan isian.
                 </p>
             </div>
         </div>
@@ -425,11 +435,11 @@
                     @php
                         $activeSalaryFilters = [];
                         if (request('salary_search')) {
-                            $activeSalaryFilters['search'] = '🔍 "' . request('salary_search') . '"';
+                            $activeSalaryFilters['search'] = request('salary_search');
                         }
                         foreach ($importFilterableColumns as $cK => $cT) {
                             if (request('salary_' . $cK) && request('salary_' . $cK) !== 'semua') {
-                                $activeSalaryFilters[$cK] = '📌 ' . $cT . ': ' . request('salary_' . $cK);
+                                $activeSalaryFilters[$cK] = $cT . ': ' . request('salary_' . $cK);
                             }
                         }
                     @endphp
@@ -437,7 +447,7 @@
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-100 pb-3">
                         <div>
                             <h3 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
-                                <span>🔍</span> Filter Khusus Analisis Metrik Gaji Kelompok Subjek
+                                <i class="fi fi-rr-search"></i> <span>Filter Khusus Analisis Metrik Gaji Kelompok Subjek</span>
                             </h3>
                             <p class="text-xs text-slate-500">Tentukan kriteria kelompok (misal: Perempuan, SMA, Desil Kesejahteraan, Status Pekerjaan) untuk menghitung statistik gaji kelompok tersebut secara terpisah.</p>
                         </div>
@@ -469,7 +479,7 @@
                                     <select id="index_salary_{{ $colKey }}" name="salary_{{ $colKey }}" aria-label="Filter {{ $colTitle }}" class="w-full text-xs font-bold bg-blue-50 border border-blue-300 text-blue-900 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
                                         <option value="semua">Semua {{ $colTitle }}</option>
                                         @foreach($importColumnDistinctValues[$colKey] as $vItem)
-                                            <option value="{{ $vItem }}" {{ (request('salary_' . $colKey) == $vItem) ? 'selected' : '' }}>📌 {{ $vItem }}</option>
+                                            <option value="{{ $vItem }}" {{ (request('salary_' . $colKey) == $vItem) ? 'selected' : '' }}>{{ $vItem }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -479,10 +489,10 @@
 
                     <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
                         <a href="{{ request()->fullUrlWithQuery(array_fill_keys(array_merge(['salary_search'], array_map(fn($k) => 'salary_' . $k, array_keys($importFilterableColumns))), null)) }}" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all">
-                            🔄 Reset Filter Gaji
+                            <i class="fi fi-rr-refresh"></i> Reset Filter Gaji
                         </a>
                         <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center gap-1.5">
-                            <span>💵</span> Hitung Metrik Gaji Terfilter
+                            <i class="fi fi-rr-dollar"></i> <span>Hitung Metrik Gaji Terfilter</span>
                         </button>
                     </div>
                 </form>
@@ -493,7 +503,7 @@
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
                     <div class="space-y-1">
                         <div class="flex items-center gap-2">
-                            <span class="p-2 bg-emerald-100 text-emerald-800 rounded-xl text-lg font-bold">💵</span>
+                            <span class="p-2 bg-emerald-100 text-emerald-800 rounded-xl text-lg font-bold flex items-center justify-center"><i class="fi fi-rr-dollar"></i></span>
                             <h3 class="font-extrabold text-slate-900 text-base">Analisis Metrik Gaji & Pendapatan Subjek</h3>
                         </div>
                         <p class="text-xs text-slate-500 font-medium">Metrik kalkulasi otomatis Gaji Tertinggi (MAX), Terendah (MIN), Rata-Rata (AVG), dan Kumulatif (SUM) bereaksi terhadap filter yang Anda tentukan di atas.</p>
@@ -512,7 +522,7 @@
                     <!-- Rata-Rata Gaji -->
                     <div class="kpi-stat-card p-5 rounded-2xl border shadow-sm space-y-2 min-w-0" style="background-color: #eff6ff; border-color: #bfdbfe;">
                         <div class="flex items-center justify-between text-xs font-extrabold uppercase tracking-wider" style="color: #1e40af;">
-                            <span class="truncate">📊 Gaji Rata-Rata (AVG)</span>
+                            <span class="truncate flex items-center gap-1.5"><i class="fi fi-rr-stats text-blue-600"></i> Gaji Rata-Rata (AVG)</span>
                             <span class="px-2 py-0.5 rounded text-[10px] font-black shrink-0" style="background-color: #dbeafe; color: #1e3a8a;">AVG</span>
                         </div>
                         <div class="kpi-stat-value text-slate-900 font-mono" title="Rp {{ number_format($gajiAvg, 0, ',', '.') }}">
@@ -525,7 +535,7 @@
                     <!-- Gaji Tertinggi -->
                     <div class="kpi-stat-card p-5 rounded-2xl border shadow-sm space-y-2 min-w-0" style="background-color: #ecfdf5; border-color: #a7f3d0;">
                         <div class="flex items-center justify-between text-xs font-extrabold uppercase tracking-wider" style="color: #065f46;">
-                            <span class="truncate">📈 Gaji Tertinggi (MAX)</span>
+                            <span class="truncate flex items-center gap-1.5"><i class="fi fi-rr-chart-line-up text-emerald-600"></i> Gaji Tertinggi (MAX)</span>
                             <span class="px-2 py-0.5 rounded text-[10px] font-black shrink-0" style="background-color: #d1fae5; color: #064e3b;">MAX</span>
                         </div>
                         <div class="kpi-stat-value text-slate-900 font-mono" title="Rp {{ number_format($gajiMax, 0, ',', '.') }}">
@@ -544,7 +554,7 @@
                     <!-- Gaji Terendah -->
                     <div class="kpi-stat-card p-5 rounded-2xl border shadow-sm space-y-2 min-w-0" style="background-color: #fffbeb; border-color: #fde68a;">
                         <div class="flex items-center justify-between text-xs font-extrabold uppercase tracking-wider" style="color: #92400e;">
-                            <span class="truncate">📉 Gaji Terendah (MIN)</span>
+                            <span class="truncate flex items-center gap-1.5"><i class="fi fi-rr-chart-line-down text-rose-600"></i> Gaji Terendah (MIN)</span>
                             <span class="px-2 py-0.5 rounded text-[10px] font-black shrink-0" style="background-color: #fef3c7; color: #78350f;">MIN</span>
                         </div>
                         <div class="kpi-stat-value text-slate-900 font-mono" title="Rp {{ number_format($gajiMin, 0, ',', '.') }}">
@@ -563,7 +573,7 @@
                     <!-- Total Kumulatif Gaji -->
                     <div class="kpi-stat-card p-5 rounded-2xl border shadow-sm space-y-2 min-w-0" style="background-color: #faf5ff; border-color: #e9d5ff;">
                         <div class="flex items-center justify-between text-xs font-extrabold uppercase tracking-wider" style="color: #6b21a8;">
-                            <span class="truncate">💰 Total Kumulatif (SUM)</span>
+                            <span class="truncate flex items-center gap-1.5"><i class="fi fi-rr-dollar text-purple-600"></i> Total Kumulatif (SUM)</span>
                             <span class="px-2 py-0.5 rounded text-[10px] font-black shrink-0" style="background-color: #f3e8ff; color: #581c87;">SUM</span>
                         </div>
                         <div class="kpi-stat-value text-slate-900 font-mono" title="Rp {{ number_format($gajiSum, 0, ',', '.') }}">
@@ -595,7 +605,7 @@
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
                 <div>
                     <h3 class="font-extrabold text-slate-900 text-base flex items-center gap-2">
-                        <span>📈</span> Analitik Metrik & Diagram Top 5 / Bottom 5 Dinamis
+                        <i class="fi fi-rr-chart-pie-alt"></i> <span>Analitik Metrik & Diagram Top 5 / Bottom 5 Dinamis</span>
                     </h3>
                     <p class="text-xs text-slate-500 font-medium">Pilih variabel target dari file unggahan untuk menghitung statistik Nilai Maksimum, Minimum, Rata-Rata, & Peringkat.</p>
                 </div>
@@ -653,7 +663,7 @@
                 <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3">
                     <div class="flex items-center justify-between border-b border-slate-200 pb-2">
                         <h4 class="font-bold text-xs text-slate-800 uppercase flex items-center gap-1.5">
-                            <span>🏆</span> Top 5 Peringkat Teratas ({{ $activeColumnsMap[$kpiTargetVar] ?? $kpiTargetVar }})
+                            <i class="fi fi-rr-trophy"></i> <span>Top 5 Peringkat Teratas</span> ({{ $activeColumnsMap[$kpiTargetVar] ?? $kpiTargetVar }})
                         </h4>
                         <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded">5 TERATAS</span>
                     </div>
@@ -738,7 +748,7 @@
                 <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3">
                     <div class="flex items-center justify-between border-b border-slate-200 pb-2">
                         <h4 class="font-bold text-xs text-slate-800 uppercase flex items-center gap-1.5">
-                            <span>🔻</span> 5 Peringkat Terbawah ({{ $activeColumnsMap[$kpiTargetVar] ?? $kpiTargetVar }})
+                            <i class="fi fi-rr-caret-down"></i> <span>5 Peringkat Terbawah</span> ({{ $activeColumnsMap[$kpiTargetVar] ?? $kpiTargetVar }})
                         </h4>
                         <span class="px-2 py-0.5 bg-amber-100 text-amber-800 text-[10px] font-bold rounded">5 TERBAWAH</span>
                     </div>
@@ -826,7 +836,7 @@
             <div class="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-4">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-100 pb-3">
                     <div class="flex items-center gap-2">
-                        <span class="w-8 h-8 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center font-bold">⚠️</span>
+                        <span class="w-8 h-8 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center font-bold"><i class="fi fi-rr-triangle-warning"></i></span>
                         <div>
                             <h3 class="font-extrabold text-slate-900 text-sm">Audit Temuan Data Bermasalah / Error</h3>
                             <p class="text-xs text-slate-500">Temuan kesalahan baris data yang memerlukan perbaikan (NIK/KK Cacat, Missing Value, dll.)</p>
@@ -834,7 +844,7 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <a href="{{ route('dtsen.export-errors') }}" class="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-1.5">
-                            <span>📥</span> Unduh Laporan Error (.csv)
+                            <i class="fi fi-rr-download"></i> <span>Unduh Laporan Error (.csv)</span>
                         </a>
                     </div>
                 </div>
@@ -845,9 +855,9 @@
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-2">
                                     @if($issueRec->quality_status === 'Critical')
-                                        <span class="px-2 py-0.5 rounded-md bg-rose-600 text-white font-bold text-[10px]">🔴 CRITICAL</span>
+                                        <span class="px-2 py-0.5 rounded-md bg-rose-600 text-white font-bold text-[10px] flex items-center gap-1"><i class="fi fi-rr-cross-circle"></i> CRITICAL</span>
                                     @else
-                                        <span class="px-2 py-0.5 rounded-md bg-amber-500 text-white font-bold text-[10px]">🟡 WARNING</span>
+                                        <span class="px-2 py-0.5 rounded-md bg-amber-500 text-white font-bold text-[10px] flex items-center gap-1"><i class="fi fi-rr-triangle-warning"></i> WARNING</span>
                                     @endif
                                     <strong class="text-slate-900 text-xs">
                                         <span x-show="isMasked">{{ $issueRec->masked_nama ?? ($issueRec->nama ?? 'Subjek') }}</span>
@@ -855,7 +865,7 @@
                                     </strong>
                                 </div>
                                 <button @click="openPreview({{ $issueRec->id ?? 0 }})" class="px-2.5 py-1 bg-white hover:bg-slate-100 border text-slate-700 font-bold text-[11px] rounded-lg shadow-sm">
-                                    👁 Inspeksi Baris Data
+                                    <i class="fi fi-rr-eye"></i> Inspeksi Baris Data
                                 </button>
                             </div>
 
@@ -892,19 +902,19 @@
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
                 <div class="space-y-1">
                     <h3 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
-                        <span>📋</span> Tabel Data Terfilter ({{ number_format($records->total()) }} Baris Data)
+                        <i class="fi fi-rr-table"></i> <span>Tabel Data Terfilter</span> ({{ number_format($records->total()) }} Baris Data)
                     </h3>
-                    <p class="text-xs text-slate-500">Gunakan Search Engine di bawah ini atau filter pivot header (🔽) pada kolom tabel.</p>
+                    <p class="text-xs text-slate-500">Gunakan Search Engine di bawah ini atau filter pivot header pada kolom tabel.</p>
                 </div>
 
                 <div class="flex items-center gap-2 shrink-0">
                     <!-- Tombol Atur Kolom Tabel (Add & Delete Column Visibilities) -->
                     <button type="button" @click="showColumnModal = true" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl border border-slate-300 shadow-xs transition-all flex items-center gap-1.5 cursor-pointer">
-                        <span>⚙️</span> Atur Kolom Tabel (<span x-text="visibleCols.length"></span>/{{ count($activeColumnsMap) }})
+                        <i class="fi fi-rr-settings-sliders"></i> <span>Atur Kolom Tabel</span> (<span x-text="visibleCols.length"></span>/{{ count($activeColumnsMap) }})
                     </button>
                     <!-- Tombol Reset Filter Data -->
                     <a href="{{ route('dtsen.index') }}#tabel-data" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl border border-slate-300 shadow-xs transition-all flex items-center gap-1.5 cursor-pointer">
-                        <span>🔄</span> Reset Filter
+                        <i class="fi fi-rr-refresh"></i> <span>Reset Filter</span>
                     </a>
                     <span class="text-xs font-bold text-slate-500 bg-slate-50 px-3 py-2 rounded-xl border border-slate-200">Halaman {{ $records->currentPage() }} dari {{ $records->lastPage() }}</span>
                 </div>
@@ -916,11 +926,11 @@
                     <label for="dtsen_table_search" class="sr-only">Cari data tabel</label>
                     <input type="text" id="dtsen_table_search" name="search" value="{{ $search }}" autocomplete="off" aria-label="Cari data NIK, KK, Nama, Alamat, Wilayah" placeholder="Cari data?..." class="w-full pl-4 pr-16 py-2.5 bg-slate-50 border border-slate-300 text-slate-900 font-bold text-xs rounded-xl outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all shadow-xs">
                     @if(!empty($search))
-                        <a href="{{ route('dtsen.index') }}#tabel-data" class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-slate-700 font-extrabold text-xs">✕ Clear</a>
+                        <a href="{{ route('dtsen.index') }}#tabel-data" class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-slate-700 font-extrabold text-xs"><i class="fi fi-rr-cross-small"></i> Clear</a>
                     @endif
                 </div>
                 <button type="submit" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl shadow-sm transition-all flex items-center gap-1.5 shrink-0 cursor-pointer">
-                    <span>⚡</span> Cari Data
+                    <i class="fi fi-rr-search"></i> <span>Cari Data</span>
                 </button>
             </form>
 
@@ -930,7 +940,7 @@
                     <div class="flex items-center justify-between border-b border-slate-100 pb-3 shrink-0">
                         <div>
                             <h3 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
-                                <span>⚙️</span> Pengatur Tampilan Kolom Tabel (Terdeteksi Berkas Dataset CSV)
+                                <i class="fi fi-rr-settings-sliders"></i> <span>Pengatur Tampilan Kolom Tabel (Terdeteksi Berkas Dataset CSV)</span>
                             </h3>
                             <p class="text-xs text-slate-500">Centang atau hilangkan centang untuk memilih dari {{ count($activeColumnsMap) }} variabel terdeteksi yang tampil pada tabel data.</p>
                         </div>
@@ -942,7 +952,7 @@
                         @if(!empty($officialIndividuVars))
                             <div class="p-3 bg-blue-50/60 rounded-xl border border-blue-200 space-y-2">
                                 <h4 class="text-xs font-black uppercase text-blue-900 flex items-center gap-1.5 border-b border-blue-200 pb-1.5">
-                                    👤 Set Data Anggota Keluarga / Individu ({{ count($officialIndividuVars) }} Variabel Terdeteksi)
+                                    <i class="fi fi-rr-user"></i> Set Data Anggota Keluarga / Individu ({{ count($officialIndividuVars) }} Variabel Terdeteksi)
                                 </h4>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                                     @foreach($officialIndividuVars as $cKey => $cTitle)
@@ -959,7 +969,7 @@
                         @if(!empty($officialKeluargaVars))
                             <div class="p-3 bg-emerald-50/60 rounded-xl border border-emerald-200 space-y-2">
                                 <h4 class="text-xs font-black uppercase text-emerald-900 flex items-center gap-1.5 border-b border-emerald-200 pb-1.5">
-                                    🏠 Set Data Keluarga ({{ count($officialKeluargaVars) }} Variabel Terdeteksi)
+                                    <i class="fi fi-rr-home"></i> Set Data Keluarga ({{ count($officialKeluargaVars) }} Variabel Terdeteksi)
                                 </h4>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                                     @foreach($officialKeluargaVars as $cKey => $cTitle)
@@ -979,7 +989,7 @@
                         @if(!empty($extraCols))
                             <div class="p-3 bg-purple-50/60 rounded-xl border border-purple-200 space-y-2">
                                 <h4 class="text-xs font-black uppercase text-purple-900 flex items-center gap-1.5 border-b border-purple-200 pb-1.5">
-                                    📌 Variabel Berkas CSV / Custom ({{ count($extraCols) }} Variabel)
+                                    <i class="fi fi-rr-thumbtack"></i> Variabel Berkas CSV / Custom ({{ count($extraCols) }} Variabel)
                                 </h4>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                                     @foreach($extraCols as $cKey => $cTitle)
@@ -995,7 +1005,7 @@
 
                     <div class="pt-3 flex items-center justify-between border-t border-slate-100 shrink-0">
                         <button type="button" @click="resetCols()" class="text-xs font-black hover:opacity-80 transition-opacity cursor-pointer" style="color: #2563eb !important;">
-                            🔄 Tampilkan Semua Kolom
+                            <i class="fi fi-rr-refresh"></i> Tampilkan Semua Kolom
                         </button>
                         <button type="button" @click="showColumnModal = false" class="px-6 py-2.5 rounded-xl font-black text-xs shadow-md transition-all cursor-pointer" style="background-color: #0f172a; color: #ffffff !important;">
                             Selesai & Simpan
@@ -1056,35 +1066,45 @@
                                         <button type="button" @click.stop="open = !open" 
                                                 class="px-1.5 py-0.5 rounded transition-colors flex items-center gap-1 cursor-pointer"
                                                 :class="selectedVals.length > 0 ? 'bg-blue-600 text-white font-extrabold text-[10px] shadow-xs' : 'text-slate-400 hover:bg-slate-200 hover:text-slate-700'">
-                                            <span class="text-[10px]">🔽</span>
+                                            <i class="fi fi-rr-angle-small-down text-[11px]"></i>
                                             <span x-show="selectedVals.length > 0" class="text-[10px] font-black" x-text="selectedVals.length"></span>
                                         </button>
 
                                         <div x-show="open" @click.away="open = false" x-cloak 
-                                             class="absolute left-0 top-full mt-1.5 w-56 bg-white rounded-xl shadow-2xl border border-slate-200 p-3 z-50 space-y-2.5 text-slate-800 normal-case tracking-normal">
-                                            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
-                                                <span class="font-extrabold text-[11px] text-blue-900 uppercase">Filter: QC Status</span>
-                                                <button type="button" @click="open = false" class="text-slate-400 hover:text-slate-600 font-bold text-base">&times;</button>
+                                             class="absolute left-0 top-full mt-1.5 w-60 max-h-[min(480px,75vh)] bg-white rounded-xl shadow-2xl border border-slate-300 z-50 text-slate-800 normal-case tracking-normal flex flex-col">
+                                            <!-- Sticky Header -->
+                                            <div class="p-3 pb-2 border-b border-slate-200 flex items-center justify-between shrink-0 bg-slate-50 rounded-t-xl gap-2">
+                                                <span class="font-black text-xs text-blue-900 uppercase">Filter: QC Status</span>
+                                                <div class="flex items-center gap-1.5">
+                                                    <button type="button" @click.prevent.stop="applyFilter()" class="px-2 py-0.5 text-[10px] font-black bg-emerald-600 hover:bg-emerald-700 text-white rounded shadow-xs cursor-pointer">
+                                                        Terapkan
+                                                    </button>
+                                                    <button type="button" @click="open = false" class="text-slate-400 hover:text-slate-600 font-bold text-base cursor-pointer px-1">&times;</button>
+                                                </div>
                                             </div>
-                                            @php $qcItems = ['Valid', 'Warning', 'Critical']; @endphp
-                                            <div class="space-y-1 text-xs border border-slate-100 rounded-lg p-1">
+                                            <!-- Scrollable Body -->
+                                            <div class="p-2.5 flex-1 overflow-y-auto min-h-0 space-y-1 text-xs">
+                                                @php $qcItems = ['Valid', 'Warning', 'Critical']; @endphp
                                                 @foreach($qcItems as $qItem)
-                                                    <label class="flex items-center gap-2 px-2 py-1 rounded hover:bg-blue-50 cursor-pointer font-medium text-slate-700 transition-colors"
-                                                           :class="hasVal('{{ $qItem }}') ? 'bg-blue-50 font-bold text-blue-900' : ''">
+                                                    <label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-blue-50 cursor-pointer font-medium text-slate-700 transition-colors border border-transparent hover:border-blue-200"
+                                                           :class="hasVal('{{ $qItem }}') ? 'bg-blue-50 font-bold text-blue-900 border-blue-200' : ''">
                                                         <input type="checkbox" 
                                                                :checked="hasVal('{{ $qItem }}')" 
                                                                @change="toggleVal('{{ $qItem }}')"
                                                                class="accent-blue-600 rounded cursor-pointer">
-                                                        <span class="truncate text-xs">{{ $qItem }}</span>
+                                                        <span class="truncate text-xs">
+                                                            @if($qItem === 'Valid') <i class="fi fi-rr-check text-emerald-600"></i> Valid @elseif($qItem === 'Warning') <i class="fi fi-rr-triangle-warning text-amber-500"></i> Warning @else <i class="fi fi-rr-cross-circle text-rose-600"></i> Critical @endif
+                                                        </span>
                                                     </label>
                                                 @endforeach
                                             </div>
-                                            <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
-                                                <button type="button" @click.prevent.stop="clearFilter()" class="px-2.5 py-1.5 text-[11px] font-bold text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer">
+                                            <!-- Sticky Footer -->
+                                            <div class="p-2.5 px-3 border-t border-slate-200 flex items-center justify-between gap-2 shrink-0 bg-slate-50 rounded-b-xl sticky bottom-0 z-10">
+                                                <button type="button" @click.prevent.stop="clearFilter()" class="px-2.5 py-1 text-[11px] font-bold text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer border border-rose-200">
                                                     Reset
                                                 </button>
-                                                <button type="button" @click.prevent.stop="applyFilter()" class="px-3.5 py-1.5 text-xs font-black bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-sm transition-all flex items-center gap-1 cursor-pointer">
-                                                    <span>✓</span> Terapkan <span x-show="selectedVals.length > 0" x-text="'(' + selectedVals.length + ')'"></span>
+                                                <button type="button" @click.prevent.stop="applyFilter()" class="px-3.5 py-1 text-xs font-black bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-sm transition-all flex items-center gap-1 cursor-pointer">
+                                                    <i class="fi fi-rr-check"></i> <span>Terapkan</span> <span x-show="selectedVals.length > 0" x-text="'(' + selectedVals.length + ')'"></span>
                                                 </button>
                                             </div>
                                         </div>
@@ -1212,74 +1232,88 @@
                                             <button type="button" @click.stop="open = !open" 
                                                     class="px-1.5 py-0.5 rounded transition-colors flex items-center gap-1 cursor-pointer"
                                                     :class="selectedVals.length > 0 ? 'bg-blue-600 text-white font-extrabold text-[10px] shadow-xs' : 'text-slate-400 hover:bg-slate-200 hover:text-slate-700'">
-                                                <span class="text-[10px]">🔽</span>
+                                                <i class="fi fi-rr-angle-small-down text-[11px]"></i>
                                                 <span x-show="selectedVals.length > 0" class="text-[10px] font-black" x-text="selectedVals.length"></span>
                                             </button>
 
-                                            <!-- Popover Dropdown Filter Pivot Excel Multi-Select -->
+                                            <!-- Popover Dropdown Filter Pivot Excel Multi-Select (Explicit Constraints) -->
                                             <div x-show="open" @click.away="open = false" x-cloak 
-                                                 class="absolute top-full mt-1.5 w-72 bg-white rounded-xl shadow-2xl border border-slate-200 p-3 z-50 space-y-2.5 text-slate-800 normal-case tracking-normal {{ $loop->index > 3 ? 'right-0' : 'left-0' }}">
-                                                <div class="flex items-center justify-between border-b border-slate-100 pb-2">
-                                                    <span class="font-extrabold text-[11px] text-blue-900 uppercase">Filter: {{ $colTitle }}</span>
-                                                    <button type="button" @click="open = false" class="text-slate-400 hover:text-slate-600 font-bold text-base">&times;</button>
-                                                </div>
-
-                                                @if($colKey === 'usia' || $colKey === 'umur')
-                                                    <div class="bg-blue-50/70 p-2.5 rounded-lg border border-blue-200 space-y-2 text-xs">
-                                                        <span class="font-extrabold text-blue-900 text-[11px] uppercase tracking-wide flex items-center gap-1">
-                                                            <span>🎂</span> Input Rentang Usia (Min - Max)
-                                                        </span>
-                                                        <div class="flex items-center gap-1.5">
-                                                            <input type="number" id="idx_min_age_{{ $colKey }}" name="min_age_{{ $colKey }}" aria-label="Usia Minimum" x-model="minAgeVal" min="0" max="120" placeholder="Min" class="w-1/2 text-xs bg-white border border-slate-300 rounded px-2 py-1 outline-none focus:ring-2 focus:ring-blue-500">
-                                                            <span class="text-slate-400 font-bold text-xs">s.d.</span>
-                                                            <input type="number" id="idx_max_age_{{ $colKey }}" name="max_age_{{ $colKey }}" aria-label="Usia Maksimum" x-model="maxAgeVal" min="0" max="120" placeholder="Max" class="w-1/2 text-xs bg-white border border-slate-300 rounded px-2 py-1 outline-none focus:ring-2 focus:ring-blue-500">
-                                                        </div>
-                                                        <button type="button" @click.prevent.stop="addCustomAgeRange()" class="w-full py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg transition-colors shadow-sm cursor-pointer flex items-center justify-center leading-normal">
-                                                            + Terapkan Rentang Usia
+                                                 class="absolute top-full mt-1.5 rounded-xl border border-slate-300 text-slate-800 normal-case tracking-normal {{ $loop->index > 3 ? 'right-0' : 'left-0' }}"
+                                                 style="width: 320px; max-width: 90vw; max-height: 480px; box-shadow: 0 10px 30px -5px rgba(0,0,0,0.25); display: flex; flex-direction: column; overflow: hidden; background: #ffffff; z-index: 9999;">
+                                                
+                                                <!-- Sticky Header -->
+                                                <div class="p-3 pb-2 border-b border-slate-200 flex items-center justify-between shrink-0 bg-slate-50 rounded-t-xl gap-2" style="flex-shrink: 0;">
+                                                    <span class="font-black text-xs text-blue-900 uppercase truncate">Filter: {{ $colTitle }}</span>
+                                                    <div class="flex items-center gap-1.5 shrink-0">
+                                                        <button type="button" @click.prevent.stop="applyFilter({{ json_encode($importColumnDistinctValues[$colKey] ?? []) }})" 
+                                                                class="px-2 py-0.5 text-[10px] font-black bg-emerald-600 hover:bg-emerald-700 text-white rounded shadow-xs cursor-pointer"
+                                                                title="Terapkan Filter Sekarang">
+                                                            Terapkan
                                                         </button>
+                                                        <button type="button" @click="open = false" class="text-slate-400 hover:text-slate-600 font-bold text-base cursor-pointer px-1 leading-none">&times;</button>
                                                     </div>
-                                                @endif
-
-                                                 <input type="text" id="idx_search_val_{{ $colKey }}" name="search_val_{{ $colKey }}" aria-label="Cari nilai {{ $colTitle }}" x-model="searchVal" @keydown.enter.prevent.stop="applyFilter({{ json_encode($importColumnDistinctValues[$colKey] ?? []) }})" placeholder="Cari nilai..." class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 outline-none focus:ring-2 focus:ring-blue-500">
-
-                                                <div class="max-h-56 overflow-y-auto space-y-1 text-xs pr-1 border border-slate-100 rounded-lg p-1" style="max-height: 220px; overflow-y: auto;">
-                                                    @if(isset($importColumnDistinctValues[$colKey]) && count($importColumnDistinctValues[$colKey]) > 0)
-                                                        <label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-100 cursor-pointer font-bold text-blue-600 border-b border-slate-100 pb-1.5 mb-1">
-                                                            <input type="checkbox" 
-                                                                   id="idx_select_all_{{ $colKey }}"
-                                                                   name="select_all_{{ $colKey }}"
-                                                                   aria-label="Pilih atau hapus semua {{ $colTitle }}"
-                                                                   :checked="selectedVals.length >= {{ count($importColumnDistinctValues[$colKey]) }}" 
-                                                                   @change="selectAll({{ json_encode($importColumnDistinctValues[$colKey]) }})"
-                                                                   class="accent-blue-600 rounded cursor-pointer">
-                                                            <span>(Pilih / Hapus Semua)</span>
-                                                        </label>
-
-                                                        @foreach($importColumnDistinctValues[$colKey] as $dIndex => $dItem)
-                                                            <label x-show="!searchVal || {{ json_encode(strtolower($dItem)) }}.includes(searchVal.toLowerCase())"
-                                                                   class="flex items-center gap-2 px-2 py-1 rounded hover:bg-blue-50 cursor-pointer font-medium text-slate-700 transition-colors"
-                                                                   :class="hasVal({{ json_encode($dItem) }}) ? 'bg-blue-50 font-bold text-blue-900' : ''">
-                                                                <input type="checkbox" 
-                                                                       id="idx_item_{{ $colKey }}_{{ $dIndex }}"
-                                                                       name="filter_{{ $colKey }}[]"
-                                                                       aria-label="{{ $dItem }}"
-                                                                       :checked="hasVal({{ json_encode($dItem) }})" 
-                                                                       @change="toggleVal({{ json_encode($dItem) }})"
-                                                                       class="accent-blue-600 rounded cursor-pointer">
-                                                                <span class="truncate text-xs">{{ $dItem }}</span>
-                                                            </label>
-                                                        @endforeach
-                                                    @else
-                                                        <p class="text-xs text-slate-400 italic px-2 py-1">Tidak ada data variasi.</p>
-                                                    @endif
                                                 </div>
 
-                                                <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
-                                                    <button type="button" @click.prevent.stop="clearFilter()" class="px-2.5 py-1.5 text-[11px] font-bold text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer">
+                                                <!-- Scrollable Content Body -->
+                                                <div class="p-3 flex-1 overflow-y-auto min-h-0 space-y-2.5 scrollbar-thin" style="flex: 1 1 auto; overflow-y: auto;">
+                                                    @if($colKey === 'usia' || $colKey === 'umur')
+                                                        <div class="bg-blue-50/70 p-2.5 rounded-lg border border-blue-200 space-y-2 text-xs">
+                                                            <span class="font-extrabold text-blue-900 text-[11px] uppercase tracking-wide flex items-center gap-1">
+                                                                <i class="fi fi-rr-cake-birthday"></i> <span>Input Rentang Usia (Min - Max)</span>
+                                                            </span>
+                                                            <div class="flex items-center gap-1.5">
+                                                                <input type="number" id="idx_min_age_{{ $colKey }}" name="min_age_{{ $colKey }}" aria-label="Usia Minimum" x-model="minAgeVal" min="0" max="120" placeholder="Min" class="w-1/2 text-xs bg-white border border-slate-300 rounded px-2 py-1 outline-none focus:ring-2 focus:ring-blue-500">
+                                                                <span class="text-slate-400 font-bold text-xs">s.d.</span>
+                                                                <input type="number" id="idx_max_age_{{ $colKey }}" name="max_age_{{ $colKey }}" aria-label="Usia Maksimum" x-model="maxAgeVal" min="0" max="120" placeholder="Max" class="w-1/2 text-xs bg-white border border-slate-300 rounded px-2 py-1 outline-none focus:ring-2 focus:ring-blue-500">
+                                                            </div>
+                                                            <button type="button" @click.prevent.stop="addCustomAgeRange()" class="w-full py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg transition-colors shadow-sm cursor-pointer flex items-center justify-center leading-normal">
+                                                                + Terapkan Rentang Usia
+                                                            </button>
+                                                        </div>
+                                                    @endif
+
+                                                    <input type="text" id="idx_search_val_{{ $colKey }}" name="search_val_{{ $colKey }}" aria-label="Cari nilai {{ $colTitle }}" x-model="searchVal" @keydown.enter.prevent.stop="applyFilter({{ json_encode($importColumnDistinctValues[$colKey] ?? []) }})" placeholder="Cari nilai..." class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 outline-none focus:ring-2 focus:ring-blue-500">
+
+                                                    <div style="max-height: 200px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 0.5rem; padding: 0.25rem; background: #ffffff;">
+                                                        @if(isset($importColumnDistinctValues[$colKey]) && count($importColumnDistinctValues[$colKey]) > 0)
+                                                            <label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-100 cursor-pointer font-bold text-blue-600 border-b border-slate-100 pb-1.5 mb-1">
+                                                                <input type="checkbox" 
+                                                                       id="idx_select_all_{{ $colKey }}"
+                                                                       name="select_all_{{ $colKey }}"
+                                                                       aria-label="Pilih atau hapus semua {{ $colTitle }}"
+                                                                       :checked="selectedVals.length >= {{ count($importColumnDistinctValues[$colKey]) }}" 
+                                                                       @change="selectAll({{ json_encode($importColumnDistinctValues[$colKey]) }})"
+                                                                       class="accent-blue-600 rounded cursor-pointer">
+                                                                <span>(Pilih / Hapus Semua)</span>
+                                                            </label>
+
+                                                            @foreach($importColumnDistinctValues[$colKey] as $dIndex => $dItem)
+                                                                <label x-show="!searchVal || {{ json_encode(strtolower($dItem)) }}.includes(searchVal.toLowerCase())"
+                                                                       class="flex items-center gap-2 px-2 py-1 rounded hover:bg-blue-50 cursor-pointer font-medium text-slate-700 transition-colors"
+                                                                       :class="hasVal({{ json_encode($dItem) }}) ? 'bg-blue-50 font-bold text-blue-900' : ''">
+                                                                    <input type="checkbox" 
+                                                                           id="idx_item_{{ $colKey }}_{{ $dIndex }}"
+                                                                           name="filter_{{ $colKey }}[]"
+                                                                           aria-label="{{ $dItem }}"
+                                                                           :checked="hasVal({{ json_encode($dItem) }})" 
+                                                                           @change="toggleVal({{ json_encode($dItem) }})"
+                                                                           class="accent-blue-600 rounded cursor-pointer">
+                                                                    <span class="truncate text-xs">{{ $dItem }}</span>
+                                                                </label>
+                                                            @endforeach
+                                                        @else
+                                                            <p class="text-xs text-slate-400 italic px-2 py-1">Tidak ada data variasi.</p>
+                                                        @endif
+                                                    </div>
+                                                </div>
+
+                                                <!-- Sticky Pinned Footer -->
+                                                <div style="padding: 0.625rem 0.75rem; border-top: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; flex-shrink: 0; background: #f8fafc;">
+                                                    <button type="button" @click.prevent.stop="clearFilter()" class="px-2.5 py-1.5 text-[11px] font-bold text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer border border-rose-200">
                                                         Reset
                                                     </button>
                                                     <button type="button" @click.prevent.stop="applyFilter({{ json_encode($importColumnDistinctValues[$colKey] ?? []) }})" class="px-3.5 py-1.5 text-xs font-black bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-sm transition-all flex items-center gap-1 cursor-pointer">
-                                                        <span>✓</span> Terapkan <span x-show="selectedVals.length > 0" x-text="'(' + selectedVals.length + ')'"></span>
+                                                        <i class="fi fi-rr-check"></i> <span>Terapkan</span> <span x-show="selectedVals.length > 0" x-text="'(' + selectedVals.length + ')'"></span>
                                                     </button>
                                                 </div>
                                             </div>
@@ -1301,15 +1335,15 @@
                                         $tooltipStr = !empty($errList) ? implode(' | ', $errList) : '';
                                     @endphp
                                     @if($row->quality_status === 'Valid' && $errCount === 0)
-                                        <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px] whitespace-nowrap">🟢 Valid</span>
+                                        <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px] whitespace-nowrap flex items-center gap-1"><i class="fi fi-rr-check"></i> Valid</span>
                                     @elseif($errCount >= 3)
-                                        <span class="px-2.5 py-0.5 rounded-full bg-rose-600 text-white font-black text-[10px] whitespace-nowrap shadow-xs" title="{{ $tooltipStr }}">🔴 {{ $errCount }} EROR TERDETEKSI</span>
+                                        <span class="px-2.5 py-0.5 rounded-full bg-rose-600 text-white font-black text-[10px] whitespace-nowrap shadow-xs flex items-center gap-1" title="{{ $tooltipStr }}"><i class="fi fi-rr-cross-circle"></i> {{ $errCount }} EROR TERDETEKSI</span>
                                     @elseif($errCount == 2)
-                                        <span class="px-2.5 py-0.5 rounded-full bg-rose-500 text-white font-bold text-[10px] whitespace-nowrap" title="{{ $tooltipStr }}">🔴 2 EROR</span>
+                                        <span class="px-2.5 py-0.5 rounded-full bg-rose-500 text-white font-bold text-[10px] whitespace-nowrap flex items-center gap-1" title="{{ $tooltipStr }}"><i class="fi fi-rr-cross-circle"></i> 2 EROR</span>
                                     @elseif($row->quality_status === 'Warning')
-                                        <span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold text-[10px] whitespace-nowrap" title="{{ $tooltipStr }}">🟡 Warning (1 Eror)</span>
+                                        <span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold text-[10px] whitespace-nowrap flex items-center gap-1" title="{{ $tooltipStr }}"><i class="fi fi-rr-triangle-warning"></i> Warning (1 Eror)</span>
                                     @else
-                                        <span class="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 font-bold text-[10px] whitespace-nowrap" title="{{ $tooltipStr }}">🔴 Critical (1 Eror)</span>
+                                        <span class="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 font-bold text-[10px] whitespace-nowrap flex items-center gap-1" title="{{ $tooltipStr }}"><i class="fi fi-rr-cross-circle"></i> Critical (1 Eror)</span>
                                     @endif
                                 </td>
 
@@ -1351,7 +1385,7 @@
 
                                 <td class="px-4 py-3 text-xs text-center whitespace-nowrap">
                                     <button @click="openPreview({{ $row->id }})" class="px-2.5 py-1 bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 font-bold text-[11px] rounded-lg shadow-sm">
-                                        👁 Detail
+                                        <i class="fi fi-rr-eye"></i> Detail
                                     </button>
                                 </td>
                             </tr>
@@ -1359,14 +1393,14 @@
                             <tr>
                                 <td colspan="{{ count($activeColumnsMap) + 3 }}" class="px-4 py-16 text-center">
                                     <div class="space-y-3 max-w-md mx-auto py-6">
-                                        <div class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center text-2xl font-bold mx-auto shadow-xs">🔍</div>
+                                        <div class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center text-2xl font-bold mx-auto shadow-xs"><i class="fi fi-rr-search"></i></div>
                                         <div class="space-y-1">
                                             <h4 class="font-extrabold text-sm text-slate-800">Tidak ada data yang sesuai dengan kriteria filter</h4>
-                                            <p class="text-xs text-slate-500 font-medium">Coba sesuaikan kata kunci pencarian atau bersihkan filter pivot header kolom (🔽).</p>
+                                            <p class="text-xs text-slate-500 font-medium">Coba sesuaikan kata kunci pencarian atau bersihkan filter pivot header kolom.</p>
                                         </div>
                                         <div class="pt-2">
                                             <a href="{{ request()->fullUrlWithQuery(array_merge(['search' => null, 'quality_status' => null, 'filter_col' => null, 'filter_val' => null, 'page' => null], array_fill_keys(array_keys($activeColumnsMap), null))) }}#tabel-data" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-sm transition-all inline-flex items-center gap-1.5 cursor-pointer">
-                                                <span>🔄</span> Reset Semua Filter
+                                                <i class="fi fi-rr-refresh"></i> <span>Reset Semua Filter</span>
                                             </a>
                                         </div>
                                     </div>
@@ -1397,13 +1431,13 @@
         <div @click.away="showPreviewModal = false" class="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div class="flex items-center gap-2">
-                    <span class="w-8 h-8 rounded-xl bg-blue-100 text-blue-800 flex items-center justify-center font-bold">📋</span>
+                    <span class="w-8 h-8 rounded-xl bg-blue-100 text-blue-800 flex items-center justify-center font-bold"><i class="fi fi-rr-document"></i></span>
                     <div>
                         <h3 class="font-extrabold text-slate-900 text-sm">Inspeksi Rincian Baris Data Subjek</h3>
                         <p class="text-[11px] text-slate-500">Detail data individu & relasi aset rumah tangga pengampu</p>
                     </div>
                 </div>
-                <button type="button" @click="showPreviewModal = false" class="text-slate-400 hover:text-slate-600 font-bold text-base">✕</button>
+                <button type="button" @click="showPreviewModal = false" class="text-slate-400 hover:text-slate-600 font-bold text-base flex items-center"><i class="fi fi-rr-cross"></i></button>
             </div>
 
             <template x-if="previewData">
@@ -1424,7 +1458,7 @@
                         <div class="p-4 bg-rose-50 rounded-xl border border-rose-200 space-y-2">
                             <div class="flex items-center justify-between">
                                 <strong class="text-rose-900 font-extrabold text-xs flex items-center gap-1.5">
-                                    <span>🔴</span> Rincian Temuan Error Audit Kualitas Data
+                                    <i class="fi fi-rr-triangle-warning text-rose-600"></i> <span>Rincian Temuan Error Audit Kualitas Data</span>
                                 </strong>
                                 <span class="px-2.5 py-0.5 rounded-full bg-rose-600 text-white font-extrabold text-[10px]"
                                       x-text="previewData.quality_issues.length + ' EROR TERDETEKSI'"></span>
@@ -1461,7 +1495,7 @@
                     <template x-if="previewData.keluarga">
                         <div class="space-y-2 pt-2 border-t border-slate-200">
                             <h4 class="font-extrabold text-slate-800 text-xs flex items-center gap-1.5">
-                                <span>🏠</span> Variabel Pengampu Rumah Tangga (KK)
+                                <i class="fi fi-rr-home text-blue-600"></i> <span>Variabel Pengampu Rumah Tangga (KK)</span>
                             </h4>
                             <div class="grid grid-cols-2 gap-2 bg-blue-50/50 p-3 rounded-xl border border-blue-200">
                                 <div>
@@ -1738,14 +1772,7 @@ function dtsenApp() {
         },
 
         openLogConsole() {
-            this.showLogModal = true;
-            this.fetchLogs();
-            if (this.logPollTimer) clearInterval(this.logPollTimer);
-            this.logPollTimer = setInterval(() => {
-                if (this.showLogModal || this.showImportProgressModal) {
-                    this.fetchLogs();
-                }
-            }, 3000);
+            window.location.href = "{{ route('dtsen.activity-logs') }}";
         },
 
         async fetchLogs() {
@@ -1785,7 +1812,7 @@ function dtsenApp() {
         },
 
         async cancelCurrentImport() {
-            if (!confirm('⚠️ Batalkan proses injeksi dataset ke database?\n\nSemua proses impor yang sedang berjalan akan dihentikan dan memori temporary akan dibersihkan.')) {
+            if (!confirm('Batalkan proses injeksi dataset ke database?\n\nSemua proses impor yang sedang berjalan akan dihentikan dan memori temporary akan dibersihkan.')) {
                 return;
             }
 

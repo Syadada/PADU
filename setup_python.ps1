@@ -1,3 +1,7 @@
+param(
+    [switch]$ForcePortable
+)
+
 # Script Penyiapan Portable Python Otomatis (TLS 1.2 & Multi-Mirror)
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $ProgressPreference = 'SilentlyContinue'
@@ -11,19 +15,21 @@ if (Test-Path "$pyDir\python.exe") {
     exit 0
 }
 
-# Cek apakah python sudah terdeteksi di sistem
-try {
-    $out = & python --version 2>&1
-    if ($out -like "*Python 3*") {
-        Write-Host "[OK] Python 3 terdeteksi di System PATH."
-        $duckOut = & python -c "import duckdb" 2>&1
-        if ($duckOut -like "*ModuleNotFoundError*" -or $LASTEXITCODE -ne 0) {
-            Write-Host "[DUCKDB] Memasang modul akselerasi DuckDB di Python Sistem..."
-            & python -m pip install duckdb --quiet 2>$null
+# Cek apakah python sudah terdeteksi di sistem (jika tidak memaksa portable)
+if (-not $ForcePortable) {
+    try {
+        $out = & python --version 2>&1
+        if ($out -like "*Python 3*") {
+            Write-Host "[OK] Python 3 terdeteksi di System PATH."
+            $duckOut = & python -c "import duckdb" 2>&1
+            if ($duckOut -like "*ModuleNotFoundError*" -or $LASTEXITCODE -ne 0) {
+                Write-Host "[DUCKDB] Memasang modul akselerasi DuckDB di Python Sistem..."
+                & python -m pip install duckdb --quiet 2>$null
+            }
+            exit 0
         }
-        exit 0
-    }
-} catch {}
+    } catch {}
+}
 
 if (-not (Test-Path $pyDir)) {
     New-Item -ItemType Directory -Path $pyDir | Out-Null
@@ -58,7 +64,7 @@ if ($downloaded) {
     foreach ($f in $pthFiles) {
         $content = Get-Content $f.FullName
         $content = $content -replace '#import site', 'import site'
-        $content += "`n."
+        $content += "`n.`nLib\site-packages`nsite-packages"
         Set-Content -Path $f.FullName -Value $content
     }
 

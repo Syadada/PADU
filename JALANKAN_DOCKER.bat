@@ -7,8 +7,10 @@ echo         PADU v1.02 - PELUNCUR DOCKER CONTAINER (PONTIS DAN PORTABLE)
 echo =======================================================================
 echo.
 
+cd /d "%~dp0"
+
 rem 1. Deteksi dan tambahkan path Docker serta System32 ke PATH
-set "PATH=C:\Users\rasyaad\AppData\Local\Programs\DockerDesktop\resources\bin;%LOCALAPPDATA%\Programs\DockerDesktop\resources\bin;%USERPROFILE%\AppData\Local\Programs\DockerDesktop\resources\bin;C:\Program Files\Docker\Docker\resources\bin;C:\Windows\System32;%PATH%"
+set "PATH=%LOCALAPPDATA%\Programs\DockerDesktop\resources\bin;%USERPROFILE%\AppData\Local\Programs\DockerDesktop\resources\bin;%ProgramFiles%\Docker\Docker\resources\bin;C:\Program Files\Docker\Docker\resources\bin;%SystemRoot%\System32;%PATH%"
 
 rem 2. Cek ketersediaan perintah docker
 where docker >nul 2>&1

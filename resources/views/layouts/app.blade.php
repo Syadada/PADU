@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PADU - Pengolah & Analisis Data Terpadu (DTSEN 2026)</title>
     
-    <!-- 100% Pure Offline Assets (Murni Lokal, Tanpa Request Jaringan Luar / Google Fonts) -->
+    <!-- Flat Icon UIcons CDN & Master Stylesheet -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@flaticon/flaticon-uicons@3.3.1/css/all/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/tailwind.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <style>
@@ -23,6 +24,7 @@
             display: none !important;
         }
     </style>
+    <script src="{{ asset('js/data-page.js') }}"></script>
     <script defer src="{{ asset('js/alpine.min.js') }}"></script>
 </head>
 <body class="min-h-screen flex antialiased text-slate-800 bg-slate-50 font-sans" 
@@ -96,13 +98,13 @@
                     <span class="text-[9px] text-blue-600 font-mono font-bold bg-blue-50 px-1.5 py-0.2 rounded border border-blue-200">DTSEN 2026</span>
                 </div>
 
-                <!-- 1. Tabel Master Data (58 Variabel) -->
+                <!-- 1. Data (Tabel Master 58 Variabel) -->
                 <a href="{{ route('dtsen.data') }}" 
                    class="sidebar-nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all {{ (request()->routeIs('dtsen.data') || request()->routeIs('dtsen.index')) ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 font-black' : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-transparent hover:border-slate-200' }}">
-                    <span class="text-base shrink-0">📋</span>
+                    <i class="fi fi-rr-table text-base shrink-0"></i>
                     <div class="min-w-0 flex-1">
-                        <div class="leading-tight truncate">Tabel Master Data</div>
-                        <div class="text-[10px] {{ (request()->routeIs('dtsen.data') || request()->routeIs('dtsen.index')) ? 'text-white/80' : 'text-slate-400' }} font-normal">58 Variabel Resmi DTSEN</div>
+                        <div class="leading-tight truncate">Data</div>
+                        <div class="text-[10px] {{ (request()->routeIs('dtsen.data') || request()->routeIs('dtsen.index')) ? 'text-white/80' : 'text-slate-400' }} font-normal">Tabel Master DTSEN</div>
                     </div>
                     @if(isset($totalRows) && $totalRows > 0)
                         <span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold {{ (request()->routeIs('dtsen.data') || request()->routeIs('dtsen.index')) ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600 border border-slate-200' }}">
@@ -111,13 +113,13 @@
                     @endif
                 </a>
 
-                <!-- 2. Metrik Kualitas & Ringkasan Data (QC) -->
+                <!-- 2. Kualitas (QC) -->
                 <a href="{{ route('dtsen.quality') }}" 
                    class="sidebar-nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all {{ request()->routeIs('dtsen.quality') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 font-black' : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-transparent hover:border-slate-200' }}">
-                    <span class="text-base shrink-0">🧮</span>
+                    <i class="fi fi-rr-shield-check text-base shrink-0"></i>
                     <div class="min-w-0 flex-1">
-                        <div class="leading-tight truncate">Metrik Kualitas (QC)</div>
-                        <div class="text-[10px] {{ request()->routeIs('dtsen.quality') ? 'text-white/80' : 'text-slate-400' }} font-normal">Validasi Integritas Data</div>
+                        <div class="leading-tight truncate">Kualitas</div>
+                        <div class="text-[10px] {{ request()->routeIs('dtsen.quality') ? 'text-white/80' : 'text-slate-400' }} font-normal">Integritas & Validasi</div>
                     </div>
                     @if(isset($validCount))
                         <span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold {{ request()->routeIs('dtsen.quality') ? 'bg-white/20 text-white' : 'bg-emerald-50 text-emerald-700 border border-emerald-200' }}">
@@ -126,33 +128,33 @@
                     @endif
                 </a>
 
-                <!-- 3. Diagram KPI & Peringkat Variabel -->
+                <!-- 3. KPI -->
                 <a href="{{ route('dtsen.kpi') }}" 
                    class="sidebar-nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all {{ request()->routeIs('dtsen.kpi') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 font-black' : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-transparent hover:border-slate-200' }}">
-                    <span class="text-base shrink-0">📈</span>
+                    <i class="fi fi-rr-chart-pie-alt text-base shrink-0"></i>
                     <div class="min-w-0 flex-1">
-                        <div class="leading-tight truncate">Diagram KPI & Ranking</div>
-                        <div class="text-[10px] {{ request()->routeIs('dtsen.kpi') ? 'text-white/80' : 'text-slate-400' }} font-normal">Peringkat Top / Bottom</div>
+                        <div class="leading-tight truncate">KPI</div>
+                        <div class="text-[10px] {{ request()->routeIs('dtsen.kpi') ? 'text-white/80' : 'text-slate-400' }} font-normal">Peringkat & Demografi</div>
                     </div>
                 </a>
 
-                <!-- 4. Analisis Finansial & Gaji Subjek -->
+                <!-- 4. Gaji -->
                 <a href="{{ route('dtsen.salary') }}" 
                    class="sidebar-nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all {{ request()->routeIs('dtsen.salary') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 font-black' : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-transparent hover:border-slate-200' }}">
-                    <span class="text-base shrink-0">💵</span>
+                    <i class="fi fi-rr-dollar text-base shrink-0"></i>
                     <div class="min-w-0 flex-1">
-                        <div class="leading-tight truncate">Analisis Finansial Gaji</div>
-                        <div class="text-[10px] {{ request()->routeIs('dtsen.salary') ? 'text-white/80' : 'text-slate-400' }} font-normal">Sebaran Pendapatan Subjek</div>
+                        <div class="leading-tight truncate">Gaji</div>
+                        <div class="text-[10px] {{ request()->routeIs('dtsen.salary') ? 'text-white/80' : 'text-slate-400' }} font-normal">Finansial & Disparitas</div>
                     </div>
                 </a>
 
-                <!-- 5. Audit Temuan Error & Anomali -->
+                <!-- 5. Audit -->
                 <a href="{{ route('dtsen.audit') }}" 
                    class="sidebar-nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all {{ request()->routeIs('dtsen.audit') ? 'bg-rose-600 text-white shadow-md shadow-rose-600/30 font-black' : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-transparent hover:border-slate-200' }}">
-                    <span class="text-base shrink-0">⚠️</span>
+                    <i class="fi fi-rr-triangle-warning text-base shrink-0"></i>
                     <div class="min-w-0 flex-1">
-                        <div class="leading-tight truncate">Audit Temuan Error</div>
-                        <div class="text-[10px] {{ request()->routeIs('dtsen.audit') ? 'text-white/80' : 'text-slate-400' }} font-normal">Deteksi Kritis & Anomali</div>
+                        <div class="leading-tight truncate">Audit</div>
+                        <div class="text-[10px] {{ request()->routeIs('dtsen.audit') ? 'text-white/80' : 'text-slate-400' }} font-normal">Temuan Anomali & Kritis</div>
                     </div>
                     @if(isset($criticalCount) && $criticalCount > 0)
                         <span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-black bg-rose-500 text-white animate-pulse">
@@ -161,13 +163,13 @@
                     @endif
                 </a>
 
-                <!-- 6. Manajemen Berkas & Ingesti / Ekspor -->
+                <!-- 6. Berkas -->
                 <a href="{{ route('dtsen.files') }}" 
                    class="sidebar-nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all {{ request()->routeIs('dtsen.files') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 font-black' : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-transparent hover:border-slate-200' }}">
-                    <span class="text-base shrink-0">📁</span>
+                    <i class="fi fi-rr-folder text-base shrink-0"></i>
                     <div class="min-w-0 flex-1">
-                        <div class="leading-tight truncate">Manajemen Berkas</div>
-                        <div class="text-[10px] {{ request()->routeIs('dtsen.files') ? 'text-white/80' : 'text-slate-400' }} font-normal">Folder <code>src-dtsen/</code> & Ingesti</div>
+                        <div class="leading-tight truncate">Berkas</div>
+                        <div class="text-[10px] {{ request()->routeIs('dtsen.files') ? 'text-white/80' : 'text-slate-400' }} font-normal"><code>src-dtsen/</code> & Ingesti</div>
                     </div>
                     @if(isset($srcDtsenFiles) && count($srcDtsenFiles) > 0)
                         <span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold {{ request()->routeIs('dtsen.files') ? 'bg-white/20 text-white' : 'bg-blue-50 text-blue-700 border border-blue-200' }}">
@@ -181,50 +183,49 @@
             <!-- GROUP: AKSI CEPAT & ALAT DATA OPERASIONAL -->
             <div class="space-y-1.5 pt-4 border-t border-slate-200">
                 <div class="px-2 pb-1 text-[10px] font-black uppercase tracking-wider text-slate-400">
-                    Alat Cepat & Operasional
+                    Operasional
                 </div>
 
-                <!-- Sakelar Masking Privasi -->
+                <!-- Sensor -->
                 <button type="button" 
                         @click="toggleMasking()" 
                         class="w-full sidebar-nav-item flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all bg-white hover:bg-slate-50 text-slate-700 cursor-pointer border border-slate-200 shadow-xs">
                     <div class="flex items-center gap-2.5">
-                        <span class="text-sm" x-text="isMasked ? '🔒' : '🔓'"></span>
-                        <span>Sensor Privasi</span>
+                        <i class="fi text-sm" :class="isMasked ? 'fi-rr-lock' : 'fi-rr-unlock'"></i>
+                        <span>Sensor</span>
                     </div>
                     <span class="px-2 py-0.5 rounded text-[9px] font-black tracking-wider uppercase"
                           :class="isMasked ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'"
                           x-text="isMasked ? 'MASKED' : 'UNMASKED'"></span>
                 </button>
 
-                <!-- Ekspor Paket (.ZIP) -->
+                <!-- Ekspor -->
                 <button type="button" 
                         @click="showExportModal = true" 
                         class="w-full sidebar-nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold transition-all bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 cursor-pointer shadow-xs">
-                    <span class="text-sm">📤</span>
-                    <span>Ekspor Paket (.ZIP)</span>
+                    <i class="fi fi-rr-upload text-sm"></i>
+                    <span>Ekspor</span>
                 </button>
 
-                <!-- Log Konsol Realtime -->
-                <button type="button" 
-                        @click="openLogConsole()" 
-                        class="w-full sidebar-nav-item flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 cursor-pointer shadow-xs">
+                <!-- Log (Halaman Khusus / Full Page) -->
+                <a href="{{ route('dtsen.activity-logs') }}" 
+                   class="w-full sidebar-nav-item flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all {{ request()->routeIs('dtsen.activity-logs') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 font-black' : 'bg-white hover:bg-slate-50 text-slate-700 border border-slate-200' }} shadow-xs">
                     <div class="flex items-center gap-2.5">
-                        <span class="text-sm">📋</span>
-                        <span>Log Aktivitas Sistem</span>
+                        <i class="fi fi-rr-list-check text-sm"></i>
+                        <span>Log</span>
                     </div>
-                    <span x-show="logList && logList.length > 0" class="px-1.5 py-0.2 rounded-full bg-blue-600 text-white text-[9px] font-mono font-bold" x-text="logList.length"></span>
-                </button>
+                    <span x-show="logList && logList.length > 0" class="px-1.5 py-0.2 rounded-full {{ request()->routeIs('dtsen.activity-logs') ? 'bg-white text-blue-700' : 'bg-blue-600 text-white' }} text-[9px] font-mono font-bold" x-text="logList.length"></span>
+                </a>
 
                 <!-- Unduh Format Master Template -->
                 <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-                    <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Unduh Format Master</span>
+                    <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Template Master</span>
                     <div class="grid grid-cols-2 gap-1.5 text-center">
                         <a href="{{ route('dtsen.template', ['format' => 'xlsx']) }}" class="px-2 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-[11px] font-bold transition-all block">
-                            🟢 Excel
+                            <i class="fi fi-rr-file-excel text-emerald-600"></i> Excel
                         </a>
                         <a href="{{ route('dtsen.template', ['format' => 'csv']) }}" class="px-2 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 text-[11px] font-bold transition-all block">
-                            📄 CSV
+                            <i class="fi fi-rr-file-spreadsheet text-blue-600"></i> CSV
                         </a>
                     </div>
                 </div>
@@ -234,8 +235,8 @@
                     <button type="button" 
                             @click="showClearModal = true" 
                             class="w-full sidebar-nav-item flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-all bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 cursor-pointer">
-                        <span class="text-sm">🗑️</span>
-                        <span>Kosongkan Dataset</span>
+                        <i class="fi fi-rr-trash text-sm"></i>
+                        <span>Kosongkan</span>
                     </button>
                 @endif
             </div>
@@ -252,11 +253,11 @@
                         <strong class="text-slate-900 font-bold">{{ number_format($totalRows) }}</strong>
                     </div>
                     <div class="flex justify-between items-center text-emerald-700">
-                        <span>🟢 Valid:</span>
+                        <span class="flex items-center gap-1"><i class="fi fi-rr-check text-emerald-600 text-[10px]"></i> Valid:</span>
                         <strong>{{ number_format($validCount ?? 0) }}</strong>
                     </div>
                     <div class="flex justify-between items-center text-rose-700">
-                        <span>🔴 Critical:</span>
+                        <span class="flex items-center gap-1"><i class="fi fi-rr-cross-circle text-rose-600 text-[10px]"></i> Critical:</span>
                         <strong>{{ number_format($criticalCount ?? 0) }}</strong>
                     </div>
                 </div>
@@ -268,7 +269,7 @@
         <div class="p-3.5 border-t border-slate-200 bg-slate-50 shrink-0 text-slate-500 text-[11px] space-y-1">
             <div class="flex items-center justify-between text-slate-800 font-bold">
                 <span class="flex items-center gap-1.5">
-                    <span class="text-amber-500">⚡</span> DuckDB OLAP Engine
+                    <i class="fi fi-rr-bolt text-amber-500"></i> DuckDB OLAP Engine
                 </span>
                 <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-200 text-slate-700 font-mono border border-slate-300">Ultra-Fast</span>
             </div>
@@ -293,37 +294,35 @@
                             class="padu-navbar-toggle-btn"
                             :title="sidebarOpen ? 'Sembunyikan Sidebar' : 'Tampilkan Sidebar'"
                             aria-label="Toggle Sidebar">
-                        <!-- Icon Toggle (Hamburger / Panel) -->
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="3" y1="6" x2="21" y2="6"></line>
-                            <line x1="3" y1="12" x2="21" y2="12"></line>
-                            <line x1="3" y1="18" x2="21" y2="18"></line>
-                        </svg>
+                        <!-- Flat Icon Menu Burger -->
+                        <i class="fi fi-rr-menu-burger text-sm"></i>
                         <span class="text-xs font-bold" x-text="sidebarOpen ? 'Tutup' : 'Menu'"></span>
                     </button>
 
                     <!-- Breadcrumb Trail -->
                     <div class="flex items-center gap-2 text-xs font-semibold text-slate-500">
                         <a href="{{ route('dtsen.data') }}" class="hover:text-blue-600 transition-colors font-bold text-slate-700 flex items-center gap-1.5">
-                            <span>📊</span>
+                            <i class="fi fi-rr-apps text-blue-600"></i>
                             <span class="hidden sm:inline">PADU</span>
                         </a>
                         <span>/</span>
-                        <span class="font-extrabold text-blue-700">
+                        <span class="font-extrabold text-blue-700 inline-flex items-center gap-1.5">
                             @if(request()->routeIs('dtsen.data') || request()->routeIs('dtsen.index'))
-                                📋 Tabel Master Data
+                                <i class="fi fi-rr-table"></i> Data
                             @elseif(request()->routeIs('dtsen.quality'))
-                                🧮 Metrik Kualitas (QC)
+                                <i class="fi fi-rr-shield-check"></i> Kualitas
                             @elseif(request()->routeIs('dtsen.kpi'))
-                                📈 Diagram KPI & Peringkat
+                                <i class="fi fi-rr-chart-pie-alt"></i> KPI
                             @elseif(request()->routeIs('dtsen.salary'))
-                                💵 Analisis Finansial Gaji
+                                <i class="fi fi-rr-dollar"></i> Gaji
                             @elseif(request()->routeIs('dtsen.audit'))
-                                ⚠️ Audit Temuan Error
+                                <i class="fi fi-rr-triangle-warning"></i> Audit
                             @elseif(request()->routeIs('dtsen.files'))
-                                📁 Manajemen Berkas Data
+                                <i class="fi fi-rr-folder"></i> Berkas
+                            @elseif(request()->routeIs('dtsen.activity-logs'))
+                                <i class="fi fi-rr-list-check"></i> Log
                             @else
-                                Modul Analisis
+                                <i class="fi fi-rr-apps"></i> Modul
                             @endif
                         </span>
                     </div>
@@ -344,13 +343,13 @@
                         <button @click="setMasked(true)" 
                                 class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
                                 :class="isMasked ? 'bg-rose-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'">
-                            <span>🔒</span>
+                            <i class="fi fi-rr-lock text-xs"></i>
                             <span class="hidden md:inline">Masked</span>
                         </button>
                         <button @click="setMasked(false)" 
                                 class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
                                 :class="!isMasked ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'">
-                            <span>🔓</span>
+                            <i class="fi fi-rr-unlock text-xs"></i>
                             <span class="hidden md:inline">Unmasked</span>
                         </button>
                     </div>
@@ -359,17 +358,21 @@
                         <!-- Dropdown Menu Profil & Pusat Administrasi Sistem -->
                         <div class="relative pl-1 border-l border-slate-200" x-data="{ openProfileMenu: false }" @click.outside="openProfileMenu = false">
                             <button type="button" 
-                                    @click="openProfileMenu = !openProfileMenu" 
-                                    class="flex items-center gap-2 px-2.5 py-1.5 rounded-xl hover:bg-slate-100 border border-transparent hover:border-slate-200 transition-all text-left cursor-pointer group focus:outline-none"
-                                    :class="openProfileMenu ? 'bg-slate-100 border-slate-200 shadow-xs' : ''"
-                                    title="Buka Menu Profil & Administrasi">
+                                     @click="openProfileMenu = !openProfileMenu" 
+                                     class="flex items-center gap-2 px-2.5 py-1.5 rounded-xl hover:bg-slate-100 border border-transparent hover:border-slate-200 transition-all text-left cursor-pointer group focus:outline-none"
+                                     :class="openProfileMenu ? 'bg-slate-100 border-slate-200 shadow-xs' : ''"
+                                     title="Buka Menu Profil & Administrasi">
                                 <div class="w-8 h-8 rounded-lg flex items-center justify-center font-black text-xs {{ method_exists(auth()->user(), 'isSuperAdmin') && auth()->user()->isSuperAdmin() ? 'bg-amber-100 text-amber-800 border border-amber-300' : 'bg-blue-100 text-blue-800 border border-blue-300' }}">
                                     {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                                 </div>
                                 <div class="hidden sm:block text-left">
                                     <span class="block text-xs font-extrabold text-slate-800 group-hover:text-blue-600 transition-colors leading-tight">{{ auth()->user()->name }}</span>
                                     <span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider {{ method_exists(auth()->user(), 'isSuperAdmin') && auth()->user()->isSuperAdmin() ? 'text-amber-600' : 'text-blue-600' }}">
-                                        {{ method_exists(auth()->user(), 'isSuperAdmin') && auth()->user()->isSuperAdmin() ? '👑 Super Admin' : '👤 Operator' }}
+                                        @if(method_exists(auth()->user(), 'isSuperAdmin') && auth()->user()->isSuperAdmin())
+                                            <i class="fi fi-rr-crown"></i> Super Admin
+                                        @else
+                                            <i class="fi fi-rr-user"></i> Operator
+                                        @endif
                                     </span>
                                 </div>
                                 <svg class="chevron-arrow text-slate-400 ml-1" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" :style="openProfileMenu ? 'transform: rotate(180deg);' : ''">
@@ -392,7 +395,7 @@
 
                                 <div style="padding: 6px 0;">
                                     <a href="{{ route('profile') }}" class="profile-dropdown-link">
-                                        <span style="font-size: 14px;">👤</span>
+                                        <i class="fi fi-rr-user" style="font-size: 14px;"></i>
                                         <span style="font-size: 12px;">Profil & Akun Saya</span>
                                     </a>
 
@@ -402,23 +405,23 @@
                                             Menu Super Administrator
                                         </div>
                                         <a href="{{ route('admin.users') }}" class="profile-dropdown-link">
-                                            <span style="font-size: 14px;">👥</span>
+                                            <i class="fi fi-rr-users" style="font-size: 14px;"></i>
                                             <span style="font-size: 12px;">Direktori Staf / Akun</span>
                                         </a>
                                         <a href="{{ route('admin.audit-logs') }}" class="profile-dropdown-link">
-                                            <span style="font-size: 14px;">🛡️</span>
+                                            <i class="fi fi-rr-shield-check" style="font-size: 14px;"></i>
                                             <span style="font-size: 12px;">Audit Log Forensik</span>
                                         </a>
                                         <a href="{{ route('admin.backup') }}" class="profile-dropdown-link">
-                                            <span style="font-size: 14px;">🗜️</span>
+                                            <i class="fi fi-rr-database" style="font-size: 14px;"></i>
                                             <span style="font-size: 12px;">Pencadangan Sistem AES</span>
                                         </a>
                                         <a href="{{ route('admin.two-factor') }}" class="profile-dropdown-link">
-                                            <span style="font-size: 14px;">📱</span>
+                                            <i class="fi fi-rr-smartphone" style="font-size: 14px;"></i>
                                             <span style="font-size: 12px;">Keamanan 2FA TOTP</span>
                                         </a>
                                         <a href="{{ route('admin.metadata') }}" class="profile-dropdown-link">
-                                            <span style="font-size: 14px;">📋</span>
+                                            <i class="fi fi-rr-document-signed" style="font-size: 14px;"></i>
                                             <span style="font-size: 12px;">Metadata & Quality Check (BAST)</span>
                                         </a>
                                     @endif
@@ -429,9 +432,7 @@
                                         <form action="{{ route('logout') }}" method="POST" onsubmit="return confirm('Keluar dari sesi sistem PADU sekarang?');">
                                             @csrf
                                             <button type="submit" class="profile-dropdown-item" style="width: 100%; text-align: left; background: transparent; border: none; color: #e11d48; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 10px; padding: 8px 16px;">
-                                                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="width: 15px; height: 15px; min-width: 15px;">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                                                </svg>
+                                                <i class="fi fi-rr-sign-out-alt" style="font-size: 14px;"></i>
                                                 <span style="font-size: 12px;">Keluar Sesi Aman</span>
                                             </button>
                                         </form>
@@ -451,10 +452,10 @@
             <div class="max-w-[1600px] w-full mx-auto px-4 sm:px-6 lg:px-8 mt-4">
                 <div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-semibold flex items-center justify-between shadow-sm" x-data="{ show: true }" x-show="show">
                     <div class="flex items-center gap-2">
-                        <span class="text-base">✅</span>
+                        <i class="fi fi-rr-check-circle text-base text-emerald-600"></i>
                         <span>{{ session('success') }}</span>
                     </div>
-                    <button @click="show = false" class="text-emerald-700 font-bold hover:text-emerald-900 text-sm cursor-pointer">✕</button>
+                    <button @click="show = false" class="text-emerald-700 font-bold hover:text-emerald-900 text-sm cursor-pointer flex items-center"><i class="fi fi-rr-cross"></i></button>
                 </div>
             </div>
         @endif
@@ -463,10 +464,10 @@
             <div class="max-w-[1600px] w-full mx-auto px-4 sm:px-6 lg:px-8 mt-4">
                 <div class="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-semibold flex items-center justify-between shadow-sm" x-data="{ show: true }" x-show="show">
                     <div class="flex items-center gap-2">
-                        <span class="text-base">⚠️</span>
+                        <i class="fi fi-rr-triangle-warning text-base text-amber-600"></i>
                         <span>{{ session('warning') }}</span>
                     </div>
-                    <button @click="show = false" class="text-amber-700 font-bold hover:text-amber-900 text-sm cursor-pointer">✕</button>
+                    <button @click="show = false" class="text-amber-700 font-bold hover:text-amber-900 text-sm cursor-pointer flex items-center"><i class="fi fi-rr-cross"></i></button>
                 </div>
             </div>
         @endif
@@ -475,10 +476,10 @@
             <div class="max-w-[1600px] w-full mx-auto px-4 sm:px-6 lg:px-8 mt-4">
                 <div class="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 text-xs font-semibold flex items-center justify-between shadow-sm" x-data="{ show: true }" x-show="show">
                     <div class="flex items-center gap-2">
-                        <span class="text-base">❌</span>
+                        <i class="fi fi-rr-cross-circle text-base text-rose-600"></i>
                         <span>{{ session('error') }}</span>
                     </div>
-                    <button @click="show = false" class="text-rose-700 font-bold hover:text-rose-900 text-sm cursor-pointer">✕</button>
+                    <button @click="show = false" class="text-rose-700 font-bold hover:text-rose-900 text-sm cursor-pointer flex items-center"><i class="fi fi-rr-cross"></i></button>
                 </div>
             </div>
         @endif
@@ -521,23 +522,11 @@
     };
 
     window.openLogConsole = function() {
-        if (window.paduApp) {
-            window.paduApp.openLogConsole();
-        }
-        const logModal = document.getElementById('padu_log_activity_modal');
-        if (logModal) {
-            logModal.style.removeProperty('display');
-        }
+        window.location.href = "{{ route('dtsen.activity-logs') }}";
     };
 
     window.closeLogConsole = function() {
-        if (window.paduApp) {
-            window.paduApp.closeLogConsole();
-        }
-        const logModal = document.getElementById('padu_log_activity_modal');
-        if (logModal) {
-            logModal.style.setProperty('display', 'none', 'important');
-        }
+        // Modal sudah tidak digunakan, log aktivitas kini beralih ke halaman penuh
     };
 
     document.addEventListener('keydown', function(e) {
@@ -642,32 +631,11 @@
             },
 
             openLogConsole() {
-                this.showLogModal = true;
-                const logModal = document.getElementById('padu_log_activity_modal');
-                if (logModal) {
-                    logModal.style.removeProperty('display');
-                }
-                this.fetchLogs();
-                if (this.logPollingInterval) clearInterval(this.logPollingInterval);
-                this.logPollingInterval = setInterval(() => {
-                    if (this.showLogModal) {
-                        this.fetchLogs();
-                    } else {
-                        clearInterval(this.logPollingInterval);
-                    }
-                }, 2000);
+                window.location.href = "{{ route('dtsen.activity-logs') }}";
             },
 
             closeLogConsole() {
                 this.showLogModal = false;
-                if (this.logPollingInterval) {
-                    clearInterval(this.logPollingInterval);
-                    this.logPollingInterval = null;
-                }
-                const logModal = document.getElementById('padu_log_activity_modal');
-                if (logModal) {
-                    logModal.style.setProperty('display', 'none', 'important');
-                }
             },
 
             async fetchLogs() {
@@ -753,7 +721,7 @@
             },
 
             async cancelCurrentImport() {
-                if (!confirm('⚠️ Batalkan proses injeksi dataset ke database?\n\nSemua proses impor yang sedang berjalan akan dihentikan.')) {
+                if (!confirm('Batalkan proses injeksi dataset ke database?\n\nSemua proses impor yang sedang berjalan akan dihentikan.')) {
                     return;
                 }
                 try {

@@ -11,9 +11,10 @@ Aplikasi **PADU (Pengolah dan Analisis Data Terpadu)** dirancang agar dapat lang
 
 ---
 
-## 🐍 2. Persyaratan Python (High-Speed Engine):
-- **Versi Python**: Python 3.8+ (Direkomendasikan **Python 3.11+**).
-- **Pustaka Python**: Built-in standard library (`sqlite3`, `csv`, `json`, `time`, `datetime`, `os`, `sys`) + Pustaka Opsional Excel (`pandas`, `pyarrow`, `openpyxl`).
+## 🐍 2. Persyaratan Python & OLAP Engine (High-Speed Engine):
+- **Portable Python 3.11**: **SUDAH TERBAWA OTOMATIS** di folder `python/` lengkap dengan pustaka akselerasi data **DuckDB 1.5.6**.
+- **Mode Eksekusi**: Plug-and-play 100% Offline (tanpa perlu koneksi internet, tanpa perlu install Python terpisah di laptop target).
+- **Pustaka Python Standar & Terpasang**: `duckdb`, `sqlite3`, `csv`, `json`, `os`, `sys`, `time`, `datetime`.
 - **File Konfigurasi**: Catatan pustaka tersedia di `requirements.txt`.
 
 ---

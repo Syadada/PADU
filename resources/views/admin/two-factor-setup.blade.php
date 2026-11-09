@@ -30,7 +30,7 @@
                     RFC 6238 TOTP
                 </span>
                 <span class="px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider rounded-md {{ $user->two_factor_enabled ? 'bg-emerald-500/15 text-emerald-800 border border-emerald-400/30' : 'bg-slate-200 text-slate-700' }}">
-                    {{ $user->two_factor_enabled ? '✓ Status: 2FA HP AKTIF' : '○ Status: 2FA Belum Aktif' }}
+                    {{ $user->two_factor_enabled ? 'Status: 2FA HP AKTIF' : 'Status: 2FA Belum Aktif' }}
                 </span>
             </div>
             <h1 class="text-2xl font-black text-slate-900 mt-2 flex items-center gap-2">
@@ -43,11 +43,11 @@
 
         <div class="flex items-center gap-2">
             <a href="{{ route('admin.users') }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 bg-white/70 hover:bg-white border border-slate-200 transition-all shadow-sm">
-                <span>👥</span>
+                <i class="fi fi-rr-users"></i>
                 <span>Direktori Staf</span>
             </a>
             <a href="{{ route('profile') }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 bg-white/70 hover:bg-white border border-slate-200 transition-all shadow-sm">
-                <span>👤</span>
+                <i class="fi fi-rr-user"></i>
                 <span>Profil Akun</span>
             </a>
         </div>
@@ -57,7 +57,7 @@
     @if(session('success'))
         <div class="p-4 rounded-xl border border-emerald-300 text-emerald-900 text-xs font-semibold flex items-center gap-2 shadow-sm"
              style="background: rgba(209, 250, 229, 0.9);">
-            <span class="text-base">✅</span>
+            <i class="fi fi-rr-check-circle text-emerald-600"></i>
             <span>{{ session('success') }}</span>
         </div>
     @endif
@@ -65,7 +65,7 @@
     @if(session('warning'))
         <div class="p-4 rounded-xl border border-amber-300 text-amber-900 text-xs font-semibold flex items-center gap-2 shadow-sm"
              style="background: rgba(254, 243, 199, 0.9);">
-            <span class="text-base">⚠️</span>
+            <i class="fi fi-rr-triangle-warning text-amber-500"></i>
             <span>{{ session('warning') }}</span>
         </div>
     @endif
@@ -75,7 +75,7 @@
              style="background: rgba(254, 226, 226, 0.9);">
             @foreach($errors->all() as $error)
                 <div class="flex items-start gap-1.5">
-                    <span class="font-bold">✕</span>
+                    <i class="fi fi-rr-cross"></i>
                     <span>{{ $error }}</span>
                 </div>
             @endforeach
@@ -104,7 +104,7 @@
                 <div class="p-5 rounded-2xl border border-slate-200 flex flex-col items-center justify-center space-y-3 shadow-inner"
                      style="background: rgba(248, 250, 252, 0.85);">
                     <div id="qrcode-container" class="p-2.5 bg-white rounded-xl shadow-md border border-slate-200/80"></div>
-                    <span class="text-[10px] text-slate-500 font-mono font-bold tracking-wider">🔒 100% Pure Offline QR Rendering (No Cloud)</span>
+                    <span class="text-[10px] text-slate-500 font-mono font-bold tracking-wider flex items-center gap-1"><i class="fi fi-rr-lock"></i> 100% Pure Offline QR Rendering (No Cloud)</span>
                 </div>
 
                 <!-- Manual Secret Key -->
@@ -117,7 +117,7 @@
                         <button type="button" 
                                 @click="copySecret()" 
                                 class="px-3 py-2.5 rounded-xl text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-300 shrink-0 transition-all cursor-pointer">
-                            <span x-text="secretCopied ? '✅ Tersalin' : '📋 Salin'"></span>
+                            <span x-text="secretCopied ? 'Tersalin' : 'Salin'"></span>
                         </button>
                     </div>
                 </div>
@@ -139,7 +139,7 @@
                         <button type="button" 
                                 @click="printSheet()" 
                                 class="px-3.5 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold border border-amber-500 shadow-md transition-all flex items-center gap-1.5 cursor-pointer hover:scale-105 active:scale-95">
-                            <span>🖨️</span>
+                            <i class="fi fi-rr-print"></i>
                             <span x-text="hasPrinted ? 'Cetak Ulang Dokumen' : 'Cetak Amplop & Buka Kunci'"></span>
                         </button>
                     </div>
@@ -155,7 +155,7 @@
                                 PADU-••••-••••-••••-••••
                             </div>
                             <div class="p-2 bg-white/80 rounded-lg text-[11px] text-amber-950 font-semibold leading-relaxed border border-amber-200 flex items-center justify-center gap-1.5">
-                                <span>🔒</span>
+                                <i class="fi fi-rr-lock"></i>
                                 <span>Kode recovery <strong>disembunyikan di layar</strong> demi mitigasi siber. Klik tombol <strong>"Cetak Amplop"</strong> di atas untuk mencetak lembar brankas fisik & membuka kode.</span>
                             </div>
                         </div>
@@ -165,12 +165,12 @@
                             <div class="recovery-key-display select-all" x-text="recoveryKey"></div>
                             <div class="flex items-center justify-between">
                                 <span class="text-[11px] font-bold text-emerald-800 flex items-center gap-1">
-                                    <span>✅</span> Dokumen fisik telah dicetak & kode terbuka
+                                    <i class="fi fi-rr-check-circle text-emerald-600"></i> <span>Dokumen fisik telah dicetak & kode terbuka</span>
                                 </span>
                                 <button type="button" 
                                         @click="copyRecoveryKey()" 
                                         class="text-[11px] font-bold text-amber-900 hover:text-amber-950 flex items-center gap-1 cursor-pointer">
-                                    <span x-text="keyCopied ? '✅ Kunci Berhasil Disalin!' : '📋 Salin Teks Kunci'"></span>
+                                    <span x-text="keyCopied ? 'Kunci Berhasil Disalin!' : 'Salin Teks Kunci'"></span>
                                 </button>
                             </div>
                         </div>
@@ -220,7 +220,7 @@
                                 class="btn-emerald-mint w-full py-3 px-4 rounded-xl text-xs font-bold shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
                             <span x-show="!submitting">Aktifkan 2FA Super Admin Sekarang</span>
                             <span x-show="submitting">Menguji Kode Token...</span>
-                            <span x-show="!submitting">✓</span>
+                            <span x-show="!submitting"><i class="fi fi-rr-check"></i></span>
                         </button>
                     </form>
                 </div>
@@ -233,7 +233,7 @@
         <div class="glass-card p-8 space-y-6">
             <div class="flex items-center gap-4">
                 <div class="w-14 h-14 rounded-2xl bg-emerald-100 border border-emerald-300 flex items-center justify-center text-2xl text-emerald-700 shadow-sm">
-                    📱
+                    <i class="fi fi-rr-smartphone"></i>
                 </div>
                 <div>
                     <h2 class="text-lg font-black text-slate-900">Perlindungan 2FA HP Cerdas Sedang Aktif</h2>

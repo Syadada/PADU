@@ -11,7 +11,7 @@
                     BSSN No. 4/2021 & UU PDP
                 </span>
                 <span class="px-2.5 py-1 text-xs font-bold bg-slate-100 text-slate-700 border border-slate-300 rounded-lg">
-                    🔒 Immutable Append-Only
+                    <i class="fi fi-rr-lock"></i> Immutable Append-Only
                 </span>
             </div>
             <h1 class="text-2xl font-black text-slate-900 mt-2 flex items-center gap-2">
@@ -26,12 +26,12 @@
         <div class="flex items-center gap-2 shrink-0">
             <a href="{{ route('admin.audit-logs.export', array_merge(request()->query(), ['format' => 'csv'])) }}" 
                class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-sm transition-all flex items-center gap-1.5">
-                <span>📥</span>
+                <i class="fi fi-rr-download"></i>
                 <span>Ekspor CSV</span>
             </a>
             <a href="{{ route('admin.audit-logs.export', array_merge(request()->query(), ['format' => 'txt'])) }}" 
                class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all flex items-center gap-1.5">
-                <span>📄</span>
+                <i class="fi fi-rr-document"></i>
                 <span>Ekspor TXT BSSN</span>
             </a>
         </div>
@@ -157,7 +157,7 @@
                                 @if(!empty($log->metadata))
                                     <button @click="selectedMeta = {{ json_encode($log->metadata) }}; showMetaModal = true;"
                                             class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-[11px] font-bold transition-colors">
-                                        🔍 JSON
+                                        <i class="fi fi-rr-search"></i> JSON
                                     </button>
                                 @else
                                     <span class="text-slate-300 text-xs">-</span>
@@ -188,10 +188,10 @@
         <div class="rounded-2xl max-w-xl w-full p-6 space-y-4 border border-slate-700 shadow-2xl text-white" style="background-color: #0f172a !important;" @click.outside="showMetaModal = false">
             <div class="flex items-center justify-between border-b border-slate-800 pb-3">
                 <h3 class="font-bold text-sm text-slate-200 flex items-center gap-2">
-                    <span>🔬</span>
+                    <i class="fi fi-rr-flask"></i>
                     <span>Detail Metadata Forensik</span>
                 </h3>
-                <button @click="showMetaModal = false" class="text-slate-400 hover:text-white font-bold">✕</button>
+                <button @click="showMetaModal = false" class="text-slate-400 hover:text-white font-bold flex items-center"><i class="fi fi-rr-cross"></i></button>
             </div>
             <pre class="bg-black/60 p-4 rounded-xl font-mono text-xs text-emerald-400 overflow-x-auto max-h-80 scrollbar-thin border border-slate-800" x-text="JSON.stringify(selectedMeta, null, 2)"></pre>
             <div class="text-right">

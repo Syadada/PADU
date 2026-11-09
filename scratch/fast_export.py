@@ -26,6 +26,24 @@ def run_fast_export(db_path, export_dir, mode="as_is", params_json="{}"):
     except Exception:
         filters = {}
 
+    cols_info = con.execute("DESCRIBE SELECT * FROM individus;").fetchall()
+    avail_cols = {r[0].lower(): r[0] for r in cols_info}
+
+    nik_col = avail_cols.get('nomor_induk_kependudukan', avail_cols.get('nik', 'nik'))
+    kk_col = avail_cols.get('nomor_kartu_keluarga', avail_cols.get('no_kk', avail_cols.get('kk', 'kk')))
+    nama_col = avail_cols.get('nama', avail_cols.get('nama_lengkap', 'nama_lengkap'))
+    desil_col = avail_cols.get('desil_nasional', avail_cols.get('desil', 'desil'))
+
+    # Wilayah
+    wilayah_parts = []
+    if 'provinsi' in avail_cols:
+        wilayah_parts.append(f'COALESCE(CAST("{avail_cols["provinsi"]}" AS VARCHAR), \'\')')
+    if 'kabupaten_kota' in avail_cols:
+        wilayah_parts.append(f'COALESCE(CAST("{avail_cols["kabupaten_kota"]}" AS VARCHAR), \'\')')
+    if 'kecamatan' in avail_cols:
+        wilayah_parts.append(f'COALESCE(CAST("{avail_cols["kecamatan"]}" AS VARCHAR), \'\')')
+    wilayah_expr = " || ' / ' || ".join(wilayah_parts) if wilayah_parts else "'-'"
+
     # MODE 1: EXPORT AUDIT REPORT (CSV ONLY)
     if mode == 'errors_only':
         file_name = f"laporan_audit_kualitas_data_dtsen_{timestamp}.csv"
@@ -39,11 +57,11 @@ def run_fast_export(db_path, export_dir, mode="as_is", params_json="{}"):
                 SELECT 
                     id AS "No. Baris",
                     quality_status AS "Tingkat Validitas",
-                    CAST(nomor_induk_kependudukan AS VARCHAR) AS "NIK",
-                    CAST(nomor_kartu_keluarga AS VARCHAR) AS "No. KK",
-                    nama AS "Nama Lengkap",
-                    desil_nasional AS "Desil Kesejahteraan",
-                    provinsi || ' / ' || kabupaten_kota || ' / ' || kecamatan AS "Wilayah (Prov/Kab/Kec)",
+                    CAST("{nik_col}" AS VARCHAR) AS "NIK",
+                    CAST("{kk_col}" AS VARCHAR) AS "No. KK",
+                    "{nama_col}" AS "Nama Lengkap",
+                    "{desil_col}" AS "Desil Kesejahteraan",
+                    {wilayah_expr} AS "Wilayah (Prov/Kab/Kec)",
                     CAST(quality_issues AS VARCHAR) AS "Rincian Temuan Error / Corrupt",
                     'Perbaiki NIK/KK agar 16 digit & lengkapi data subjek' AS "Rekomendasi Tindakan Perbaikan"
                 FROM individus
@@ -71,7 +89,7 @@ def run_fast_export(db_path, export_dir, mode="as_is", params_json="{}"):
     search = filters.get('search', '').strip()
     if search:
         search_escaped = search.lower().replace("'", "''")
-        where_clauses.append(f"(LOWER(CAST(nama AS VARCHAR)) LIKE '%{search_escaped}%' OR LOWER(CAST(nomor_induk_kependudukan AS VARCHAR)) LIKE '%{search_escaped}%' OR LOWER(CAST(nomor_kartu_keluarga AS VARCHAR)) LIKE '%{search_escaped}%')")
+        where_clauses.append(f"(LOWER(CAST(\"{nama_col}\" AS VARCHAR)) LIKE '%{search_escaped}%' OR LOWER(CAST(\"{nik_col}\" AS VARCHAR)) LIKE '%{search_escaped}%' OR LOWER(CAST(\"{kk_col}\" AS VARCHAR)) LIKE '%{search_escaped}%')")
 
     quality_status = filters.get('quality_status', 'semua')
     if quality_status and quality_status != 'semua':

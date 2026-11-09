@@ -374,7 +374,9 @@ def run_duckdb_query():
                     COUNT(*) as total_rows,
                     COUNT(DISTINCT "{kk_col}") as total_kk,
                     SUM(CASE WHEN quality_status = 'Valid' THEN 1 ELSE 0 END) as valid_cnt,
-                    SUM(CASE WHEN quality_status = 'Critical' THEN 1 ELSE 0 END) as critical_cnt
+                    SUM(CASE WHEN quality_status = 'Warning' THEN 1 ELSE 0 END) as warn_cnt,
+                    SUM(CASE WHEN quality_status = 'Critical' THEN 1 ELSE 0 END) as critical_cnt,
+                    SUM(CASE WHEN len(quality_issues) >= 3 THEN 1 ELSE 0 END) as multi_err_cnt
                 FROM {table_ref}{where_sql};
             """).fetchone()
 
@@ -382,10 +384,10 @@ def run_duckdb_query():
                 "total_rows": int(stats_row[0] or 0),
                 "total_kk": int(stats_row[1] or 0),
                 "valid_count": int(stats_row[2] or 0),
-                "warning_count": 0,
-                "critical_count": int(stats_row[3] or 0),
-                "multi_error_count": 0,
-                "error_count": int(stats_row[3] or 0)
+                "warning_count": int(stats_row[3] or 0),
+                "critical_count": int(stats_row[4] or 0),
+                "multi_error_count": int(stats_row[5] or 0),
+                "error_count": int((stats_row[3] or 0) + (stats_row[4] or 0))
             }
 
             # 5. Top 6 issue records for audit sidebar

@@ -98,12 +98,7 @@ def run_fast_import(csv_path, db_path):
             canonical = f"{canonical}_custom"
         used_cleans.add(canonical)
         norm_map[c] = canonical
-        if canonical in ('nomor_kartu_keluarga', 'no_kk', 'kk'):
-            select_exprs.append(f"REGEXP_REPLACE(TRIM(CAST(\"{c}\" AS VARCHAR)), '\\.0+$', '') AS \"{canonical}\"")
-        elif canonical in ('nomor_induk_kependudukan', 'nik'):
-            select_exprs.append(f"REGEXP_REPLACE(TRIM(CAST(\"{c}\" AS VARCHAR)), '\\.0+$', '') AS \"{canonical}\"")
-        else:
-            select_exprs.append(f'"{c}" AS "{canonical}"')
+        select_exprs.append(f'TRIM(CAST("{c}" AS VARCHAR)) AS "{canonical}"')
 
     select_str = ", ".join(select_exprs)
 
@@ -114,9 +109,9 @@ def run_fast_import(csv_path, db_path):
     gaji_col = 'gaji_bulanan' if 'gaji_bulanan' in used_cleans else ('gaji' if 'gaji' in used_cleans else None)
     usia_col = 'usia' if 'usia' in used_cleans else ('umur' if 'umur' in used_cleans else None)
 
-    nik_expr = f"REGEXP_REPLACE(TRIM(CAST(\"{nik_col}\" AS VARCHAR)), '\\.0+$', '')" if nik_col else "'3201019000000000'"
-    kk_expr = f"REGEXP_REPLACE(TRIM(CAST(\"{kk_col}\" AS VARCHAR)), '\\.0+$', '')" if kk_col else "'3201012010180000'"
-    nama_expr = f'"{nama_col}"' if nama_col else "'Masyarakat'"
+    nik_expr = f'TRIM(CAST("{nik_col}" AS VARCHAR))' if nik_col else "'3201019000000000'"
+    kk_expr = f'TRIM(CAST("{kk_col}" AS VARCHAR))' if kk_col else "'3201012010180000'"
+    nama_expr = f'TRIM(CAST("{nama_col}" AS VARCHAR))' if nama_col else "'Masyarakat'"
     desil_expr = f'TRY_CAST("{desil_col}" AS INTEGER)' if desil_col else "1"
     gaji_expr = f'TRY_CAST(REGEXP_REPLACE(CAST("{gaji_col}" AS VARCHAR), \'[^0-9.]\', \'\', \'g\') AS DOUBLE)' if gaji_col else "0.0"
     usia_expr = f'TRY_CAST("{usia_col}" AS INTEGER)' if usia_col else "0"
@@ -138,9 +133,31 @@ def run_fast_import(csv_path, db_path):
                 {desil_expr} AS desil,
                 {usia_expr} AS umur,
                 ARRAY_FILTER([
-                    CASE WHEN NOT REGEXP_MATCHES({nik_expr}, '^[0-9]{16}$') THEN 'Digit NIK tidak valid (harus 16 digit angka murni)' ELSE NULL END,
-                    CASE WHEN NOT REGEXP_MATCHES({kk_expr}, '^[0-9]{16}$') THEN 'Digit No. KK tidak valid (memuat desimal / bukan 16 digit angka murni)' ELSE NULL END,
-                    CASE WHEN {desil_expr} IS NULL OR {desil_expr} < 1 OR {desil_expr} > 10 THEN 'Desil Kesejahteraan diluar jangkauan 1-10' ELSE NULL END
+                    -- 1. Evaluasi NIK (Standar UU No. 24/2013 - Persis 16 Digit Angka Murni)
+                    CASE WHEN {nik_expr} IS NULL OR TRIM({nik_expr}) = '' THEN 'NIK kosong / belum terisi' ELSE NULL END,
+                    CASE WHEN {nik_expr} LIKE '%.%' THEN 'NIK mengandung tanda titik (.) / cacat pecahan float Excel' ELSE NULL END,
+                    CASE WHEN {nik_expr} LIKE '%,%' THEN 'NIK mengandung tanda koma (,) / cacat format desimal Excel' ELSE NULL END,
+                    CASE WHEN REGEXP_MATCHES({nik_expr}, '[a-zA-Z]') THEN 'NIK mengandung karakter alfabet / notasi ilmiah' ELSE NULL END,
+                    CASE WHEN NOT REGEXP_MATCHES({nik_expr}, '^[0-9\.,a-zA-Z]+$') THEN 'NIK mengandung karakter simbol atau spasi' ELSE NULL END,
+                    CASE WHEN {nik_expr} IS NOT NULL AND TRIM({nik_expr}) != '' AND NOT ({nik_expr} LIKE '%.%' OR {nik_expr} LIKE '%,%') AND LENGTH(REGEXP_REPLACE({nik_expr}, '[^0-9]', '', 'g')) != 16 THEN 'NIK tidak memenuhi standar nasional Ditjen Dukcapil (harus persis 16 digit angka murni, terdeteksi ' || LENGTH(REGEXP_REPLACE({nik_expr}, '[^0-9]', '', 'g')) || ' digit)' ELSE NULL END,
+
+                    -- 2. Evaluasi KK (Standar UU No. 24/2013 - Persis 16 Digit Angka Murni)
+                    CASE WHEN {kk_expr} LIKE '%.%' THEN 'Nomor KK mengandung tanda titik (.) / cacat format pecahan Excel' ELSE NULL END,
+                    CASE WHEN {kk_expr} LIKE '%,%' THEN 'Nomor KK mengandung tanda koma (,) / cacat format desimal Excel' ELSE NULL END,
+                    CASE WHEN REGEXP_MATCHES({kk_expr}, '[a-zA-Z]') THEN 'Nomor KK mengandung karakter alfabet / notasi ilmiah' ELSE NULL END,
+                    CASE WHEN NOT REGEXP_MATCHES({kk_expr}, '^[0-9\.,a-zA-Z]+$') THEN 'Nomor KK mengandung karakter simbol atau spasi' ELSE NULL END,
+                    CASE WHEN {kk_expr} IS NOT NULL AND TRIM({kk_expr}) != '' AND NOT ({kk_expr} LIKE '%.%' OR {kk_expr} LIKE '%,%') AND LENGTH(REGEXP_REPLACE({kk_expr}, '[^0-9]', '', 'g')) != 16 THEN 'Nomor KK tidak memenuhi standar nasional Ditjen Dukcapil (harus persis 16 digit angka murni, terdeteksi ' || LENGTH(REGEXP_REPLACE({kk_expr}, '[^0-9]', '', 'g')) || ' digit)' ELSE NULL END,
+
+                    -- 3. Evaluasi Nama Lengkap (Standar Permendagri No. 73/2022 - Huruf Latin & Spasi Sahaja)
+                    CASE WHEN {nama_expr} IS NULL OR TRIM({nama_expr}) = '' THEN 'Nama lengkap kosong / belum terisi' ELSE NULL END,
+                    CASE WHEN {nama_expr} LIKE '%.%' THEN 'Nama mengandung tanda titik (.) / singkatan gelar dilarang' ELSE NULL END,
+                    CASE WHEN {nama_expr} LIKE '%,%' THEN 'Nama mengandung tanda koma (,) / penulisan gelar dilarang' ELSE NULL END,
+                    CASE WHEN REGEXP_MATCHES({nama_expr}, '[0-9]') THEN 'Nama mengandung angka/digit numerik' ELSE NULL END,
+                    CASE WHEN NOT REGEXP_MATCHES({nama_expr}, '^[a-zA-Z \.,0-9]+$') THEN 'Nama mengandung karakter simbol khusus non-alfabet' ELSE NULL END,
+                    CASE WHEN {nama_expr} IS NOT NULL AND LENGTH(TRIM({nama_expr})) > 0 AND LENGTH(TRIM({nama_expr})) < 2 THEN 'Nama terlalu pendek (kurang dari 2 huruf)' ELSE NULL END,
+
+                    -- 4. Evaluasi Desil (1-10)
+                    CASE WHEN {desil_expr} IS NULL OR {desil_expr} < 1 OR {desil_expr} > 10 THEN 'Desil Kesejahteraan ' || COALESCE(CAST({desil_expr} AS VARCHAR), 'NULL') || ' di luar rentang valid 1-10' ELSE NULL END
                 ], x -> x IS NOT NULL) AS quality_issues
             FROM read_csv_auto('{csv_escaped}', all_varchar=True, ignore_errors=true, sample_size=500)
         )
@@ -210,6 +227,18 @@ def run_fast_import(csv_path, db_path):
             swap_success = True
         except Exception as e_swap:
             print(f"[ERROR] Atomic swap failed: {e_swap}", flush=True)
+
+    # Save persistent active dataset metadata JSON
+    try:
+        active_meta_file = os.path.join(os.path.dirname(db_file), 'active_dataset.json')
+        with open(active_meta_file, 'w', encoding='utf-8') as amf:
+            json.dump({
+                'active_dataset_file': os.path.basename(csv_file),
+                'total_rows': total_rows,
+                'imported_at': time.strftime('%Y-%m-%d %H:%M:%S')
+            }, amf)
+    except Exception as e_meta:
+        pass
 
     update_progress(100, f"Pemrosesan dataset {total_rows:,} baris selesai!", start_time)
 
