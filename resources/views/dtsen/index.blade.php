@@ -1517,34 +1517,49 @@
                     </button>
                 </div>
 
-                <!-- Distinct Values Checkbox List (Strictly Contained with 220px max-height scroll) -->
-                <div class="padu-filter-list" style="max-height: 220px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 0.75rem; background: #ffffff;">
-                    <div class="p-2.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs font-bold text-slate-700 sticky top-0 z-10">
-                        <button type="button" @click="selectAllFilterVals()" class="text-blue-600 hover:text-blue-800 flex items-center gap-1.5 cursor-pointer">
-                            <i class="fi fi-rr-check-double"></i>
-                            <span x-text="filterSelectedVals.length >= filterDistinctValues.length && filterDistinctValues.length > 0 ? 'Batalkan Semua' : 'Pilih Semua (' + filterDistinctValues.length + ')'"></span>
-                        </button>
-                        <span class="text-[11px] font-mono text-slate-500" x-text="filterSelectedVals.length + ' dipilih'"></span>
+                <!-- Special Identity Notice for NIK / KK -->
+                <template x-if="activeFilterType === 'identity'">
+                    <div class="p-3.5 bg-indigo-50/70 border border-indigo-200 rounded-xl space-y-2 text-xs">
+                        <div class="flex items-center gap-2 font-extrabold text-indigo-900">
+                            <i class="fi fi-rr-id-badge text-indigo-600 text-sm"></i>
+                            <span>Pencarian Nomor Identitas</span>
+                        </div>
+                        <p class="text-slate-600 text-[11px] leading-relaxed">
+                            Ketik nomor lengkap atau awalan NIK/KK pada kolom pencarian di atas, lalu tekan <strong>Terapkan Filter</strong> atau tombol Enter.
+                        </p>
                     </div>
+                </template>
 
-                    <div style="padding: 0.5rem; display: flex; flex-direction: column; gap: 0.25rem;">
-                        <template x-for="(item, idx) in filterDistinctValues.filter(v => !filterSearchVal || String(v).toLowerCase().includes(filterSearchVal.toLowerCase()))" :key="idx">
-                            <label class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg hover:bg-blue-50 cursor-pointer font-medium text-slate-800 transition-colors"
-                                   :class="hasFilterVal(item) ? 'bg-blue-50/90 font-bold text-blue-900 border border-blue-200' : 'border border-transparent'">
-                                <input type="checkbox" 
-                                       :checked="hasFilterVal(item)" 
-                                       @change="toggleFilterVal(item)"
-                                       class="accent-blue-600 rounded cursor-pointer w-4 h-4">
-                                <span class="truncate text-xs" x-text="item"></span>
-                            </label>
-                        </template>
+                <!-- Distinct Values Checkbox List (Strictly Contained with 220px max-height scroll) -->
+                <template x-if="activeFilterType !== 'identity'">
+                    <div class="padu-filter-list" style="max-height: 220px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 0.75rem; background: #ffffff;">
+                        <div class="p-2.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs font-bold text-slate-700 sticky top-0 z-10">
+                            <button type="button" @click="selectAllFilterVals()" class="text-blue-600 hover:text-blue-800 flex items-center gap-1.5 cursor-pointer">
+                                <i class="fi fi-rr-check-double"></i>
+                                <span x-text="filterSelectedVals.length >= filterDistinctValues.length && filterDistinctValues.length > 0 ? 'Batalkan Semua' : 'Pilih Semua (' + filterDistinctValues.length + ')'"></span>
+                            </button>
+                            <span class="text-[11px] font-mono text-slate-500" x-text="filterSelectedVals.length + ' dipilih'"></span>
+                        </div>
 
-                        <div x-show="filterDistinctValues.length === 0" class="py-6 text-center text-slate-400 text-xs">
-                            <i class="fi fi-rr-info text-base block mb-1"></i>
-                            Filter teks fleksibel aktif. Ketik nilai di kolom input di atas lalu tekan Terapkan.
+                        <div style="padding: 0.5rem; display: flex; flex-direction: column; gap: 0.25rem;">
+                            <template x-for="(item, idx) in filterDistinctValues.filter(v => !filterSearchVal || String(v).toLowerCase().includes(filterSearchVal.toLowerCase()))" :key="idx">
+                                <label class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg hover:bg-blue-50 cursor-pointer font-medium text-slate-800 transition-colors"
+                                       :class="hasFilterVal(item) ? 'bg-blue-50/90 font-bold text-blue-900 border border-blue-200' : 'border border-transparent'">
+                                    <input type="checkbox" 
+                                           :checked="hasFilterVal(item)" 
+                                           @change="toggleFilterVal(item)"
+                                           class="accent-blue-600 rounded cursor-pointer w-4 h-4">
+                                    <span class="truncate text-xs" x-text="item"></span>
+                                </label>
+                            </template>
+
+                            <div x-show="filterDistinctValues.length === 0" class="py-6 text-center text-slate-400 text-xs">
+                                <i class="fi fi-rr-info text-base block mb-1"></i>
+                                Filter teks fleksibel aktif. Ketik nilai di kolom input di atas lalu tekan Terapkan.
+                            </div>
                         </div>
                     </div>
-                </div>
+                </template>
 
             </div>
 

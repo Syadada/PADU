@@ -514,7 +514,7 @@ def run_duckdb_query():
         for col in target_cols:
             col_clean = str(col).strip().lower()
             target_name = resolve_target_column(col_clean, existing_cols)
-            if target_name and col_clean not in ('id', 'created_at', 'updated_at', 'extra_attributes', 'quality_issues'):
+            if target_name and col_clean not in ('id', 'created_at', 'updated_at', 'extra_attributes', 'quality_issues', 'nik', 'nomor_induk_kependudukan', 'kk', 'nomor_kartu_keluarga', 'no_nik', 'no_kk'):
                 try:
                     rows = con.execute(f'SELECT DISTINCT "{target_name}" FROM {table_ref} WHERE "{target_name}" IS NOT NULL AND TRIM(CAST("{target_name}" AS VARCHAR)) != \'\' ORDER BY "{target_name}" ASC LIMIT 100;').fetchall()
                     vals = [str(r[0]).strip() for r in rows if r[0] is not None and str(r[0]).strip() != '']
