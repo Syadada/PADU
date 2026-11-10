@@ -5,14 +5,9 @@
 
     <!-- Banner Sambutan & Tombol Aksi Utama -->
     <div class="card-simple p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div class="space-y-1">
-            <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-                <i class="fi fi-rr-apps"></i> <span>Selamat Datang di PADU</span> v1.02 (Pengolah & Analisis Data Terpadu)
-            </h2>
-            <p class="text-sm text-slate-600">
-                Hitung statistik (Jumlah, Max, Min, Rata-rata), umur detail (Tahun & Bulan), status kehidupan, serta kelola data hingga tingkat RT/RW.
-            </p>
-        </div>
+        <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+            <i class="fi fi-rr-apps"></i> <span>Selamat Datang di PADU</span>
+        </h2>
 
         <!-- Tombol Aksi Utama -->
         <div class="flex flex-wrap items-center gap-2">

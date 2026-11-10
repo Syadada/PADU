@@ -5,19 +5,11 @@
     
     <!-- Header Banner -->
     <div class="p-5 sm:p-6 bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div class="space-y-1">
-            <div class="flex items-center gap-2">
-                <span class="p-2 rounded-xl bg-indigo-50 text-indigo-600 text-lg font-bold flex items-center justify-center"><i class="fi fi-rr-chart-pie-alt"></i></span>
-                <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">
-                    Dashboard Indikator Kunci (KPI) & Demografi DTSEN 2026
-                </h2>
-                <span class="px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-800 text-xs font-bold font-mono">
-                    Macro Demographics
-                </span>
-            </div>
-            <p class="text-xs text-slate-500 font-medium">
-                Ringkasan makro indikator kependudukan, rasio gender, piramida kelompok usia, distribusi kesejahteraan (desil), status ketenagakerjaan, dan pemeringkatan variabel.
-            </p>
+        <div class="flex items-center gap-2">
+            <span class="p-2 rounded-xl bg-indigo-50 text-indigo-600 text-lg font-bold flex items-center justify-center"><i class="fi fi-rr-chart-pie-alt"></i></span>
+            <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">
+                Dashboard Indikator Kunci (KPI) & Demografi
+            </h2>
         </div>
 
         <div class="flex items-center gap-2 shrink-0">
@@ -170,11 +162,8 @@
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                     <div>
                         <h4 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
-                            <i class="fi fi-rr-tag"></i> <span>Sebaran 10 Desil Kesejahteraan Sosial</span> (Regsosek / DTSEN)
+                            <i class="fi fi-rr-tag"></i> <span>Sebaran 10 Desil Kesejahteraan Sosial</span>
                         </h4>
-                        <p class="text-xs text-slate-500">
-                            Distribusi tingkat desil kemiskinan ekstrem (Desil 1) hingga kelompok sejahtera (Desil 10).
-                        </p>
                     </div>
                     <span class="px-2.5 py-1 bg-amber-50 text-amber-900 border border-amber-200 rounded-lg text-[10px] font-extrabold">
                         Prioritas Bansos: Desil 1-2
@@ -391,7 +380,6 @@
                     <h4 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
                         <i class="fi fi-rr-users"></i> <span>Komposisi Kelompok Usia</span>
                     </h4>
-                    <p class="text-xs text-slate-500">Proporsi piramida usia produktif vs non-produktif.</p>
                 </div>
 
                 @php
@@ -516,15 +504,10 @@
         <div class="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-6">
             
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
-                <div class="space-y-1">
-                    <h3 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
-                        <i class="fi fi-rr-bullseye"></i> <span>Eksplorasi Metrik & Peringkat Bebas per Variabel:</span> 
-                        <span class="text-blue-700 font-black">{{ $activeColumnsMap[$kpiTargetVar] ?? $kpiTargetVar }}</span>
-                    </h3>
-                    <p class="text-xs text-slate-500">
-                        Pilih variabel target untuk mengkalkulasi nilai ekstrem dan 5 tingkatan peringkat tertinggi & terendah.
-                    </p>
-                </div>
+                <h3 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
+                    <i class="fi fi-rr-bullseye"></i> <span>Eksplorasi Metrik & Peringkat Bebas per Variabel:</span> 
+                    <span class="text-blue-700 font-black">{{ $activeColumnsMap[$kpiTargetVar] ?? $kpiTargetVar }}</span>
+                </h3>
 
                 <!-- Form Pemilih Variabel Target KPI -->
                 <form method="GET" action="{{ route('dtsen.kpi') }}" id="kpiVarForm" class="flex items-center gap-2 shrink-0">
@@ -578,12 +561,9 @@
                 <!-- TOP 5 WIDGET -->
                 <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3">
                     <div class="flex items-center justify-between border-b border-slate-200 pb-2">
-                        <div>
-                            <h4 class="font-extrabold text-xs text-slate-800 uppercase flex items-center gap-1.5">
-                                <i class="fi fi-rr-trophy"></i> <span>Top 5 Peringkat Teratas (Maksimum)</span>
-                            </h4>
-                            <p class="text-[10px] text-slate-500 font-medium">5 tingkatan nilai tertinggi berjenjang dengan subjek representatif.</p>
-                        </div>
+                        <h4 class="font-extrabold text-xs text-slate-800 uppercase flex items-center gap-1.5">
+                            <i class="fi fi-rr-trophy"></i> <span>Top 5 Peringkat Teratas (Maksimum)</span>
+                        </h4>
                         <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-extrabold rounded">5 TINGKAT TERATAS</span>
                     </div>
 
@@ -627,12 +607,9 @@
                 <!-- BOTTOM 5 WIDGET -->
                 <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3">
                     <div class="flex items-center justify-between border-b border-slate-200 pb-2">
-                        <div>
-                            <h4 class="font-extrabold text-xs text-slate-800 uppercase flex items-center gap-1.5">
-                                <i class="fi fi-rr-caret-down"></i> <span>5 Peringkat Terbawah (Minimum)</span>
-                            </h4>
-                            <p class="text-[10px] text-slate-500 font-medium">5 tingkatan nilai terendah berjenjang dengan subjek representatif.</p>
-                        </div>
+                        <h4 class="font-extrabold text-xs text-slate-800 uppercase flex items-center gap-1.5">
+                            <i class="fi fi-rr-caret-down"></i> <span>5 Peringkat Terbawah (Minimum)</span>
+                        </h4>
                         <span class="px-2 py-0.5 bg-amber-100 text-amber-800 text-[10px] font-extrabold rounded">5 TINGKAT TERBAWAH</span>
                     </div>
 

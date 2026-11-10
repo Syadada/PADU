@@ -34,24 +34,19 @@
     
     <!-- Header Banner Modul -->
     <div class="p-5 sm:p-6 bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div class="space-y-1">
-            <div class="flex flex-wrap items-center gap-2">
-                <span class="p-2 rounded-xl bg-emerald-50 text-emerald-600 text-lg font-bold flex items-center justify-center"><i class="fi fi-rr-dollar"></i></span>
-                <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">
-                    Analisis Finansial & Pencarian Gaji Subjek
-                </h2>
-                @if(!empty($activeDatasetScopeLabel))
-                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold border flex items-center gap-1 {{ $activeDatasetScopeBadge ?? 'bg-indigo-50 text-indigo-700 border-indigo-200' }}">
-                        <i class="{{ $activeDatasetScopeIcon ?? 'fi fi-rr-apps' }}"></i> {{ $activeDatasetScopeLabel }}
-                    </span>
-                @endif
-                <span class="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-800 text-xs font-bold font-mono border border-slate-200">
-                    {{ number_format($records->total()) }} Baris
+        <div class="flex flex-wrap items-center gap-2">
+            <span class="p-2 rounded-xl bg-emerald-50 text-emerald-600 text-lg font-bold flex items-center justify-center"><i class="fi fi-rr-dollar"></i></span>
+            <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">
+                Analisis Finansial & Pencarian Gaji Subjek
+            </h2>
+            @if(!empty($activeDatasetScopeLabel))
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold border flex items-center gap-1 {{ $activeDatasetScopeBadge ?? 'bg-indigo-50 text-indigo-700 border-indigo-200' }}">
+                    <i class="{{ $activeDatasetScopeIcon ?? 'fi fi-rr-apps' }}"></i> {{ $activeDatasetScopeLabel }}
                 </span>
-            </div>
-            <p class="text-xs text-slate-500 font-medium">
-                Sistem pencarian & perbandingan gaji fleksibel yang menyesuaikan secara otomatis dengan seluruh header berkas dataset yang dimuat.
-            </p>
+            @endif
+            <span class="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-800 text-xs font-bold font-mono border border-slate-200">
+                {{ number_format($records->total()) }} Baris
+            </span>
         </div>
 
         <div class="flex flex-wrap items-center gap-2 shrink-0">
@@ -137,14 +132,9 @@
                     @endphp
 
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-100 pb-3">
-                        <div class="space-y-0.5">
-                            <h3 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
-                                <i class="fi fi-rr-search"></i> <span>Filter Multidimensi Bebas Sesuai Dataset</span>
-                            </h3>
-                            <p class="text-xs text-slate-500">
-                                Seluruh pilihan filter di bawah ini dibaca langsung dari kolom & data unik berkas Anda. Klik <strong>Atur Header Filter</strong> untuk menambah header lain.
-                            </p>
-                        </div>
+                        <h3 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
+                            <i class="fi fi-rr-search"></i> <span>Filter Multidimensi Bebas Sesuai Dataset</span>
+                        </h3>
 
                         <div class="flex flex-wrap items-center gap-2 shrink-0">
                             <!-- Tombol Buka Modal Atur Header Filter di Atas -->
@@ -287,14 +277,9 @@
             <div x-show="showFilterModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs p-3 sm:p-6 flex items-center justify-center">
                 <div @click.away="showFilterModal = false" class="bg-white rounded-2xl max-w-4xl w-full p-5 sm:p-6 space-y-4 shadow-2xl border border-slate-200 my-auto flex flex-col max-h-[88vh]">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-3 shrink-0">
-                        <div>
-                            <h3 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
-                                <i class="fi fi-rr-settings-sliders"></i> <span>Pengatur Tampilan Dropdown Header Filter di Atas</span>
-                            </h3>
-                            <p class="text-xs text-slate-500">
-                                Centang header kolom yang ingin Anda tampilkan sebagai kotak filter di bagian atas halaman analisis gaji.
-                            </p>
-                        </div>
+                        <h3 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
+                            <i class="fi fi-rr-settings-sliders"></i> <span>Pengatur Tampilan Dropdown Header Filter di Atas</span>
+                        </h3>
                         <button type="button" @click="showFilterModal = false" class="text-slate-400 hover:text-slate-700 font-extrabold text-lg p-1 cursor-pointer">&times;</button>
                     </div>
 
@@ -378,14 +363,9 @@
             <div x-show="showColumnModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs p-3 sm:p-6 flex items-center justify-center">
                 <div @click.away="showColumnModal = false" class="bg-white rounded-2xl max-w-4xl w-full p-5 sm:p-6 space-y-4 shadow-2xl border border-slate-200 my-auto flex flex-col max-h-[88vh]">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-3 shrink-0">
-                        <div>
-                            <h3 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
-                                <i class="fi fi-rr-settings-sliders"></i> <span>Pengatur Tampilan Kolom Tabel Data Gaji</span>
-                            </h3>
-                            <p class="text-xs text-slate-500">
-                                Centang atau hilangkan centang untuk memilih variabel yang ingin ditampilkan di kolom tabel.
-                            </p>
-                        </div>
+                        <h3 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
+                            <i class="fi fi-rr-settings-sliders"></i> <span>Pengatur Tampilan Kolom Tabel Data Gaji</span>
+                        </h3>
                         <button type="button" @click="showColumnModal = false" class="text-slate-400 hover:text-slate-700 font-extrabold text-lg p-1 cursor-pointer">&times;</button>
                     </div>
 

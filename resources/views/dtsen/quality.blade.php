@@ -5,19 +5,11 @@
     
     <!-- Header Banner -->
     <div class="p-5 sm:p-6 bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div class="space-y-1">
-            <div class="flex items-center gap-2">
-                <span class="p-2 rounded-xl bg-amber-50 text-amber-600 text-lg font-bold flex items-center justify-center"><i class="fi fi-rr-shield-check"></i></span>
-                <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">
-                    Metrik Kualitas Data & Evaluasi Adaptif (QC)
-                </h2>
-                <span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 text-xs font-bold font-mono">
-                    Data Quality Assurance
-                </span>
-            </div>
-            <p class="text-xs text-slate-500 font-medium">
-                Pemeriksaan kepatuhan integritas data 58 variabel resmi BPS-Bappenas DTSEN 2026: NIK, KK, Desil, dan Kelengkapan Atribut.
-            </p>
+        <div class="flex items-center gap-2">
+            <span class="p-2 rounded-xl bg-amber-50 text-amber-600 text-lg font-bold flex items-center justify-center"><i class="fi fi-rr-shield-check"></i></span>
+            <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">
+                Metrik Kualitas Data & Evaluasi Adaptif (QC)
+            </h2>
         </div>
 
         <div class="flex items-center gap-2 shrink-0">
@@ -52,12 +44,9 @@
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-amber-200 pb-3">
                 <div class="flex items-center gap-2">
                     <span class="text-xl"><i class="fi fi-rr-chart-pie-alt"></i></span>
-                    <div>
-                        <h3 class="font-black text-amber-950 text-sm uppercase tracking-wide">
-                            Ringkasan Integritas & Kepatuhan Dataset
-                        </h3>
-                        <p class="text-[11px] text-amber-800">Skor validitas integritas data (Aturan BPS & Dukcapil)</p>
-                    </div>
+                    <h3 class="font-black text-amber-950 text-sm uppercase tracking-wide">
+                        Ringkasan Integritas & Kepatuhan Dataset
+                    </h3>
                 </div>
                 <div class="flex items-center gap-2">
                     @php
@@ -137,10 +126,7 @@
             <div class="p-5 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-3">
                 <div class="flex items-center gap-2.5 border-b border-slate-100 pb-3">
                     <span class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm"><i class="fi fi-rr-user"></i></span>
-                    <div>
-                        <h4 class="font-extrabold text-slate-900 text-xs uppercase tracking-wider">1. Data Kependudukan & Demografi</h4>
-                        <p class="text-[11px] text-slate-500">NIK, KK, Nama Lengkap, Tanggal Lahir, Status Hubungan</p>
-                    </div>
+                    <h4 class="font-extrabold text-slate-900 text-xs uppercase tracking-wider">1. Data Kependudukan & Demografi</h4>
                 </div>
                 <ul class="space-y-2 text-xs text-slate-700">
                     <li class="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-100">
@@ -162,10 +148,7 @@
             <div class="p-5 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-3">
                 <div class="flex items-center gap-2.5 border-b border-slate-100 pb-3">
                     <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm"><i class="fi fi-rr-dollar"></i></span>
-                    <div>
-                        <h4 class="font-extrabold text-slate-900 text-xs uppercase tracking-wider">2. Kesejahteraan & Desil Nasional</h4>
-                        <p class="text-[11px] text-slate-500">Desil 1-10, PBI Nasional, PBI Pemda, Finansial</p>
-                    </div>
+                    <h4 class="font-extrabold text-slate-900 text-xs uppercase tracking-wider">2. Kesejahteraan & Desil Nasional</h4>
                 </div>
                 <ul class="space-y-2 text-xs text-slate-700">
                     <li class="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-100">
@@ -189,10 +172,7 @@
             <div class="p-5 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-3">
                 <div class="flex items-center gap-2.5 border-b border-slate-100 pb-3">
                     <span class="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-sm"><i class="fi fi-rr-graduation-cap"></i></span>
-                    <div>
-                        <h4 class="font-extrabold text-slate-900 text-xs uppercase tracking-wider">3. Pendidikan & Ketenagakerjaan</h4>
-                        <p class="text-[11px] text-slate-500">Partisipasi Sekolah, Jenjang, Status Bekerja, Lapangan Usaha</p>
-                    </div>
+                    <h4 class="font-extrabold text-slate-900 text-xs uppercase tracking-wider">3. Pendidikan & Ketenagakerjaan</h4>
                 </div>
                 <ul class="space-y-2 text-xs text-slate-700">
                     <li class="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-100">
@@ -214,10 +194,7 @@
             <div class="p-5 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-3">
                 <div class="flex items-center gap-2.5 border-b border-slate-100 pb-3">
                     <span class="w-8 h-8 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center font-bold text-sm"><i class="fi fi-rr-home"></i></span>
-                    <div>
-                        <h4 class="font-extrabold text-slate-900 text-xs uppercase tracking-wider">4. Perumahan, Sanitasi & Aset</h4>
-                        <p class="text-[11px] text-slate-500">Status Kepemilikan, Air Minum, Listrik PLN, Fasilitas BAB, Aset</p>
-                    </div>
+                    <h4 class="font-extrabold text-slate-900 text-xs uppercase tracking-wider">4. Perumahan, Sanitasi & Aset</h4>
                 </div>
                 <ul class="space-y-2 text-xs text-slate-700">
                     <li class="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-100">

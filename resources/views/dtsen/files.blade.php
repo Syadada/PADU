@@ -5,19 +5,11 @@
     
     <!-- Header Banner -->
     <div class="p-5 sm:p-6 bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div class="space-y-1">
-            <div class="flex items-center gap-2">
-                <span class="p-2 rounded-xl bg-blue-50 text-blue-600 text-lg font-bold flex items-center justify-center"><i class="fi fi-rr-folder"></i></span>
-                <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">
-                    Manajemen Berkas Data & Ingesti Cepat
-                </h2>
-                <span class="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 text-xs font-bold font-mono">
-                    High-Speed Ingestion Engine
-                </span>
-            </div>
-            <p class="text-xs text-slate-500 font-medium">
-                Kelola berkas sumber dari folder <code class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-800 font-mono text-xs">src-dtsen/</code>, unduh paket arsip dari <code class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-800 font-mono text-xs">src-export/</code>, dan unduh master template resmi.
-            </p>
+        <div class="flex items-center gap-2">
+            <span class="p-2 rounded-xl bg-blue-50 text-blue-600 text-lg font-bold flex items-center justify-center"><i class="fi fi-rr-folder"></i></span>
+            <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">
+                Manajemen Berkas Data
+            </h2>
         </div>
 
         <div class="flex flex-wrap items-center gap-2 shrink-0">
@@ -38,12 +30,9 @@
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-emerald-100 pb-3">
                 <div class="flex items-center gap-2.5">
                     <span class="p-2 rounded-xl bg-emerald-100 text-emerald-800 font-bold text-base flex items-center justify-center"><i class="fi fi-rr-box"></i></span>
-                    <div>
-                        <h4 class="text-xs font-black uppercase tracking-wider text-emerald-950">
-                            BERKAS HASIL EKSPOR TERSEDIA DI FOLDER <code class="px-2 py-0.5 rounded font-mono text-xs bg-emerald-50 text-emerald-800 border border-emerald-200">src-export/</code>
-                        </h4>
-                        <p class="text-[11px] text-slate-600">Paket arsip (.ZIP) resmi yang telah diekspor oleh sistem</p>
-                    </div>
+                    <h4 class="text-xs font-black uppercase tracking-wider text-emerald-950">
+                        BERKAS HASIL EKSPOR TERSEDIA DI FOLDER <code class="px-2 py-0.5 rounded font-mono text-xs bg-emerald-50 text-emerald-800 border border-emerald-200">src-export/</code>
+                    </h4>
                 </div>
                 <span class="text-xs font-bold font-mono text-emerald-800 bg-emerald-50 px-3 py-1 rounded-xl border border-emerald-200">
                     {{ count($srcExportFiles) }} Paket Terdeteksi
@@ -75,15 +64,10 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-emerald-100 pb-3">
             <div class="flex items-center gap-2.5">
                 <span class="p-2 rounded-xl bg-emerald-100 text-emerald-800 font-bold text-base flex items-center justify-center"><i class="fi fi-rr-upload"></i></span>
-                <div>
-                    <h3 class="text-xs font-black uppercase tracking-wider text-emerald-950 flex items-center gap-1.5">
-                        <span>UNGGAH DATASET BARU KE FOLDER</span>
-                        <code class="px-2 py-0.5 rounded font-mono text-xs bg-emerald-50 text-emerald-800 border border-emerald-200">src-dtsen/</code>
-                    </h3>
-                    <p class="text-[11px] text-slate-600">
-                        Unggah berkas data baru langsung dari peramban web. Berkas otomatis disimpan ke direktori <code class="font-mono text-emerald-900 font-bold">src-dtsen/</code> dan siap diproses.
-                    </p>
-                </div>
+                <h3 class="text-xs font-black uppercase tracking-wider text-emerald-950 flex items-center gap-1.5">
+                    <span>UNGGAH DATASET BARU KE FOLDER</span>
+                    <code class="px-2 py-0.5 rounded font-mono text-xs bg-emerald-50 text-emerald-800 border border-emerald-200">src-dtsen/</code>
+                </h3>
             </div>
             <span class="text-[10px] font-black uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3 py-1 rounded-xl border border-emerald-200 self-start sm:self-auto">
                 CSV / XLSX / XLS / ZIP
@@ -107,9 +91,8 @@
                     <span x-show="uploading">Mengunggah berkas...</span>
                 </button>
             </div>
-            <div class="flex items-center justify-between text-[11px] text-slate-500 font-medium">
-                <span class="flex items-center gap-1"><i class="fi fi-rr-bolt text-amber-500"></i> Mendukung file besar CSV jutaan baris & ZIP terkompresi. Nama berkas otomatis diamankan dari karakter berbahaya.</span>
-                <span x-show="fileName" class="font-mono font-bold text-emerald-700" x-text="'File dipilih: ' + fileName"></span>
+            <div x-show="fileName" class="text-right text-[11px] text-slate-500 font-medium">
+                <span class="font-mono font-bold text-emerald-700" x-text="'File dipilih: ' + fileName"></span>
             </div>
         </form>
     </div>
@@ -117,16 +100,11 @@
     <!-- 3. PEMILIH & INGESTI BERKAS DARI FOLDER src-dtsen/ -->
     <div id="import-section" class="p-6 rounded-2xl shadow-sm bg-white text-slate-900 border border-slate-200 space-y-5">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-100 pb-4">
-            <div class="space-y-1">
-                <div class="flex items-center gap-2">
-                    <span class="p-2 rounded-xl bg-blue-50 text-blue-600 text-lg font-bold flex items-center justify-center"><i class="fi fi-rr-bolt"></i></span>
-                    <h3 class="text-sm font-black uppercase tracking-wider text-slate-900">
-                        PILIH & PROSES DATA DARI FOLDER <code class="px-2 py-0.5 rounded font-mono text-xs bg-blue-50 text-blue-800 border border-blue-200">src-dtsen/</code>
-                    </h3>
-                </div>
-                <p class="text-xs text-slate-600 font-medium">
-                    Pindahkan berkas dataset (CSV / XLSX) ke folder <code class="font-mono text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">src-dtsen/</code> di root project. Pilih berkas di bawah ini untuk diproses ke database DuckDB.
-                </p>
+            <div class="flex items-center gap-2">
+                <span class="p-2 rounded-xl bg-blue-50 text-blue-600 text-lg font-bold flex items-center justify-center"><i class="fi fi-rr-bolt"></i></span>
+                <h3 class="text-sm font-black uppercase tracking-wider text-slate-900">
+                    PILIH & PROSES DATA DARI FOLDER <code class="px-2 py-0.5 rounded font-mono text-xs bg-blue-50 text-blue-800 border border-blue-200">src-dtsen/</code>
+                </h3>
             </div>
             
             <a href="{{ route('dtsen.files') }}" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 shrink-0 self-start md:self-auto cursor-pointer border border-blue-600">
@@ -268,14 +246,8 @@
         <div class="p-5 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-3">
             <div class="flex items-center gap-2.5 border-b border-slate-100 pb-3">
                 <span class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm"><i class="fi fi-rr-download"></i></span>
-                <div>
-                    <h4 class="font-extrabold text-slate-900 text-xs uppercase tracking-wider">Format Master 58 Variabel DTSEN 2026</h4>
-                    <p class="text-[11px] text-slate-500">Unduh format acuan kolom resmi BPS & Bappenas</p>
-                </div>
+                <h4 class="font-extrabold text-slate-900 text-xs uppercase tracking-wider">Format Master 58 Variabel DTSEN 2026</h4>
             </div>
-            <p class="text-xs text-slate-600">
-                Gunakan template standar ini untuk memastikan susunan header kolom 100% cocok dengan parser ingesti otomatis.
-            </p>
             <div class="grid grid-cols-2 gap-2 pt-1">
                 <a href="{{ route('dtsen.template', ['format' => 'xlsx']) }}" class="p-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-center text-xs font-bold transition-all flex items-center justify-center gap-2">
                     <i class="fi fi-rr-file-excel text-emerald-600"></i> <span>Unduh Excel (.xlsx)</span>

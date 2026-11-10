@@ -9,19 +9,14 @@
     
     <!-- Header Banner -->
     <div class="p-5 sm:p-6 bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div class="space-y-1">
-            <div class="flex items-center gap-2">
-                <span class="p-2 rounded-xl bg-rose-50 text-rose-600 text-lg font-bold flex items-center justify-center"><i class="fi fi-rr-triangle-warning"></i></span>
-                <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">
-                    Tabel Data Temuan Error & Anomali
-                </h2>
-                <span class="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 text-xs font-bold font-mono">
-                    {{ number_format($totalErrors) }} Data Bermasalah
-                </span>
-            </div>
-            <p class="text-xs text-slate-500 font-medium">
-                Daftar baris data kependudukan yang mengandung anomali (NIK/KK tidak valid, desil cacat, tanggal lahir salah). Data ini tidak boleh diajukan bansos sebelum diverifikasi.
-            </p>
+        <div class="flex items-center gap-2">
+            <span class="p-2 rounded-xl bg-rose-50 text-rose-600 text-lg font-bold flex items-center justify-center"><i class="fi fi-rr-triangle-warning"></i></span>
+            <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">
+                Tabel Data Temuan Error & Anomali
+            </h2>
+            <span class="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 text-xs font-bold font-mono">
+                {{ number_format($totalErrors) }} Data Bermasalah
+            </span>
         </div>
 
         <div class="flex flex-wrap items-center gap-2 shrink-0">

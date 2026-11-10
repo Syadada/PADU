@@ -50,26 +50,21 @@
 
     <!-- Header Banner Dashboard -->
     <div class="p-6 bg-white rounded-2xl border border-slate-300 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div class="space-y-1">
-            <div class="flex flex-wrap items-center gap-2">
-                <span class="p-2 rounded-xl bg-blue-50 text-blue-600 text-lg flex items-center justify-center"><i class="{{ $activeDatasetScopeIcon ?? 'fi fi-rr-apps' }}"></i></span>
-                <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">
-                    Dashboard Analitik & Quality Test (DTSEN 2026)
-                </h2>
-                @if(!empty($activeDatasetScopeLabel))
-                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold border flex items-center gap-1 {{ $activeDatasetScopeBadge ?? 'bg-indigo-50 text-indigo-700 border-indigo-200' }}">
-                        <i class="{{ $activeDatasetScopeIcon ?? 'fi fi-rr-apps' }}"></i> {{ $activeDatasetScopeLabel }}
-                    </span>
-                @endif
-                @if($totalRows > 0)
-                    <span class="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-800 text-xs font-bold font-mono border border-slate-200">
-                        {{ number_format($totalRows) }} Baris
-                    </span>
-                @endif
-            </div>
-            <p class="text-xs text-slate-500 font-medium">
-                {{ $activeDatasetScopeDesc ?? 'Pengolahan Data Adaptif File CSV/XLSX, Relasi Otomatis KK-Individu, & Pengecekan Kualitas Standar Validasi Data.' }}
-            </p>
+        <div class="flex flex-wrap items-center gap-2">
+            <span class="p-2 rounded-xl bg-blue-50 text-blue-600 text-lg flex items-center justify-center"><i class="{{ $activeDatasetScopeIcon ?? 'fi fi-rr-apps' }}"></i></span>
+            <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">
+                Dashboard Analitik & Quality Test (DTSEN 2026)
+            </h2>
+            @if(!empty($activeDatasetScopeLabel))
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold border flex items-center gap-1 {{ $activeDatasetScopeBadge ?? 'bg-indigo-50 text-indigo-700 border-indigo-200' }}">
+                    <i class="{{ $activeDatasetScopeIcon ?? 'fi fi-rr-apps' }}"></i> {{ $activeDatasetScopeLabel }}
+                </span>
+            @endif
+            @if($totalRows > 0)
+                <span class="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-800 text-xs font-bold font-mono border border-slate-200">
+                    {{ number_format($totalRows) }} Baris
+                </span>
+            @endif
         </div>
 
         <div class="flex flex-wrap items-center gap-2.5 shrink-0" x-data="{ showExportModal: false, showTemplateModal: false }">
@@ -222,16 +217,11 @@
     <!-- Selector & Impor Berkas Data dari Folder src-dtsen (High-Speed Python Engine) -->
     <div class="p-6 rounded-2xl shadow-xl card-dark-slate space-y-4 font-sans" style="background-color: #0f172a !important; color: #ffffff !important; border: 1px solid #1e293b !important;">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b pb-4" style="border-color: #334155 !important;">
-            <div class="space-y-1">
-                <div class="flex items-center gap-2">
-                    <span class="p-2 rounded-xl text-blue-400 text-lg flex items-center justify-center" style="background-color: rgba(59, 130, 246, 0.2);"><i class="fi fi-rr-bolt"></i></span>
-                    <h3 class="text-sm font-black uppercase tracking-wider" style="color: #ffffff !important;">
-                        PILIH & PROSES DATA DARI FOLDER <code class="px-2 py-0.5 rounded font-mono text-xs" style="background-color: #1e3a8a !important; color: #93c5fd !important; border: 1px solid #1d4ed8 !important;">src-dtsen/</code>
-                    </h3>
-                </div>
-                <p class="text-xs font-medium" style="color: #cbd5e1 !important;">
-                    Pindahkan berkas dataset (CSV / XLSX) ke folder <code class="font-mono" style="color: #fde047 !important;">src-dtsen/</code> di root project. Pilih berkas di bawah ini untuk diproses.
-                </p>
+            <div class="flex items-center gap-2">
+                <span class="p-2 rounded-xl text-blue-400 text-lg flex items-center justify-center" style="background-color: rgba(59, 130, 246, 0.2);"><i class="fi fi-rr-bolt"></i></span>
+                <h3 class="text-sm font-black uppercase tracking-wider" style="color: #ffffff !important;">
+                    PILIH & PROSES DATA DARI FOLDER <code class="px-2 py-0.5 rounded font-mono text-xs" style="background-color: #1e3a8a !important; color: #93c5fd !important; border: 1px solid #1d4ed8 !important;">src-dtsen/</code>
+                </h3>
             </div>
             
             <a href="{{ route('dtsen.index') }}" class="btn-refresh-folder px-4 py-2 rounded-xl text-white text-xs font-bold transition-all shadow-md flex items-center gap-1.5 shrink-0 self-start md:self-auto cursor-pointer" style="background-color: #0284c7 !important; color: #ffffff !important; border: 1px solid #0369a1 !important;">

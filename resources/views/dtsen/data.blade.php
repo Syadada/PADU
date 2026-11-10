@@ -5,22 +5,17 @@
     
     <!-- Header Banner Modul -->
     <div class="p-5 sm:p-6 bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div class="space-y-1">
-            <div class="flex flex-wrap items-center gap-2">
-                <span class="p-2 rounded-xl bg-blue-50 text-blue-600 text-lg font-bold flex items-center justify-center"><i class="{{ $activeDatasetScopeIcon ?? 'fi fi-rr-table' }}"></i></span>
-                <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">
-                    Tabel Master Data Terpadu
-                </h2>
-                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold border flex items-center gap-1 {{ $activeDatasetScopeBadge ?? 'bg-indigo-50 text-indigo-700 border-indigo-200' }}">
-                    <i class="{{ $activeDatasetScopeIcon ?? 'fi fi-rr-apps' }}"></i> {{ $activeDatasetScopeLabel ?? 'Set Terpadu (Keduanya)' }}
-                </span>
-                <span class="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-800 text-xs font-bold font-mono border border-slate-200">
-                    {{ number_format($records->total()) }} Baris
-                </span>
-            </div>
-            <p class="text-xs text-slate-500 font-medium">
-                {{ $activeDatasetScopeDesc ?? 'Pusat data terpadu: Relasi otomatis KK & Individu, sensor privasi NIK/KK, filter pivot Excel, dan transliterasi teks resmi BPS-Bappenas.' }}
-            </p>
+        <div class="flex flex-wrap items-center gap-2">
+            <span class="p-2 rounded-xl bg-blue-50 text-blue-600 text-lg font-bold flex items-center justify-center"><i class="{{ $activeDatasetScopeIcon ?? 'fi fi-rr-table' }}"></i></span>
+            <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">
+                Tabel Master Data Terpadu
+            </h2>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold border flex items-center gap-1 {{ $activeDatasetScopeBadge ?? 'bg-indigo-50 text-indigo-700 border-indigo-200' }}">
+                <i class="{{ $activeDatasetScopeIcon ?? 'fi fi-rr-apps' }}"></i> {{ $activeDatasetScopeLabel ?? 'Set Terpadu (Keduanya)' }}
+            </span>
+            <span class="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-800 text-xs font-bold font-mono border border-slate-200">
+                {{ number_format($records->total()) }} Baris
+            </span>
         </div>
 
         <div class="flex flex-wrap items-center gap-2 shrink-0">
@@ -260,10 +255,8 @@
                             <span class="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-sm font-black shrink-0">
                                 <i class="fi fi-rr-users-alt"></i>
                             </span>
-                            <div>
-                                <h3 class="font-extrabold text-slate-900 text-sm">Bulk Search (Pencarian Massal NIK / KK)</h3>
-                                <p class="text-[11px] text-slate-500">Cari puluhan atau ratusan NIK/KK sekaligus dengan sekali tempel.</p>
-                            </div>
+                            <h3 class="font-extrabold text-slate-900 text-sm">Bulk Search (Pencarian Massal NIK / KK)</h3>
+                        </div>
                         </div>
                         <button type="button" @click="showBulkSearchModal = false" class="text-slate-400 hover:text-slate-600 text-base cursor-pointer">
                             <i class="fi fi-rr-cross"></i>
@@ -336,12 +329,9 @@
                  style="display: none;">
                 <div @click.away="showColumnModal = false" class="bg-white rounded-2xl max-w-4xl w-full p-5 sm:p-6 space-y-4 shadow-2xl border border-slate-200 my-auto flex flex-col max-h-[88vh]">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-3 shrink-0">
-                        <div>
-                            <h3 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
-                                <i class="fi fi-rr-settings-sliders"></i> <span>Pengatur Tampilan Kolom Tabel ({{ count($activeColumnsMap) }} Variabel Terdeteksi)</span>
-                            </h3>
-                            <p class="text-xs text-slate-500">Centang atau hilangkan centang untuk memilih kolom yang ingin ditampilkan pada tabel data.</p>
-                        </div>
+                        <h3 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
+                            <i class="fi fi-rr-settings-sliders"></i> <span>Pengatur Tampilan Kolom Tabel ({{ count($activeColumnsMap) }} Variabel Terdeteksi)</span>
+                        </h3>
                         <button type="button" @click="showColumnModal = false" class="text-slate-400 hover:text-slate-700 font-extrabold text-lg p-1 cursor-pointer">&times;</button>
                     </div>
 
