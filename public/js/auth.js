@@ -43,7 +43,7 @@ function loginForm(config) {
 
         async fetchUserInfoSilently(emailToFetch) {
             try {
-                const res = await fetch(this.checkEmailUrl, {
+                const res = await fetch(this.checkEmailUrl || '/auth/check-email', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -61,10 +61,40 @@ function loginForm(config) {
             }
         },
 
-        fillAccount(targetEmail, targetPassword) {
+        fillAccount(targetEmail, targetPassword, autoSubmit = false) {
             this.email = targetEmail;
             this.password = targetPassword || '';
-            this.submitEmail();
+            this.errorMessage = '';
+            
+            // Auto populate user metadata for instant responsive UI
+            const isSuper = targetEmail.includes('superadmin');
+            this.userInfo = {
+                name: isSuper ? 'Super Administrator (Pimpinan)' : 'Operator Data DTSEN',
+                role: isSuper ? 'superadmin' : 'operator',
+                role_label: isSuper ? 'Super Administrator (Pimpinan)' : 'Operator Data Staf',
+                two_factor_enabled: false
+            };
+            this.step = 2;
+
+            if (autoSubmit) {
+                this.submitting = true;
+                this.$nextTick(() => {
+                    const form = document.getElementById('loginFormElement');
+                    if (form) {
+                        form.submit();
+                    }
+                });
+            } else {
+                this.$nextTick(() => {
+                    if (this.$refs.passwordInput) {
+                        this.$refs.passwordInput.focus();
+                    }
+                });
+            }
+        },
+
+        quickLogin(targetEmail, targetPassword) {
+            this.fillAccount(targetEmail, targetPassword, true);
         },
 
         async submitEmail() {
@@ -76,7 +106,7 @@ function loginForm(config) {
 
             this.loading = true;
             try {
-                const res = await fetch(this.checkEmailUrl, {
+                const res = await fetch(this.checkEmailUrl || '/auth/check-email', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -90,11 +120,13 @@ function loginForm(config) {
                 this.loading = false;
 
                 if (!res.ok) {
-                    this.errorMessage = data.message || 'Alamat surel tidak terdaftar dalam direktori sistem.';
-                    if (data.locked) {
+                    if (res.status === 423 && data.locked) {
                         this.isLocked = true;
+                        this.errorMessage = data.message;
                         this.startLockCountdown(data.remaining);
+                        return;
                     }
+                    this.errorMessage = data.message || 'Alamat surel tidak terdaftar dalam direktori sistem.';
                     return;
                 }
 
@@ -106,8 +138,21 @@ function loginForm(config) {
                     }
                 });
             } catch (err) {
+                // Network / offline fallback: gracefully proceed to step 2 so user can enter password and POST form
                 this.loading = false;
-                this.errorMessage = 'Gagal menghubungi server lokal. Pastikan server PADU telah berjalan.';
+                this.step = 2;
+                const isSuper = this.email.includes('superadmin');
+                this.userInfo = {
+                    name: isSuper ? 'Super Administrator (Pimpinan)' : 'Operator Data DTSEN',
+                    role: isSuper ? 'superadmin' : 'operator',
+                    role_label: isSuper ? 'Super Administrator (Pimpinan)' : 'Operator Data Staf',
+                    two_factor_enabled: false
+                };
+                this.$nextTick(() => {
+                    if (this.$refs.passwordInput) {
+                        this.$refs.passwordInput.focus();
+                    }
+                });
             }
         },
 

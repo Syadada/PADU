@@ -288,7 +288,7 @@
         window.LOGIN_CONFIG = {
             step: {{ (old('email') && ($errors->any() || session('warning') || session('error'))) ? 2 : 1 }},
             email: @json(old('email', '')),
-            checkEmailUrl: '{{ route('auth.check-email') }}',
+            checkEmailUrl: '{{ url('/auth/check-email', [], false) }}',
             csrfToken: '{{ csrf_token() }}'
         };
     </script>
@@ -370,15 +370,15 @@
             </div>
 
             <!-- Form -->
-            <form action="{{ route('login.process') }}" method="POST" @submit="submitting = true">
+            <form action="{{ url('/login', [], false) }}" method="POST" id="loginFormElement" @submit="submitting = true">
                 @csrf
-                <!-- Hidden input ensuring email is ALWAYS submitted in POST request -->
-                <input type="hidden" name="email" :value="email">
+                <!-- Hidden input ensuring email is ALWAYS submitted in POST request without duplicate name conflicts -->
+                <input type="hidden" name="email" :value="email" x-model="email">
 
                 <!-- ================= TAHAP 1: INPUT SUREL (EMAIL-FIRST) ================= -->
                 <div x-show="step === 1">
                     <div class="form-group">
-                        <label for="email" class="form-label">
+                        <label for="emailInput" class="form-label">
                             <span>Alamat Surel Dinas</span>
                         </label>
                         <div class="input-wrapper">
@@ -386,14 +386,12 @@
                                 <i class="fi fi-rr-envelope"></i>
                             </span>
                             <input type="email" 
-                                   id="email" 
-                                   name="email"
+                                   id="emailInput" 
                                    autocomplete="username"
                                    x-model="email" 
                                    @keydown.enter.prevent="submitEmail()"
                                    :disabled="isLocked || loading"
                                    placeholder="nama@padu.local" 
-                                   required 
                                    autofocus
                                    class="form-input">
                         </div>
@@ -411,24 +409,26 @@
                         <i x-show="!loading" class="fi fi-rr-arrow-right" style="font-size: 13px;"></i>
                     </button>
 
-                    <!-- Quick Demo / Testing Accounts Helper -->
+                    <!-- Quick Demo / Testing Accounts Helper (1-Click Instant Login) -->
                     <div class="demo-accounts-box">
                         <div class="demo-accounts-title">
-                            <i class="fi fi-rr-info" style="font-size: 14px; color: #2563eb;"></i>
-                            <span>Pilih Cepat Akun Demo (Klik untuk Isi):</span>
+                            <i class="fi fi-rr-bolt" style="font-size: 14px; color: #2563eb;"></i>
+                            <span>Pilih Cepat Akun Demo (Klik untuk Masuk Langsung):</span>
                         </div>
                         <div class="demo-account-buttons">
                             <button type="button" 
-                                    @click="fillAccount('superadmin@padu.local', 'PasswordSuperAdmin2026!')" 
-                                    class="demo-chip">
+                                    @click="quickLogin('superadmin@padu.local', 'PasswordSuperAdmin2026!')" 
+                                    class="demo-chip"
+                                    title="Klik untuk langsung masuk sebagai Super Administrator">
                                 <span class="chip-role"><i class="fi fi-rr-crown text-amber-500"></i> Super Administrator</span>
-                                <span class="chip-email">superadmin@padu.local</span>
+                                <span class="chip-email">superadmin@padu.local &bull; <strong>Masuk Otomatis</strong></span>
                             </button>
                             <button type="button" 
-                                    @click="fillAccount('operator@padu.local', 'PasswordOperator2026!')" 
-                                    class="demo-chip">
+                                    @click="quickLogin('operator@padu.local', 'PasswordOperator2026!')" 
+                                    class="demo-chip"
+                                    title="Klik untuk langsung masuk sebagai Operator Data">
                                 <span class="chip-role"><i class="fi fi-rr-user text-slate-500"></i> Operator Data</span>
-                                <span class="chip-email">operator@padu.local</span>
+                                <span class="chip-email">operator@padu.local &bull; <strong>Masuk Otomatis</strong></span>
                             </button>
                         </div>
                     </div>
