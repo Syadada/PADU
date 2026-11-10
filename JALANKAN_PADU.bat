@@ -354,7 +354,7 @@ rem Jalankan Laravel Server pada port bebas yang telah dideteksi
 if %errorlevel% neq 0 (
     echo.
     echo [INFO] artisan serve mengalami kendala. Menjalankan fallback web server [server.php]...
-    "%PHP_BIN%" -d variables_order=EGPCS -d memory_limit=1024M -d upload_max_filesize=500M -d post_max_size=550M -d max_execution_time=600 -d max_input_time=600 -S 127.0.0.1:%LARAVEL_PORT% "%PROJECT_DIR%server.php"
+    "%PHP_BIN%" -d variables_order=EGPCS -d memory_limit=1024M -d upload_max_filesize=500M -d post_max_size=550M -d max_execution_time=600 -d max_input_time=600 -t "%PROJECT_DIR%public" -S 127.0.0.1:%LARAVEL_PORT% "%PROJECT_DIR%server.php"
 )
 
 echo.
