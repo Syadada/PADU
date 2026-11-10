@@ -31,12 +31,19 @@
                 <i class="fi fi-rr-settings-sliders"></i> <span>Atur Kolom</span> (<span x-text="visibleCols.length"></span>/{{ count($activeColumnsMap) }})
             </button>
             
-            <!-- Ekspor Data Modal Trigger -->
+            <!-- Unduh Hasil Pencarian (.CSV) -->
+            <a href="{{ route('dtsen.export-search', request()->all()) }}" 
+               class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
+               title="Unduh hasil pencarian dan filter ke berkas CSV">
+                <i class="fi fi-rr-file-download text-sm"></i> <span>Unduh Hasil (.CSV)</span>
+            </a>
+
+            <!-- Ekspor Data Modal Trigger (.ZIP) -->
             <button type="button" 
                     @click="showExportModal = true" 
-                    class="px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-xs rounded-xl border border-emerald-300 shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
+                    class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl border border-slate-300 shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
                     @if($totalRows === 0) disabled title="Belum ada data untuk diekspor" @endif>
-                <i class="fi fi-rr-upload"></i> <span>Ekspor (.ZIP)</span>
+                <i class="fi fi-rr-upload"></i> <span>Ekspor Paket (.ZIP)</span>
             </button>
 
             <!-- Reset Filter -->
@@ -54,12 +61,12 @@
             <div class="space-y-1">
                 <h3 class="font-extrabold text-slate-900 text-base">Belum Ada Dataset yang Dimuat</h3>
                 <p class="text-xs text-slate-500 max-w-md mx-auto">
-                    Silakan buka menu <strong><i class="fi fi-rr-folder"></i> Berkas</strong> di sidebar kiri untuk memilih dan mengimpor file CSV/Excel dari folder <code>src-dtsen/</code>.
+                    Silakan buka menu <strong><i class="fi fi-rr-folder"></i> 1. DATA</strong> di sidebar kiri untuk memilih dan mengimpor file CSV/Excel dari folder <code>src-dtsen/</code>.
                 </p>
             </div>
             <div class="pt-2">
                 <a href="{{ route('dtsen.files') }}" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition-all inline-flex items-center gap-2 cursor-pointer">
-                    <i class="fi fi-rr-bolt"></i> <span>Buka Berkas</span>
+                    <i class="fi fi-rr-bolt"></i> <span>Buka 1. DATA</span>
                 </a>
             </div>
         </div>
@@ -68,62 +75,258 @@
         <div class="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-5" id="tabel-data">
             
             <!-- SEARCH ENGINE & FILTER BAR -->
-            <form method="GET" action="{{ route('dtsen.data') }}#tabel-data" id="dataTableSearchForm" class="space-y-3">
-                <div class="flex flex-col sm:flex-row items-center gap-2">
-                    <div class="relative w-full">
+            <form method="GET" action="{{ route('dtsen.data') }}#tabel-data" id="dataTableSearchForm" class="space-y-3.5">
+                <!-- Baris 1: Search By, Input Pencarian, Tombol Cari, Bulk Search, Unduh CSV -->
+                <div class="flex flex-col md:flex-row items-stretch md:items-center gap-2">
+                    <!-- Search By Selector -->
+                    <div class="shrink-0">
+                        <select name="search_by" 
+                                aria-label="Target Pencarian Kolom"
+                                class="w-full md:w-auto px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200/80 border border-slate-300 text-slate-900 font-black text-xs rounded-xl outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer transition-all shadow-xs">
+                            <option value="all" {{ ($searchBy ?? 'all') === 'all' ? 'selected' : '' }}>Semua Kolom</option>
+                            <option value="nik" {{ ($searchBy ?? '') === 'nik' ? 'selected' : '' }}>NIK (Kependudukan)</option>
+                            <option value="kk" {{ ($searchBy ?? '') === 'kk' ? 'selected' : '' }}>No. Kartu Keluarga (KK)</option>
+                            <option value="nama" {{ ($searchBy ?? '') === 'nama' ? 'selected' : '' }}>Nama Lengkap</option>
+                            <option value="wilayah" {{ ($searchBy ?? '') === 'wilayah' ? 'selected' : '' }}>Wilayah Domisili</option>
+                        </select>
+                    </div>
+
+                    <!-- Search Input Field -->
+                    <div class="relative flex-1">
                         <input type="text" 
                                name="search" 
                                value="{{ $search }}" 
-                               placeholder="Cari NIK, KK, Nama Lengkap, atau Wilayah domisili..." 
+                               placeholder="Ketik kata kunci pencarian (NIK, KK, Nama, atau Wilayah)..." 
                                class="w-full pl-10 pr-20 py-2.5 bg-slate-50 border border-slate-300 text-slate-900 font-bold text-xs rounded-xl outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all shadow-xs">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 text-sm"><i class="fi fi-rr-search"></i></span>
                         @if(!empty($search))
-                            <a href="{{ route('dtsen.data') }}#tabel-data" class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-slate-700 font-extrabold text-xs"><i class="fi fi-rr-cross-small"></i> Clear</a>
+                            <a href="{{ route('dtsen.data', array_merge(request()->except('search'), ['page' => 1])) }}#tabel-data" class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-slate-700 font-extrabold text-xs"><i class="fi fi-rr-cross-small"></i> Clear</a>
                         @endif
                     </div>
 
-                    <button type="submit" class="w-full sm:w-auto px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl shadow-sm transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer">
-                        <i class="fi fi-rr-search"></i> <span>Cari Data</span>
-                    </button>
+                    <!-- Action Buttons -->
+                    <div class="flex items-center gap-2 shrink-0">
+                        <button type="submit" class="flex-1 md:flex-initial px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                            <i class="fi fi-rr-search"></i> <span>Cari Data</span>
+                        </button>
+
+                        <button type="button" 
+                                @click="showBulkSearchModal = true" 
+                                class="flex-1 md:flex-initial px-4 py-2.5 rounded-xl border font-black text-xs flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer {{ !empty($bulkSearch) ? 'bg-indigo-600 text-white border-indigo-700 shadow-md shadow-indigo-600/20' : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200' }}">
+                            <i class="fi fi-rr-users-alt"></i> <span>Bulk Search</span>
+                            @if(!empty($bulkSearch))
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            @endif
+                        </button>
+
+                        <a href="{{ route('dtsen.export-search', request()->all()) }}" 
+                           class="flex-1 md:flex-initial px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                           title="Unduh hasil pencarian dan filter ke berkas CSV">
+                            <i class="fi fi-rr-file-download text-sm"></i> <span>Unduh CSV</span>
+                        </a>
+                    </div>
                 </div>
 
-                <!-- FILTER QUICK PRESETS -->
-                <div class="flex flex-wrap items-center gap-2 pt-1 text-xs">
-                    <span class="font-bold text-slate-500 text-[11px] uppercase tracking-wider">Filter Cepat:</span>
-                    
-                    <!-- Desil Filter -->
-                    <select id="filter_desil" name="desil" aria-label="Filter Berdasarkan Desil" class="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 font-bold text-xs cursor-pointer outline-none focus:border-blue-500">
-                        <option value="semua" {{ $desil === 'semua' ? 'selected' : '' }}>Semua Desil</option>
-                        @for($d = 1; $d <= 10; $d++)
-                            <option value="{{ $d }}" {{ (string)$desil === (string)$d ? 'selected' : '' }}>Desil {{ $d }}</option>
-                        @endfor
-                    </select>
+                <!-- Hidden inputs to retain current bulk search and column filters when submitting normal form -->
+                @if(!empty($bulkSearch))
+                    <input type="hidden" name="bulk_search" value="{{ $bulkSearch }}">
+                    <input type="hidden" name="bulk_field" value="{{ $bulkField ?? 'nik' }}">
+                @endif
 
-                    <!-- QC Status Filter -->
-                    <select id="filter_quality_status" name="quality_status" aria-label="Filter Berdasarkan Status Quality Check" class="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 font-bold text-xs cursor-pointer outline-none focus:border-blue-500">
-                        <option value="semua" {{ $qualityStatus === 'semua' ? 'selected' : '' }}>Semua Status QC</option>
-                        <option value="Valid" {{ $qualityStatus === 'Valid' ? 'selected' : '' }}>Hanya Valid</option>
-                        <option value="Warning" {{ $qualityStatus === 'Warning' ? 'selected' : '' }}>Hanya Warning</option>
-                        <option value="Critical" {{ $qualityStatus === 'Critical' ? 'selected' : '' }}>Hanya Critical</option>
-                    </select>
-
-                    @php
-                        $hasCustomColFilters = false;
-                        foreach(request()->query() as $qk => $qv) {
-                            if (!in_array($qk, ['page', 'search', 'desil', 'quality_status', '_token']) && !empty($qv) && $qv !== 'semua') {
-                                $hasCustomColFilters = true;
-                                break;
-                            }
-                        }
-                    @endphp
-
-                    @if(!empty($search) || $desil !== 'semua' || $qualityStatus !== 'semua' || $hasCustomColFilters)
-                        <a href="{{ route('dtsen.data') }}#tabel-data" class="px-2.5 py-1.5 rounded-lg bg-rose-50 text-rose-700 border border-rose-200 font-bold text-[11px] hover:bg-rose-100 transition-colors flex items-center gap-1 shadow-2xs">
-                            <i class="fi fi-rr-cross-small"></i> <span>Hapus Semua Filter</span>
-                        </a>
+                @foreach(request()->query() as $qk => $qv)
+                    @if(!in_array($qk, ['page', 'search', 'search_by', 'bulk_search', 'bulk_field', 'desil', 'quality_status', 'order_by', 'per_page', '_token']) && !empty($qv))
+                        <input type="hidden" name="{{ $qk }}" value="{{ is_array($qv) ? implode(',', $qv) : $qv }}">
                     @endif
+                @endforeach
+
+                <!-- Baris 2: Filter Cepat, Urutkan (Flexible Sorts), & Set Row Numbers -->
+                <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-100 text-xs">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="font-bold text-slate-500 text-[11px] uppercase tracking-wider">Filter Cepat:</span>
+                        
+                        <!-- Desil Filter -->
+                        <select id="filter_desil" name="desil" onchange="document.getElementById('dataTableSearchForm').submit()" aria-label="Filter Berdasarkan Desil" class="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 font-bold text-xs cursor-pointer outline-none focus:border-blue-500">
+                            <option value="semua" {{ $desil === 'semua' ? 'selected' : '' }}>Semua Desil</option>
+                            @for($d = 1; $d <= 10; $d++)
+                                <option value="{{ $d }}" {{ (string)$desil === (string)$d ? 'selected' : '' }}>Desil {{ $d }}</option>
+                            @endfor
+                        </select>
+
+                        <!-- QC Status Filter -->
+                        <select id="filter_quality_status" name="quality_status" onchange="document.getElementById('dataTableSearchForm').submit()" aria-label="Filter Berdasarkan Status Quality Check" class="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 font-bold text-xs cursor-pointer outline-none focus:border-blue-500">
+                            <option value="semua" {{ $qualityStatus === 'semua' ? 'selected' : '' }}>Semua Status QC</option>
+                            <option value="Valid" {{ $qualityStatus === 'Valid' ? 'selected' : '' }}>Hanya Valid</option>
+                            <option value="Warning" {{ $qualityStatus === 'Warning' ? 'selected' : '' }}>Hanya Warning</option>
+                            <option value="Critical" {{ $qualityStatus === 'Critical' ? 'selected' : '' }}>Hanya Critical</option>
+                        </select>
+
+                        <!-- Flexible Sorts Selector -->
+                        <div class="flex items-center gap-1.5 pl-1 sm:pl-3 sm:border-l border-slate-200">
+                            <span class="font-bold text-slate-500 text-[11px] uppercase tracking-wider"><i class="fi fi-rr-sort-alt"></i> Urutkan:</span>
+                            <select name="order_by" onchange="document.getElementById('dataTableSearchForm').submit()" aria-label="Urutkan Data" class="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 font-bold text-xs cursor-pointer outline-none focus:border-blue-500">
+                                <option value="id_desc" {{ ($orderBy ?? '') === 'id_desc' ? 'selected' : '' }}>ID / Input Terbaru</option>
+                                <option value="id_asc" {{ ($orderBy ?? '') === 'id_asc' ? 'selected' : '' }}>ID / Input Terlama</option>
+                                <option value="nik_asc" {{ ($orderBy ?? '') === 'nik_asc' ? 'selected' : '' }}>NIK (0 - 9)</option>
+                                <option value="nik_desc" {{ ($orderBy ?? '') === 'nik_desc' ? 'selected' : '' }}>NIK (9 - 0)</option>
+                                <option value="nama_asc" {{ ($orderBy ?? '') === 'nama_asc' ? 'selected' : '' }}>Nama (A - Z)</option>
+                                <option value="nama_desc" {{ ($orderBy ?? '') === 'nama_desc' ? 'selected' : '' }}>Nama (Z - A)</option>
+                                <option value="gaji_desc" {{ ($orderBy ?? '') === 'gaji_desc' ? 'selected' : '' }}>Gaji Tertinggi</option>
+                                <option value="gaji_asc" {{ ($orderBy ?? '') === 'gaji_asc' ? 'selected' : '' }}>Gaji Terendah</option>
+                                <option value="tgl_asc" {{ ($orderBy ?? '') === 'tgl_asc' ? 'selected' : '' }}>Tanggal Lahir (Tertua)</option>
+                                <option value="tgl_desc" {{ ($orderBy ?? '') === 'tgl_desc' ? 'selected' : '' }}>Tanggal Lahir (Termuda)</option>
+                                <option value="desil_asc" {{ ($orderBy ?? '') === 'desil_asc' ? 'selected' : '' }}>Desil Terendah (1 - 10)</option>
+                                <option value="desil_desc" {{ ($orderBy ?? '') === 'desil_desc' ? 'selected' : '' }}>Desil Tertinggi (10 - 1)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Set Row Numbers (Baris Per Halaman) -->
+                    <div class="flex items-center gap-1.5">
+                        <span class="font-bold text-slate-500 text-[11px] uppercase tracking-wider"><i class="fi fi-rr-list"></i> Baris:</span>
+                        <select name="per_page" onchange="document.getElementById('dataTableSearchForm').submit()" aria-label="Jumlah Baris Per Halaman" class="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 font-bold text-xs cursor-pointer outline-none focus:border-blue-500">
+                            <option value="10" {{ ($perPage ?? 15) == 10 ? 'selected' : '' }}>10 baris</option>
+                            <option value="15" {{ ($perPage ?? 15) == 15 ? 'selected' : '' }}>15 baris</option>
+                            <option value="25" {{ ($perPage ?? 15) == 25 ? 'selected' : '' }}>25 baris</option>
+                            <option value="50" {{ ($perPage ?? 15) == 50 ? 'selected' : '' }}>50 baris</option>
+                            <option value="100" {{ ($perPage ?? 15) == 100 ? 'selected' : '' }}>100 baris</option>
+                            <option value="250" {{ ($perPage ?? 15) == 250 ? 'selected' : '' }}>250 baris</option>
+                            <option value="500" {{ ($perPage ?? 15) == 500 ? 'selected' : '' }}>500 baris</option>
+                        </select>
+                    </div>
                 </div>
             </form>
+
+            <!-- BULK SEARCH ACTIVE STATUS BANNER -->
+            @if(!empty($bulkSearch))
+                @php
+                    $bulkItems = array_filter(preg_split('/[\r\n,;\s]+/', trim($bulkSearch)));
+                    $bulkItemCount = count($bulkItems);
+                @endphp
+                <div class="flex items-center justify-between gap-3 p-3 bg-indigo-50 border border-indigo-200 rounded-xl text-xs font-bold text-indigo-900 shadow-xs">
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-xs shrink-0"><i class="fi fi-rr-users-alt"></i></span>
+                        <span>Bulk Search Aktif: Menyaring <strong>{{ number_format($bulkItemCount) }}</strong> nilai <strong>{{ strtoupper($bulkField ?? 'nik') }}</strong> spesifik.</span>
+                    </div>
+                    <button type="button" @click="clearBulkSearch()" class="px-2.5 py-1 rounded-lg bg-indigo-200 hover:bg-indigo-300 text-indigo-900 text-xs font-black cursor-pointer inline-flex items-center gap-1 transition-all">
+                        <i class="fi fi-rr-cross-small"></i> <span>Hapus Bulk Search</span>
+                    </button>
+                </div>
+            @endif
+
+            <!-- COUNT RESULT & FILTER STATUS BANNER -->
+            @php
+                $hasCustomColFilters = false;
+                foreach(request()->query() as $qk => $qv) {
+                    if (!in_array($qk, ['page', 'search', 'search_by', 'bulk_search', 'bulk_field', 'desil', 'quality_status', 'order_by', 'per_page', '_token']) && !empty($qv) && $qv !== 'semua') {
+                        $hasCustomColFilters = true;
+                        break;
+                    }
+                }
+                $isFiltered = !empty($search) || !empty($bulkSearch) || $desil !== 'semua' || $qualityStatus !== 'semua' || $hasCustomColFilters;
+            @endphp
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+                <div class="flex items-center gap-2.5">
+                    <span class="w-8 h-8 rounded-lg {{ $isFiltered ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-700' }} flex items-center justify-center font-black text-sm shrink-0">
+                        <i class="fi fi-rr-stats"></i>
+                    </span>
+                    <div class="text-xs text-slate-700">
+                        <span>Ditemukan <strong class="text-blue-700 text-sm font-black">{{ number_format($records->total()) }}</strong> data</span>
+                        <span class="text-slate-500 font-normal"> (Menampilkan baris <strong>{{ number_format($records->firstItem() ?: 0) }}</strong> &ndash; <strong>{{ number_format($records->lastItem() ?: 0) }}</strong>)</span>
+                        <span class="text-slate-400 font-normal"> dari total <strong>{{ number_format($totalSystemRows ?? $totalRows) }}</strong> data terdaftar di sistem.</span>
+                    </div>
+                </div>
+
+                @if($isFiltered)
+                    <div class="flex items-center gap-2 shrink-0">
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-blue-100 text-blue-800 border border-blue-200 flex items-center gap-1">
+                            <i class="fi fi-rr-filter"></i> Terfilter
+                        </span>
+                        <a href="{{ route('dtsen.data') }}#tabel-data" class="px-3 py-1 rounded-lg bg-rose-50 text-rose-700 border border-rose-200 font-black text-xs hover:bg-rose-100 transition-colors flex items-center gap-1 shadow-2xs">
+                            <i class="fi fi-rr-cross-small"></i> <span>Reset Semua Filter</span>
+                        </a>
+                    </div>
+                @endif
+            </div>
+
+            <!-- MODAL BULK SEARCH BY NIK & KK -->
+            <div x-show="showBulkSearchModal" 
+                 x-cloak 
+                 @keydown.escape.window="showBulkSearchModal = false"
+                 class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs p-3 sm:p-6 flex items-center justify-center"
+                 style="display: none;">
+                <div @click.away="showBulkSearchModal = false" class="bg-white rounded-2xl max-w-xl w-full p-5 sm:p-6 space-y-4 shadow-2xl border border-slate-200 my-auto flex flex-col">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-sm font-black shrink-0">
+                                <i class="fi fi-rr-users-alt"></i>
+                            </span>
+                            <div>
+                                <h3 class="font-extrabold text-slate-900 text-sm">Bulk Search (Pencarian Massal NIK / KK)</h3>
+                                <p class="text-[11px] text-slate-500">Cari puluhan atau ratusan NIK/KK sekaligus dengan sekali tempel.</p>
+                            </div>
+                        </div>
+                        <button type="button" @click="showBulkSearchModal = false" class="text-slate-400 hover:text-slate-600 text-base cursor-pointer">
+                            <i class="fi fi-rr-cross"></i>
+                        </button>
+                    </div>
+
+                    <form method="GET" action="{{ route('dtsen.data') }}#tabel-data" class="space-y-4">
+                        <!-- Target Field Radio -->
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-black text-slate-700 uppercase tracking-wider">Pilih Target Identitas:</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <label class="flex items-center gap-2 p-3 rounded-xl border cursor-pointer transition-all" 
+                                       :class="bulkSearchField === 'nik' ? 'bg-indigo-50 border-indigo-500 text-indigo-900 font-black ring-2 ring-indigo-500/30' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'">
+                                    <input type="radio" name="bulk_field" value="nik" x-model="bulkSearchField" class="accent-indigo-600">
+                                    <span class="text-xs">NIK (Kependudukan)</span>
+                                </label>
+                                <label class="flex items-center gap-2 p-3 rounded-xl border cursor-pointer transition-all" 
+                                       :class="bulkSearchField === 'kk' ? 'bg-indigo-50 border-indigo-500 text-indigo-900 font-black ring-2 ring-indigo-500/30' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'">
+                                    <input type="radio" name="bulk_field" value="kk" x-model="bulkSearchField" class="accent-indigo-600">
+                                    <span class="text-xs">Nomor Kartu Keluarga (KK)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Textarea -->
+                        <div class="space-y-1.5">
+                            <div class="flex items-center justify-between text-xs">
+                                <label for="bulkSearchTextarea" class="font-black text-slate-700 uppercase tracking-wider">Daftar Nomor Identitas:</label>
+                                <span class="text-[11px] font-mono font-bold text-indigo-600" x-text="bulkSearchCount + ' nomor terdeteksi'"></span>
+                            </div>
+                            <textarea id="bulkSearchTextarea" 
+                                      name="bulk_search" 
+                                      x-model="bulkSearchInput"
+                                      rows="7" 
+                                      placeholder="Tempelkan daftar NIK atau No. KK di sini...&#10;Contoh:&#10;3201012010187820&#10;3201012010187819&#10;3201012010187818&#10;(Bisa dipisahkan baris baru, koma, titik koma, atau spasi)"
+                                      class="w-full p-3 font-mono text-xs bg-slate-50 border border-slate-300 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all"></textarea>
+                        </div>
+
+                        <!-- Retain other params -->
+                        @if(!empty($search))
+                            <input type="hidden" name="search" value="{{ $search }}">
+                        @endif
+                        @if(!empty($searchBy))
+                            <input type="hidden" name="search_by" value="{{ $searchBy }}">
+                        @endif
+                        @if(!empty($perPage))
+                            <input type="hidden" name="per_page" value="{{ $perPage }}">
+                        @endif
+                        @if(!empty($orderBy))
+                            <input type="hidden" name="order_by" value="{{ $orderBy }}">
+                        @endif
+
+                        <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                            <button type="button" @click="showBulkSearchModal = false" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer">
+                                Batal
+                            </button>
+                            <button type="submit" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer">
+                                <i class="fi fi-rr-check"></i> <span>Terapkan Bulk Search</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
             <!-- MODAL POPUP ATUR KOLOM TABEL (58 VARIABEL) -->
             <div x-show="showColumnModal" 

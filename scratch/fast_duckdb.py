@@ -57,30 +57,104 @@ def build_where_clause(con, table_ref, params):
 
     where_clauses = []
 
-    # 1. Search filter
+    # 1. Search filter & Search By
     search = clean_str(params.get('search'))
+    search_by = clean_str(params.get('search_by', 'all')).lower()
     if not search:
         filters_map = params.get('filters', {})
         if isinstance(filters_map, dict):
             search = clean_str(filters_map.get('salary_search'))
             if not search:
                 search = clean_str(filters_map.get('search'))
+            if not search_by or search_by == 'all':
+                search_by = clean_str(filters_map.get('search_by', 'all')).lower()
+
     if search:
-        search_clean = search.lower()
-        if len(search) == 16 and search.isdigit():
-            nik_col = existing_cols.get('nomor_induk_kependudukan', existing_cols.get('nik', 'nik'))
-            kk_col = existing_cols.get('nomor_kartu_keluarga', existing_cols.get('no_kk', existing_cols.get('kk', 'kk')))
-            where_clauses.append(f'(CAST("{nik_col}" AS VARCHAR) = \'{search}\' OR CAST("{kk_col}" AS VARCHAR) = \'{search}\')')
-        elif search.isdigit():
-            nik_col = existing_cols.get('nomor_induk_kependudukan', existing_cols.get('nik', 'nik'))
-            kk_col = existing_cols.get('nomor_kartu_keluarga', existing_cols.get('no_kk', existing_cols.get('kk', 'kk')))
-            where_clauses.append(f'(CAST("{nik_col}" AS VARCHAR) LIKE \'{search}%\' OR CAST("{kk_col}" AS VARCHAR) LIKE \'{search}%\')')
+        search_clean = search.lower().replace("'", "''")
+        nik_col = existing_cols.get('nomor_induk_kependudukan', existing_cols.get('nik', 'nik'))
+        kk_col = existing_cols.get('nomor_kartu_keluarga', existing_cols.get('no_kk', existing_cols.get('kk', 'kk')))
+        nama_col = existing_cols.get('nama', existing_cols.get('nama_lengkap', 'nama'))
+
+        if search_by == 'nik':
+            digits = ''.join(c for c in search if c.isdigit())
+            target_str = digits if digits else search_clean
+            where_clauses.append(f'CAST("{nik_col}" AS VARCHAR) LIKE \'%{target_str}%\'')
+        elif search_by in ('kk', 'no_kk'):
+            digits = ''.join(c for c in search if c.isdigit())
+            target_str = digits if digits else search_clean
+            where_clauses.append(f'CAST("{kk_col}" AS VARCHAR) LIKE \'%{target_str}%\'')
+        elif search_by in ('nama', 'nama_lengkap'):
+            where_clauses.append(f'LOWER(CAST("{nama_col}" AS VARCHAR)) LIKE \'%{search_clean}%\'')
+        elif search_by in ('wilayah', 'daerah'):
+            prov_col = existing_cols.get('provinsi')
+            kab_col = existing_cols.get('kabupaten_kota', existing_cols.get('kabupaten'))
+            kec_col = existing_cols.get('kecamatan')
+            desa_col = existing_cols.get('desa_kelurahan', existing_cols.get('desa'))
+            alamat_col = existing_cols.get('alamat')
+            w_parts = []
+            if prov_col: w_parts.append(f'LOWER(CAST("{prov_col}" AS VARCHAR)) LIKE \'%{search_clean}%\'')
+            if kab_col: w_parts.append(f'LOWER(CAST("{kab_col}" AS VARCHAR)) LIKE \'%{search_clean}%\'')
+            if kec_col: w_parts.append(f'LOWER(CAST("{kec_col}" AS VARCHAR)) LIKE \'%{search_clean}%\'')
+            if desa_col: w_parts.append(f'LOWER(CAST("{desa_col}" AS VARCHAR)) LIKE \'%{search_clean}%\'')
+            if alamat_col: w_parts.append(f'LOWER(CAST("{alamat_col}" AS VARCHAR)) LIKE \'%{search_clean}%\'')
+            if w_parts:
+                where_clauses.append('(' + ' OR '.join(w_parts) + ')')
         else:
-            nama_col = existing_cols.get('nama', existing_cols.get('nama_lengkap', 'nama'))
-            nik_col = existing_cols.get('nomor_induk_kependudukan', existing_cols.get('nik', 'nik'))
-            kk_col = existing_cols.get('nomor_kartu_keluarga', existing_cols.get('no_kk', existing_cols.get('kk', 'kk')))
-            search_escaped = search_clean.replace("'", "''")
-            where_clauses.append(f'(LOWER(CAST("{nama_col}" AS VARCHAR)) LIKE \'%{search_escaped}%\' OR LOWER(CAST("{nik_col}" AS VARCHAR)) LIKE \'%{search_escaped}%\' OR LOWER(CAST("{kk_col}" AS VARCHAR)) LIKE \'%{search_escaped}%\')')
+            # Global 'all' search
+            if len(search) == 16 and search.isdigit():
+                where_clauses.append(f'(CAST("{nik_col}" AS VARCHAR) = \'{search}\' OR CAST("{kk_col}" AS VARCHAR) = \'{search}\')')
+            elif search.isdigit():
+                where_clauses.append(f'(CAST("{nik_col}" AS VARCHAR) LIKE \'{search}%\' OR CAST("{kk_col}" AS VARCHAR) LIKE \'{search}%\')')
+            else:
+                prov_col = existing_cols.get('provinsi')
+                kec_col = existing_cols.get('kecamatan')
+                kab_col = existing_cols.get('kabupaten_kota', existing_cols.get('kabupaten'))
+                or_terms = [
+                    f'LOWER(CAST("{nama_col}" AS VARCHAR)) LIKE \'%{search_clean}%\'',
+                    f'LOWER(CAST("{nik_col}" AS VARCHAR)) LIKE \'%{search_clean}%\'',
+                    f'LOWER(CAST("{kk_col}" AS VARCHAR)) LIKE \'%{search_clean}%\''
+                ]
+                if kec_col: or_terms.append(f'LOWER(CAST("{kec_col}" AS VARCHAR)) LIKE \'%{search_clean}%\'')
+                if kab_col: or_terms.append(f'LOWER(CAST("{kab_col}" AS VARCHAR)) LIKE \'%{search_clean}%\'')
+                if prov_col: or_terms.append(f'LOWER(CAST("{prov_col}" AS VARCHAR)) LIKE \'%{search_clean}%\'')
+                where_clauses.append('(' + ' OR '.join(or_terms) + ')')
+
+    # 1b. Bulk Search (NIK / KK)
+    bulk_raw = params.get('bulk_search')
+    if not bulk_raw:
+        filters_map = params.get('filters', {})
+        if isinstance(filters_map, dict):
+            bulk_raw = filters_map.get('bulk_search')
+    
+    if bulk_raw:
+        bulk_field = clean_str(params.get('bulk_field', 'nik')).lower()
+        if not bulk_field or bulk_field == 'nik':
+            filters_map = params.get('filters', {})
+            if isinstance(filters_map, dict):
+                bulk_field = clean_str(filters_map.get('bulk_field', 'nik')).lower()
+        
+        import re
+        if isinstance(bulk_raw, list):
+            raw_items = bulk_raw
+        else:
+            raw_items = re.split(r'[\r\n,;\s]+', str(bulk_raw).strip())
+        
+        cleaned_items = []
+        for it in raw_items:
+            c = re.sub(r'[^0-9A-Za-z]', '', str(it).strip())
+            if c:
+                cleaned_items.append(c)
+        
+        # Deduplicate preserving order (up to 5000 items)
+        cleaned_items = list(dict.fromkeys(cleaned_items))[:5000]
+        if cleaned_items:
+            if bulk_field in ('kk', 'no_kk', 'nomor_kartu_keluarga'):
+                target_bulk_col = existing_cols.get('nomor_kartu_keluarga', existing_cols.get('no_kk', existing_cols.get('kk', 'kk')))
+            else:
+                target_bulk_col = existing_cols.get('nomor_induk_kependudukan', existing_cols.get('nik', 'nik'))
+            
+            in_vals = ", ".join(["'" + v.replace("'", "''") + "'" for v in cleaned_items])
+            where_clauses.append(f'CAST("{target_bulk_col}" AS VARCHAR) IN ({in_vals})')
 
     # 2. Quality status filter
     quality_status = clean_str(params.get('quality_status'))
@@ -110,10 +184,10 @@ def build_where_clause(con, table_ref, params):
                 where_clauses.append(f'LOWER(CAST("{target_custom}" AS VARCHAR)) LIKE \'%{c_clean}%\'')
 
         excluded_param_keys = (
-            'page', 'search', 'quality_status', '_token', 
+            'page', 'search', 'search_by', 'bulk_search', 'bulk_field', 'quality_status', '_token', 
             'salary_filter_col', 'salary_filter_val', 'custom_filter_col', 'custom_filter_val',
             'order_by', 'sort_by', 'salary_sort', 'per_page', 'limit', 'salary_limit',
-            'salary_metric_var', 'salary_group_col', 'salary_search'
+            'salary_metric_var', 'salary_group_col', 'salary_search', 'export'
         )
 
         for req_key, user_val in filters_map.items():
@@ -337,6 +411,11 @@ def run_duckdb_query():
             else:
                 num_usia = 'id'
 
+            nik_col = existing_cols.get('nomor_induk_kependudukan', existing_cols.get('nik', 'nik'))
+            tgl_col = existing_cols.get('tanggal_lahir', existing_cols.get('tgl_lahir', None))
+            desil_col = existing_cols.get('desil_nasional', existing_cols.get('desil', None))
+            num_desil = f'TRY_CAST("{desil_col}" AS INTEGER)' if desil_col else 'id'
+
             if order_param in ('gaji_desc', 'salary_desc', 'max_gaji', 'avg_desc', 'tertinggi'):
                 order_clause = f"{num_salary} DESC NULLS LAST, id DESC"
             elif order_param in ('gaji_asc', 'salary_asc', 'min_gaji', 'avg_asc', 'terendah'):
@@ -349,6 +428,20 @@ def run_duckdb_query():
                 order_clause = f'"{nama_col}" ASC, id ASC'
             elif order_param in ('nama_desc', 'name_desc') and nama_col:
                 order_clause = f'"{nama_col}" DESC, id DESC'
+            elif order_param in ('nik_asc', 'nik_up'):
+                order_clause = f'CAST("{nik_col}" AS VARCHAR) ASC, id ASC'
+            elif order_param in ('nik_desc', 'nik_down'):
+                order_clause = f'CAST("{nik_col}" AS VARCHAR) DESC, id DESC'
+            elif order_param in ('tgl_asc', 'tgl_lahir_asc', 'lahir_asc') and tgl_col:
+                order_clause = f'"{tgl_col}" ASC NULLS LAST, id ASC'
+            elif order_param in ('tgl_desc', 'tgl_lahir_desc', 'lahir_desc') and tgl_col:
+                order_clause = f'"{tgl_col}" DESC NULLS LAST, id DESC'
+            elif order_param in ('desil_asc', 'desil_up') and desil_col:
+                order_clause = f"{num_desil} ASC NULLS LAST, id ASC"
+            elif order_param in ('desil_desc', 'desil_down') and desil_col:
+                order_clause = f"{num_desil} DESC NULLS LAST, id DESC"
+            elif order_param == 'id_asc':
+                order_clause = "id ASC"
             else:
                 order_clause = "id DESC"
 
@@ -697,6 +790,53 @@ def run_duckdb_query():
             print(f"[DUCKDB_BREAKDOWN_RESULT] {json.dumps(res)}", flush=True)
         except Exception as e:
             print(f"[DUCKDB_ERROR] Breakdown Query failed: {e}", flush=True)
+
+    elif mode == 'export_search_csv':
+        export_file = params.get('export_path')
+        if not export_file:
+            export_file = os.path.join(os.path.dirname(db_path), 'search_export.csv')
+        
+        limit_rows = int(params.get('limit', 100000))
+        cols_list = list(existing_cols.values())
+        select_cols = ", ".join([f'"{c}"' for c in cols_list])
+        
+        order_param = str(params.get('order_by', params.get('sort_by', ''))).lower().strip()
+        salary_col = existing_cols.get('gaji_bulanan', existing_cols.get('gaji', None))
+        nama_col = existing_cols.get('nama', existing_cols.get('nama_lengkap', None))
+        nik_col = existing_cols.get('nomor_induk_kependudukan', existing_cols.get('nik', 'nik'))
+        
+        if 'gaji' in existing_cols:
+            num_salary = '"gaji"'
+        elif salary_col:
+            num_salary = f'TRY_CAST(REGEXP_REPLACE(CAST("{salary_col}" AS VARCHAR), \'[^0-9.]\', \'\', \'g\') AS DOUBLE)'
+        else:
+            num_salary = 'id'
+
+        if order_param in ('gaji_desc', 'salary_desc'):
+            order_clause = f"{num_salary} DESC NULLS LAST, id DESC"
+        elif order_param in ('gaji_asc', 'salary_asc'):
+            order_clause = f"{num_salary} ASC NULLS LAST, id ASC"
+        elif order_param in ('nama_asc', 'name_asc') and nama_col:
+            order_clause = f'"{nama_col}" ASC, id ASC'
+        elif order_param in ('nama_desc', 'name_desc') and nama_col:
+            order_clause = f'"{nama_col}" DESC, id DESC'
+        elif order_param in ('nik_asc', 'nik_up'):
+            order_clause = f'CAST("{nik_col}" AS VARCHAR) ASC, id ASC'
+        elif order_param in ('nik_desc', 'nik_down'):
+            order_clause = f'CAST("{nik_col}" AS VARCHAR) DESC, id DESC'
+        elif order_param == 'id_asc':
+            order_clause = "id ASC"
+        else:
+            order_clause = "id DESC"
+
+        try:
+            export_clean_path = export_file.replace('\\', '/')
+            con.execute(f"COPY (SELECT {select_cols} FROM {table_ref}{where_sql} ORDER BY {order_clause} LIMIT {limit_rows}) TO '{export_clean_path}' (HEADER, DELIMITER ',');")
+            
+            exported_count = con.execute(f"SELECT COUNT(*) FROM read_csv_auto('{export_clean_path}');").fetchone()[0]
+            print(f"[DUCKDB_EXPORT_RESULT] {json.dumps({'export_path': export_file, 'rows': exported_count})}", flush=True)
+        except Exception as e:
+            print(f"[DUCKDB_ERROR] Export search CSV failed: {e}", flush=True)
 
     con.close()
 

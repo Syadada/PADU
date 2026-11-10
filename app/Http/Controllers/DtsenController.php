@@ -163,6 +163,9 @@ class DtsenController extends Controller
         ]);
 
         $search = trim($request->input('search', ''));
+        $searchBy = trim($request->input('search_by', 'all'));
+        $bulkSearch = trim($request->input('bulk_search', ''));
+        $bulkField = trim($request->input('bulk_field', 'nik'));
         $desil = $request->input('desil', 'semua');
         $qualityStatus = $request->input('quality_status', 'semua');
         $jenisKelamin = $request->input('jenis_kelamin', 'semua');
@@ -208,6 +211,8 @@ class DtsenController extends Controller
 
         $page = (int)$request->input('page', 1);
         $perPage = (int)$request->input('per_page', 15);
+        if ($perPage < 5) $perPage = 15;
+        if ($perPage > 1000) $perPage = 500;
         $isSalaryRoute = $request->routeIs('dtsen.salary') || str_contains($request->path(), 'dtsen/salary');
         $defaultOrder = $isSalaryRoute ? 'gaji_desc' : 'id_desc';
         $orderBy = $request->input('order_by', $request->input('salary_sort', $defaultOrder));
@@ -218,6 +223,9 @@ class DtsenController extends Controller
             'page' => $page,
             'per_page' => $perPage,
             'search' => $effectiveSearch,
+            'search_by' => $searchBy,
+            'bulk_search' => $bulkSearch,
+            'bulk_field' => $bulkField,
             'quality_status' => $qualityStatus,
             'order_by' => $orderBy,
             'filters' => $request->all()
@@ -599,6 +607,11 @@ class DtsenController extends Controller
             'errorCount',
             'issueRecords',
             'search',
+            'searchBy',
+            'bulkSearch',
+            'bulkField',
+            'perPage',
+            'orderBy',
             'desil',
             'qualityStatus',
             'jenisKelamin',
@@ -653,10 +666,14 @@ class DtsenController extends Controller
     }
 
     /**
-     * Halaman 1: Tabel Master Data (58 Variabel DTSEN 2026)
+     * Halaman 1: Tabel Master Data (58 Variabel DTSEN 2026) - Modul Pengolahan Terpadu
      */
     public function dataTable(Request $request)
     {
+        if ($request->input('export') === 'search_csv') {
+            return $this->exportSearch($request);
+        }
+
         $viewData = $this->getSharedAnalyticsData($request);
         if ($request->ajax() || $request->wantsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
             return response()->json([
@@ -665,6 +682,60 @@ class DtsenController extends Controller
             ]);
         }
         return view('dtsen.data', $viewData);
+    }
+
+    /**
+     * Unduh Hasil Pencarian & Filter Terkini Langsung ke Berkas CSV
+     */
+    public function exportSearch(Request $request)
+    {
+        set_time_limit(0);
+        ini_set('memory_limit', '1024M');
+
+        $search = trim($request->input('search', ''));
+        $searchBy = trim($request->input('search_by', 'all'));
+        $bulkSearch = trim($request->input('bulk_search', ''));
+        $bulkField = trim($request->input('bulk_field', 'nik'));
+        $qualityStatus = $request->input('quality_status', 'semua');
+        $orderBy = $request->input('order_by', 'id_desc');
+
+        $srcExportDir = base_path('src-export');
+        if (!file_exists($srcExportDir)) {
+            @mkdir($srcExportDir, 0777, true);
+        }
+
+        $fileName = 'Hasil_Pencarian_DTSEN_' . date('Ymd_His') . '.csv';
+        $exportPath = $srcExportDir . DIRECTORY_SEPARATOR . $fileName;
+
+        $exportResult = $this->runDuckDbQuery('export_search_csv', [
+            'search' => $search,
+            'search_by' => $searchBy,
+            'bulk_search' => $bulkSearch,
+            'bulk_field' => $bulkField,
+            'quality_status' => $qualityStatus,
+            'order_by' => $orderBy,
+            'filters' => $request->all(),
+            'export_path' => $exportPath,
+            'limit' => 100000
+        ]);
+
+        clearstatcache(true, $exportPath);
+        if (file_exists($exportPath) && filesize($exportPath) > 0) {
+            $fileSize = filesize($exportPath);
+            self::logActivity('SUCCESS', "Hasil pencarian berhasil diekspor ke berkas 'src-export/{$fileName}' (" . number_format($fileSize) . " bytes).");
+            return response()->streamDownload(function () use ($exportPath) {
+                $stream = fopen($exportPath, 'rb');
+                if ($stream) {
+                    fpassthru($stream);
+                    fclose($stream);
+                }
+            }, $fileName, [
+                'Content-Type' => 'text/csv; charset=UTF-8',
+                'Content-Length' => $fileSize,
+            ]);
+        }
+
+        return back()->with('error', 'Gagal membuat berkas ekspor hasil pencarian atau data kosong.');
     }
 
     /**
@@ -1843,6 +1914,8 @@ class DtsenController extends Controller
             } elseif ($mode === 'total_system_rows' && preg_match('/\[DUCKDB_COUNT_RESULT\]\s*(\{.*\})/', $output, $m)) {
                 return json_decode($m[1], true);
             } elseif ($mode === 'salary_breakdown' && preg_match('/\[DUCKDB_BREAKDOWN_RESULT\]\s*(\{.*\})/', $output, $m)) {
+                return json_decode($m[1], true);
+            } elseif ($mode === 'export_search_csv' && preg_match('/\[DUCKDB_EXPORT_RESULT\]\s*(\{.*\})/', $output, $m)) {
                 return json_decode($m[1], true);
             }
         }

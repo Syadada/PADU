@@ -17,6 +17,24 @@ function dtsenDataPageApp(allColKeys = []) {
         showColumnModal: false,
         visibleCols: validSavedCols.length > 0 ? validSavedCols : [...allColKeys],
 
+        // State Bulk Search by NIK / KK Modal
+        showBulkSearchModal: false,
+        bulkSearchField: 'nik',
+        bulkSearchInput: '',
+        get bulkSearchCount() {
+            if (!this.bulkSearchInput) return 0;
+            const items = this.bulkSearchInput.split(/[\r\n,;\s]+/).map(s => s.trim().replace(/[^0-9A-Za-z]/g, '')).filter(Boolean);
+            return (new Set(items)).size;
+        },
+        clearBulkSearch() {
+            const url = new URL(window.location.href);
+            url.searchParams.delete('bulk_search');
+            url.searchParams.delete('bulk_field');
+            url.searchParams.set('page', '1');
+            url.hash = 'tabel-data';
+            window.location.href = url.toString();
+        },
+
         // State Filter Kolom Pivot Modal (Terpusat, Anti-Offscreen, & Pinned Footer)
         showFilterModal: false,
         activeFilterCol: null,

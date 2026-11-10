@@ -55,6 +55,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/dtsen/import-local', [DtsenController::class, 'importLocalPath'])->name('dtsen.import-local');
     Route::get('/dtsen/template', [DtsenController::class, 'downloadTemplate'])->name('dtsen.template');
     Route::get('/dtsen/export-errors', [DtsenController::class, 'exportErrors'])->name('dtsen.export-errors');
+    Route::get('/dtsen/export-search', [DtsenController::class, 'exportSearch'])->name('dtsen.export-search');
     Route::get('/dtsen/export', [DtsenController::class, 'exportCsv'])->name('dtsen.export');
     Route::post('/dtsen/clear', [DtsenController::class, 'clearData'])->name('dtsen.clear');
     Route::get('/dtsen/import-progress', [DtsenController::class, 'getImportProgress'])->name('dtsen.import-progress');

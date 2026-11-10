@@ -91,85 +91,20 @@
         <!-- 2. SCROLLABLE SIDEBAR NAVIGATION -->
         <div class="flex-1 overflow-y-auto p-3.5 space-y-5 scrollbar-thin">
             
-            <!-- GROUP: MODUL ANALISIS PADU -->
+            <!-- GROUP: MODUL UTAMA PADU -->
             <div class="space-y-1">
                 <div class="px-2 pb-1 text-[10px] font-black uppercase tracking-wider text-slate-400 flex items-center justify-between">
-                    <span>Modul Analisis Data</span>
+                    <span>Menu Utama</span>
                     <span class="text-[9px] text-blue-600 font-mono font-bold bg-blue-50 px-1.5 py-0.2 rounded border border-blue-200">DTSEN 2026</span>
                 </div>
 
-                <!-- 1. Data (Tabel Master 58 Variabel) -->
-                <a href="{{ route('dtsen.data') }}" 
-                   class="sidebar-nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all {{ (request()->routeIs('dtsen.data') || request()->routeIs('dtsen.index')) ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 font-black' : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-transparent hover:border-slate-200' }}">
-                    <i class="fi fi-rr-table text-base shrink-0"></i>
-                    <div class="min-w-0 flex-1">
-                        <div class="leading-tight truncate">Data</div>
-                        <div class="text-[10px] {{ (request()->routeIs('dtsen.data') || request()->routeIs('dtsen.index')) ? 'text-white/80' : 'text-slate-400' }} font-normal">Tabel Master DTSEN</div>
-                    </div>
-                    @if(isset($totalRows) && $totalRows > 0)
-                        <span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold {{ (request()->routeIs('dtsen.data') || request()->routeIs('dtsen.index')) ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600 border border-slate-200' }}">
-                            {{ number_format($totalRows) }}
-                        </span>
-                    @endif
-                </a>
-
-                <!-- 2. Kualitas (QC) -->
-                <a href="{{ route('dtsen.quality') }}" 
-                   class="sidebar-nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all {{ request()->routeIs('dtsen.quality') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 font-black' : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-transparent hover:border-slate-200' }}">
-                    <i class="fi fi-rr-shield-check text-base shrink-0"></i>
-                    <div class="min-w-0 flex-1">
-                        <div class="leading-tight truncate">Kualitas</div>
-                        <div class="text-[10px] {{ request()->routeIs('dtsen.quality') ? 'text-white/80' : 'text-slate-400' }} font-normal">Integritas & Validasi</div>
-                    </div>
-                    @if(isset($validCount))
-                        <span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold {{ request()->routeIs('dtsen.quality') ? 'bg-white/20 text-white' : 'bg-emerald-50 text-emerald-700 border border-emerald-200' }}">
-                            {{ number_format($validCount) }}
-                        </span>
-                    @endif
-                </a>
-
-                <!-- 3. KPI -->
-                <a href="{{ route('dtsen.kpi') }}" 
-                   class="sidebar-nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all {{ request()->routeIs('dtsen.kpi') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 font-black' : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-transparent hover:border-slate-200' }}">
-                    <i class="fi fi-rr-chart-pie-alt text-base shrink-0"></i>
-                    <div class="min-w-0 flex-1">
-                        <div class="leading-tight truncate">KPI</div>
-                        <div class="text-[10px] {{ request()->routeIs('dtsen.kpi') ? 'text-white/80' : 'text-slate-400' }} font-normal">Peringkat & Demografi</div>
-                    </div>
-                </a>
-
-                <!-- 4. Gaji -->
-                <a href="{{ route('dtsen.salary') }}" 
-                   class="sidebar-nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all {{ request()->routeIs('dtsen.salary') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 font-black' : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-transparent hover:border-slate-200' }}">
-                    <i class="fi fi-rr-dollar text-base shrink-0"></i>
-                    <div class="min-w-0 flex-1">
-                        <div class="leading-tight truncate">Gaji</div>
-                        <div class="text-[10px] {{ request()->routeIs('dtsen.salary') ? 'text-white/80' : 'text-slate-400' }} font-normal">Finansial & Disparitas</div>
-                    </div>
-                </a>
-
-                <!-- 5. Audit -->
-                <a href="{{ route('dtsen.audit') }}" 
-                   class="sidebar-nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all {{ request()->routeIs('dtsen.audit') ? 'bg-rose-600 text-white shadow-md shadow-rose-600/30 font-black' : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-transparent hover:border-slate-200' }}">
-                    <i class="fi fi-rr-triangle-warning text-base shrink-0"></i>
-                    <div class="min-w-0 flex-1">
-                        <div class="leading-tight truncate">Audit</div>
-                        <div class="text-[10px] {{ request()->routeIs('dtsen.audit') ? 'text-white/80' : 'text-slate-400' }} font-normal">Temuan Anomali & Kritis</div>
-                    </div>
-                    @if(isset($criticalCount) && $criticalCount > 0)
-                        <span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-black bg-rose-500 text-white animate-pulse">
-                            {{ number_format($criticalCount) }}
-                        </span>
-                    @endif
-                </a>
-
-                <!-- 6. Berkas -->
+                <!-- 1. DATA (Load Dataset) -->
                 <a href="{{ route('dtsen.files') }}" 
                    class="sidebar-nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all {{ request()->routeIs('dtsen.files') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 font-black' : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-transparent hover:border-slate-200' }}">
-                    <i class="fi fi-rr-folder text-base shrink-0"></i>
+                    <i class="fi fi-rr-folder-download text-base shrink-0"></i>
                     <div class="min-w-0 flex-1">
-                        <div class="leading-tight truncate">Berkas</div>
-                        <div class="text-[10px] {{ request()->routeIs('dtsen.files') ? 'text-white/80' : 'text-slate-400' }} font-normal"><code>src-dtsen/</code> & Ingesti</div>
+                        <div class="leading-tight truncate font-black">1. DATA</div>
+                        <div class="text-[10px] {{ request()->routeIs('dtsen.files') ? 'text-white/80' : 'text-slate-400' }} font-normal">Load & Ingesti Dataset</div>
                     </div>
                     @if(isset($srcDtsenFiles) && count($srcDtsenFiles) > 0)
                         <span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold {{ request()->routeIs('dtsen.files') ? 'bg-white/20 text-white' : 'bg-blue-50 text-blue-700 border border-blue-200' }}">
@@ -178,6 +113,63 @@
                     @endif
                 </a>
 
+                <!-- 2. Pengolahan (Tabel Master Data Terpadu) -->
+                <a href="{{ route('dtsen.data') }}" 
+                   class="sidebar-nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all {{ (request()->routeIs('dtsen.data') || request()->routeIs('dtsen.index')) ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 font-black' : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-transparent hover:border-slate-200' }}">
+                    <i class="fi fi-rr-table text-base shrink-0"></i>
+                    <div class="min-w-0 flex-1">
+                        <div class="leading-tight truncate font-black">2. Pengolahan</div>
+                        <div class="text-[10px] {{ (request()->routeIs('dtsen.data') || request()->routeIs('dtsen.index')) ? 'text-white/80' : 'text-slate-400' }} font-normal">Tabel Master Data</div>
+                    </div>
+                    @if(isset($totalRows) && $totalRows > 0)
+                        <span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold {{ (request()->routeIs('dtsen.data') || request()->routeIs('dtsen.index')) ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600 border border-slate-200' }}">
+                            {{ number_format($totalRows) }}
+                        </span>
+                    @endif
+                </a>
+
+                <!-- 3. KPI metrix -->
+                <a href="{{ route('dtsen.kpi') }}" 
+                   class="sidebar-nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all {{ request()->routeIs('dtsen.kpi') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 font-black' : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-transparent hover:border-slate-200' }}">
+                    <i class="fi fi-rr-chart-pie-alt text-base shrink-0"></i>
+                    <div class="min-w-0 flex-1">
+                        <div class="leading-tight truncate font-black">3. KPI metrix</div>
+                        <div class="text-[10px] {{ request()->routeIs('dtsen.kpi') ? 'text-white/80' : 'text-slate-400' }} font-normal">Metrik & Demografi</div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- GROUP: MODUL ANALISIS LANJUTAN (Kualitas, Gaji, Audit) -->
+            <div class="space-y-1 pt-3 border-t border-slate-200/80">
+                <div class="px-2 pb-1 text-[9px] font-black uppercase tracking-wider text-slate-400 flex items-center justify-between">
+                    <span>Analisis Spesifik</span>
+                </div>
+                <a href="{{ route('dtsen.quality') }}" class="sidebar-nav-item flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-all {{ request()->routeIs('dtsen.quality') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 font-black' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                    <div class="flex items-center gap-2.5">
+                        <i class="fi fi-rr-shield-check text-sm shrink-0"></i>
+                        <span class="truncate">Kualitas Data (QC)</span>
+                    </div>
+                    @if(isset($validCount))
+                        <span class="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold {{ request()->routeIs('dtsen.quality') ? 'bg-white/20 text-white' : 'bg-emerald-50 text-emerald-700 border border-emerald-200' }}">
+                            {{ number_format($validCount) }}
+                        </span>
+                    @endif
+                </a>
+                <a href="{{ route('dtsen.salary') }}" class="sidebar-nav-item flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-all {{ request()->routeIs('dtsen.salary') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 font-black' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                    <i class="fi fi-rr-dollar text-sm shrink-0"></i>
+                    <span class="truncate">Analisis Gaji</span>
+                </a>
+                <a href="{{ route('dtsen.audit') }}" class="sidebar-nav-item flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-all {{ request()->routeIs('dtsen.audit') ? 'bg-rose-600 text-white shadow-md shadow-rose-600/30 font-black' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                    <div class="flex items-center gap-2.5">
+                        <i class="fi fi-rr-triangle-warning text-sm shrink-0 {{ request()->routeIs('dtsen.audit') ? 'text-white' : 'text-rose-500' }}"></i>
+                        <span class="truncate">Audit Anomali</span>
+                    </div>
+                    @if(isset($criticalCount) && $criticalCount > 0)
+                        <span class="px-1.5 py-0.2 rounded text-[9px] font-mono font-black {{ request()->routeIs('dtsen.audit') ? 'bg-white text-rose-600' : 'bg-rose-500 text-white animate-pulse' }}">
+                            {{ number_format($criticalCount) }}
+                        </span>
+                    @endif
+                </a>
             </div>
 
             <!-- GROUP: AKSI CEPAT & ALAT DATA OPERASIONAL -->
