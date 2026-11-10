@@ -3,22 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Masuk Sistem — PADU</title>
+    <title>Masuk Sistem &bull; PADU DTSEN 2026</title>
     
     <!-- Cache Control -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     
-    <!-- 100% Offline Standalone Assets -->
+    <!-- Flat Icon UIcons CDN & Master Stylesheets -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@flaticon/flaticon-uicons@3.3.1/css/all/all.min.css">
+    <link rel="stylesheet" href="{{ asset('css/tailwind.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}?v={{ file_exists(public_path('css/app.css')) ? filemtime(public_path('css/app.css')) : time() }}">
     <link rel="stylesheet" href="{{ asset('css/auth.css') }}?v={{ file_exists(public_path('css/auth.css')) ? filemtime(public_path('css/auth.css')) : time() }}">
+    
+    <!-- Critical Inline Styles (Anti-FOUC & Anti-Vector Blowup) -->
     <style>
         *, *::before, *::after {
+            box-sizing: border-box;
             text-decoration: none !important;
         }
-        a, button, [role="button"], u, ins {
-            text-decoration: none !important;
+        [x-cloak] {
+            display: none !important;
+        }
+        svg {
+            max-width: 24px !important;
+            max-height: 24px !important;
+            display: inline-block;
+        }
+        body {
+            margin: 0;
+            padding: 1.5rem;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at 50% 0%, #e0f2fe 0%, #f1f5f9 45%, #f8fafc 100%) !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #0f172a;
+        }
+        .auth-container {
+            width: 100%;
+            max-width: 440px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+        .auth-card {
+            background: #ffffff;
+            border-radius: 1.25rem;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+            padding: 2rem;
+        }
+        .brand-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .brand-logo-badge {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 0.75rem;
+            border-radius: 1rem;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #1e40af 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 2rem;
+            font-weight: 900;
+            box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.35);
+        }
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #0f172a;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .form-input:focus {
+            background: #ffffff;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+        .btn-primary {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: #2563eb;
+            color: #ffffff;
+            border: none;
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+            transition: all 0.2s;
+        }
+        .btn-primary:hover:not(:disabled) {
+            background: #1d4ed8;
+            box-shadow: 0 6px 12px -2px rgba(37, 99, 235, 0.3);
+        }
+        .btn-primary:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
         }
     </style>
     
@@ -40,56 +135,55 @@
         <!-- Brand Monogram Header -->
         <div class="brand-header">
             <div class="brand-logo-badge">
-                <span class="brand-logo-text">P</span>
+                <span>P</span>
             </div>
-            <div class="brand-title">
-                <span>PADU</span>
-                <span class="version-pill">v2.0</span>
+            <div class="flex items-center justify-center gap-1.5">
+                <span class="text-xl font-black text-slate-900 tracking-tight">PADU</span>
+                <span class="px-2 py-0.5 text-[10px] font-black uppercase tracking-wider bg-blue-100 text-blue-700 rounded-full border border-blue-200">v2.0</span>
             </div>
-            <p class="brand-subtitle">Pengolah & Analisis Data Terpadu (DTSEN 2026)</p>
+            <p class="text-xs text-slate-500 font-medium mt-1">Pengolah & Analisis Data Terpadu (DTSEN 2026)</p>
         </div>
 
-        <!-- Luxury Card -->
+        <!-- Authentication Card -->
         <div class="auth-card">
             
             <!-- Top Security Badges -->
-            <div class="security-strip">
-                <div class="offline-status">
-                    <span class="pulse-dot"></span>
+            <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100 text-[11px] font-bold text-slate-500">
+                <div class="flex items-center gap-1.5 text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                     <span>100% Offline Lokal</span>
                 </div>
-                <div class="bssn-status">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                    </svg>
+                <div class="flex items-center gap-1.5 text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full border border-blue-200">
+                    <i class="fi fi-rr-shield-check text-xs"></i>
                     <span>Standar BSSN & UU PDP</span>
                 </div>
             </div>
 
             <!-- Flash Alerts -->
             @if(session('success'))
-                <div class="alert-box alert-success">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <div class="p-3 mb-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-2">
+                    <i class="fi fi-rr-check-circle text-emerald-600 shrink-0"></i>
                     <span>{{ session('success') }}</span>
                 </div>
             @endif
 
             @if(session('warning'))
-                <div class="alert-box alert-warning">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <div class="p-3 mb-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold flex items-center gap-2">
+                    <i class="fi fi-rr-triangle-warning text-amber-600 shrink-0"></i>
                     <span>{{ session('warning') }}</span>
                 </div>
             @endif
 
             <!-- Dynamic Error Box -->
-            <div x-show="errorMessage" x-cloak class="alert-box alert-error">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+            <div x-show="errorMessage" x-cloak class="p-3 mb-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold flex items-center gap-2">
+                <i class="fi fi-rr-cross-circle text-rose-600 shrink-0"></i>
                 <span x-text="errorMessage"></span>
             </div>
 
             @if($errors->any())
-                <div class="alert-box alert-error">
-                    <div>
+                <div class="p-3 mb-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold flex items-start gap-2">
+                    <i class="fi fi-rr-cross-circle text-rose-600 shrink-0 mt-0.5"></i>
+                    <div class="space-y-0.5">
                         @foreach($errors->all() as $error)
                             <div>{{ $error }}</div>
                         @endforeach
@@ -98,35 +192,32 @@
             @endif
 
             <!-- Lockout Countdown Alert -->
-            <div x-show="isLocked" x-cloak class="lockout-box">
-                <div class="lockout-title">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <div x-show="isLocked" x-cloak class="p-4 mb-4 rounded-xl bg-rose-50 border-2 border-rose-300 text-rose-900 space-y-2">
+                <div class="flex items-center gap-2 font-black text-xs uppercase tracking-wider text-rose-700">
+                    <i class="fi fi-rr-lock"></i>
                     <span>AKUN TERKUNCI SEMENTARA</span>
                 </div>
-                <p style="font-size: 11px; color: #475569; margin-top: 4px;">
+                <p class="text-[11px] text-slate-600">
                     Terjadi 5 kali kegagalan kata sandi berturut-turut. Sesuai Standar BSSN No. 4/2021, akun Anda terkunci selama:
                 </p>
-                <div class="lockout-timer" x-text="formatSeconds(lockCountdown)"></div>
+                <div class="font-mono text-xl font-black text-rose-600" x-text="formatSeconds(lockCountdown)"></div>
             </div>
 
             <!-- Form -->
-            <form action="{{ route('login.process') }}" method="POST" @submit="submitting = true">
+            <form action="{{ route('login.process') }}" method="POST" @submit="submitting = true" class="space-y-4">
                 @csrf
                 <!-- Hidden input ensuring email is ALWAYS submitted in POST request -->
                 <input type="hidden" name="email" :value="email">
 
                 <!-- ================= TAHAP 1: INPUT SUREL (EMAIL-FIRST) ================= -->
-                <div x-show="step === 1">
-                    <div class="form-group">
-                        <label for="email" class="form-label">
-                            <span>Alamat Surel Dinas</span>
+                <div x-show="step === 1" class="space-y-4">
+                    <div class="space-y-1.5">
+                        <label for="email" class="block text-xs font-black uppercase tracking-wider text-slate-700">
+                            Alamat Surel Dinas
                         </label>
-                        <div class="input-wrapper">
-                            <span class="input-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                                    <polyline points="22,6 12,13 2,6"/>
-                                </svg>
+                        <div class="relative flex items-center">
+                            <span class="absolute left-3 text-slate-400 flex items-center pointer-events-none">
+                                <i class="fi fi-rr-envelope text-sm"></i>
                             </span>
                             <input type="email" 
                                    id="email" 
@@ -140,7 +231,7 @@
                                    autofocus
                                    class="form-input">
                         </div>
-                        <p class="form-help">
+                        <p class="text-[11px] text-slate-400 font-medium">
                             Gunakan surel resmi yang telah didaftarkan dalam sistem.
                         </p>
                     </div>
@@ -151,70 +242,72 @@
                             class="btn-primary">
                         <span x-show="!loading">Lanjutkan Verifikasi</span>
                         <span x-show="loading">Memeriksa Direktori...</span>
-                        <svg x-show="!loading" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                        <i x-show="!loading" class="fi fi-rr-arrow-right text-xs"></i>
                     </button>
 
                     <!-- Quick Demo / Testing Accounts Helper -->
-                    <div class="demo-accounts-box">
-                        <div class="demo-accounts-title">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                    <div class="pt-4 border-t border-slate-100 space-y-2">
+                        <div class="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-slate-500">
+                            <i class="fi fi-rr-info text-blue-600"></i>
                             <span>Pilih Cepat Akun Demo (Klik untuk Isi):</span>
                         </div>
-                        <div class="demo-account-buttons">
+                        <div class="grid grid-cols-1 gap-2">
                             <button type="button" 
                                     @click="fillAccount('superadmin@padu.local', 'PasswordSuperAdmin2026!')" 
-                                    class="demo-chip">
-                                <span class="chip-role"><i class="fi fi-rr-crown"></i> Super Administrator</span>
-                                <span class="chip-email">superadmin@padu.local</span>
+                                    class="p-2.5 rounded-xl border border-blue-200 bg-blue-50/70 hover:bg-blue-100 text-left transition-all cursor-pointer flex items-center justify-between">
+                                <span class="flex items-center gap-1.5 text-xs font-black text-blue-900">
+                                    <i class="fi fi-rr-crown text-amber-500"></i> Super Administrator
+                                </span>
+                                <span class="text-[11px] font-mono text-blue-700 font-bold">superadmin@padu.local</span>
                             </button>
                             <button type="button" 
                                     @click="fillAccount('operator@padu.local', 'PasswordOperator2026!')" 
-                                    class="demo-chip">
-                                <span class="chip-role"><i class="fi fi-rr-user"></i> Operator Data</span>
-                                <span class="chip-email">operator@padu.local</span>
+                                    class="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-left transition-all cursor-pointer flex items-center justify-between">
+                                <span class="flex items-center gap-1.5 text-xs font-black text-slate-800">
+                                    <i class="fi fi-rr-user text-slate-500"></i> Operator Data
+                                </span>
+                                <span class="text-[11px] font-mono text-slate-600 font-bold">operator@padu.local</span>
                             </button>
                         </div>
                     </div>
                 </div>
 
                 <!-- ================= TAHAP 2: INPUT KATA SANDI (ROLE-AWARE) ================= -->
-                <div x-show="step === 2" x-cloak>
+                <div x-show="step === 2" x-cloak class="space-y-4">
                     
                     <!-- Box Pengguna Terdeteksi -->
-                    <div class="user-detect-box">
-                        <div class="user-detect-info">
-                            <div class="user-avatar" :class="userInfo && userInfo.role === 'superadmin' ? 'avatar-superadmin' : (email === 'superadmin@padu.local' ? 'avatar-superadmin' : 'avatar-operator')">
-                                <span x-text="userInfo && userInfo.role === 'superadmin' ? 'Super Admin' : (email === 'superadmin@padu.local' ? 'Super Admin' : 'Operator')"></span>
+                    <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <div class="w-8 h-8 rounded-lg flex items-center justify-center font-black text-xs shrink-0" 
+                                 :class="userInfo && userInfo.role === 'superadmin' ? 'bg-amber-100 text-amber-800' : (email === 'superadmin@padu.local' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800')">
+                                <i class="fi" :class="userInfo && userInfo.role === 'superadmin' ? 'fi-rr-crown' : (email === 'superadmin@padu.local' ? 'fi-rr-crown' : 'fi-rr-user')"></i>
                             </div>
-                            <div>
-                                <div class="user-name" x-text="userInfo ? userInfo.name : (email === 'superadmin@padu.local' ? 'Super Administrator (Pimpinan)' : 'Operator Data DTSEN')"></div>
-                                <div class="user-email-text" x-text="email"></div>
+                            <div class="min-w-0">
+                                <div class="text-xs font-black text-slate-900 truncate" x-text="userInfo ? userInfo.name : (email === 'superadmin@padu.local' ? 'Super Administrator (Pimpinan)' : 'Operator Data DTSEN')"></div>
+                                <div class="text-[11px] font-mono text-slate-500 truncate" x-text="email"></div>
                             </div>
                         </div>
-                        <button type="button" @click="backToEmail()" class="btn-change-email">
+                        <button type="button" @click="backToEmail()" class="px-2.5 py-1 rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 font-extrabold text-[11px] shrink-0 cursor-pointer transition-all">
                             Ganti
                         </button>
                     </div>
 
                     <!-- Role Badge -->
-                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
-                        <span style="font-size: 11px; font-weight: 700; color: #64748b;">Hak Akses:</span>
-                        <span class="role-tag" 
-                              :class="userInfo && userInfo.role === 'superadmin' ? 'role-superadmin' : (email === 'superadmin@padu.local' ? 'role-superadmin' : 'role-operator')"
+                    <div class="flex items-center gap-2 text-xs">
+                        <span class="font-bold text-slate-500 text-[11px] uppercase tracking-wider">Hak Akses:</span>
+                        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-black border" 
+                              :class="userInfo && userInfo.role === 'superadmin' ? 'bg-amber-50 text-amber-800 border-amber-200' : (email === 'superadmin@padu.local' ? 'bg-amber-50 text-amber-800 border-amber-200' : 'bg-blue-50 text-blue-800 border-blue-200')"
                               x-text="userInfo ? userInfo.role_label : (email === 'superadmin@padu.local' ? 'Super Administrator (Pimpinan)' : 'Operator Data Staf')"></span>
                     </div>
 
-                    <div class="form-group">
-                        <div class="form-label">
-                            <span>Kata Sandi</span>
-                            <span class="label-hint">Standar Min. 15 Karakter</span>
+                    <div class="space-y-1.5">
+                        <div class="flex items-center justify-between text-xs">
+                            <label for="password" class="font-black uppercase tracking-wider text-slate-700">Kata Sandi</label>
+                            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Min. 15 Karakter</span>
                         </div>
-                        <div class="input-wrapper">
-                            <span class="input-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                                </svg>
+                        <div class="relative flex items-center">
+                            <span class="absolute left-3 text-slate-400 flex items-center pointer-events-none">
+                                <i class="fi fi-rr-lock text-sm"></i>
                             </span>
                             <input :type="showPassword ? 'text' : 'password'" 
                                    id="password" 
@@ -224,31 +317,30 @@
                                    x-model="password" 
                                    required 
                                    placeholder="Masukkan kata sandi..." 
-                                   class="form-input">
+                                   class="form-input pr-10">
                             <button type="button" 
                                     @click="showPassword = !showPassword" 
-                                    class="toggle-password-btn" 
+                                    class="absolute right-3 text-slate-400 hover:text-slate-600 flex items-center cursor-pointer" 
                                     tabindex="-1">
-                                <svg x-show="!showPassword" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                                <svg x-show="showPassword" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                                <i class="fi text-sm" :class="showPassword ? 'fi-rr-eye-crossed' : 'fi-rr-eye'"></i>
                             </button>
                         </div>
 
                         <!-- Auto-fill hint for standard credential -->
-                        <div style="margin-top: 8px; font-size: 11px; color: #64748b; background: #f8fafc; padding: 7px 10px; border-radius: 8px; border: 1px dashed #cbd5e1; display: flex; align-items: center; justify-content: space-between;">
-                            <span>Sandi Standar: <code style="font-weight: 700; color: #1e40af;" x-text="email === 'superadmin@padu.local' ? 'PasswordSuperAdmin2026!' : 'PasswordOperator2026!'"></code></span>
+                        <div class="mt-2 p-2.5 rounded-xl bg-slate-50 border border-dashed border-slate-300 flex items-center justify-between text-xs">
+                            <span class="text-slate-600">Sandi Standar: <code class="font-mono font-bold text-blue-700" x-text="email === 'superadmin@padu.local' ? 'PasswordSuperAdmin2026!' : 'PasswordOperator2026!'"></code></span>
                             <button type="button" 
                                     @click="password = (email === 'superadmin@padu.local' ? 'PasswordSuperAdmin2026!' : 'PasswordOperator2026!')"
-                                    style="background: #e0f2fe; border: 1px solid #bae6fd; color: #0369a1; font-size: 11px; font-weight: 700; cursor: pointer; text-decoration: none; padding: 3px 8px; border-radius: 6px;">
+                                    class="px-2.5 py-1 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-800 font-extrabold text-[11px] cursor-pointer transition-all">
                                 Isi Otomatis
                             </button>
                         </div>
                     </div>
 
                     <!-- Peringatan Kepatuhan BSSN Lockout -->
-                    <div class="policy-notice">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                        <span>Akun akan otomatis terkunci selama 15 menit jika kata sandi salah 5 kali berturut-turut.</span>
+                    <div class="p-2.5 rounded-xl bg-blue-50 border border-blue-200 text-[11px] font-bold text-blue-900 flex items-center gap-2">
+                        <i class="fi fi-rr-shield-exclamation text-blue-600 shrink-0"></i>
+                        <span>Akun otomatis terkunci selama 15 menit jika kata sandi salah 5 kali berturut-turut.</span>
                     </div>
 
                     <button type="submit" 
@@ -256,19 +348,19 @@
                             class="btn-primary">
                         <span x-show="!submitting">Masuk ke Sistem</span>
                         <span x-show="submitting">Mengautentikasi...</span>
-                        <svg x-show="!submitting" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        <i x-show="!submitting" class="fi fi-rr-sign-in-alt text-xs"></i>
                     </button>
 
                     <!-- SOP Lupa Sandi -->
-                    <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid #f1f5f9; text-align: center;">
+                    <div class="pt-3 border-t border-slate-100 text-center">
                         <template x-if="userInfo && userInfo.role === 'operator'">
-                            <p style="font-size: 11px; color: #64748b; line-height: 1.5;">
-                                Lupa kata sandi? Hubungi <strong style="color: #0f172a;">Super Administrator</strong> untuk melakukan <em>Admin-Assisted Offline Reset</em> sesuai SOP keamanan PADU v2.0.
+                            <p class="text-[11px] text-slate-500 leading-relaxed">
+                                Lupa kata sandi? Hubungi <strong class="text-slate-800">Super Administrator</strong> untuk melakukan <em>Admin-Assisted Offline Reset</em> sesuai SOP keamanan PADU v2.0.
                             </p>
                         </template>
                         <template x-if="userInfo && userInfo.role === 'superadmin'">
-                            <p style="font-size: 11px; color: #64748b; line-height: 1.5;">
-                                Akun Pimpinan dilindungi oleh <strong style="color: #0f172a;">2FA HP Offline</strong> & Lembar Kunci Pemulihan Darurat fisik di brankas.
+                            <p class="text-[11px] text-slate-500 leading-relaxed">
+                                Akun Pimpinan dilindungi oleh <strong class="text-slate-800">2FA HP Offline</strong> & Lembar Kunci Pemulihan Darurat fisik di brankas.
                             </p>
                         </template>
                     </div>
@@ -280,9 +372,9 @@
         </div>
 
         <!-- Footer Akreditasi -->
-        <div class="auth-footer">
-            <div>Sistem Informasi PADU &bull; Kedaulatan Mandiri Lepas Kunci</div>
-            <div class="auth-footer-sub">Selaras Regulasi BSSN No. 4/2021, No. 11/2024, & UU No. 27/2022 (UU PDP)</div>
+        <div class="mt-6 text-center text-xs text-slate-400 space-y-1">
+            <div class="font-bold text-slate-500">Sistem Informasi PADU &bull; Kedaulatan Mandiri Lepas Kunci</div>
+            <div class="text-[11px]">Selaras Regulasi BSSN No. 4/2021, No. 11/2024, & UU No. 27/2022 (UU PDP)</div>
         </div>
 
     </div>
