@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verifikasi 2FA HP Cerdas — PADU</title>
+    <title>Verifikasi 2FA — PADU</title>
     
-    <!-- 100% Offline Standalone Assets -->
     <link rel="stylesheet" href="{{ asset('css/tailwind.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <style>
@@ -30,7 +29,7 @@
                     <line x1="12" y1="18" x2="12.01" y2="18"/>
                 </svg>
             </div>
-            <h1 class="text-2xl font-black text-white tracking-tight">Verifikasi 2FA HP Offline</h1>
+            <h1 class="text-2xl font-black text-white tracking-tight">Verifikasi 2FA</h1>
             <p class="text-xs text-slate-400 mt-1 font-medium">Autentikasi Dua Faktor Tingkat Pimpinan (Standar RFC 6238)</p>
         </div>
 
@@ -127,7 +126,7 @@
             <div x-show="mode === 'recovery'" x-cloak>
                 <div class="twofa-alert-warning text-xs leading-relaxed space-y-1">
                     <p class="font-extrabold flex items-center gap-1.5 text-amber-900">
-                        <i class="fi fi-rr-shield-exclamation text-rose-600"></i> <span>PROSEDUR PEMULIHAN DARURAT BSSN:</span>
+                        <i class="fi fi-rr-shield-exclamation text-rose-600"></i> <span>PROSEDUR PEMULIHAN DARURAT:</span>
                     </p>
                     <p class="text-[11px] text-amber-800">
                         Masukkan <strong>Master Recovery Key</strong> dari lembar fisik bersegel di brankas Pimpinan. Jika diverifikasi benar, <strong>perangkat 2FA lama langsung dihanguskan (auto-revoke)</strong> demi keamanan.
@@ -178,8 +177,8 @@
 
         <!-- Footer Akreditasi -->
         <div class="mt-6 text-center text-[11px] text-slate-400 space-y-0.5">
-            <div>100% Offline Standalone &bull; Tanpa Internet & Pulsa &bull; Standar RFC 6238</div>
-            <div class="text-[10px] text-slate-500">Direktori Forensik Keamanan Tingkat Tinggi PADU v2.0</div>
+            <div>PADU &bull; Pengolah & Analisis Data Terpadu &bull; Standar RFC 6238</div>
+            <div class="text-[10px] text-slate-500">Keamanan Akses Terpadu © {{ date('Y') }}</div>
         </div>
 
     </div>

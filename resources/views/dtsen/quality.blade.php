@@ -56,7 +56,7 @@
                         <h3 class="font-black text-amber-950 text-sm uppercase tracking-wide">
                             Ringkasan Integritas & Kepatuhan Dataset
                         </h3>
-                        <p class="text-[11px] text-amber-800">Skor validitas berdasarkan aturan BPS & UU PDP</p>
+                        <p class="text-[11px] text-amber-800">Skor validitas integritas data (Aturan BPS & Dukcapil)</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
@@ -153,7 +153,7 @@
                     </li>
                     <li class="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-100">
                         <span>Dynamic PII Masking:</span>
-                        <span class="font-bold text-emerald-700 flex items-center gap-1"><i class="fi fi-rr-lock text-emerald-600"></i> Aktif (Standar UU PDP)</span>
+                        <span class="font-bold text-emerald-700 flex items-center gap-1"><i class="fi fi-rr-lock text-emerald-600"></i> Sensor Privasi Aktif</span>
                     </li>
                 </ul>
             </div>

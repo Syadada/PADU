@@ -35,7 +35,7 @@
                 <span>Pengaturan Profil & Keamanan</span>
             </h1>
             <p class="text-xs sm:text-sm text-slate-500 font-medium mt-1">
-                Pengelolaan kredensial mandiri terotentikasi dan verifikasi kepatuhan standar keamanan siber BSSN.
+                Pengelolaan profil akun dan keamanan kredensial login.
             </p>
         </div>
 
@@ -49,37 +49,6 @@
                 <span>Direktori Staf & Operator &rarr;</span>
             </a>
         @endif
-    </div>
-
-    <!-- Banner Kepatuhan Regulasi BSSN & UU PDP -->
-    <div class="p-4 sm:p-5 rounded-2xl text-white shadow-lg border border-blue-800/40 relative overflow-hidden" style="background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%) !important;">
-        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div class="space-y-1">
-                <div class="flex items-center gap-2">
-                    <span class="px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider rounded-md bg-blue-500/30 text-blue-200 border border-blue-400/30">
-                        Standar Keamanan Siber BSSN No. 4/2021
-                    </span>
-                    <span class="px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider rounded-md bg-emerald-500/30 text-emerald-200 border border-emerald-400/30">
-                        UU PDP No. 27/2022
-                    </span>
-                </div>
-                <h3 class="text-base font-extrabold text-white">Prinsip Self-Service & Akuntabilitas Identitas</h3>
-                <p class="text-xs text-blue-200 max-w-2xl leading-relaxed">
-                    Setiap staf berhak memperbarui nama tampilan serta kata sandi mandiri. Perubahan kata sandi mewajibkan konfirmasi sandi saat ini dan pemenuhan kompleksitas minimal 15 karakter dengan pencatatan jejak audit forensik.
-                </p>
-            </div>
-            <div class="flex items-center gap-2 bg-white/10 p-3 rounded-xl border border-white/15 backdrop-blur shrink-0">
-                <div class="text-center px-2">
-                    <span class="block text-lg font-black text-amber-300">15+</span>
-                    <span class="text-[9px] uppercase font-bold tracking-wider text-blue-100">Karakter Min.</span>
-                </div>
-                <div class="h-6 w-px bg-white/20"></div>
-                <div class="text-center px-2">
-                    <span class="block text-lg font-black text-emerald-300">100%</span>
-                    <span class="text-[9px] uppercase font-bold tracking-wider text-blue-100">Audit Trail</span>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Grid 2 Kolom Profil & Keamanan -->
@@ -167,7 +136,7 @@
                             <span class="text-lg"><i class="fi fi-rr-document-signed"></i></span>
                             <div>
                                 <span class="block text-xs font-bold text-slate-800 group-hover:text-slate-900">Jejak Audit Forensik</span>
-                                <span class="text-[10px] text-slate-500">Audit trail kepatuhan BSSN</span>
+                                <span class="text-[10px] text-slate-500">Pencatatan jejak audit aktivitas</span>
                             </div>
                         </div>
                         <span class="text-slate-400 group-hover:text-slate-900 font-bold">&rarr;</span>
@@ -281,12 +250,12 @@
                 </form>
             </div>
 
-            <!-- FORM 2: Ubah Kata Sandi Mandiri (Standar BSSN 15+ Karakter) -->
+            <!-- FORM 2: Ubah Kata Sandi Mandiri (Min. 15 Karakter) -->
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-5">
                 <div class="border-b border-slate-100 pb-4">
                     <div class="flex items-center gap-2">
-                        <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-rose-100 text-rose-800 border border-rose-300">
-                            Wajib BSSN
+                        <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-slate-100 text-slate-700 border border-slate-300">
+                            Keamanan
                         </span>
                         <h2 class="text-lg font-black text-slate-900">
                             <i class="fi fi-rr-key"></i> Ubah Kata Sandi Akun
@@ -353,11 +322,11 @@
                         </div>
                     </div>
 
-                    <!-- Checklist Interaktif Kepatuhan BSSN (Peraturan No. 4/2021) -->
+                    <!-- Checklist Interaktif Kebijakan Sandi (Min. 15 Karakter) -->
                     <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2.5">
                         <div class="flex items-center justify-between">
                             <span class="text-[11px] font-bold uppercase tracking-wider text-slate-600">
-                                Evaluator Otomatis Kebijakan BSSN:
+                                Evaluator Kebijakan Kata Sandi:
                             </span>
                             <span class="text-[11px] font-mono font-bold" :class="allValid ? 'text-emerald-600' : 'text-slate-400'">
                                 Panjang: <span x-text="newPassword.length"></span> / 15

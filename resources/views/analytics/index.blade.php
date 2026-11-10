@@ -901,7 +901,7 @@
                         <input type="radio" name="mode" value="masked" x-model="exportMode" class="mt-0.5 text-emerald-600 focus:ring-emerald-500">
                         <div>
                             <span class="font-bold text-slate-900 text-xs block flex items-center gap-1"><i class="fi fi-rr-lock"></i> Disensor (Masked)</span>
-                            <span class="text-[11px] text-slate-600 block">Sembunyikan NIK, Nama & Alamat demi privasi (UU PDP).</span>
+                            <span class="text-[11px] text-slate-600 block">Sembunyikan NIK, Nama & Alamat demi perlindungan privasi data.</span>
                         </div>
                     </label>
 

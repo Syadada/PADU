@@ -285,28 +285,6 @@
                 </a>
             </div>
         </div>
-
-        <!-- Danger Zone: Reset / Kosongkan Database -->
-        <div class="p-5 bg-white rounded-2xl border border-rose-200 shadow-sm space-y-3">
-            <div class="flex items-center gap-2.5 border-b border-rose-100 pb-3">
-                <span class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-sm"><i class="fi fi-rr-trash"></i></span>
-                <div>
-                    <h4 class="font-extrabold text-rose-900 text-xs uppercase tracking-wider">Pembersihan Total Dataset</h4>
-                    <p class="text-[11px] text-rose-600">Kosongkan database incase salah unggah berkas</p>
-                </div>
-            </div>
-            <p class="text-xs text-slate-600">
-                Menghapus seluruh baris data dan indeks di database SQLite/DuckDB agar sistem kembali bersih 0 record untuk berkas baru.
-            </p>
-            <div class="pt-1">
-                <button type="button" 
-                        @click="showClearModal = true" 
-                        class="w-full p-3 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer"
-                        @if(($totalSystemRows ?? $totalRows) === 0) disabled title="Sistem sudah bersih" @endif>
-                    <i class="fi fi-rr-trash"></i> <span>Kosongkan Seluruh Dataset</span>
-                </button>
-            </div>
-        </div>
     </div>
 
 </div>

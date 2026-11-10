@@ -27,15 +27,15 @@
             </div>
             <h1 class="force-reset-title">Wajib Pembaruan Kata Sandi</h1>
             <p class="force-reset-sub">
-                <i class="fi fi-rr-shield-check"></i> Standar Keamanan Siber BSSN No. 4/2021 (Min. 15 Karakter)
+                <i class="fi fi-rr-shield-check"></i> Kebijakan Keamanan Kata Sandi (Min. 15 Karakter)
             </p>
         </div>
 
         <div class="auth-card">
 
             <div class="force-reset-notice">
-                <i class="fi fi-rr-triangle-warning text-amber-500"></i> <strong>Inisialisasi Keamanan Akun Pertama Kali:</strong><br>
-                Sesuai regulasi keamanan BSSN, Anda diwajibkan menyetel kata sandi baru berstandar enterprise (panjang minimal 15 karakter) sebelum dapat mengakses data aplikasi.
+                <i class="fi fi-rr-triangle-warning text-amber-500"></i> <strong>Inisialisasi Keamanan Akun:</strong><br>
+                Anda diwajibkan menyetel kata sandi baru (panjang minimal 15 karakter) sebelum dapat mengakses data aplikasi.
             </div>
 
             <div class="force-reset-usercard">
@@ -95,7 +95,7 @@
                 <!-- Checklist Kepatuhan Sandi -->
                 <div class="force-reset-checklist">
                     <div class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-0.5">
-                        CHECKLIST KEBIJAKAN SANDI BSSN:
+                        CHECKLIST KEBIJAKAN KATA SANDI:
                     </div>
 
                     <div class="force-reset-checklist-grid">

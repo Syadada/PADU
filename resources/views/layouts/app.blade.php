@@ -62,7 +62,7 @@
                             <span class="font-extrabold text-slate-900 text-sm tracking-tight leading-none truncate">PADU</span>
                             <span class="px-1.5 py-0.5 text-[9px] uppercase font-black bg-blue-50 text-blue-700 border border-blue-200 rounded-md shrink-0">v2.0</span>
                         </div>
-                        <p class="text-[11px] text-slate-500 font-medium truncate mt-1">DTSEN 2026 &bull; Standar BSSN</p>
+                        <p class="text-[11px] text-slate-500 font-medium truncate mt-1">Pengolah & Analisis Data Terpadu</p>
                     </div>
                 </a>
                 
@@ -77,14 +77,6 @@
                         <line x1="6" y1="6" x2="18" y2="18"></line>
                     </svg>
                 </button>
-            </div>
-            
-            <div class="mt-3 flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-[10px] font-semibold text-emerald-800">
-                <span class="flex items-center gap-1.5 text-emerald-700 font-bold">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    100% Offline Lokal
-                </span>
-                <span>UU PDP No. 27/2022</span>
             </div>
         </div>
 
@@ -221,16 +213,6 @@
                         </a>
                     </div>
                 </div>
-
-                @if(isset($totalRows) && $totalRows > 0)
-                    <!-- Kosongkan Dataset -->
-                    <button type="button" 
-                            @click="showClearModal = true" 
-                            class="w-full sidebar-nav-item flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-all bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 cursor-pointer">
-                        <i class="fi fi-rr-trash text-sm"></i>
-                        <span>Kosongkan</span>
-                    </button>
-                @endif
             </div>
 
             <!-- SNAPSHOT DATASET MINI STATS -->
@@ -257,15 +239,14 @@
 
         </div>
 
-        <!-- 3. SIDEBAR FOOTER (ENGINE & KEDAULATAN SISTEM) -->
-        <div class="p-3.5 border-t border-slate-200 bg-slate-50 shrink-0 text-slate-500 text-[11px] space-y-1">
+        <!-- 3. SIDEBAR FOOTER (ENGINE STATUS) -->
+        <div class="p-3.5 border-t border-slate-200 bg-slate-50 shrink-0 text-slate-500 text-[11px]">
             <div class="flex items-center justify-between text-slate-800 font-bold">
                 <span class="flex items-center gap-1.5">
                     <i class="fi fi-rr-bolt text-amber-500"></i> DuckDB OLAP Engine
                 </span>
                 <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-200 text-slate-700 font-mono border border-slate-300">Ultra-Fast</span>
             </div>
-            <p class="text-[10px] text-slate-400">Arsitektur Kedaulatan Lepas Kunci</p>
         </div>
 
     </aside>
@@ -481,16 +462,12 @@
             @yield('content')
         </main>
 
-        <!-- FOOTER STANDAR BSSN -->
-        <footer class="bg-white border-t border-slate-200 py-6 mt-auto">
+        <!-- FOOTER -->
+        <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
             <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2">
-                <p><strong>PADU</strong> &copy; {{ date('Y') }} — Pengolah & Analisis Data Terpadu (Kedaulatan Mandiri Lepas Kunci).</p>
-                <div class="flex items-center gap-4 text-[11px]">
-                    <span class="text-emerald-600 font-bold flex items-center gap-1">
-                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                        100% Offline Standalone
-                    </span>
-                    <span>Standar BSSN & UU PDP No. 27/2022</span>
+                <p><strong>PADU</strong> &copy; {{ date('Y') }} — Pengolah & Analisis Data Terpadu.</p>
+                <div class="text-[11px] text-slate-400">
+                    Engine Analisis Data Cepat &bull; DTSEN 2026
                 </div>
             </div>
         </footer>

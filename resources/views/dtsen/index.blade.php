@@ -72,7 +72,7 @@
             </p>
         </div>
 
-        <div class="flex flex-wrap items-center gap-2.5 shrink-0" x-data="{ showExportModal: false, showTemplateModal: false, showClearModal: false }">
+        <div class="flex flex-wrap items-center gap-2.5 shrink-0" x-data="{ showExportModal: false, showTemplateModal: false }">
             <a href="{{ route('dtsen.activity-logs') }}" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md transition-all flex items-center gap-2 border border-slate-700 whitespace-nowrap shrink-0 cursor-pointer text-decoration-none">
                 <i class="fi fi-rr-list-check"></i> <span>Log Aktivitas System</span> <span x-show="logCount > 0" class="px-2 py-0.5 rounded-full bg-blue-600 text-white text-[10px] font-bold" x-text="logCount"></span>
             </a>
@@ -80,9 +80,6 @@
             @if($totalRows > 0)
                 <button @click="showExportModal = true" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer">
                     <i class="fi fi-rr-upload"></i> <span>Ekspor Data Paket (.ZIP)</span>
-                </button>
-                <button @click="showClearModal = true" class="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-sm transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer">
-                    <i class="fi fi-rr-trash"></i> <span>Kosongkan Data</span>
                 </button>
             @endif
 
@@ -105,35 +102,7 @@
                 </div>
             </div>
 
-            <!-- Modal Konfirmasi Kosongkan Data (Incase user salah upload file) -->
-            <div x-show="showClearModal" 
-                 x-transition 
-                 class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4" 
-                 style="display: none;">
-                <div @click.away="showClearModal = false" class="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-md p-6 space-y-4">
-                    <div class="flex items-center gap-3 border-b border-slate-100 pb-3">
-                        <span class="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center font-bold text-lg"><i class="fi fi-rr-trash"></i></span>
-                        <div>
-                            <h3 class="font-extrabold text-slate-900 text-sm">Konfirmasi Kosongkan Data</h3>
-                            <p class="text-[11px] text-slate-500">Hapus seluruh data di sistem incase salah upload file</p>
-                        </div>
-                    </div>
 
-                    <div class="p-3.5 bg-rose-50 rounded-xl border border-rose-200 text-xs text-rose-900 space-y-1">
-                        <p><i class="fi fi-rr-triangle-warning text-rose-600"></i> <strong>Perhatian:</strong> Tindakan ini akan menghapus <strong>{{ number_format($totalRows) }} baris data</strong> yang saat ini ada di sistem. Sistem akan dikosongkan secara total agar Anda bisa mengunggah file yang benar.</p>
-                    </div>
-
-                    <form action="{{ route('dtsen.clear') }}" method="POST" class="pt-2 flex items-center justify-end gap-2 border-t border-slate-100">
-                        @csrf
-                        <button type="button" @click="showClearModal = false" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs hover:bg-slate-200">
-                            Batal
-                        </button>
-                        <button type="submit" class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer">
-                            <i class="fi fi-rr-trash"></i> <span>Ya, Kosongkan Sekarang</span>
-                        </button>
-                    </form>
-                </div>
-            </div>
 
             <!-- Modal Opsi Ekspor Data (2 Mode Utama & Solusi Rekonsiliasi Original_Row_Index) -->
             <div x-show="showExportModal" 
@@ -196,10 +165,9 @@
                             </div>
                         </div>
 
-                        <!-- Catatan Penting Paket Dual File & Auto Reset -->
-                        <div class="p-3 bg-amber-500 rounded-xl border border-amber-200 text-[11px] text-amber-900 space-y-1">
-                            <p><i class="fi fi-rr-folder"></i> <strong>Lokasi Hasil Ekspor:</strong> Paket berkas (.ZIP) akan diekspor & disimpan langsung di folder <code class="text-blue-900 font-mono font-bold">src-export/</code> di root project (bebas memori & anti crash browser).</p>
-                            <p><i class="fi fi-rr-broom"></i> <strong>Auto-Purge Reset:</strong> Setelah ekspor selesai, data sistem dikosongkan agar bersih untuk pemrosesan file berikutnya.</p>
+                        <!-- Catatan Penting Lokasi Berkas -->
+                        <div class="p-3 bg-blue-50 rounded-xl border border-blue-200 text-[11px] text-blue-900 space-y-1">
+                            <p><i class="fi fi-rr-folder"></i> <strong>Lokasi Hasil Ekspor:</strong> Paket berkas (.ZIP) akan diekspor & disimpan langsung di folder <code class="text-blue-900 font-mono font-bold">src-export/</code> di root project.</p>
                         </div>
 
                         <div class="pt-3 flex items-center justify-end gap-2 border-t border-slate-100">

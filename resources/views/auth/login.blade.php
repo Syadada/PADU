@@ -110,33 +110,7 @@
             font-size: 11px;
             font-weight: 700;
         }
-        .offline-status {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: #059669;
-            background: #ecfdf5;
-            padding: 4px 10px;
-            border-radius: 8px;
-            border: 1px solid #a7f3d0;
-        }
-        .pulse-dot {
-            width: 7px;
-            height: 7px;
-            background-color: #10b981;
-            border-radius: 50%;
-            display: inline-block;
-        }
-        .bssn-status {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            color: #1e3a8a;
-            background: #eff6ff;
-            padding: 4px 10px;
-            border-radius: 8px;
-            border: 1px solid #bfdbfe;
-        }
+
         .form-group {
             margin-bottom: 20px;
         }
@@ -314,18 +288,6 @@
         <!-- Luxury Card -->
         <div class="auth-card">
             
-            <!-- Top Security Badges -->
-            <div class="security-strip">
-                <div class="offline-status">
-                    <span class="pulse-dot"></span>
-                    <span>100% Offline Lokal</span>
-                </div>
-                <div class="bssn-status">
-                    <i class="fi fi-rr-shield-check" style="font-size: 13px;"></i>
-                    <span>Standar BSSN & UU PDP</span>
-                </div>
-            </div>
-
             <!-- Flash Alerts -->
             @if(session('success'))
                 <div class="alert-box alert-success">
@@ -364,7 +326,7 @@
                     <span>AKUN TERKUNCI SEMENTARA</span>
                 </div>
                 <p style="font-size: 11px; color: #475569; margin-top: 4px;">
-                    Terjadi 5 kali kegagalan kata sandi berturut-turut. Sesuai Standar BSSN No. 4/2021, akun Anda terkunci selama:
+                    Terjadi 5 kali kegagalan kata sandi berturut-turut. Akun Anda terkunci sementara selama:
                 </p>
                 <div class="lockout-timer" x-text="formatSeconds(lockCountdown)"></div>
             </div>
@@ -498,33 +460,14 @@
                         </div>
                     </div>
 
-                    <!-- Peringatan Kepatuhan BSSN Lockout -->
-                    <div class="policy-notice">
-                        <i class="fi fi-rr-shield-exclamation" style="font-size: 15px; color: #2563eb; shrink-0;"></i>
-                        <span>Akun akan otomatis terkunci selama 15 menit jika kata sandi salah 5 kali berturut-turut.</span>
-                    </div>
-
                     <button type="submit" 
                             :disabled="submitting || !password"
-                            class="btn-primary">
+                            class="btn-primary"
+                            style="margin-top: 14px;">
                         <span x-show="!submitting">Masuk ke Sistem</span>
                         <span x-show="submitting" x-cloak>Mengautentikasi...</span>
                         <i x-show="!submitting" class="fi fi-rr-sign-in-alt" style="font-size: 13px;"></i>
                     </button>
-
-                    <!-- SOP Lupa Sandi -->
-                    <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid #f1f5f9; text-align: center;">
-                        <template x-if="userInfo && userInfo.role === 'operator'">
-                            <p style="font-size: 11px; color: #64748b; line-height: 1.5;">
-                                Lupa kata sandi? Hubungi <strong style="color: #0f172a;">Super Administrator</strong> untuk melakukan <em>Admin-Assisted Offline Reset</em> sesuai SOP keamanan PADU v2.0.
-                            </p>
-                        </template>
-                        <template x-if="userInfo && userInfo.role === 'superadmin'">
-                            <p style="font-size: 11px; color: #64748b; line-height: 1.5;">
-                                Akun Pimpinan dilindungi oleh <strong style="color: #0f172a;">2FA HP Offline</strong> & Lembar Kunci Pemulihan Darurat fisik di brankas.
-                            </p>
-                        </template>
-                    </div>
 
                 </div>
 
@@ -532,10 +475,9 @@
 
         </div>
 
-        <!-- Footer Akreditasi -->
+        <!-- Footer -->
         <div class="auth-footer">
-            <div>Sistem Informasi PADU &bull; Kedaulatan Mandiri Lepas Kunci</div>
-            <div class="auth-footer-sub">Selaras Regulasi BSSN No. 4/2021, No. 11/2024, & UU No. 27/2022 (UU PDP)</div>
+            <div>PADU &bull; Pengolah & Analisis Data Terpadu &copy; {{ date('Y') }}</div>
         </div>
 
     </div>
