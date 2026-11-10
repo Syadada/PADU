@@ -1,0 +1,51 @@
+nomor_induk_kependudukan,nomor_kartu_keluarga,nama,tanggal_lahir,usia,jenis_kelamin,status_hubungan_keluarga,status_kawin,partisipasi_sekolah,jenjang_tertinggi_yang_diduduki,ijazah_tertinggi_yang_dimiliki,status_bekerja,lapangan_usaha_dari_pekerjaan_utama,gaji_bulanan
+3201011370000001,3201012010180001,Hendra Kusuma,1974-03-24,52,Laki-laki,Kepala Keluarga,Kawin/Nikah,Tidak Sekolah Lagi,SMA/SMK/MA,SMA/SMK/MA,Ya,"Pertanian, kehutanan, dan perikanan",11229295.0
+3201011592000002,3201012010180001,Irfan Putri,1977-03-07,49,Laki-laki,Istri,Kawin/Nikah,Tidak Sekolah Lagi,Sarjana (S1),Sarjana (S1),Ya,Perdagangan besar dan eceran,2552944.0
+3201012188000003,3201012010180001,Rahmat Umar,1962-11-08,64,Laki-laki,Anak,Belum Kawin,Tidak Sekolah Lagi,Magister (S2),Magister (S2),Ya,Jasa keuangan & asuransi,2503445.0
+3201012793000004,3201012010180002,Rina Sartika,1989-07-09,37,Perempuan,Kepala Keluarga,Kawin/Nikah,Tidak Sekolah Lagi,SMA/SMK/MA,SMA/SMK/MA,Ya,Jasa keuangan & asuransi,7042265.0
+3201012474000005,3201012010180002,Hendra Nyak Dien,1975-12-18,51,Laki-laki,Istri,Kawin/Nikah,Tidak Sekolah Lagi,Diploma (D1-D4),Diploma (D1-D4),Ya,Konstruksi,18031484.0
+3201012289000006,3201012010180002,Ahmad Setiawan,1995-01-22,31,Laki-laki,Anak,Belum Kawin,Tidak Sekolah Lagi,Sarjana (S1),Sarjana (S1),Ya,Industri pengolahan,9704433.0
+3201012194000007,3201012010180003,Anisa Santoso,1998-06-16,28,Perempuan,Kepala Keluarga,Kawin/Nikah,Tidak Sekolah Lagi,Diploma (D1-D4),Diploma (D1-D4),Ya,Konstruksi,8244903.0
+3201011578000008,3201012010180003,Agus Kurniawan,1973-09-25,53,Laki-laki,Istri,Kawin/Nikah,Tidak Sekolah Lagi,Magister (S2),Magister (S2),Ya,Perdagangan besar dan eceran,7814865.0
+3201011177000009,3201012010180003,Teuku Rahmawati,1981-02-17,45,Laki-laki,Anak,Belum Kawin,Tidak Sekolah Lagi,Magister (S2),Magister (S2),Tidak,Industri pengolahan,3684009.0
+3201011371000010,3201012010180004,Yuni Putri,1966-04-07,60,Perempuan,Kepala Keluarga,Kawin/Nikah,Tidak Sekolah Lagi,Magister (S2),Magister (S2),Ya,"Pertanian, kehutanan, dan perikanan",11675934.0
+3201011775000011,3201012010180004,Irfan Lestari,1990-04-28,36,Laki-laki,Istri,Kawin/Nikah,Tidak Sekolah Lagi,Magister (S2),Magister (S2),Ya,Jasa keuangan & asuransi,2620521.0
+3201012071000012,3201012010180004,Siti Lestari,1992-09-06,34,Perempuan,Anak,Belum Kawin,Tidak Sekolah Lagi,SMA/SMK/MA,SMA/SMK/MA,Ya,"Pertanian, kehutanan, dan perikanan",4164993.0
+3201012099000013,3201012010180005,Hendra Wibowo,2002-12-11,24,Laki-laki,Kepala Keluarga,Belum Kawin,Tidak Sekolah Lagi,SMA/SMK/MA,SMA/SMK/MA,Ya,Perdagangan besar dan eceran,8520092.0
+3201011781000014,3201012010180005,Dedi Sartika,1988-09-23,38,Laki-laki,Istri,Kawin/Nikah,Tidak Sekolah Lagi,Sarjana (S1),Sarjana (S1),Ya,Perdagangan besar dan eceran,9637076.0
+3201012685000015,3201012010180005,Hendra Rahmawati,1965-11-14,61,Laki-laki,Anak,Belum Kawin,Tidak Sekolah Lagi,Magister (S2),Magister (S2),Ya,Industri pengolahan,3192456.0
+3201011471000016,3201012010180006,Dedi Hidayat,1962-06-07,64,Laki-laki,Kepala Keluarga,Kawin/Nikah,Tidak Sekolah Lagi,Diploma (D1-D4),Diploma (D1-D4),Ya,"Pertanian, kehutanan, dan perikanan",13466871.0
+3201011382000017,3201012010180006,Siti Lestari,1974-04-27,52,Perempuan,Istri,Kawin/Nikah,Tidak Sekolah Lagi,Diploma (D1-D4),Diploma (D1-D4),Ya,Industri pengolahan,3833286.0
+3201012070000018,3201012010180006,Dewi Setiawan,1971-10-09,55,Perempuan,Anak,Belum Kawin,Tidak Sekolah Lagi,SMA/SMK/MA,SMA/SMK/MA,Tidak,Konstruksi,8845385.0
+3201011681000019,3201012010180007,Irfan Umar,2002-06-20,24,Laki-laki,Kepala Keluarga,Belum Kawin,Tidak Sekolah Lagi,Magister (S2),Magister (S2),Ya,Jasa keuangan & asuransi,6245432.0
+3201012879000020,3201012010180007,Yuni Santoso,1979-05-07,47,Perempuan,Istri,Kawin/Nikah,Tidak Sekolah Lagi,Magister (S2),Magister (S2),Ya,Administrasi pemerintahan,14400603.0
+3201011470000021,3201012010180007,Siti Kusuma,1990-10-28,36,Perempuan,Anak,Belum Kawin,Tidak Sekolah Lagi,Magister (S2),Magister (S2),Tidak,Administrasi pemerintahan,4055076.0
+3201011384000022,3201012010180008,Wawan Suryani,2002-09-18,24,Laki-laki,Kepala Keluarga,Belum Kawin,Tidak Sekolah Lagi,Diploma (D1-D4),Diploma (D1-D4),Ya,Administrasi pemerintahan,15639300.0
+3201011977000023,3201012010180008,Hendra Putri,1980-09-03,46,Laki-laki,Istri,Kawin/Nikah,Tidak Sekolah Lagi,Magister (S2),Magister (S2),Ya,Industri pengolahan,3416314.0
+3201012882000024,3201012010180008,Nur Santoso,1982-05-25,44,Perempuan,Anak,Belum Kawin,Tidak Sekolah Lagi,Sarjana (S1),Sarjana (S1),Ya,Perdagangan besar dan eceran,3978751.0
+3201012770000025,3201012010180009,Yuni Santoso,1965-11-14,61,Perempuan,Kepala Keluarga,Kawin/Nikah,Tidak Sekolah Lagi,Diploma (D1-D4),Diploma (D1-D4),Ya,Industri pengolahan,6724453.0
+3201012177000026,3201012010180009,Teuku Rahmawati,1961-04-07,65,Laki-laki,Istri,Kawin/Nikah,Tidak Sekolah Lagi,Diploma (D1-D4),Diploma (D1-D4),Ya,Industri pengolahan,4403035.0
+3201012891000027,3201012010180009,Yuni Wijaya,2005-04-03,21,Perempuan,Anak,Belum Kawin,Masih Sekolah,SMP/MTs,SMP/MTs,Tidak,Industri pengolahan,7237168.0
+3201012492000028,3201012010180010,Wawan Kurniawan,1971-12-17,55,Laki-laki,Kepala Keluarga,Kawin/Nikah,Tidak Sekolah Lagi,Sarjana (S1),Sarjana (S1),Ya,Jasa keuangan & asuransi,16998163.0
+3201012597000029,3201012010180010,Cut Sartika,1991-04-12,35,Perempuan,Istri,Kawin/Nikah,Tidak Sekolah Lagi,Diploma (D1-D4),Diploma (D1-D4),Ya,Perdagangan besar dan eceran,7545945.0
+3201011072000030,3201012010180010,Dedi Kusuma,1985-12-08,41,Laki-laki,Anak,Belum Kawin,Tidak Sekolah Lagi,Sarjana (S1),Sarjana (S1),Tidak,Industri pengolahan,8295567.0
+3201011576000031,3201012010180011,Rahmat Lestari,1977-12-19,49,Laki-laki,Kepala Keluarga,Kawin/Nikah,Tidak Sekolah Lagi,Sarjana (S1),Sarjana (S1),Ya,"Pertanian, kehutanan, dan perikanan",4351560.0
+3201011490000032,3201012010180011,Nur Pratama,1960-10-10,66,Perempuan,Istri,Kawin/Nikah,Tidak Sekolah Lagi,Magister (S2),Magister (S2),Ya,Perdagangan besar dan eceran,4103936.0
+3201011773000033,3201012010180011,Tri Kurniawan,1998-10-26,28,Laki-laki,Anak,Belum Kawin,Tidak Sekolah Lagi,Magister (S2),Magister (S2),Tidak,Konstruksi,13690842.0
+3201011275000034,3201012010180012,Budi Kurniawan,1988-12-20,38,Laki-laki,Kepala Keluarga,Kawin/Nikah,Tidak Sekolah Lagi,SMA/SMK/MA,SMA/SMK/MA,Ya,Administrasi pemerintahan,5473802.0
+3201011896000035,3201012010180012,Wawan Umar,1963-03-26,63,Laki-laki,Istri,Kawin/Nikah,Tidak Sekolah Lagi,Magister (S2),Magister (S2),Ya,Jasa keuangan & asuransi,2522554.0
+3201011791000036,3201012010180012,Eko Santoso,2003-05-19,23,Laki-laki,Anak,Belum Kawin,Tidak Sekolah Lagi,SMA/SMK/MA,SMA/SMK/MA,Ya,Industri pengolahan,14446846.0
+3201012579000037,3201012010180013,Yuni Rahmawati,1989-02-11,37,Perempuan,Kepala Keluarga,Kawin/Nikah,Tidak Sekolah Lagi,Magister (S2),Magister (S2),Ya,Industri pengolahan,16980601.0
+3201011984000038,3201012010180013,Nur Pratama,1961-11-20,65,Perempuan,Istri,Kawin/Nikah,Tidak Sekolah Lagi,SMA/SMK/MA,SMA/SMK/MA,Ya,"Pertanian, kehutanan, dan perikanan",2450921.0
+3201012585000039,3201012010180013,Rina Suryani,1995-03-13,31,Perempuan,Anak,Belum Kawin,Tidak Sekolah Lagi,Magister (S2),Magister (S2),Tidak,Konstruksi,4356985.0
+3201012785000040,3201012010180014,Bambang Putri,1995-09-13,31,Laki-laki,Kepala Keluarga,Kawin/Nikah,Tidak Sekolah Lagi,Diploma (D1-D4),Diploma (D1-D4),Ya,Industri pengolahan,3774816.0
+3201011174000041,3201012010180014,Agus Putri,1966-08-04,60,Laki-laki,Istri,Kawin/Nikah,Tidak Sekolah Lagi,SMA/SMK/MA,SMA/SMK/MA,Ya,Industri pengolahan,4058247.0
+3201012280000042,3201012010180014,Nur Rahmawati,1999-02-08,27,Perempuan,Anak,Belum Kawin,Tidak Sekolah Lagi,SMA/SMK/MA,SMA/SMK/MA,Ya,Administrasi pemerintahan,2861820.0
+3201012388000043,3201012010180015,Anisa Sartika,1971-02-20,55,Perempuan,Kepala Keluarga,Kawin/Nikah,Tidak Sekolah Lagi,Sarjana (S1),Sarjana (S1),Ya,Industri pengolahan,4399626.0
+3201012392000044,3201012010180015,Hendra Suryani,1979-04-13,47,Laki-laki,Istri,Kawin/Nikah,Tidak Sekolah Lagi,Sarjana (S1),Sarjana (S1),Ya,Perdagangan besar dan eceran,7189825.0
+3201011789000045,3201012010180015,Bambang Kusuma,2000-04-20,26,Laki-laki,Anak,Belum Kawin,Tidak Sekolah Lagi,Magister (S2),Magister (S2),Tidak,Jasa keuangan & asuransi,2462801.0
+3201012186000046,3201012010180016,Agus Setiawan,1970-05-27,56,Laki-laki,Kepala Keluarga,Kawin/Nikah,Tidak Sekolah Lagi,SMA/SMK/MA,SMA/SMK/MA,Ya,"Pertanian, kehutanan, dan perikanan",7675825.0
+3201011888000047,3201012010180016,Yuni Hidayat,1966-11-08,60,Perempuan,Istri,Kawin/Nikah,Tidak Sekolah Lagi,Sarjana (S1),Sarjana (S1),Ya,Administrasi pemerintahan,3152480.0
+3201011482000048,3201012010180016,Ahmad Hidayat,2002-12-23,24,Laki-laki,Anak,Belum Kawin,Tidak Sekolah Lagi,Magister (S2),Magister (S2),Ya,Jasa keuangan & asuransi,17927389.0
+3201012171000049,3201012010180017,Yuni Setiawan,1972-02-28,54,Perempuan,Kepala Keluarga,Kawin/Nikah,Tidak Sekolah Lagi,Diploma (D1-D4),Diploma (D1-D4),Ya,"Pertanian, kehutanan, dan perikanan",2676805.0
+3201011078000050,3201012010180017,Wawan Nyak Dien,1994-05-26,32,Laki-laki,Istri,Kawin/Nikah,Tidak Sekolah Lagi,Sarjana (S1),Sarjana (S1),Ya,Perdagangan besar dan eceran,2382973.0

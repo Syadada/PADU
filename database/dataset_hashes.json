@@ -1,0 +1,146 @@
+{
+    "Versi_3_2026_Lampiran_BAST_Metadata_DTSEN.xlsx": {
+        "sha256": "9e69b712c88473fdec6ef90d92f677a2fbea5fe86c54b108801f703227514a61",
+        "size": 114158,
+        "mtime": 1788316056,
+        "calculated_at": "2026-11-10 10:46:27",
+        "scope": "kustom",
+        "scope_info": {
+            "scope": "kustom",
+            "scope_label": "Set Data Kustom",
+            "scope_badge": "bg-slate-100 text-slate-700 border-slate-300",
+            "scope_icon": "fi fi-rr-document",
+            "total_headers": 0,
+            "matched_individu_count": 0,
+            "matched_keluarga_count": 0
+        }
+    },
+    "dataset_dtsen_500_bervariasi.xlsx": {
+        "sha256": "d7c7e2cd0f20d65ddeb33aa6d2468b4f5bf0bad771a3df5f811de040e470b524",
+        "size": 112483,
+        "mtime": 1788696005,
+        "calculated_at": "2026-11-10 10:46:27",
+        "scope": "kustom",
+        "scope_info": {
+            "scope": "kustom",
+            "scope_label": "Set Data Kustom",
+            "scope_badge": "bg-slate-100 text-slate-700 border-slate-300",
+            "scope_icon": "fi fi-rr-document",
+            "total_headers": 0,
+            "matched_individu_count": 0,
+            "matched_keluarga_count": 0
+        }
+    },
+    "dataset_dtsen_500_lengkap.csv": {
+        "sha256": "07e20785fe5fa3ff168c68f45d9c5e59db2463a7187af7e7c20b6eabce8f0370",
+        "size": 262226,
+        "mtime": 1788696005,
+        "calculated_at": "2026-11-10 10:46:27",
+        "scope": "gabungan",
+        "scope_info": {
+            "scope": "gabungan",
+            "scope_label": "Set Terpadu (Keduanya)",
+            "scope_badge": "bg-indigo-50 text-indigo-700 border-indigo-200",
+            "scope_icon": "fi fi-rr-apps",
+            "total_headers": 48,
+            "matched_individu_count": 19,
+            "matched_keluarga_count": 24
+        }
+    },
+    "dataset_dtsen_500_lengkap.xlsx": {
+        "sha256": "5247a784493029f3c7fb9c4871e55e6fc527c98fd6f32f46808b0c615d07bdfd",
+        "size": 107337,
+        "mtime": 1788696005,
+        "calculated_at": "2026-11-10 10:46:27",
+        "scope": "kustom",
+        "scope_info": {
+            "scope": "kustom",
+            "scope_label": "Set Data Kustom",
+            "scope_badge": "bg-slate-100 text-slate-700 border-slate-300",
+            "scope_icon": "fi fi-rr-document",
+            "total_headers": 0,
+            "matched_individu_count": 0,
+            "matched_keluarga_count": 0
+        }
+    },
+    "dataset_dtsen_50k_lengkap.csv": {
+        "sha256": "62785070ead2407f430da3a179738a0183cef5251ff14a344618f1b7c01146b2",
+        "size": 25706689,
+        "mtime": 1788769348,
+        "calculated_at": "2026-11-10 10:46:27",
+        "scope": "gabungan",
+        "scope_info": {
+            "scope": "gabungan",
+            "scope_label": "Set Terpadu (Keduanya)",
+            "scope_badge": "bg-indigo-50 text-indigo-700 border-indigo-200",
+            "scope_icon": "fi fi-rr-apps",
+            "total_headers": 45,
+            "matched_individu_count": 15,
+            "matched_keluarga_count": 12
+        }
+    },
+    "sample_13_juta_data.csv": {
+        "sha256": "04c58b0406c5f1e31866cdaf4182f85044c5baed06fafff5b30d8a0cd8d3dd0f",
+        "size": 2720485024,
+        "mtime": 1788796364,
+        "calculated_at": "2026-11-10 10:46:39",
+        "scope": "gabungan",
+        "scope_info": {
+            "scope": "gabungan",
+            "scope_label": "Set Terpadu (Keduanya)",
+            "scope_badge": "bg-indigo-50 text-indigo-700 border-indigo-200",
+            "scope_icon": "fi fi-rr-apps",
+            "total_headers": 17,
+            "matched_individu_count": 9,
+            "matched_keluarga_count": 5
+        }
+    },
+    "sample_1_juta_data.csv": {
+        "sha256": "abbb13b3a6169e4779bb3af974f69f92b9fb4c229f180b30fbfc0ca01fb1883e",
+        "size": 122590689,
+        "mtime": 1788417168,
+        "calculated_at": "2026-11-10 10:46:40",
+        "scope": "gabungan",
+        "scope_info": {
+            "scope": "gabungan",
+            "scope_label": "Set Terpadu (Keduanya)",
+            "scope_badge": "bg-indigo-50 text-indigo-700 border-indigo-200",
+            "scope_icon": "fi fi-rr-apps",
+            "total_headers": 11,
+            "matched_individu_count": 7,
+            "matched_keluarga_count": 2
+        }
+    },
+    "sample_set_anggota_keluarga.csv": {
+        "sha256": "7358873ce01628c9ae34fd980807a73495430cc20b458a264ac73a297ff875fc",
+        "size": 9179,
+        "mtime": 1794281399,
+        "calculated_at": "2026-11-10 10:46:40",
+        "scope": "individu",
+        "scope_info": {
+            "scope": "individu",
+            "scope_label": "Set Anggota Keluarga",
+            "scope_badge": "bg-blue-50 text-blue-700 border-blue-200",
+            "scope_icon": "fi fi-rr-user",
+            "total_headers": 14,
+            "matched_individu_count": 12,
+            "matched_keluarga_count": 0
+        }
+    },
+    "sample_set_keluarga_rumahtangga.csv": {
+        "sha256": "8bfe4ce21f8672f541e9af9ab6f660fc1fc560d04c3318d2ae8c6459074370da",
+        "size": 13109,
+        "mtime": 1794281399,
+        "calculated_at": "2026-11-10 10:46:40",
+        "scope": "gabungan",
+        "scope_info": {
+            "scope": "gabungan",
+            "scope_label": "Set Terpadu (Keduanya)",
+            "scope_badge": "bg-indigo-50 text-indigo-700 border-indigo-200",
+            "scope_icon": "fi fi-rr-apps",
+            "total_headers": 27,
+            "matched_individu_count": 3,
+            "matched_keluarga_count": 23
+        }
+    }
+}

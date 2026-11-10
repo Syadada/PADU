@@ -6,17 +6,20 @@
     <!-- Header Banner Modul -->
     <div class="p-5 sm:p-6 bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="space-y-1">
-            <div class="flex items-center gap-2">
-                <span class="p-2 rounded-xl bg-blue-50 text-blue-600 text-lg font-bold flex items-center justify-center"><i class="fi fi-rr-table"></i></span>
+            <div class="flex flex-wrap items-center gap-2">
+                <span class="p-2 rounded-xl bg-blue-50 text-blue-600 text-lg font-bold flex items-center justify-center"><i class="{{ $activeDatasetScopeIcon ?? 'fi fi-rr-table' }}"></i></span>
                 <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">
-                    Tabel Master Data Terpadu (58 Variabel DTSEN 2026)
+                    Tabel Master Data Terpadu
                 </h2>
-                <span class="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 text-xs font-bold font-mono">
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold border flex items-center gap-1 {{ $activeDatasetScopeBadge ?? 'bg-indigo-50 text-indigo-700 border-indigo-200' }}">
+                    <i class="{{ $activeDatasetScopeIcon ?? 'fi fi-rr-apps' }}"></i> {{ $activeDatasetScopeLabel ?? 'Set Terpadu (Keduanya)' }}
+                </span>
+                <span class="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-800 text-xs font-bold font-mono border border-slate-200">
                     {{ number_format($records->total()) }} Baris
                 </span>
             </div>
             <p class="text-xs text-slate-500 font-medium">
-                Pusat data terpadu: Relasi otomatis KK & Individu, sensor privasi NIK/KK, filter pivot Excel, dan transliterasi teks resmi BPS-Bappenas.
+                {{ $activeDatasetScopeDesc ?? 'Pusat data terpadu: Relasi otomatis KK & Individu, sensor privasi NIK/KK, filter pivot Excel, dan transliterasi teks resmi BPS-Bappenas.' }}
             </p>
         </div>
 
@@ -132,59 +135,67 @@
                     <div class="flex items-center justify-between border-b border-slate-100 pb-3 shrink-0">
                         <div>
                             <h3 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
-                                <i class="fi fi-rr-settings-sliders"></i> <span>Pengatur Tampilan Kolom Tabel (58 Variabel DTSEN)</span>
+                                <i class="fi fi-rr-settings-sliders"></i> <span>Pengatur Tampilan Kolom Tabel ({{ count($activeColumnsMap) }} Variabel Terdeteksi)</span>
                             </h3>
-                            <p class="text-xs text-slate-500">Centang atau hilangkan centang untuk memilih kolom yang ingin ditampilkan pada tabel.</p>
+                            <p class="text-xs text-slate-500">Centang atau hilangkan centang untuk memilih kolom yang ingin ditampilkan pada tabel data.</p>
                         </div>
                         <button type="button" @click="showColumnModal = false" class="text-slate-400 hover:text-slate-700 font-extrabold text-lg p-1 cursor-pointer">&times;</button>
                     </div>
 
                     <div class="space-y-4 overflow-y-auto pr-2 flex-1 scrollbar-thin max-h-[60vh]">
                         <!-- Group 1: Set Data Anggota Keluarga (Individu) -->
-                        @if(!empty($officialIndividuVars))
-                            <div class="p-3 bg-blue-50/60 rounded-xl border border-blue-200 space-y-2">
-                                <h4 class="text-xs font-black uppercase text-blue-900 flex items-center gap-1.5 border-b border-blue-200 pb-1.5">
-                                    <i class="fi fi-rr-user"></i> Set Data Anggota Keluarga / Individu ({{ count($officialIndividuVars) }} Variabel)
-                                </h4>
+                        <div class="p-3 bg-blue-50/60 rounded-xl border border-blue-200 space-y-2">
+                            <h4 class="text-xs font-black uppercase text-blue-900 flex items-center gap-1.5 border-b border-blue-200 pb-1.5 justify-between">
+                                <span class="flex items-center gap-1.5"><i class="fi fi-rr-user"></i> Set Data Anggota Keluarga / Individu</span>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-blue-100 text-blue-800 font-bold">{{ count($activeIndividuCols ?? []) }} Kolom Aktif</span>
+                            </h4>
+                            @if(!empty($activeIndividuCols) && count($activeIndividuCols) > 0)
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                                    @foreach($officialIndividuVars as $cKey => $cTitle)
+                                    @foreach($activeIndividuCols as $cKey => $cTitle)
                                         <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:bg-blue-100/60 cursor-pointer text-xs font-bold text-slate-800 transition-colors">
                                             <input type="checkbox" id="toggle_col_{{ $cKey }}" name="toggle_col_{{ $cKey }}" aria-label="Tampilkan kolom {{ $cTitle }}" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
                                             <span class="truncate" title="{{ $cTitle }}">{{ $cTitle }}</span>
                                         </label>
                                     @endforeach
                                 </div>
-                            </div>
-                        @endif
+                            @else
+                                <div class="p-3 bg-white/80 rounded-lg border border-dashed border-blue-200 text-slate-500 text-xs flex items-center gap-2 font-medium">
+                                    <i class="fi fi-rr-info text-blue-600"></i> Berkas dataset aktif tidak memuat variabel Set Individu (berfokus pada Set Rumah Tangga).
+                                </div>
+                            @endif
+                        </div>
 
                         <!-- Group 2: Set Data Keluarga -->
-                        @if(!empty($officialKeluargaVars))
-                            <div class="p-3 bg-emerald-50/60 rounded-xl border border-emerald-200 space-y-2">
-                                <h4 class="text-xs font-black uppercase text-emerald-900 flex items-center gap-1.5 border-b border-emerald-200 pb-1.5">
-                                    <i class="fi fi-rr-home"></i> Set Data Keluarga ({{ count($officialKeluargaVars) }} Variabel)
-                                </h4>
+                        <div class="p-3 bg-emerald-50/60 rounded-xl border border-emerald-200 space-y-2">
+                            <h4 class="text-xs font-black uppercase text-emerald-900 flex items-center gap-1.5 border-b border-emerald-200 pb-1.5 justify-between">
+                                <span class="flex items-center gap-1.5"><i class="fi fi-rr-home"></i> Set Data Keluarga / Rumah Tangga</span>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-100 text-emerald-800 font-bold">{{ count($activeKeluargaCols ?? []) }} Kolom Aktif</span>
+                            </h4>
+                            @if(!empty($activeKeluargaCols) && count($activeKeluargaCols) > 0)
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                                    @foreach($officialKeluargaVars as $cKey => $cTitle)
+                                    @foreach($activeKeluargaCols as $cKey => $cTitle)
                                         <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:bg-emerald-100/60 cursor-pointer text-xs font-bold text-slate-800 transition-colors">
                                             <input type="checkbox" id="toggle_col_{{ $cKey }}" name="toggle_col_{{ $cKey }}" aria-label="Tampilkan kolom {{ $cTitle }}" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500">
                                             <span class="truncate" title="{{ $cTitle }}">{{ $cTitle }}</span>
                                         </label>
                                     @endforeach
                                 </div>
-                            </div>
-                        @endif
+                            @else
+                                <div class="p-3 bg-white/80 rounded-lg border border-dashed border-emerald-200 text-slate-500 text-xs flex items-center gap-2 font-medium">
+                                    <i class="fi fi-rr-info text-emerald-600"></i> Berkas dataset aktif tidak memuat variabel Set Keluarga (berfokus pada Set Anggota Keluarga / Individu).
+                                </div>
+                            @endif
+                        </div>
 
                         <!-- Group 3: Variabel Lainnya / Custom -->
-                        @php
-                            $extraCols = array_diff_key($activeColumnsMap, $officialIndividuVars, $officialKeluargaVars);
-                        @endphp
-                        @if(!empty($extraCols))
+                        @if(!empty($activeExtraCols) && count($activeExtraCols) > 0)
                             <div class="p-3 bg-purple-50/60 rounded-xl border border-purple-200 space-y-2">
-                                <h4 class="text-xs font-black uppercase text-purple-900 flex items-center gap-1.5 border-b border-purple-200 pb-1.5">
-                                    <i class="fi fi-rr-thumbtack"></i> Variabel Berkas CSV / Tambahan ({{ count($extraCols) }} Variabel)
+                                <h4 class="text-xs font-black uppercase text-purple-900 flex items-center gap-1.5 border-b border-purple-200 pb-1.5 justify-between">
+                                    <span class="flex items-center gap-1.5"><i class="fi fi-rr-thumbtack"></i> Variabel Dataset Tambahan / Kustom</span>
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-purple-100 text-purple-800 font-bold">{{ count($activeExtraCols) }} Kolom</span>
                                 </h4>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                                    @foreach($extraCols as $cKey => $cTitle)
+                                    @foreach($activeExtraCols as $cKey => $cTitle)
                                         <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:bg-purple-100/60 cursor-pointer text-xs font-bold text-slate-800 transition-colors">
                                             <input type="checkbox" id="toggle_col_{{ $cKey }}" name="toggle_col_{{ $cKey }}" aria-label="Tampilkan kolom {{ $cTitle }}" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-purple-600 rounded border-slate-300 focus:ring-purple-500">
                                             <span class="truncate" title="{{ $cTitle }}">{{ $cTitle }}</span>

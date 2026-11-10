@@ -196,32 +196,15 @@ class DtsenController extends Controller
             self::logActivity('INFO', 'Penerapan Filter Data: ' . implode(' | ', $activeFilterSummaries));
         }
 
-        // Scan folder src-dtsen di root folder project
+        // Scan folder src-dtsen di root folder project dengan verifikasi integritas SHA-256 & deteksi duplikat
         $srcDtsenDir = base_path('src-dtsen');
         if (!file_exists($srcDtsenDir)) {
             @mkdir($srcDtsenDir, 0777, true);
         }
 
-        $srcDtsenFiles = [];
-        if (file_exists($srcDtsenDir) && is_dir($srcDtsenDir)) {
-            $files = array_diff(scandir($srcDtsenDir), ['.', '..', '.gitkeep', '.DS_Store']);
-            foreach ($files as $fName) {
-                $fPath = $srcDtsenDir . DIRECTORY_SEPARATOR . $fName;
-                if (is_file($fPath)) {
-                    $ext = strtolower(pathinfo($fName, PATHINFO_EXTENSION));
-                    $size = filesize($fPath);
-                    $srcDtsenFiles[] = [
-                        'name' => $fName,
-                        'full_path' => $fPath,
-                        'relative_path' => 'src-dtsen/' . $fName,
-                        'extension' => $ext,
-                        'size' => $size,
-                        'size_formatted' => DtsenImportService::formatBytes($size),
-                        'modified_at' => date('d/m/Y H:i', filemtime($fPath)),
-                    ];
-                }
-            }
-        }
+        $allIndividuDict = self::getOfficialIndividuVariables();
+        $allKeluargaDict = self::getOfficialKeluargaVariables();
+        $srcDtsenFiles = \App\Services\DatasetIntegrityService::scanFolderWithIntegrity($srcDtsenDir, $allIndividuDict, $allKeluargaDict);
 
         $page = (int)$request->input('page', 1);
         $perPage = (int)$request->input('per_page', 15);
@@ -268,8 +251,24 @@ class DtsenController extends Controller
                     ?? session('uploaded_file_metrics.original_name');
             }
 
-            // 3. Deteksi Cerdas Berdasarkan Jumlah Baris Aktual (Bukan sembarang ambil file urutan pertama!)
-            if (empty($activeDatasetFile) && !empty($srcDtsenFiles)) {
+            // 3. Validasi Konsistensi Baris: Jangan izinkan file kecil (misal BAST xlsx) menandai 1 juta baris data!
+            $needsResync = false;
+            if (!empty($activeDatasetFile)) {
+                $sName = strtolower($activeDatasetFile);
+                if ($totalSystemRows >= 900000 && $totalSystemRows <= 1100000 && !str_contains($sName, '1_juta') && !str_contains($sName, '1juta') && !str_contains($sName, '1m')) {
+                    $needsResync = true;
+                } elseif ($totalSystemRows >= 12000000 && !str_contains($sName, '13_juta') && !str_contains($sName, '13juta') && !str_contains($sName, '13m')) {
+                    $needsResync = true;
+                } elseif ($totalSystemRows >= 45000 && $totalSystemRows <= 55000 && !str_contains($sName, '50k')) {
+                    $needsResync = true;
+                } elseif ($totalSystemRows <= 600 && (str_contains($sName, '1_juta') || str_contains($sName, '13_juta') || str_contains($sName, '50k'))) {
+                    $needsResync = true;
+                }
+            } else {
+                $needsResync = true;
+            }
+
+            if ($needsResync && !empty($srcDtsenFiles)) {
                 foreach ($srcDtsenFiles as $sf) {
                     $sName = strtolower($sf['name']);
                     if ($totalSystemRows >= 900000 && $totalSystemRows <= 1100000 && (str_contains($sName, '1_juta') || str_contains($sName, '1juta') || str_contains($sName, '1m'))) {
@@ -292,6 +291,11 @@ class DtsenController extends Controller
             if (!empty($activeDatasetFile)) {
                 session(['active_dataset_file' => $activeDatasetFile]);
                 \Illuminate\Support\Facades\Cache::forever('active_dataset_file', $activeDatasetFile);
+                @file_put_contents(database_path('active_dataset.json'), json_encode([
+                    'active_dataset_file' => $activeDatasetFile,
+                    'total_rows' => $totalSystemRows,
+                    'synced_at' => date('Y-m-d H:i:s')
+                ]));
             }
         }
 
@@ -326,6 +330,52 @@ class DtsenController extends Controller
             if (empty($activeColumnsMap)) {
                 $activeColumnsMap = $masterDict;
             }
+        }
+
+        // Evaluasi Lingkup Set Data yang Aktif (Set Individu vs Set Keluarga vs Gabungan Keduanya)
+        $matchedIndividuActive = 0;
+        $matchedKeluargaActive = 0;
+        $activeIndividuCols = [];
+        $activeKeluargaCols = [];
+        $activeExtraCols = [];
+
+        foreach ($activeColumnsMap as $colK => $colTitle) {
+            $norm = DtsenImportService::normalizeHeaderKey($colK)['key'];
+            if (isset($allIndividuDict[$norm]) || isset($allIndividuDict[$colK])) {
+                $matchedIndividuActive++;
+                $activeIndividuCols[$colK] = $colTitle;
+            } elseif (isset($allKeluargaDict[$norm]) || isset($allKeluargaDict[$colK])) {
+                $matchedKeluargaActive++;
+                $activeKeluargaCols[$colK] = $colTitle;
+            } else {
+                $activeExtraCols[$colK] = $colTitle;
+            }
+        }
+
+        if ($matchedIndividuActive > 0 && $matchedKeluargaActive > 0) {
+            $activeDatasetScope = 'gabungan';
+            $activeDatasetScopeLabel = 'Set Terpadu (Keduanya)';
+            $activeDatasetScopeBadge = 'bg-indigo-50 text-indigo-700 border-indigo-200';
+            $activeDatasetScopeIcon = 'fi fi-rr-apps';
+            $activeDatasetScopeDesc = 'Dataset aktif memuat kombinasi data Anggota Keluarga (Individu) dan Rumah Tangga (Keluarga).';
+        } elseif ($matchedIndividuActive > 0 && $matchedKeluargaActive === 0) {
+            $activeDatasetScope = 'individu';
+            $activeDatasetScopeLabel = 'Set Anggota Keluarga (Individu)';
+            $activeDatasetScopeBadge = 'bg-blue-50 text-blue-700 border-blue-200';
+            $activeDatasetScopeIcon = 'fi fi-rr-user';
+            $activeDatasetScopeDesc = 'Dataset aktif berfokus pada data Anggota Keluarga / Individu (NIK, Nama, Pekerjaan, Gaji, dll.).';
+        } elseif ($matchedIndividuActive === 0 && $matchedKeluargaActive > 0) {
+            $activeDatasetScope = 'keluarga';
+            $activeDatasetScopeLabel = 'Set Rumah Tangga (Keluarga)';
+            $activeDatasetScopeBadge = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+            $activeDatasetScopeIcon = 'fi fi-rr-home';
+            $activeDatasetScopeDesc = 'Dataset aktif berfokus pada data Rumah Tangga / Keluarga (No. KK, Desil, Alamat, Fasilitas Hunian, dll.).';
+        } else {
+            $activeDatasetScope = 'kustom';
+            $activeDatasetScopeLabel = 'Set Data Kustom';
+            $activeDatasetScopeBadge = 'bg-slate-100 text-slate-700 border-slate-300';
+            $activeDatasetScopeIcon = 'fi fi-rr-document';
+            $activeDatasetScopeDesc = 'Dataset aktif memuat variabel kustom.';
         }
 
         // Scan folder src-export di root folder project
@@ -588,7 +638,15 @@ class DtsenController extends Controller
             'srcDtsenFiles',
             'srcExportFiles',
             'filteredTotal',
-            'activeDatasetFile'
+            'activeDatasetFile',
+            'activeDatasetScope',
+            'activeDatasetScopeLabel',
+            'activeDatasetScopeBadge',
+            'activeDatasetScopeIcon',
+            'activeDatasetScopeDesc',
+            'activeIndividuCols',
+            'activeKeluargaCols',
+            'activeExtraCols'
         );
 
         return $viewData;
@@ -878,16 +936,32 @@ class DtsenController extends Controller
                 $safeName = $baseName . '_' . date('Ymd_His') . '.' . $ext;
             }
 
+            // Validasi integritas & duplikasi via cryptographic SHA-256 hash
+            $tempPath = $file->getRealPath();
+            $dupCheck = \App\Services\DatasetIntegrityService::checkDuplicateUpload($tempPath, $originalName, $srcDtsenDir);
+            $shaShort = !empty($dupCheck['sha256']) ? substr($dupCheck['sha256'], 0, 12) : '';
+
             $file->move($srcDtsenDir, $safeName);
 
             $userName = \Illuminate\Support\Facades\Auth::check() ? \Illuminate\Support\Facades\Auth::user()->name : 'Pengguna';
+
+            if (!empty($dupCheck['is_duplicate'])) {
+                \App\Services\AuditLogger::log(
+                    'DATASET_DUPLICATE_UPLOADED',
+                    "Pengguna '{$userName}' mengunggah berkas '{$safeName}' yang memiliki hash SHA-256 identik ({$shaShort}) dengan '{$dupCheck['matching_file']}'.",
+                    'WARNING'
+                );
+
+                return redirect()->route('dtsen.files')->with('warning', "Peringatan Duplikasi: Berkas '{$safeName}' berhasil disimpan, namun terdeteksi memiliki isi identik (SHA-256: {$shaShort}...) dengan berkas '{$dupCheck['matching_file']}' yang sudah ada di folder src-dtsen/.");
+            }
+
             \App\Services\AuditLogger::log(
                 'DATASET_UPLOADED',
-                "Pengguna '{$userName}' berhasil mengunggah berkas dataset '{$safeName}' ke folder src-dtsen/.",
+                "Pengguna '{$userName}' berhasil mengunggah berkas dataset '{$safeName}' (SHA-256: {$shaShort}) ke folder src-dtsen/.",
                 'SUCCESS'
             );
 
-            return redirect()->route('dtsen.files')->with('success', "Berkas '{$safeName}' berhasil disimpan ke folder src-dtsen/ dan siap untuk diproses!");
+            return redirect()->route('dtsen.files')->with('success', "Berkas '{$safeName}' (SHA-256: {$shaShort}...) berhasil disimpan ke folder src-dtsen/ dan siap untuk diproses!");
         } catch (\Throwable $e) {
             return back()->with('error', 'Gagal mengunggah berkas: ' . $e->getMessage());
         }
@@ -929,11 +1003,18 @@ class DtsenController extends Controller
             }
         }
 
+        $actualRows = 0;
         if (preg_match('/\[SUMMARY_STATS\]\s*(\{.*\})/', $output, $sm)) {
             $parsedStats = json_decode($sm[1], true);
             if (is_array($parsedStats)) {
                 session(['dataset_summary_stats' => $parsedStats]);
+                if (isset($parsedStats['total_rows'])) {
+                    $actualRows = (int)$parsedStats['total_rows'];
+                }
             }
+        }
+        if ($actualRows === 0 && preg_match('/Impor\s+([0-9.,]+)\s+baris/', $output, $rm)) {
+            $actualRows = (int)str_replace(['.', ','], '', $rm[1]);
         }
 
         if (preg_match('/\[DISTINCT_MAP_JSON\]\s*(\{.*\})/', $output, $dm)) {
@@ -958,7 +1039,7 @@ class DtsenController extends Controller
         \Illuminate\Support\Facades\Cache::forever('active_dataset_file', $fileName);
         @file_put_contents(database_path('active_dataset.json'), json_encode([
             'active_dataset_file' => $fileName,
-            'total_rows' => $totalSystemRows ?? $fileSize ?? 0,
+            'total_rows' => $actualRows > 0 ? $actualRows : ($fileSize ?? 0),
             'imported_at' => date('Y-m-d H:i:s')
         ]));
     }

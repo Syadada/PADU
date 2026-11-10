@@ -180,6 +180,32 @@
                                         </div>
                                     @endif
 
+                                    <!-- Badges: Scope Set Data & Hash Kriptografis SHA-256 -->
+                                    <div class="flex flex-wrap items-center gap-1.5 pt-1">
+                                        @if(!empty($f['scope_label']))
+                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border flex items-center gap-1 {{ $f['scope_badge'] }}">
+                                                <i class="{{ $f['scope_icon'] }}"></i> {{ $f['scope_label'] }}
+                                            </span>
+                                        @endif
+                                        @if(!empty($f['sha256']))
+                                            <span class="px-2 py-0.5 rounded font-mono text-[10px] bg-slate-100 text-slate-600 border border-slate-200" title="Hash SHA-256 Lengkap: {{ $f['sha256'] }}">
+                                                <i class="fi fi-rr-fingerprint text-[9px]"></i> SHA: {{ $f['sha256_short'] }}...
+                                            </span>
+                                        @endif
+                                    </div>
+
+                                    <!-- Deteksi Duplikat Hash -->
+                                    @if(!empty($f['is_duplicate']))
+                                        <div class="p-2 rounded-lg bg-amber-50 border border-amber-300 text-amber-900 text-[10px] font-bold flex items-center gap-1.5">
+                                            <i class="fi fi-rr-triangle-warning text-amber-600 shrink-0"></i>
+                                            <span>Duplikat terdeteksi: Konten identik dengan <strong class="truncate">{{ $f['duplicate_of'] }}</strong></span>
+                                        </div>
+                                    @elseif(!empty($f['has_duplicates']))
+                                        <div class="text-[10px] text-amber-700 font-semibold flex items-center gap-1">
+                                            <i class="fi fi-rr-copy"></i> Memiliki salinan berkas duplikat di folder ini
+                                        </div>
+                                    @endif
+
                                     <div class="flex items-center gap-3 text-[11px] font-mono pt-0.5 text-slate-500">
                                         <span class="px-2 py-0.5 rounded font-bold {{ $isActiveThisFile ? 'bg-emerald-100 text-emerald-900 border border-emerald-300' : 'bg-white text-slate-700 border border-slate-300' }} shadow-2xs">
                                             {{ $f['size_formatted'] }}

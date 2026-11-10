@@ -49,13 +49,26 @@
     </style>
 
     <!-- Header Banner Dashboard -->
-    <div class="p-6 bg-white rounded-2xl border border-slate-400 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="p-6 bg-white rounded-2xl border border-slate-300 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="space-y-1">
-            <h2 class="text-xl font-extrabold text-slate-900 flex items-center gap-2">
-                <span class="p-2 rounded-xl bg-blue-50 text-blue-600 text-lg flex items-center justify-center"><i class="fi fi-rr-apps"></i></span> Dashboard Analitik & Quality Test (DTSEN 2026)
-            </h2>
+            <div class="flex flex-wrap items-center gap-2">
+                <span class="p-2 rounded-xl bg-blue-50 text-blue-600 text-lg flex items-center justify-center"><i class="{{ $activeDatasetScopeIcon ?? 'fi fi-rr-apps' }}"></i></span>
+                <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">
+                    Dashboard Analitik & Quality Test (DTSEN 2026)
+                </h2>
+                @if(!empty($activeDatasetScopeLabel))
+                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold border flex items-center gap-1 {{ $activeDatasetScopeBadge ?? 'bg-indigo-50 text-indigo-700 border-indigo-200' }}">
+                        <i class="{{ $activeDatasetScopeIcon ?? 'fi fi-rr-apps' }}"></i> {{ $activeDatasetScopeLabel }}
+                    </span>
+                @endif
+                @if($totalRows > 0)
+                    <span class="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-800 text-xs font-bold font-mono border border-slate-200">
+                        {{ number_format($totalRows) }} Baris
+                    </span>
+                @endif
+            </div>
             <p class="text-xs text-slate-500 font-medium">
-                Pengolahan Data Adaptif File CSV/XLSX, Relasi Otomatis KK-Individu, & Pengecekan Kualitas Standar Validasi Data.
+                {{ $activeDatasetScopeDesc ?? 'Pengolahan Data Adaptif File CSV/XLSX, Relasi Otomatis KK-Individu, & Pengecekan Kualitas Standar Validasi Data.' }}
             </p>
         </div>
 
@@ -1020,120 +1033,49 @@
                     <thead class="sticky top-0 z-20 bg-slate-100 shadow-xs">
                         <tr class="bg-slate-100 border-b border-slate-200">
                             <th class="px-4 py-3 text-xs font-bold text-slate-700 uppercase tracking-wider bg-slate-100">No</th>
-                            <th class="px-4 py-3 text-xs font-bold text-slate-700 uppercase tracking-wider bg-slate-100">
+                            <!-- QC Status Header dengan Trigger Filter Modal Terpusat -->
+                            <th class="px-4 py-3 text-xs font-bold text-slate-700 uppercase tracking-wider bg-slate-100" style="min-width: 140px; border-left: 1px solid #cbd5e1;">
                                 <div class="flex items-center justify-between gap-2">
                                     <span>QC Status</span>
-                                    <div class="relative" x-data="{ 
-                                        open: false, 
-                                        searchVal: '',
-                                        selectedVals: {{ json_encode(array_values(array_filter(is_array(request('quality_status')) ? request('quality_status') : explode(',', (string)request('quality_status')), fn($v) => $v !== '' && $v !== 'semua'))) }},
-                                        hasVal(val) {
-                                            if (val === null || val === undefined) return false;
-                                            const target = String(val).trim().toLowerCase();
-                                            return this.selectedVals.some(v => String(v).trim().toLowerCase() === target);
-                                        },
-                                        toggleVal(val) {
-                                            if (this.hasVal(val)) {
-                                                const target = String(val).trim().toLowerCase();
-                                                this.selectedVals = this.selectedVals.filter(v => String(v).trim().toLowerCase() !== target);
-                                            } else {
-                                                this.selectedVals.push(val);
-                                            }
-                                        },
-                                        applyFilter() {
-                                            const url = new URL(window.location.href);
-                                            if (this.selectedVals.length > 0) {
-                                                url.searchParams.set('quality_status', this.selectedVals.join(','));
-                                            } else {
-                                                url.searchParams.delete('quality_status');
-                                            }
-                                            url.searchParams.set('page', '1');
-                                            url.hash = 'tabel-data';
-                                            this.open = false;
-                                            window.location.href = url.toString();
-                                        },
-                                        clearFilter() {
-                                            this.selectedVals = [];
-                                            this.searchVal = '';
-                                            const url = new URL(window.location.href);
-                                            url.searchParams.delete('quality_status');
-                                            url.searchParams.set('page', '1');
-                                            url.hash = 'tabel-data';
-                                            this.open = false;
-                                            window.location.href = url.toString();
-                                        }
-                                    }">
-                                        <button type="button" @click.stop="open = !open" 
-                                                class="px-1.5 py-0.5 rounded transition-colors flex items-center gap-1 cursor-pointer"
-                                                :class="selectedVals.length > 0 ? 'bg-blue-600 text-white font-extrabold text-[10px] shadow-xs' : 'text-slate-400 hover:bg-slate-200 hover:text-slate-700'">
-                                            <i class="fi fi-rr-angle-small-down text-[11px]"></i>
-                                            <span x-show="selectedVals.length > 0" class="text-[10px] font-black" x-text="selectedVals.length"></span>
-                                        </button>
-
-                                        <div x-show="open" @click.away="open = false" x-cloak 
-                                             class="absolute left-0 top-full mt-1.5 w-60 max-h-[min(480px,75vh)] bg-white rounded-xl shadow-2xl border border-slate-300 z-50 text-slate-800 normal-case tracking-normal flex flex-col">
-                                            <!-- Sticky Header -->
-                                            <div class="p-3 pb-2 border-b border-slate-200 flex items-center justify-between shrink-0 bg-slate-50 rounded-t-xl gap-2">
-                                                <span class="font-black text-xs text-blue-900 uppercase">Filter: QC Status</span>
-                                                <div class="flex items-center gap-1.5">
-                                                    <button type="button" @click.prevent.stop="applyFilter()" class="px-2 py-0.5 text-[10px] font-black bg-emerald-600 hover:bg-emerald-700 text-white rounded shadow-xs cursor-pointer">
-                                                        Terapkan
-                                                    </button>
-                                                    <button type="button" @click="open = false" class="text-slate-400 hover:text-slate-600 font-bold text-base cursor-pointer px-1">&times;</button>
-                                                </div>
-                                            </div>
-                                            <!-- Scrollable Body -->
-                                            <div class="p-2.5 flex-1 overflow-y-auto min-h-0 space-y-1 text-xs">
-                                                @php $qcItems = ['Valid', 'Warning', 'Critical']; @endphp
-                                                @foreach($qcItems as $qItem)
-                                                    <label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-blue-50 cursor-pointer font-medium text-slate-700 transition-colors border border-transparent hover:border-blue-200"
-                                                           :class="hasVal('{{ $qItem }}') ? 'bg-blue-50 font-bold text-blue-900 border-blue-200' : ''">
-                                                        <input type="checkbox" 
-                                                               :checked="hasVal('{{ $qItem }}')" 
-                                                               @change="toggleVal('{{ $qItem }}')"
-                                                               class="accent-blue-600 rounded cursor-pointer">
-                                                        <span class="truncate text-xs">
-                                                            @if($qItem === 'Valid') <i class="fi fi-rr-check text-emerald-600"></i> Valid @elseif($qItem === 'Warning') <i class="fi fi-rr-triangle-warning text-amber-500"></i> Warning @else <i class="fi fi-rr-cross-circle text-rose-600"></i> Critical @endif
-                                                        </span>
-                                                    </label>
-                                                @endforeach
-                                            </div>
-                                            <!-- Sticky Footer -->
-                                            <div class="p-2.5 px-3 border-t border-slate-200 flex items-center justify-between gap-2 shrink-0 bg-slate-50 rounded-b-xl sticky bottom-0 z-10">
-                                                <button type="button" @click.prevent.stop="clearFilter()" class="px-2.5 py-1 text-[11px] font-bold text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer border border-rose-200">
-                                                    Reset
-                                                </button>
-                                                <button type="button" @click.prevent.stop="applyFilter()" class="px-3.5 py-1 text-xs font-black bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-sm transition-all flex items-center gap-1 cursor-pointer">
-                                                    <i class="fi fi-rr-check"></i> <span>Terapkan</span> <span x-show="selectedVals.length > 0" x-text="'(' + selectedVals.length + ')'"></span>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    @php
+                                        $qsParam = request('quality_status');
+                                        $initialQs = array_values(array_filter(
+                                            is_array($qsParam) ? $qsParam : explode(',', (string)$qsParam), 
+                                            fn($v) => $v !== '' && $v !== 'semua'
+                                        ));
+                                    @endphp
+                                    <button type="button" 
+                                            @click="openColumnFilter('quality_status', 'QC Status', 'qc', ['Valid', 'Warning', 'Critical'], {{ json_encode($initialQs) }})" 
+                                            class="px-1.5 py-0.5 rounded transition-colors flex items-center gap-1 cursor-pointer {{ count($initialQs) > 0 ? 'bg-blue-600 text-white font-extrabold text-[10px] shadow-xs' : 'text-slate-400 hover:bg-slate-200 hover:text-slate-700' }}"
+                                            title="Filter QC Status">
+                                        <i class="fi fi-rr-angle-small-down text-[11px]"></i>
+                                        @if(count($initialQs) > 0)
+                                            <span class="text-[10px] font-black">{{ count($initialQs) }}</span>
+                                        @endif
+                                    </button>
                                 </div>
                             </th>
 
-                            <!-- Header Kolom Dinamis dengan Popover Filter Pivot Excel (Tersedia untuk Seluruh Variabel) -->
+                            <!-- Header Kolom Dinamis dengan Trigger Filter Modal Pivot Excel Terpusat -->
                             @foreach($activeColumnsMap as $colKey => $colTitle)
                                 @php
                                     $reqVal = request($colKey);
-                                    if (empty($reqVal)) {
-                                        $synonymsMap = [
-                                            'jenis_kelamin' => ['gender', 'jk', 'sex'],
-                                            'usia' => ['umur', 'age'],
-                                            'gaji_bulanan' => ['gaji', 'pendapatan', 'income', 'salary'],
-                                            'desil_nasional' => ['desil', 'desil_kesejahteraan'],
-                                            'status_bekerja' => ['pekerjaan', 'status_kerja'],
-                                            'nomor_induk_kependudukan' => ['nik', 'no_nik'],
-                                            'nomor_kartu_keluarga' => ['kk', 'no_kk'],
-                                            'pendidikan' => ['pendidikan_terakhir', 'ijazah_tertinggi_yang_dimiliki'],
-                                            'status_kawin' => ['status_pernikahan'],
-                                        ];
-                                        if (isset($synonymsMap[$colKey])) {
-                                            foreach ($synonymsMap[$colKey] as $syn) {
-                                                if (request()->has($syn) && !empty(request($syn))) {
-                                                    $reqVal = request($syn);
-                                                    break;
-                                                }
+                                    $synonymsMap = [
+                                        'jenis_kelamin' => ['gender', 'jk', 'sex'],
+                                        'usia' => ['umur', 'age'],
+                                        'gaji_bulanan' => ['gaji', 'pendapatan', 'income', 'salary', 'penghasilan'],
+                                        'desil_nasional' => ['desil', 'desil_kesejahteraan'],
+                                        'status_bekerja' => ['pekerjaan', 'status_kerja'],
+                                        'nomor_induk_kependudukan' => ['nik', 'no_nik'],
+                                        'nomor_kartu_keluarga' => ['kk', 'no_kk'],
+                                        'pendidikan' => ['pendidikan_terakhir', 'ijazah_tertinggi_yang_dimiliki'],
+                                        'status_kawin' => ['status_pernikahan'],
+                                    ];
+                                    if (empty($reqVal) && isset($synonymsMap[$colKey])) {
+                                        foreach ($synonymsMap[$colKey] as $syn) {
+                                            if (request()->has($syn) && !empty(request($syn))) {
+                                                $reqVal = request($syn);
+                                                break;
                                             }
                                         }
                                     }
@@ -1141,187 +1083,39 @@
                                         is_array($reqVal) ? $reqVal : explode(',', (string)$reqVal), 
                                         fn($v) => $v !== '' && $v !== 'semua'
                                     ));
+
+                                    $lowerColKey = strtolower($colKey);
+                                    $filterType = 'general';
+                                    if (in_array($lowerColKey, ['usia', 'umur', 'age']) || str_contains($lowerColKey, 'usia') || str_contains($lowerColKey, 'umur')) {
+                                        $filterType = 'age';
+                                    } elseif (in_array($lowerColKey, ['gaji', 'gaji_bulanan', 'pendapatan', 'penghasilan', 'salary', 'income']) || str_contains($lowerColKey, 'gaji') || str_contains($lowerColKey, 'pendapatan')) {
+                                        $filterType = 'salary';
+                                    } elseif (str_contains($lowerColKey, 'desil')) {
+                                        $filterType = 'desil';
+                                    } elseif (in_array($lowerColKey, ['jenis_kelamin', 'gender', 'jk', 'sex'])) {
+                                        $filterType = 'gender';
+                                    } elseif (in_array($lowerColKey, ['nik', 'nomor_induk_kependudukan', 'kk', 'nomor_kartu_keluarga', 'no_nik', 'no_kk', 'id_pelanggan_pln', 'no_telepon', 'nomor_telepon'])) {
+                                        $filterType = 'identity';
+                                    }
                                 @endphp
-                                <th x-show="isColVisible('{{ $colKey }}')" class="px-4 py-3 text-xs font-bold text-slate-700 uppercase tracking-wider whitespace-nowrap relative group bg-slate-100">
+                                <th x-show="isColVisible('{{ $colKey }}')" class="px-4 py-3 text-xs font-bold text-slate-700 tracking-wider whitespace-nowrap relative group bg-slate-100" style="min-width: 175px; padding: 12px 16px; text-align: left; border-left: 1px solid #cbd5e1;">
                                     <div class="flex items-center justify-between gap-2">
-                                        <span>{{ $colTitle }}</span>
+                                        <span class="{{ count($initialSelectedArr) > 0 ? 'text-blue-700 font-extrabold' : '' }}">{{ $colTitle }}</span>
 
-                                         <!-- Tombol Filter Pivot AutoFilter Excel Multi-Select untuk Seluruh Kolom -->
-                                        <div class="relative" x-data="{ 
-                                            open: false, 
-                                            searchVal: '',
-                                            minAgeVal: '',
-                                            maxAgeVal: '',
-                                            selectedVals: {{ json_encode($initialSelectedArr) }},
-                                            hasVal(val) {
-                                                if (val === null || val === undefined) return false;
-                                                const target = String(val).trim().toLowerCase();
-                                                return this.selectedVals.some(v => String(v).trim().toLowerCase() === target);
-                                            },
-                                            toggleVal(val) {
-                                                if (this.hasVal(val)) {
-                                                    const target = String(val).trim().toLowerCase();
-                                                    this.selectedVals = this.selectedVals.filter(v => String(v).trim().toLowerCase() !== target);
-                                                } else {
-                                                    this.selectedVals.push(val);
-                                                }
-                                                console.log('[FILTER UI TOGGLE] Column:', '{{ $colKey }}', 'Toggled:', val, 'SelectedVals:', JSON.parse(JSON.stringify(this.selectedVals)));
-                                            },
-                                            addCustomAgeRange() {
-                                                const min = parseInt(this.minAgeVal);
-                                                const max = parseInt(this.maxAgeVal);
-                                                let rangeStr = '';
-                                                if (!isNaN(min) && !isNaN(max)) {
-                                                    rangeStr = min + ' - ' + max;
-                                                } else if (!isNaN(min)) {
-                                                    rangeStr = '> ' + (min - 1);
-                                                } else if (!isNaN(max)) {
-                                                    rangeStr = '< ' + (max + 1);
-                                                }
-                                                if (rangeStr) {
-                                                    if (!this.hasVal(rangeStr)) {
-                                                        this.selectedVals.push(rangeStr);
-                                                    }
-                                                    this.minAgeVal = '';
-                                                    this.maxAgeVal = '';
-                                                    this.applyFilter();
-                                                }
-                                            },
-                                            selectAll(items) {
-                                                if (this.selectedVals.length >= items.length) {
-                                                    this.selectedVals = [];
-                                                } else {
-                                                    this.selectedVals = [...items];
-                                                }
-                                                console.log('[FILTER UI SELECT ALL] Column:', '{{ $colKey }}', 'SelectedVals:', JSON.parse(JSON.stringify(this.selectedVals)));
-                                            },
-                                            applyFilter(allItems = []) {
-                                                if (this.searchVal.trim() !== '' && this.selectedVals.length === 0 && Array.isArray(allItems)) {
-                                                    const query = this.searchVal.trim().toLowerCase();
-                                                    const matches = allItems.filter(item => String(item).toLowerCase().includes(query));
-                                                    if (matches.length > 0) {
-                                                        this.selectedVals = matches;
-                                                    }
-                                                }
-                                                const url = new URL(window.location.href);
-                                                if (this.selectedVals.length > 0) {
-                                                    url.searchParams.set('{{ $colKey }}', this.selectedVals.join(','));
-                                                } else {
-                                                    url.searchParams.delete('{{ $colKey }}');
-                                                }
-                                                url.searchParams.set('page', '1');
-                                                url.hash = 'tabel-data';
-                                                this.open = false;
-                                                console.log('[FILTER UI APPLY] Column:', '{{ $colKey }}', 'Target URL:', url.toString());
-                                                window.location.href = url.toString();
-                                            },
-                                            clearFilter() {
-                                                this.selectedVals = [];
-                                                this.searchVal = '';
-                                                this.minAgeVal = '';
-                                                this.maxAgeVal = '';
-                                                const url = new URL(window.location.href);
-                                                url.searchParams.delete('{{ $colKey }}');
-                                                url.searchParams.set('page', '1');
-                                                url.hash = 'tabel-data';
-                                                this.open = false;
-                                                console.log('[FILTER UI CLEAR] Column:', '{{ $colKey }}', 'Target URL:', url.toString());
-                                                window.location.href = url.toString();
-                                            }
-                                        }">
-                                            <button type="button" @click.stop="open = !open" 
-                                                    class="px-1.5 py-0.5 rounded transition-colors flex items-center gap-1 cursor-pointer"
-                                                    :class="selectedVals.length > 0 ? 'bg-blue-600 text-white font-extrabold text-[10px] shadow-xs' : 'text-slate-400 hover:bg-slate-200 hover:text-slate-700'">
-                                                <i class="fi fi-rr-angle-small-down text-[11px]"></i>
-                                                <span x-show="selectedVals.length > 0" class="text-[10px] font-black" x-text="selectedVals.length"></span>
-                                            </button>
-
-                                            <!-- Popover Dropdown Filter Pivot Excel Multi-Select (Explicit Constraints) -->
-                                            <div x-show="open" @click.away="open = false" x-cloak 
-                                                 class="absolute top-full mt-1.5 rounded-xl border border-slate-300 text-slate-800 normal-case tracking-normal {{ $loop->index > 3 ? 'right-0' : 'left-0' }}"
-                                                 style="width: 320px; max-width: 90vw; max-height: 480px; box-shadow: 0 10px 30px -5px rgba(0,0,0,0.25); display: flex; flex-direction: column; overflow: hidden; background: #ffffff; z-index: 9999;">
-                                                
-                                                <!-- Sticky Header -->
-                                                <div class="p-3 pb-2 border-b border-slate-200 flex items-center justify-between shrink-0 bg-slate-50 rounded-t-xl gap-2" style="flex-shrink: 0;">
-                                                    <span class="font-black text-xs text-blue-900 uppercase truncate">Filter: {{ $colTitle }}</span>
-                                                    <div class="flex items-center gap-1.5 shrink-0">
-                                                        <button type="button" @click.prevent.stop="applyFilter({{ json_encode($importColumnDistinctValues[$colKey] ?? []) }})" 
-                                                                class="px-2 py-0.5 text-[10px] font-black bg-emerald-600 hover:bg-emerald-700 text-white rounded shadow-xs cursor-pointer"
-                                                                title="Terapkan Filter Sekarang">
-                                                            Terapkan
-                                                        </button>
-                                                        <button type="button" @click="open = false" class="text-slate-400 hover:text-slate-600 font-bold text-base cursor-pointer px-1 leading-none">&times;</button>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Scrollable Content Body -->
-                                                <div class="p-3 flex-1 overflow-y-auto min-h-0 space-y-2.5 scrollbar-thin" style="flex: 1 1 auto; overflow-y: auto;">
-                                                    @if($colKey === 'usia' || $colKey === 'umur')
-                                                        <div class="bg-blue-50/70 p-2.5 rounded-lg border border-blue-200 space-y-2 text-xs">
-                                                            <span class="font-extrabold text-blue-900 text-[11px] uppercase tracking-wide flex items-center gap-1">
-                                                                <i class="fi fi-rr-cake-birthday"></i> <span>Input Rentang Usia (Min - Max)</span>
-                                                            </span>
-                                                            <div class="flex items-center gap-1.5">
-                                                                <input type="number" id="idx_min_age_{{ $colKey }}" name="min_age_{{ $colKey }}" aria-label="Usia Minimum" x-model="minAgeVal" min="0" max="120" placeholder="Min" class="w-1/2 text-xs bg-white border border-slate-300 rounded px-2 py-1 outline-none focus:ring-2 focus:ring-blue-500">
-                                                                <span class="text-slate-400 font-bold text-xs">s.d.</span>
-                                                                <input type="number" id="idx_max_age_{{ $colKey }}" name="max_age_{{ $colKey }}" aria-label="Usia Maksimum" x-model="maxAgeVal" min="0" max="120" placeholder="Max" class="w-1/2 text-xs bg-white border border-slate-300 rounded px-2 py-1 outline-none focus:ring-2 focus:ring-blue-500">
-                                                            </div>
-                                                            <button type="button" @click.prevent.stop="addCustomAgeRange()" class="w-full py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg transition-colors shadow-sm cursor-pointer flex items-center justify-center leading-normal">
-                                                                + Terapkan Rentang Usia
-                                                            </button>
-                                                        </div>
-                                                    @endif
-
-                                                    <input type="text" id="idx_search_val_{{ $colKey }}" name="search_val_{{ $colKey }}" aria-label="Cari nilai {{ $colTitle }}" x-model="searchVal" @keydown.enter.prevent.stop="applyFilter({{ json_encode($importColumnDistinctValues[$colKey] ?? []) }})" placeholder="Cari nilai..." class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 outline-none focus:ring-2 focus:ring-blue-500">
-
-                                                    <div style="max-height: 200px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 0.5rem; padding: 0.25rem; background: #ffffff;">
-                                                        @if(isset($importColumnDistinctValues[$colKey]) && count($importColumnDistinctValues[$colKey]) > 0)
-                                                            <label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-100 cursor-pointer font-bold text-blue-600 border-b border-slate-100 pb-1.5 mb-1">
-                                                                <input type="checkbox" 
-                                                                       id="idx_select_all_{{ $colKey }}"
-                                                                       name="select_all_{{ $colKey }}"
-                                                                       aria-label="Pilih atau hapus semua {{ $colTitle }}"
-                                                                       :checked="selectedVals.length >= {{ count($importColumnDistinctValues[$colKey]) }}" 
-                                                                       @change="selectAll({{ json_encode($importColumnDistinctValues[$colKey]) }})"
-                                                                       class="accent-blue-600 rounded cursor-pointer">
-                                                                <span>(Pilih / Hapus Semua)</span>
-                                                            </label>
-
-                                                            @foreach($importColumnDistinctValues[$colKey] as $dIndex => $dItem)
-                                                                <label x-show="!searchVal || {{ json_encode(strtolower($dItem)) }}.includes(searchVal.toLowerCase())"
-                                                                       class="flex items-center gap-2 px-2 py-1 rounded hover:bg-blue-50 cursor-pointer font-medium text-slate-700 transition-colors"
-                                                                       :class="hasVal({{ json_encode($dItem) }}) ? 'bg-blue-50 font-bold text-blue-900' : ''">
-                                                                    <input type="checkbox" 
-                                                                           id="idx_item_{{ $colKey }}_{{ $dIndex }}"
-                                                                           name="filter_{{ $colKey }}[]"
-                                                                           aria-label="{{ $dItem }}"
-                                                                           :checked="hasVal({{ json_encode($dItem) }})" 
-                                                                           @change="toggleVal({{ json_encode($dItem) }})"
-                                                                           class="accent-blue-600 rounded cursor-pointer">
-                                                                    <span class="truncate text-xs">{{ $dItem }}</span>
-                                                                </label>
-                                                            @endforeach
-                                                        @else
-                                                            <p class="text-xs text-slate-400 italic px-2 py-1">Tidak ada data variasi.</p>
-                                                        @endif
-                                                    </div>
-                                                </div>
-
-                                                <!-- Sticky Pinned Footer -->
-                                                <div style="padding: 0.625rem 0.75rem; border-top: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; flex-shrink: 0; background: #f8fafc;">
-                                                    <button type="button" @click.prevent.stop="clearFilter()" class="px-2.5 py-1.5 text-[11px] font-bold text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer border border-rose-200">
-                                                        Reset
-                                                    </button>
-                                                    <button type="button" @click.prevent.stop="applyFilter({{ json_encode($importColumnDistinctValues[$colKey] ?? []) }})" class="px-3.5 py-1.5 text-xs font-black bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-sm transition-all flex items-center gap-1 cursor-pointer">
-                                                        <i class="fi fi-rr-check"></i> <span>Terapkan</span> <span x-show="selectedVals.length > 0" x-text="'(' + selectedVals.length + ')'"></span>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <button type="button" 
+                                                @click="openColumnFilter('{{ $colKey }}', '{{ addslashes($colTitle) }}', '{{ $filterType }}', {{ json_encode($importColumnDistinctValues[$colKey] ?? []) }}, {{ json_encode($initialSelectedArr) }})" 
+                                                class="px-1.5 py-0.5 rounded transition-all flex items-center gap-1 cursor-pointer {{ count($initialSelectedArr) > 0 ? 'bg-blue-600 text-white font-extrabold text-[10px] shadow-sm' : 'text-slate-400 hover:bg-slate-200 hover:text-slate-700' }}"
+                                                title="Filter Kolom {{ $colTitle }}">
+                                            <i class="fi fi-rr-angle-small-down text-[11px]"></i>
+                                            @if(count($initialSelectedArr) > 0)
+                                                <span class="text-[10px] font-black bg-white text-blue-900 px-1 py-0.2 rounded-full">{{ count($initialSelectedArr) }}</span>
+                                            @endif
+                                        </button>
                                     </div>
                                 </th>
                             @endforeach
-                            <th class="px-4 py-3 text-xs font-bold text-slate-700 uppercase tracking-wider text-center bg-slate-100">Aksi</th>
+
+                            <th class="px-4 py-3 text-xs font-bold text-slate-700 uppercase tracking-wider text-center bg-slate-100" style="min-width: 90px; border-left: 1px solid #cbd5e1;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200">
@@ -1528,6 +1322,252 @@
         </div>
     </div>
 
+    <!-- MODAL POPUP FILTER PIVOT EXCEL (Terpusat, Anti-Offscreen, & Pinned Footer) -->
+    <div x-show="showFilterModal" 
+         x-transition:enter="transition ease-out duration-150"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-100"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         @keydown.escape.window="closeColumnFilter()"
+         class="padu-filter-overlay"
+         style="position: fixed; inset: 0; z-index: 99999; display: flex; align-items: center; justify-content: center; background-color: rgba(15, 23, 42, 0.65); padding: 1rem; backdrop-filter: blur(4px);" 
+         x-cloak>
+        
+        <!-- Backdrop Click to Close -->
+        <div style="position: absolute; inset: 0;" @click="closeColumnFilter()"></div>
+
+        <!-- Modal Dialog Container (Strictly 520px Width Max & Centered) -->
+        <div @click.stop 
+             class="padu-filter-card" 
+             style="position: relative; z-index: 100000; width: 100%; max-width: 520px; max-height: 85vh; background: #ffffff; border-radius: 1rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35); border: 1px solid #e2e8f0; display: flex; flex-direction: column; overflow: hidden; margin: auto;">
+            
+            <!-- Pinned Header -->
+            <div class="padu-filter-header" style="padding: 1rem 1.25rem; background: #f8fafc; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;">
+                <div class="flex items-center gap-3 min-w-0">
+                    <span class="w-9 h-9 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center text-sm font-black shrink-0">
+                        <i class="fi fi-rr-filter"></i>
+                    </span>
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] font-black uppercase tracking-wider text-slate-500">Filter Kolom Tabel</span>
+                            <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-mono" x-text="activeFilterType"></span>
+                        </div>
+                        <h3 class="text-sm font-black text-slate-900 truncate" x-text="activeFilterTitle"></h3>
+                    </div>
+                </div>
+                <button type="button" @click="closeColumnFilter()" class="w-8 h-8 rounded-xl hover:bg-slate-200 text-slate-400 hover:text-slate-700 flex items-center justify-center text-lg font-black transition-colors cursor-pointer">
+                    &times;
+                </button>
+            </div>
+
+            <!-- Scrollable Body with graceful height constraints -->
+            <div class="padu-filter-body" style="flex: 1 1 auto; overflow-y: auto; max-height: calc(85vh - 140px); padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: 0.875rem;">
+                
+                <!-- QC Presets -->
+                <template x-if="activeFilterType === 'qc'">
+                    <div class="space-y-1.5">
+                        <span class="text-[11px] font-bold text-slate-600 block">Pilih Status Validitas:</span>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button type="button" @click="setSingleFilterVal('Valid')" class="p-2.5 rounded-xl border border-emerald-300 bg-emerald-50/70 hover:bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-all">
+                                <i class="fi fi-rr-check"></i> Valid
+                            </button>
+                            <button type="button" @click="setSingleFilterVal('Warning')" class="p-2.5 rounded-xl border border-amber-300 bg-amber-50/70 hover:bg-amber-100 text-amber-800 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-all">
+                                <i class="fi fi-rr-triangle-warning"></i> Warning
+                            </button>
+                            <button type="button" @click="setSingleFilterVal('Critical')" class="p-2.5 rounded-xl border border-rose-300 bg-rose-50/70 hover:bg-rose-100 text-rose-800 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-all">
+                                <i class="fi fi-rr-cross-circle"></i> Critical
+                            </button>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Age Presets & Range -->
+                <template x-if="activeFilterType === 'age'">
+                    <div class="bg-blue-50/80 p-3 rounded-xl border border-blue-200 space-y-2 text-xs">
+                        <span class="font-extrabold text-blue-900 text-[11px] uppercase tracking-wide flex items-center gap-1">
+                            <i class="fi fi-rr-cake-birthday"></i> <span>Preset Rentang Usia Cepat</span>
+                        </span>
+                        <div class="grid grid-cols-2 gap-1.5">
+                            <button type="button" @click="setSingleFilterVal('< 5')" class="px-2 py-1.5 bg-white hover:bg-blue-100 border border-blue-300 rounded-lg text-xs font-bold text-blue-800 transition-colors cursor-pointer text-center">
+                                &lt; 5 Thn (Balita)
+                            </button>
+                            <button type="button" @click="setSingleFilterVal('5 - 17')" class="px-2 py-1.5 bg-white hover:bg-blue-100 border border-blue-300 rounded-lg text-xs font-bold text-blue-800 transition-colors cursor-pointer text-center">
+                                5 - 17 Thn (Anak)
+                            </button>
+                            <button type="button" @click="setSingleFilterVal('18 - 40')" class="px-2 py-1.5 bg-white hover:bg-blue-100 border border-blue-300 rounded-lg text-xs font-bold text-blue-800 transition-colors cursor-pointer text-center">
+                                18 - 40 Thn (Pemuda)
+                            </button>
+                            <button type="button" @click="setSingleFilterVal('41 - 59')" class="px-2 py-1.5 bg-white hover:bg-blue-100 border border-blue-300 rounded-lg text-xs font-bold text-blue-800 transition-colors cursor-pointer text-center">
+                                41 - 59 Thn (Dewasa)
+                            </button>
+                            <button type="button" @click="setSingleFilterVal('>= 60')" class="col-span-2 px-2 py-1.5 bg-white hover:bg-blue-100 border border-blue-300 rounded-lg text-xs font-bold text-blue-800 transition-colors cursor-pointer text-center">
+                                &ge; 60 Thn (Lansia)
+                            </button>
+                        </div>
+                        <div class="pt-2 border-t border-blue-200">
+                            <span class="font-bold text-blue-900 text-[10px] block mb-1">Rentang Usia Kustom:</span>
+                            <div class="flex items-center gap-2">
+                                <input type="number" x-model="filterMinVal" min="0" max="120" placeholder="Min" class="w-1/2 text-xs bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 outline-none focus:ring-2 focus:ring-blue-500">
+                                <span class="text-slate-400 font-bold text-xs">s.d.</span>
+                                <input type="number" x-model="filterMaxVal" min="0" max="120" placeholder="Max" class="w-1/2 text-xs bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 outline-none focus:ring-2 focus:ring-blue-500">
+                                <button type="button" @click="applyFilterRange()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg transition-colors cursor-pointer shrink-0">
+                                    Set
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Salary Presets & Range -->
+                <template x-if="activeFilterType === 'salary'">
+                    <div class="bg-emerald-50/80 p-3 rounded-xl border border-emerald-200 space-y-2 text-xs">
+                        <span class="font-extrabold text-emerald-900 text-[11px] uppercase tracking-wide flex items-center gap-1">
+                            <i class="fi fi-rr-dollar"></i> <span>Preset Rentang Gaji Cepat</span>
+                        </span>
+                        <div class="grid grid-cols-2 gap-1.5">
+                            <button type="button" @click="setSingleFilterVal('< 1.5 Juta')" class="px-2 py-1.5 bg-white hover:bg-emerald-100 border border-emerald-300 rounded-lg text-xs font-bold text-emerald-800 transition-colors cursor-pointer text-center">
+                                &lt; Rp 1.5 Juta
+                            </button>
+                            <button type="button" @click="setSingleFilterVal('1.5 - 3 Juta')" class="px-2 py-1.5 bg-white hover:bg-emerald-100 border border-emerald-300 rounded-lg text-xs font-bold text-emerald-800 transition-colors cursor-pointer text-center">
+                                Rp 1.5 - 3 Juta
+                            </button>
+                            <button type="button" @click="setSingleFilterVal('3 - 5 Juta')" class="px-2 py-1.5 bg-white hover:bg-emerald-100 border border-emerald-300 rounded-lg text-xs font-bold text-emerald-800 transition-colors cursor-pointer text-center">
+                                Rp 3 - 5 Juta
+                            </button>
+                            <button type="button" @click="setSingleFilterVal('5 - 10 Juta')" class="px-2 py-1.5 bg-white hover:bg-emerald-100 border border-emerald-300 rounded-lg text-xs font-bold text-emerald-800 transition-colors cursor-pointer text-center">
+                                Rp 5 - 10 Juta
+                            </button>
+                            <button type="button" @click="setSingleFilterVal('> 10 Juta')" class="col-span-2 px-2 py-1.5 bg-white hover:bg-emerald-100 border border-emerald-300 rounded-lg text-xs font-bold text-emerald-800 transition-colors cursor-pointer text-center">
+                                &gt; Rp 10 Juta
+                            </button>
+                        </div>
+                        <div class="pt-2 border-t border-emerald-200">
+                            <span class="font-bold text-emerald-900 text-[10px] block mb-1">Rentang Nominal Kustom:</span>
+                            <div class="flex items-center gap-2">
+                                <input type="number" x-model="filterMinVal" placeholder="Min Rp" class="w-1/2 text-xs bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 outline-none focus:ring-2 focus:ring-emerald-500">
+                                <span class="text-slate-400 font-bold text-xs">-</span>
+                                <input type="number" x-model="filterMaxVal" placeholder="Max Rp" class="w-1/2 text-xs bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 outline-none focus:ring-2 focus:ring-emerald-500">
+                                <button type="button" @click="applyFilterRange()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition-colors cursor-pointer shrink-0">
+                                    Set
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Desil Presets -->
+                <template x-if="activeFilterType === 'desil'">
+                    <div class="bg-amber-50/80 p-3 rounded-xl border border-amber-200 space-y-2 text-xs">
+                        <span class="font-extrabold text-amber-900 text-[11px] uppercase tracking-wide flex items-center gap-1">
+                            <i class="fi fi-rr-stats"></i> <span>Preset Desil Kesejahteraan</span>
+                        </span>
+                        <div class="grid grid-cols-2 gap-1.5">
+                            <button type="button" @click="setSingleFilterVal('1')" class="px-2 py-1.5 bg-white hover:bg-rose-100 border border-rose-300 rounded-lg text-xs font-bold text-rose-800 transition-colors cursor-pointer text-center">
+                                Desil 1 (Sangat Miskin)
+                            </button>
+                            <button type="button" @click="setSingleFilterVal('1 - 4')" class="px-2 py-1.5 bg-white hover:bg-amber-100 border border-amber-300 rounded-lg text-xs font-bold text-amber-800 transition-colors cursor-pointer text-center">
+                                Desil 1 - 4 (Bansos)
+                            </button>
+                            <button type="button" @click="setSingleFilterVal('5 - 7')" class="px-2 py-1.5 bg-white hover:bg-blue-100 border border-blue-300 rounded-lg text-xs font-bold text-blue-800 transition-colors cursor-pointer text-center">
+                                Desil 5 - 7 (Menengah)
+                            </button>
+                            <button type="button" @click="setSingleFilterVal('8 - 10')" class="px-2 py-1.5 bg-white hover:bg-emerald-100 border border-emerald-300 rounded-lg text-xs font-bold text-emerald-800 transition-colors cursor-pointer text-center">
+                                Desil 8 - 10 (Mampu)
+                            </button>
+                        </div>
+                        <div class="pt-2 border-t border-amber-200">
+                            <span class="font-bold text-amber-900 text-[10px] block mb-1">Pilih Angka Desil:</span>
+                            <div class="grid grid-cols-5 gap-1">
+                                <template x-for="d in [1,2,3,4,5,6,7,8,9,10]" :key="d">
+                                    <button type="button" @click="toggleFilterVal(String(d))" 
+                                            class="py-1 rounded-lg text-xs font-black transition-colors cursor-pointer border"
+                                            :class="hasFilterVal(String(d)) ? 'bg-amber-600 text-white border-amber-600 shadow-xs' : 'bg-white hover:bg-amber-100 text-slate-700 border-slate-200'"
+                                            x-text="'D' + d">
+                                    </button>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Gender Presets -->
+                <template x-if="activeFilterType === 'gender'">
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <button type="button" @click="setSingleFilterVal('Laki-laki')" class="p-2.5 rounded-xl border border-blue-300 bg-blue-50/70 hover:bg-blue-100 text-blue-900 text-xs font-black flex items-center justify-center gap-1.5 cursor-pointer transition-all">
+                            <i class="fi fi-rr-user"></i> Laki-laki
+                        </button>
+                        <button type="button" @click="setSingleFilterVal('Perempuan')" class="p-2.5 rounded-xl border border-pink-300 bg-pink-50/70 hover:bg-pink-100 text-pink-900 text-xs font-black flex items-center justify-center gap-1.5 cursor-pointer transition-all">
+                            <i class="fi fi-rr-user"></i> Perempuan
+                        </button>
+                    </div>
+                </template>
+
+                <!-- Search input box -->
+                <div class="relative">
+                    <input type="text" 
+                           x-model="filterSearchVal" 
+                           @keydown.enter.prevent="applyActiveFilter()"
+                           :placeholder="'Cari / filter kata kunci ' + activeFilterTitle + '...'"
+                           class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 pl-9 pr-8 outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+                    <i class="fi fi-rr-search absolute left-3 top-3 text-slate-400 text-xs"></i>
+                    <button type="button" x-show="filterSearchVal" @click="filterSearchVal = ''" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 text-sm font-bold cursor-pointer">
+                        &times;
+                    </button>
+                </div>
+
+                <!-- Distinct Values Checkbox List (Strictly Contained with 220px max-height scroll) -->
+                <div class="padu-filter-list" style="max-height: 220px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 0.75rem; background: #ffffff;">
+                    <div class="p-2.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs font-bold text-slate-700 sticky top-0 z-10">
+                        <button type="button" @click="selectAllFilterVals()" class="text-blue-600 hover:text-blue-800 flex items-center gap-1.5 cursor-pointer">
+                            <i class="fi fi-rr-check-double"></i>
+                            <span x-text="filterSelectedVals.length >= filterDistinctValues.length && filterDistinctValues.length > 0 ? 'Batalkan Semua' : 'Pilih Semua (' + filterDistinctValues.length + ')'"></span>
+                        </button>
+                        <span class="text-[11px] font-mono text-slate-500" x-text="filterSelectedVals.length + ' dipilih'"></span>
+                    </div>
+
+                    <div style="padding: 0.5rem; display: flex; flex-direction: column; gap: 0.25rem;">
+                        <template x-for="(item, idx) in filterDistinctValues.filter(v => !filterSearchVal || String(v).toLowerCase().includes(filterSearchVal.toLowerCase()))" :key="idx">
+                            <label class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg hover:bg-blue-50 cursor-pointer font-medium text-slate-800 transition-colors"
+                                   :class="hasFilterVal(item) ? 'bg-blue-50/90 font-bold text-blue-900 border border-blue-200' : 'border border-transparent'">
+                                <input type="checkbox" 
+                                       :checked="hasFilterVal(item)" 
+                                       @change="toggleFilterVal(item)"
+                                       class="accent-blue-600 rounded cursor-pointer w-4 h-4">
+                                <span class="truncate text-xs" x-text="item"></span>
+                            </label>
+                        </template>
+
+                        <div x-show="filterDistinctValues.length === 0" class="py-6 text-center text-slate-400 text-xs">
+                            <i class="fi fi-rr-info text-base block mb-1"></i>
+                            Filter teks fleksibel aktif. Ketik nilai di kolom input di atas lalu tekan Terapkan.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Pinned Footer: ALWAYS 100% visible -->
+            <div class="padu-filter-footer" style="padding: 0.875rem 1.25rem; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-shrink: 0;">
+                <button type="button" @click="clearActiveFilter()" class="px-3.5 py-2 text-xs font-bold text-rose-600 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer border border-rose-200 flex items-center gap-1.5">
+                    <i class="fi fi-rr-trash"></i> <span>Reset Filter</span>
+                </button>
+                <div class="flex items-center gap-2">
+                    <button type="button" @click="closeColumnFilter()" class="px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-200 rounded-xl transition-colors cursor-pointer">
+                        Batal
+                    </button>
+                    <button type="button" @click="applyActiveFilter()" class="px-5 py-2 text-xs font-black bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-md transition-all flex items-center gap-1.5 cursor-pointer">
+                        <i class="fi fi-rr-check"></i>
+                        <span>Terapkan Filter</span>
+                        <span x-show="filterSelectedVals.length > 0" class="px-1.5 py-0.2 rounded-full bg-white text-emerald-800 font-extrabold text-[10px]" x-text="filterSelectedVals.length"></span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
     <!-- Modals are globally handled in layouts/modals.blade.php -->
 </div>
 
@@ -1549,6 +1589,128 @@ function dtsenApp() {
         showColumnModal: false,
         previewData: null,
         visibleCols: validSavedCols.length > 0 ? validSavedCols : [...allColKeys],
+
+        // State Filter Kolom Pivot Modal (Terpusat, Anti-Offscreen, & Pinned Footer)
+        showFilterModal: false,
+        activeFilterCol: null,
+        activeFilterTitle: '',
+        activeFilterType: 'general',
+        filterSearchVal: '',
+        filterMinVal: '',
+        filterMaxVal: '',
+        filterSelectedVals: [],
+        filterDistinctValues: [],
+
+        openColumnFilter(colKey, colTitle, filterType = 'general', distinctVals = [], currentVals = []) {
+            this.activeFilterCol = colKey;
+            this.activeFilterTitle = colTitle;
+            this.activeFilterType = filterType;
+            this.filterDistinctValues = Array.isArray(distinctVals) ? distinctVals : [];
+            this.filterSelectedVals = Array.isArray(currentVals) ? [...currentVals] : [];
+            this.filterSearchVal = (this.filterSelectedVals.length === 1) ? this.filterSelectedVals[0] : '';
+            this.filterMinVal = '';
+            this.filterMaxVal = '';
+            this.showFilterModal = true;
+        },
+
+        closeColumnFilter() {
+            this.showFilterModal = false;
+            this.activeFilterCol = null;
+        },
+
+        hasFilterVal(val) {
+            if (val === null || val === undefined) return false;
+            const target = String(val).trim().toLowerCase();
+            return this.filterSelectedVals.some(v => String(v).trim().toLowerCase() === target);
+        },
+
+        toggleFilterVal(val) {
+            if (this.hasFilterVal(val)) {
+                const target = String(val).trim().toLowerCase();
+                this.filterSelectedVals = this.filterSelectedVals.filter(v => String(v).trim().toLowerCase() !== target);
+            } else {
+                this.filterSelectedVals.push(String(val).trim());
+            }
+        },
+
+        selectAllFilterVals() {
+            if (this.filterSelectedVals.length >= this.filterDistinctValues.length) {
+                this.filterSelectedVals = [];
+            } else {
+                this.filterSelectedVals = this.filterDistinctValues.map(v => String(v).trim());
+            }
+        },
+
+        setSingleFilterVal(val) {
+            this.filterSelectedVals = [String(val).trim()];
+            this.applyActiveFilter();
+        },
+
+        applyFilterRange() {
+            let min = parseInt(this.filterMinVal);
+            let max = parseInt(this.filterMaxVal);
+            let rangeStr = '';
+            if (!isNaN(min) && !isNaN(max)) {
+                rangeStr = min + ' - ' + max;
+            } else if (!isNaN(min)) {
+                rangeStr = '> ' + (min - 1);
+            } else if (!isNaN(max)) {
+                rangeStr = '< ' + (max + 1);
+            }
+            if (rangeStr) {
+                this.filterSelectedVals = [rangeStr];
+                this.applyActiveFilter();
+            }
+        },
+
+        applyActiveFilter() {
+            if (!this.activeFilterCol) return;
+            const textQuery = this.filterSearchVal.trim();
+            if (textQuery !== '') {
+                if (this.filterSelectedVals.length === 0) {
+                    this.filterSelectedVals = [textQuery];
+                } else if (!this.filterSelectedVals.some(v => String(v).toLowerCase() === textQuery.toLowerCase())) {
+                    this.filterSelectedVals.push(textQuery);
+                }
+            }
+            const url = new URL(window.location.href);
+            if (this.filterSelectedVals.length > 0) {
+                url.searchParams.set(this.activeFilterCol, this.filterSelectedVals.join(','));
+            } else {
+                url.searchParams.delete(this.activeFilterCol);
+            }
+            url.searchParams.set('page', '1');
+            url.hash = 'tabel-data';
+            this.showFilterModal = false;
+            window.location.href = url.toString();
+        },
+
+        clearActiveFilter() {
+            if (!this.activeFilterCol) return;
+            const url = new URL(window.location.href);
+            url.searchParams.delete(this.activeFilterCol);
+            
+            const synonyms = {
+                'jenis_kelamin': ['gender', 'jk', 'sex'],
+                'usia': ['umur', 'age'],
+                'gaji_bulanan': ['gaji', 'pendapatan', 'income', 'salary', 'penghasilan'],
+                'desil_nasional': ['desil', 'desil_kesejahteraan'],
+                'status_bekerja': ['pekerjaan', 'status_kerja'],
+                'nomor_induk_kependudukan': ['nik', 'no_nik'],
+                'nomor_kartu_keluarga': ['kk', 'no_kk'],
+                'pendidikan': ['pendidikan_terakhir', 'ijazah_tertinggi_yang_dimiliki'],
+                'status_kawin': ['status_pernikahan'],
+                'quality_status': ['quality_status']
+            };
+            if (synonyms[this.activeFilterCol]) {
+                synonyms[this.activeFilterCol].forEach(s => url.searchParams.delete(s));
+            }
+
+            url.searchParams.set('page', '1');
+            url.hash = 'tabel-data';
+            this.showFilterModal = false;
+            window.location.href = url.toString();
+        },
 
         formatEta(sec) {
             if (!sec || sec <= 0) return '5 detik';

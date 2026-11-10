@@ -35,13 +35,18 @@
     <!-- Header Banner Modul -->
     <div class="p-5 sm:p-6 bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="space-y-1">
-            <div class="flex items-center gap-2">
+            <div class="flex flex-wrap items-center gap-2">
                 <span class="p-2 rounded-xl bg-emerald-50 text-emerald-600 text-lg font-bold flex items-center justify-center"><i class="fi fi-rr-dollar"></i></span>
                 <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">
                     Analisis Finansial & Pencarian Gaji Subjek
                 </h2>
-                <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold font-mono">
-                    Dynamic Dataset Query
+                @if(!empty($activeDatasetScopeLabel))
+                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold border flex items-center gap-1 {{ $activeDatasetScopeBadge ?? 'bg-indigo-50 text-indigo-700 border-indigo-200' }}">
+                        <i class="{{ $activeDatasetScopeIcon ?? 'fi fi-rr-apps' }}"></i> {{ $activeDatasetScopeLabel }}
+                    </span>
+                @endif
+                <span class="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-800 text-xs font-bold font-mono border border-slate-200">
+                    {{ number_format($records->total()) }} Baris
                 </span>
             </div>
             <p class="text-xs text-slate-500 font-medium">
@@ -386,42 +391,54 @@
 
                     <div class="space-y-4 overflow-y-auto pr-2 flex-1 scrollbar-thin max-h-[60vh]">
                         <!-- Group 1: Set Data Individu -->
-                        @if(!empty($officialIndividuVars))
-                            <div class="p-3 bg-blue-50/60 rounded-xl border border-blue-200 space-y-2">
-                                <h4 class="text-xs font-black uppercase text-blue-900 flex items-center gap-1.5 border-b border-blue-200 pb-1.5">
-                                    <i class="fi fi-rr-user"></i> Set Data Anggota Keluarga / Individu ({{ count($officialIndividuVars) }} Variabel)
-                                </h4>
+                        <div class="p-3 bg-blue-50/60 rounded-xl border border-blue-200 space-y-2">
+                            <h4 class="text-xs font-black uppercase text-blue-900 flex items-center gap-1.5 border-b border-blue-200 pb-1.5 justify-between">
+                                <span class="flex items-center gap-1.5"><i class="fi fi-rr-user"></i> Set Data Anggota Keluarga / Individu</span>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-blue-100 text-blue-800 font-bold">{{ count($activeIndividuCols ?? []) }} Kolom Aktif</span>
+                            </h4>
+                            @php
+                                $individuSelectables = array_filter($selectableColKeys, fn($k) => isset($officialIndividuVars[$k]));
+                            @endphp
+                            @if(!empty($individuSelectables))
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                                    @foreach($officialIndividuVars as $cKey => $cTitle)
-                                        @if(in_array($cKey, $selectableColKeys))
-                                            <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:bg-blue-100/60 cursor-pointer text-xs font-bold text-slate-800 transition-colors">
-                                                <input type="checkbox" id="toggle_salary_col_{{ $cKey }}" name="toggle_col_{{ $cKey }}" aria-label="Tampilkan kolom {{ $cTitle }}" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
-                                                <span class="truncate" title="{{ $cTitle }}">{{ $cTitle }}</span>
-                                            </label>
-                                        @endif
+                                    @foreach($individuSelectables as $cKey)
+                                        <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:bg-blue-100/60 cursor-pointer text-xs font-bold text-slate-800 transition-colors">
+                                            <input type="checkbox" id="toggle_salary_col_{{ $cKey }}" name="toggle_col_{{ $cKey }}" aria-label="Tampilkan kolom {{ $officialIndividuVars[$cKey] ?? $cKey }}" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                                            <span class="truncate" title="{{ $officialIndividuVars[$cKey] ?? $cKey }}">{{ $officialIndividuVars[$cKey] ?? $cKey }}</span>
+                                        </label>
                                     @endforeach
                                 </div>
-                            </div>
-                        @endif
+                            @else
+                                <div class="p-3 bg-white/80 rounded-lg border border-dashed border-blue-200 text-slate-500 text-xs flex items-center gap-2 font-medium">
+                                    <i class="fi fi-rr-info text-blue-600"></i> Berkas dataset aktif tidak memuat variabel Set Individu.
+                                </div>
+                            @endif
+                        </div>
 
                         <!-- Group 2: Set Data Keluarga -->
-                        @if(!empty($officialKeluargaVars))
-                            <div class="p-3 bg-emerald-50/60 rounded-xl border border-emerald-200 space-y-2">
-                                <h4 class="text-xs font-black uppercase text-emerald-900 flex items-center gap-1.5 border-b border-emerald-200 pb-1.5">
-                                    <i class="fi fi-rr-home"></i> Set Data Keluarga ({{ count($officialKeluargaVars) }} Variabel)
-                                </h4>
+                        <div class="p-3 bg-emerald-50/60 rounded-xl border border-emerald-200 space-y-2">
+                            <h4 class="text-xs font-black uppercase text-emerald-900 flex items-center gap-1.5 border-b border-emerald-200 pb-1.5 justify-between">
+                                <span class="flex items-center gap-1.5"><i class="fi fi-rr-home"></i> Set Data Keluarga / Rumah Tangga</span>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-100 text-emerald-800 font-bold">{{ count($activeKeluargaCols ?? []) }} Kolom Aktif</span>
+                            </h4>
+                            @php
+                                $keluargaSelectables = array_filter($selectableColKeys, fn($k) => isset($officialKeluargaVars[$k]));
+                            @endphp
+                            @if(!empty($keluargaSelectables))
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                                    @foreach($officialKeluargaVars as $cKey => $cTitle)
-                                        @if(in_array($cKey, $selectableColKeys))
-                                            <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:bg-emerald-100/60 cursor-pointer text-xs font-bold text-slate-800 transition-colors">
-                                                <input type="checkbox" id="toggle_salary_col_{{ $cKey }}" name="toggle_col_{{ $cKey }}" aria-label="Tampilkan kolom {{ $cTitle }}" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500">
-                                                <span class="truncate" title="{{ $cTitle }}">{{ $cTitle }}</span>
-                                            </label>
-                                        @endif
+                                    @foreach($keluargaSelectables as $cKey)
+                                        <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:bg-emerald-100/60 cursor-pointer text-xs font-bold text-slate-800 transition-colors">
+                                            <input type="checkbox" id="toggle_salary_col_{{ $cKey }}" name="toggle_col_{{ $cKey }}" aria-label="Tampilkan kolom {{ $officialKeluargaVars[$cKey] ?? $cKey }}" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500">
+                                            <span class="truncate" title="{{ $officialKeluargaVars[$cKey] ?? $cKey }}">{{ $officialKeluargaVars[$cKey] ?? $cKey }}</span>
+                                        </label>
                                     @endforeach
                                 </div>
-                            </div>
-                        @endif
+                            @else
+                                <div class="p-3 bg-white/80 rounded-lg border border-dashed border-emerald-200 text-slate-500 text-xs flex items-center gap-2 font-medium">
+                                    <i class="fi fi-rr-info text-emerald-600"></i> Berkas dataset aktif tidak memuat variabel Set Keluarga.
+                                </div>
+                            @endif
+                        </div>
 
                         <!-- Group 3: Variabel Tambahan Dataset Lainnya -->
                         @php
