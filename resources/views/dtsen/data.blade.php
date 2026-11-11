@@ -234,8 +234,13 @@
                     <span class="w-8 h-8 rounded-lg {{ $isFiltered ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-700' }} flex items-center justify-center font-black text-sm shrink-0">
                         <i class="fi fi-rr-stats"></i>
                     </span>
-                    <div class="text-xs text-slate-700">
+                    <div class="text-xs text-slate-700 flex flex-wrap items-center gap-1.5">
                         <span>Ditemukan <strong class="text-blue-700 text-sm font-black">{{ number_format($records->total()) }}</strong> data</span>
+                        @if(isset($totalKk) && $totalKk > 0 && $totalKk < $records->total())
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-200 font-extrabold text-[11px] shadow-2xs" title="Jumlah Nomor Kartu Keluarga (KK) unik tanpa perulangan anggota keluarga">
+                                <i class="fi fi-rr-users-alt text-xs"></i> <span>{{ number_format($totalKk) }} KK Unik</span>
+                            </span>
+                        @endif
                         <span class="text-slate-500 font-normal"> (Menampilkan baris <strong>{{ number_format($records->firstItem() ?: 0) }}</strong> &ndash; <strong>{{ number_format($records->lastItem() ?: 0) }}</strong>)</span>
                         <span class="text-slate-400 font-normal"> dari total <strong>{{ number_format($totalSystemRows ?? $totalRows) }}</strong> data terdaftar di sistem.</span>
                     </div>
