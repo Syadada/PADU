@@ -61,95 +61,91 @@ def parse_semantic_nlq(search_str, existing_cols, table_ref):
     tags = []
     is_kk_scope = False
     
-    # Text to strip for residual detection
     cleaned_for_residuals = q_low
 
     def strip_from_residual(pattern):
         nonlocal cleaned_for_residuals
         cleaned_for_residuals = re.sub(pattern, ' ', cleaned_for_residuals)
 
-    # Check for KK Scope trigger
+    def find_col(hints):
+        for hint in hints:
+            if hint in col_map:
+                return col_map[hint]
+        for hint in hints:
+            for c_low, c_orig in col_map.items():
+                if hint == c_low or hint in c_low:
+                    return c_orig
+        return None
+
+    def find_all_cols(hints):
+        matched = []
+        for hint in hints:
+            for c_low, c_orig in col_map.items():
+                if (hint == c_low or hint in c_low) and c_orig not in matched:
+                    matched.append(c_orig)
+        return matched
+
+    # 0. Check for KK Scope trigger
     if any(k in q_low for k in ['per kk', 'dalam satu kk', 'per keluarga', 'tiap kk', 'tiap keluarga', 'dalam 1 kk', '1 kk', 'satu kk']):
         is_kk_scope = True
         strip_from_residual(r'\b(?:per|dalam|tiap|satu)?\s*(?:kk|keluarga|rumah\s*tangga)\b')
 
-    # Wilayah Columns
-    wilayah_cols = []
-    for hint in ['kecamatan', 'kabupaten_kota', 'kabupaten', 'provinsi', 'desa_kelurahan', 'desa', 'kelurahan', 'alamat']:
-        for c_low, c_orig in col_map.items():
-            if hint == c_low or hint in c_low:
-                if c_orig not in wilayah_cols:
-                    wilayah_cols.append(c_orig)
+    # 1. Gaji & Omzet Usaha FIRST (so "di atas 10 juta" doesn't get consumed by "di <wilayah>")
+    gaji_col = find_col(['gaji_bulanan', 'gaji', 'omzet_usaha_utama', 'penghasilan', 'pendapatan'])
+    gaji_match = re.search(r'(?:gaji|penghasilan|pendapatan|omzet)?\s*(?:di\s+atas|lebih\s+dari|>=|>|minimal|paling\s+sedikit)?\s*(\d+(?:[.,]\d+)?)\s*(juta|jt|ribu|rb)\b', q_low)
+    if gaji_match and any(k in q_low for k in ['gaji', 'omzet', 'penghasilan', 'pendapatan', 'juta', 'jt', 'ribu', 'rb']):
+        raw_num = float(gaji_match.group(1).replace(',', '.'))
+        unit = (gaji_match.group(2) or '').lower()
+        if unit in ('juta', 'jt'):
+            gaji_val = raw_num * 1000000
+        elif unit in ('ribu', 'rb'):
+            gaji_val = raw_num * 1000
+        else:
+            gaji_val = raw_num if raw_num > 10000 else raw_num * 1000000
+        
+        if gaji_col:
+            clauses.append(f'COALESCE(TRY_CAST("{gaji_col}" AS DOUBLE), 0) >= {gaji_val}')
+            tags.append(f'Pendapatan: ≥ Rp {int(gaji_val):,}')
+        else:
+            tags.append(f'Pendapatan: ≥ Rp {int(gaji_val):,} (Kolom N/A)')
+        strip_from_residual(re.escape(gaji_match.group(0)))
+        strip_from_residual(r'\b(?:di\s+atas|lebih\s+dari)\b')
 
-    # 1. Wilayah / Lokasi explicit: "di wilayah X", "di kecamatan X", "wilayah X", "di X"
-    w_match = re.search(r'\b(?:di\s+wilayah|di\s+daerah|di\s+kecamatan|di\s+kabupaten|di\s+kota|di\s+desa|di\s+kelurahan|wilayah|daerah|kecamatan|kabupaten|desa|kelurahan)\s+([a-z0-9\s]+?)(?:(?=\s+(?:dan|dengan|yang|status|gaji|pendidikan|desil|kk|umur|usia|$))|$)', q_low)
+    # 2. Wilayah / Lokasi Explicit
+    wilayah_cols = find_all_cols(['kecamatan', 'kabupaten_kota', 'kabupaten', 'kota', 'provinsi', 'desa_kelurahan', 'kelurahan_desa', 'desa', 'kelurahan', 'alamat'])
     
+    w_match = re.search(r'\b(?:di\s+wilayah|di\s+daerah|di\s+kecamatan|di\s+kabupaten|di\s+kota|di\s+desa|di\s+kelurahan|wilayah|daerah|kecamatan|kabupaten|desa|kelurahan)\s+([a-z0-9\s]+?)(?:(?=\s+(?:dan|dengan|yang|status|gaji|pendidikan|desil|kk|umur|usia|punya|atap|dinding|lantai|$))|$)', q_low)
     found_wilayah = None
     if w_match:
         raw_val = w_match.group(1).strip()
-        if raw_val and len(raw_val) >= 2 and raw_val not in ('yang', 'dan', 'dengan', 'ada'):
+        if raw_val and len(raw_val) >= 2 and not raw_val.startswith(('atas', 'bawah', 'antara', 'luar', 'dalam', 'yang', 'dan', 'dengan', 'ada')):
             found_wilayah = raw_val
             strip_from_residual(re.escape(w_match.group(0)))
     
     if not found_wilayah:
-        di_match = re.search(r'\bdi\s+([a-z0-9\s]+?)(?:(?=\s+(?:dan|dengan|yang|status|gaji|pendidikan|desil|kk|umur|usia|$))|$)', q_low)
+        di_match = re.search(r'\bdi\s+([a-z0-9\s]+?)(?:(?=\s+(?:dan|dengan|yang|status|gaji|pendidikan|desil|kk|umur|usia|punya|atap|dinding|lantai|$))|$)', q_low)
         if di_match:
             raw_val = di_match.group(1).strip()
-            if raw_val and len(raw_val) >= 2 and raw_val not in ('bawah', 'atas', 'antara', 'luar', 'dalam', 'yang', 'dan', 'dengan'):
+            if raw_val and len(raw_val) >= 2 and not raw_val.startswith(('atas', 'bawah', 'antara', 'luar', 'dalam', 'samping', 'yang', 'dan', 'dengan')):
                 found_wilayah = raw_val
                 strip_from_residual(re.escape(di_match.group(0)))
 
     if found_wilayah and wilayah_cols:
         clean_w = found_wilayah.replace("'", "''")
         no_space_w = clean_w.replace(" ", "")
-        
-        w_terms = []
-        for wc in wilayah_cols:
-            w_terms.append(f'LOWER(CAST("{wc}" AS VARCHAR)) LIKE \'%{clean_w}%\'')
-            if len(clean_w.split()) > 1:
-                w_terms.append(f'REPLACE(LOWER(CAST("{wc}" AS VARCHAR)), \' \', \'\') LIKE \'%{no_space_w}%\'')
-        
+        w_terms = [f'LOWER(CAST("{wc}" AS VARCHAR)) LIKE \'%{clean_w}%\'' for wc in wilayah_cols]
+        if len(clean_w.split()) > 1:
+            w_terms.extend([f'REPLACE(LOWER(CAST("{wc}" AS VARCHAR)), \' \', \'\') LIKE \'%{no_space_w}%\'' for wc in wilayah_cols])
         if w_terms:
             clauses.append('(' + ' OR '.join(w_terms) + ')')
             tags.append(f'Wilayah: {found_wilayah.title()}')
+    elif found_wilayah:
+        strip_from_residual(re.escape(found_wilayah))
 
-    # 2. Livestock / Sapi (e.g. "100 sapi", "sapi >= 100", "sapi 100", "sapi")
-    sapi_match = re.search(r'(\d+)\s*(?:ekor\s*)?(?:sapi|lembu|ternak)|(?:sapi|lembu|ternak)\s*(?:>=|>|minimal|di atas|sebanyak|punya)?\s*(\d+)', q_low)
-    sapi_col = None
-    for hint in ['jumlah_sapi', 'sapi', 'ternak_sapi', 'ternak', 'aset']:
-        for c_low, c_orig in col_map.items():
-            if hint in c_low:
-                sapi_col = c_orig
-                break
-        if sapi_col: break
-
-    if sapi_col:
-        if sapi_match:
-            val = sapi_match.group(1) or sapi_match.group(2)
-            if is_kk_scope or 'kk' in q_low or 'keluarga' in q_low:
-                having_clauses.append(f'MAX(COALESCE(TRY_CAST("{sapi_col}" AS DOUBLE), 0)) >= {val}')
-                tags.append(f'Aset Sapi KK: ≥ {val} ekor')
-                is_kk_scope = True
-            else:
-                clauses.append(f'COALESCE(TRY_CAST("{sapi_col}" AS DOUBLE), 0) >= {val}')
-                tags.append(f'Sapi: ≥ {val} ekor')
-            strip_from_residual(re.escape(sapi_match.group(0)))
-        elif 'sapi' in q_low or 'ternak' in q_low:
-            clauses.append(f'COALESCE(TRY_CAST("{sapi_col}" AS DOUBLE), 0) > 0')
-            tags.append('Memiliki Ternak Sapi')
-            strip_from_residual(r'\b(sapi|ternak)\b')
-
-    # 3. Gender & Count in KK or Individual
+    # 3. Gender & Count in KK / Individual
     p_num = re.search(r'(?:minimal|paling sedikit|di atas|>=)?\s*(\d+)\s*(?:orang\s*)?(?:perempuan|wanita)', q_low)
     l_num = re.search(r'(?:minimal|paling sedikit|di atas|>=)?\s*(\d+)\s*(?:orang\s*)?(?:laki|pria)', q_low)
-    
-    jk_col = None
-    for hint in ['jenis_kelamin', 'jk', 'gender']:
-        for c_low, c_orig in col_map.items():
-            if hint in c_low:
-                jk_col = c_orig
-                break
-        if jk_col: break
+    jk_col = find_col(['jenis_kelamin', 'jk', 'gender'])
 
     if jk_col:
         if p_num and (is_kk_scope or 'kk' in q_low or 'keluarga' in q_low):
@@ -170,7 +166,6 @@ def parse_semantic_nlq(search_str, existing_cols, table_ref):
             is_kk_scope = True
             strip_from_residual(r'\b(?:perempuan|wanita)\s+per\s+kk\b')
         else:
-            # Individual Gender Filter
             m_p = re.search(r'\b(perempuan|wanita|cewek|ibu)\b', q_low)
             m_l = re.search(r'\b(laki|laki-laki|pria|cowok|bapak)\b', q_low)
             if m_p and not m_l:
@@ -181,207 +176,490 @@ def parse_semantic_nlq(search_str, existing_cols, table_ref):
                 clauses.append(f'LOWER(CAST("{jk_col}" AS VARCHAR)) LIKE \'%laki%\'')
                 tags.append('Jenis Kelamin: Laki-laki')
                 strip_from_residual(r'\b(laki|laki-laki|pria|cowok|bapak)\b')
+    else:
+        strip_from_residual(r'\b(perempuan|wanita|cewek|laki|laki-laki|pria|cowok)\b')
 
-    # 4. Education / Pendidikan
-    pdd_col = None
-    for hint in ['ijazah_tertinggi', 'pendidikan', 'ijazah', 'pendidikan_terakhir']:
-        for c_low, c_orig in col_map.items():
-            if hint in c_low:
-                pdd_col = c_orig
-                break
-        if pdd_col: break
-    
-    if pdd_col:
-        if re.search(r'\b(sma|slta|smk|aliyah|menengah atas)\b', q_low):
-            clauses.append(f'(LOWER(CAST("{pdd_col}" AS VARCHAR)) LIKE \'%sma%\' OR LOWER(CAST("{pdd_col}" AS VARCHAR)) LIKE \'%slta%\' OR LOWER(CAST("{pdd_col}" AS VARCHAR)) LIKE \'%smk%\')')
-            tags.append('Pendidikan: SMA / Sederajat')
-            strip_from_residual(r'\b(pendidikan\s+)?(sma|slta|smk|aliyah|menengah atas)\b')
-        elif re.search(r'\b(smp|sltp|mts|menengah pertama)\b', q_low):
-            clauses.append(f'(LOWER(CAST("{pdd_col}" AS VARCHAR)) LIKE \'%smp%\' OR LOWER(CAST("{pdd_col}" AS VARCHAR)) LIKE \'%sltp%\')')
-            tags.append('Pendidikan: SMP / Sederajat')
-            strip_from_residual(r'\b(pendidikan\s+)?(smp|sltp|mts|menengah pertama)\b')
-        elif re.search(r'\b(sd|sekolah dasar|mi)\b', q_low):
-            clauses.append(f'LOWER(CAST("{pdd_col}" AS VARCHAR)) LIKE \'%sd%\'')
-            tags.append('Pendidikan: SD / Sederajat')
-            strip_from_residual(r'\b(pendidikan\s+)?(sd|sekolah dasar|mi)\b')
-        elif re.search(r'\b(s1|s2|s3|diploma|sarjana|kuliah|perguruan tinggi)\b', q_low):
-            clauses.append(f'(LOWER(CAST("{pdd_col}" AS VARCHAR)) LIKE \'%s1%\' OR LOWER(CAST("{pdd_col}" AS VARCHAR)) LIKE \'%diploma%\' OR LOWER(CAST("{pdd_col}" AS VARCHAR)) LIKE \'%sarjana%\')')
-            tags.append('Pendidikan: Perguruan Tinggi')
-            strip_from_residual(r'\b(s1|s2|s3|diploma|sarjana|kuliah|perguruan tinggi)\b')
-        elif re.search(r'\b(tidak sekolah|belum sekolah|putus sekolah)\b', q_low):
-            clauses.append(f'LOWER(CAST("{pdd_col}" AS VARCHAR)) LIKE \'%tidak%\'')
-            tags.append('Pendidikan: Tidak / Belum Sekolah')
-            strip_from_residual(r'\b(tidak sekolah|belum sekolah|putus sekolah)\b')
+    # 4. Status Hubungan Keluarga (SHDK)
+    shdk_col = find_col(['status_hubungan_keluarga', 'shdk', 'hubungan_keluarga'])
+    shdk_map = [
+        (r'\b(?:kepala\s+keluarga|kepala\s+kk|kpl\s+keluarga)\b', 'kepala', 'Kepala Keluarga'),
+        (r'\bistri\b', 'istri', 'Istri'),
+        (r'\banak(?:\s+kandung)?\b', 'anak', 'Anak'),
+        (r'\b(?:orang\s*tua|mertua|ayah|ibu\s+kandung)\b', 'orang tua', 'Orang Tua / Mertua'),
+        (r'\bcucu\b', 'cucu', 'Cucu'),
+        (r'\b(?:famili|famili\s+lain)\b', 'famili', 'Famili Lain'),
+        (r'\b(?:pembantu|sopir|art)\b', 'pembantu', 'Pembantu / Sopir')
+    ]
+    for pattern, val_match, tag_name in shdk_map:
+        if re.search(pattern, q_low):
+            if shdk_col:
+                clauses.append(f'LOWER(CAST("{shdk_col}" AS VARCHAR)) LIKE \'%{val_match}%\'')
+                tags.append(f'SHDK: {tag_name}')
+            else:
+                tags.append(f'SHDK: {tag_name} (Kolom N/A)')
+            strip_from_residual(pattern)
+            strip_from_residual(r'\b(?:shdk|status\s+hubungan)\b')
+            break
 
-    # 5. Marital Status
-    kawin_col = None
-    for hint in ['status_kawin', 'status_pernikahan', 'perkawinan']:
-        for c_low, c_orig in col_map.items():
-            if hint in c_low:
-                kawin_col = c_orig
-                break
-        if kawin_col: break
-    
-    if kawin_col:
-        m_bk = re.search(r'\b(?:belum\s+(?:menikah|kawin|nikah)|lajang|single|bujang)\b', q_low)
-        m_k = re.search(r'\b(?:sudah\s+menikah|menikah|kawin|nikah|berkeluarga)\b', q_low)
-        m_c = re.search(r'\b(?:cerai|janda|duda)\b', q_low)
-        if m_bk:
+    # 5. Status Perkawinan (Status Kawin)
+    kawin_col = find_col(['status_kawin', 'status_pernikahan', 'perkawinan'])
+    m_bk = re.search(r'\b(?:belum\s+(?:menikah|kawin|nikah)|lajang|single|bujang|gadis)\b', q_low)
+    m_k = re.search(r'\b(?:sudah\s+menikah|menikah|kawin|nikah|berkeluarga)\b', q_low)
+    m_c = re.search(r'\b(?:cerai|janda|duda|cerai\s+hidup|cerai\s+mati)\b', q_low)
+    if m_bk:
+        if kawin_col:
             clauses.append(f'LOWER(CAST("{kawin_col}" AS VARCHAR)) LIKE \'%belum%\'')
             tags.append('Status: Belum Kawin')
-            strip_from_residual(re.escape(m_bk.group(0)))
-        elif m_k:
+        else:
+            tags.append('Status: Belum Kawin (Kolom N/A)')
+        strip_from_residual(m_bk.group(0))
+        strip_from_residual(r'\b(?:status|kawin|nikah)\b')
+    elif m_k:
+        if kawin_col:
             clauses.append(f'(LOWER(CAST("{kawin_col}" AS VARCHAR)) LIKE \'%kawin%\' OR LOWER(CAST("{kawin_col}" AS VARCHAR)) LIKE \'%nikah%\')')
             tags.append('Status: Sudah Menikah')
-            strip_from_residual(re.escape(m_k.group(0)))
-        elif m_c:
+        else:
+            tags.append('Status: Sudah Menikah (Kolom N/A)')
+        strip_from_residual(m_k.group(0))
+        strip_from_residual(r'\b(?:status|kawin|nikah)\b')
+    elif m_c:
+        if kawin_col:
             clauses.append(f'LOWER(CAST("{kawin_col}" AS VARCHAR)) LIKE \'%cerai%\'')
-            tags.append('Status: Cerai')
-            strip_from_residual(re.escape(m_c.group(0)))
+            tags.append('Status: Cerai / Duda / Janda')
+        else:
+            tags.append('Status: Cerai (Kolom N/A)')
+        strip_from_residual(m_c.group(0))
+        strip_from_residual(r'\b(?:status|kawin|nikah)\b')
 
-    # 6. Employment / Status Bekerja
-    kerja_col = None
-    for hint in ['status_bekerja', 'pekerjaan_utama', 'pekerjaan']:
-        for c_low, c_orig in col_map.items():
-            if hint in c_low:
-                kerja_col = c_orig
-                break
-        if kerja_col: break
-    
-    if kerja_col:
-        if re.search(r'\b(?:tidak\s+bekerja|menganggur|belum\s+kerja|pengangguran)\b', q_low):
+    # 6. Usia & Kelompok Umur
+    usia_col = find_col(['usia', 'umur', 'tanggal_lahir'])
+    age_op_match = re.search(r'(?:usia|umur)\s*(>=|<=|>|<|=)?\s*(\d+)(?:\s*(?:sampai|-|s/d)\s*(\d+))?', q_low)
+    if age_op_match:
+        op = age_op_match.group(1) or '='
+        v1 = age_op_match.group(2)
+        v2 = age_op_match.group(3)
+        if usia_col:
+            if v2:
+                clauses.append(f'TRY_CAST("{usia_col}" AS INTEGER) BETWEEN {v1} AND {v2}')
+                tags.append(f'Usia: {v1} - {v2} thn')
+            else:
+                clauses.append(f'TRY_CAST("{usia_col}" AS INTEGER) {op} {v1}')
+                tags.append(f'Usia: {op} {v1} thn')
+        strip_from_residual(re.escape(age_op_match.group(0)))
+    else:
+        # Age groups
+        if re.search(r'\b(?:lansia|manula|lanjut\s+usia|kakek|nenek)\b', q_low):
+            if usia_col:
+                clauses.append(f'TRY_CAST("{usia_col}" AS INTEGER) >= 60')
+                tags.append('Kelompok: Lansia (≥ 60 thn)')
+            else:
+                tags.append('Kelompok: Lansia (Kolom Usia N/A)')
+            strip_from_residual(r'\b(?:lansia|manula|lanjut\s+usia|kakek|nenek)\b')
+        elif re.search(r'\b(?:balita|baduta|bayi)\b', q_low):
+            if usia_col:
+                clauses.append(f'TRY_CAST("{usia_col}" AS INTEGER) <= 5')
+                tags.append('Kelompok: Balita (≤ 5 thn)')
+            else:
+                tags.append('Kelompok: Balita (Kolom Usia N/A)')
+            strip_from_residual(r'\b(?:balita|baduta|bayi)\b')
+        elif re.search(r'\b(?:anak-anak|anak)\b', q_low) and not shdk_col:
+            if usia_col:
+                clauses.append(f'TRY_CAST("{usia_col}" AS INTEGER) < 18')
+                tags.append('Kelompok: Anak-anak (< 18 thn)')
+            strip_from_residual(r'\b(?:anak-anak|anak)\b')
+        elif re.search(r'\b(?:remaja|pemuda)\b', q_low):
+            if usia_col:
+                clauses.append(f'TRY_CAST("{usia_col}" AS INTEGER) BETWEEN 12 AND 25')
+                tags.append('Kelompok: Remaja / Pemuda (12-25 thn)')
+            strip_from_residual(r'\b(?:remaja|pemuda)\b')
+
+    # 7. Pendidikan
+    pdd_col = find_col(['ijazah_tertinggi_yang_dimiliki', 'pendidikan_akhir_ktp', 'pendidikan', 'ijazah', 'pendidikan_terakhir', 'jenjang_tertinggi_yang_diduduki'])
+    pdd_rules = [
+        (r'\b(?:tidak\s+sekolah|belum\s+sekolah|putus\s+sekolah|tanpa\s+ijazah)\b', '%tidak%', 'Tidak / Belum Sekolah'),
+        (r'\b(?:sd|sekolah\s+dasar|mi|madrasah\s+ibtidaiyah)\b', '%sd%', 'SD / Sederajat'),
+        (r'\b(?:smp|sltp|mts|menengah\s+pertama)\b', '%smp%', 'SMP / Sederajat'),
+        (r'\b(?:sma|slta|smk|aliyah|menengah\s+atas|kejuruan)\b', '%sma%', 'SMA / Sederajat'),
+        (r'\b(?:diploma|d1|d2|d3|d4|akademi)\b', '%diploma%', 'Diploma (D1-D4)'),
+        (r'\b(?:s1|sarjana|sarjana\s+s1|kuliah|perguruan\s+tinggi|universitas)\b', '%sarjana%', 'S1 / Sarjana'),
+        (r'\b(?:s2|s3|magister|master|doktor)\b', '%s2%', 'Pascasarjana (S2/S3)')
+    ]
+    for pattern, val_match, tag_name in pdd_rules:
+        if re.search(pattern, q_low):
+            if pdd_col:
+                if 'sma' in val_match:
+                    clauses.append(f'(LOWER(CAST("{pdd_col}" AS VARCHAR)) LIKE \'%sma%\' OR LOWER(CAST("{pdd_col}" AS VARCHAR)) LIKE \'%smk%\' OR LOWER(CAST("{pdd_col}" AS VARCHAR)) LIKE \'%slta%\')')
+                elif 'sarjana' in val_match:
+                    clauses.append(f'(LOWER(CAST("{pdd_col}" AS VARCHAR)) LIKE \'%s1%\' OR LOWER(CAST("{pdd_col}" AS VARCHAR)) LIKE \'%sarjana%\' OR LOWER(CAST("{pdd_col}" AS VARCHAR)) LIKE \'%diploma%\')')
+                else:
+                    clauses.append(f'LOWER(CAST("{pdd_col}" AS VARCHAR)) LIKE \'{val_match}\'')
+                tags.append(f'Pendidikan: {tag_name}')
+            else:
+                tags.append(f'Pendidikan: {tag_name} (Kolom N/A)')
+            strip_from_residual(pattern)
+            strip_from_residual(r'\b(?:pendidikan|ijazah|lulusan|tamat|tertinggi)\b')
+            break
+
+    # 8. Ketenagakerjaan & Profesi
+    kerja_col = find_col(['status_bekerja', 'lapangan_usaha_dari_pekerjaan_utama', 'pekerjaan_utama', 'pekerjaan_ktp', 'pekerjaan'])
+    if re.search(r'\b(?:tidak\s+bekerja|menganggur|belum\s+kerja|pengangguran)\b', q_low):
+        if kerja_col:
             clauses.append(f'(LOWER(CAST("{kerja_col}" AS VARCHAR)) LIKE \'%tidak%\' OR LOWER(CAST("{kerja_col}" AS VARCHAR)) LIKE \'%belum%\')')
             tags.append('Status Kerja: Tidak Bekerja')
-            strip_from_residual(r'\b(?:tidak\s+bekerja|menganggur|belum\s+kerja|pengangguran)\b')
-        elif re.search(r'\b(?:sudah\s+kerja|aktif\s+bekerja|bekerja|kerja)\b', q_low) and not ('tidak' in q_low or 'belum' in q_low):
+        else:
+            tags.append('Status Kerja: Tidak Bekerja (Kolom N/A)')
+        strip_from_residual(r'\b(?:tidak\s+bekerja|menganggur|belum\s+kerja|pengangguran)\b')
+    elif re.search(r'\b(?:sudah\s+kerja|aktif\s+bekerja|bekerja|kerja)\b', q_low) and not ('tidak' in q_low or 'belum' in q_low):
+        if kerja_col:
             clauses.append(f'(LOWER(CAST("{kerja_col}" AS VARCHAR)) = \'ya\' OR LOWER(CAST("{kerja_col}" AS VARCHAR)) LIKE \'%bekerja%\')')
             tags.append('Status Kerja: Bekerja')
-            strip_from_residual(r'\b(?:sudah\s+kerja|aktif\s+bekerja|bekerja|kerja)\b')
-        
-        for prof in ['pns', 'asn', 'tni', 'polri', 'petani', 'nelayan', 'buruh', 'wiraswasta', 'pedagang', 'karyawan', 'guru']:
-            if re.search(r'\b' + prof + r'\b', q_low):
-                clauses.append(f'LOWER(CAST("{kerja_col}" AS VARCHAR)) LIKE \'%{prof}%\'')
-                tags.append(f'Pekerjaan: {prof.upper()}')
-                strip_from_residual(r'\b' + prof + r'\b')
-                break
-
-    # 7. Roof / Atap
-    atap_col = None
-    for hint in ['atap', 'jenis_atap']:
-        for c_low, c_orig in col_map.items():
-            if hint in c_low:
-                atap_col = c_orig
-                break
-        if atap_col: break
+        strip_from_residual(r'\b(?:sudah\s+kerja|aktif\s+bekerja|bekerja|kerja)\b')
     
-    if atap_col:
-        for atap_val in ['genteng', 'seng', 'asbes', 'rumbia']:
-            if atap_val in q_low:
-                clauses.append(f'LOWER(CAST("{atap_col}" AS VARCHAR)) LIKE \'%{atap_val}%\'')
-                tags.append(f'Atap: {atap_val.capitalize()}')
-                strip_from_residual(r'\b(atap\s+rumah|atap)?\s*' + atap_val + r'\b')
-                break
-
-    # 8. Vehicle / Mobil / Motor
-    kendaraan_col = None
-    for hint in ['kendaraan', 'mobil', 'motor', 'aset_kendaraan']:
-        for c_low, c_orig in col_map.items():
-            if hint in c_low:
-                kendaraan_col = c_orig
-                break
-        if kendaraan_col: break
-    
-    if kendaraan_col:
-        if 'mobil' in q_low:
-            clauses.append(f'(LOWER(CAST("{kendaraan_col}" AS VARCHAR)) LIKE \'%mobil%\' OR LOWER(CAST("{kendaraan_col}" AS VARCHAR)) = \'ya\' OR LOWER(CAST("{kendaraan_col}" AS VARCHAR)) = \'1\')')
-            tags.append('Kendaraan: Mobil')
-            strip_from_residual(r'\b(kendaraan\s+)?mobil\b')
-        elif 'motor' in q_low:
-            clauses.append(f'(LOWER(CAST("{kendaraan_col}" AS VARCHAR)) LIKE \'%motor%\' OR LOWER(CAST("{kendaraan_col}" AS VARCHAR)) = \'ya\' OR LOWER(CAST("{kendaraan_col}" AS VARCHAR)) = \'1\')')
-            tags.append('Kendaraan: Motor')
-            strip_from_residual(r'\b(kendaraan\s+)?motor\b')
-
-    # 9. Facility / AC
-    if re.search(r'\bac\b', q_low):
-        ac_col = None
-        for hint in ['fasilitas', 'ac', 'aset']:
-            for c_low, c_orig in col_map.items():
-                if hint in c_low:
-                    ac_col = c_orig
-                    break
-            if ac_col: break
-        if ac_col:
-            clauses.append(f'LOWER(CAST("{ac_col}" AS VARCHAR)) LIKE \'%ac%\'')
-            tags.append('Fasilitas: AC')
-            strip_from_residual(r'\b(fasilitas\s+)?ac\b')
-
-    # 10. Poverty & Desil
-    desil_col = None
-    for hint in ['desil_nasional', 'desil']:
-        for c_low, c_orig in col_map.items():
-            if hint in c_low:
-                desil_col = c_orig
-                break
-        if desil_col: break
-    
-    desil_match = re.search(r'desil\s*(\d+)', q_low)
-    if desil_match and desil_col:
-        d_val = desil_match.group(1)
-        clauses.append(f'TRY_CAST("{desil_col}" AS INTEGER) = {d_val}')
-        tags.append(f'Desil: {d_val}')
-        strip_from_residual(re.escape(desil_match.group(0)))
-    elif re.search(r'\b(miskin|prasejahtera)\b', q_low) and desil_col:
-        clauses.append(f'TRY_CAST("{desil_col}" AS INTEGER) IN (1, 2)')
-        tags.append('Kategori: Miskin (Desil 1-2)')
-        strip_from_residual(r'\b(miskin|prasejahtera)\b')
-
-    # 11. Bansos
-    bansos_col = None
-    for hint in ['status_bantuan', 'bantuan', 'bansos']:
-        for c_low, c_orig in col_map.items():
-            if hint in c_low:
-                bansos_col = c_orig
-                break
-        if bansos_col: break
-    
-    if bansos_col:
-        if re.search(r'\b(?:penerima\s+bansos|dapat\s+bansos|pkh|bpnt)\b', q_low) and not 'bukan' in q_low:
-            clauses.append(f'LOWER(CAST("{bansos_col}" AS VARCHAR)) LIKE \'%penerima%\'')
-            tags.append('Bansos: Penerima')
-            strip_from_residual(r'\b(?:penerima\s+bansos|dapat\s+bansos|pkh|bpnt)\b')
-        elif re.search(r'\bbukan\s+penerima\b', q_low):
-            clauses.append(f'LOWER(CAST("{bansos_col}" AS VARCHAR)) LIKE \'%bukan%\'')
-            tags.append('Bansos: Bukan Penerima')
-            strip_from_residual(r'\bbukan\s+penerima\b')
-
-    # 12. Salary / Gaji
-    gaji_col = col_map.get('gaji_bulanan', col_map.get('gaji', None))
-    if gaji_col:
-        gaji_match = re.search(r'(?:gaji|penghasilan|pendapatan)\s*(?:>=|>|minimal|di atas|lebih dari)?\s*(\d+(?:[.,]\d+)?)\s*(juta|jt|ribu|rb)?', q_low)
-        if gaji_match:
-            raw_num = float(gaji_match.group(1).replace(',', '.'))
-            unit = (gaji_match.group(2) or '').lower()
-            if unit in ('juta', 'jt'):
-                gaji_val = raw_num * 1000000
-            elif unit in ('ribu', 'rb'):
-                gaji_val = raw_num * 1000
+    prof_list = [
+        ('petani', ['petani', 'pertanian', 'tani'], 'Petani'),
+        ('nelayan', ['nelayan', 'perikanan'], 'Nelayan'),
+        ('peternak', ['peternak', 'peternakan'], 'Peternak'),
+        ('pedagang', ['pedagang', 'perdagangan', 'jualan', 'toko', 'warung'], 'Pedagang'),
+        ('pns', ['pns', 'asn', 'pegawai negeri'], 'PNS / ASN'),
+        ('tni_polri', ['tni', 'polri', 'polisi', 'tentara'], 'TNI / POLRI'),
+        ('guru', ['guru', 'dosen', 'pendidik'], 'Guru / Pendidik'),
+        ('buruh', ['buruh', 'karyawan pabrik', 'kuli'], 'Buruh'),
+        ('karyawan', ['karyawan', 'pegawai swasta'], 'Karyawan Swasta'),
+        ('wiraswasta', ['wiraswasta', 'pengusaha', 'wirausaha'], 'Wiraswasta')
+    ]
+    for p_id, p_synonyms, p_tag in prof_list:
+        p_pattern = r'\b(?:' + '|'.join(p_synonyms) + r')\b'
+        if re.search(p_pattern, q_low):
+            if kerja_col:
+                clauses.append(f'LOWER(CAST("{kerja_col}" AS VARCHAR)) LIKE \'%{p_synonyms[0]}%\'')
+                tags.append(f'Pekerjaan: {p_tag}')
             else:
-                gaji_val = raw_num if raw_num > 10000 else raw_num * 1000000
-            
-            clauses.append(f'COALESCE(TRY_CAST("{gaji_col}" AS DOUBLE), 0) >= {gaji_val}')
-            tags.append(f'Gaji: ≥ Rp {int(gaji_val):,}')
-            strip_from_residual(re.escape(gaji_match.group(0)))
+                tags.append(f'Pekerjaan: {p_tag} (Kolom N/A)')
+            strip_from_residual(p_pattern)
+            strip_from_residual(r'\b(?:pekerjaan|profesi|lapangan\s+usaha)\b')
+            break
 
-    # 13. Residual keywords handling (Safety net for unparsed location or search terms)
-    stop_words = {'dan', 'dengan', 'yang', 'di', 'ke', 'dari', 'pada', 'untuk', 'ada', 'nya', 'atau', 'wilayah', 'daerah', 'kecamatan', 'kabupaten', 'desa', 'kota'}
+    # Kepemilikan Usaha
+    usaha_col = find_col(['kepemilikan_usaha', 'jumlah_usaha'])
+    if re.search(r'\b(?:punya\s+usaha|memiliki\s+usaha|buka\s+usaha)\b', q_low):
+        if usaha_col:
+            clauses.append(f'(LOWER(CAST("{usaha_col}" AS VARCHAR)) = \'ya\' OR LOWER(CAST("{usaha_col}" AS VARCHAR)) = \'1\')')
+            tags.append('Memiliki Usaha Sendiri')
+        else:
+            tags.append('Memiliki Usaha Sendiri (Kolom N/A)')
+        strip_from_residual(r'\b(?:punya\s+usaha|memiliki\s+usaha|buka\s+usaha)\b')
+
+    # 9. Kesehatan, Gizi & Disabilitas
+    gizi_col = find_col(['kondisi_gizi', 'stunting', 'status_gizi'])
+    if re.search(r'\b(?:stunting|kerdil|pendek|gizi\s+buruk|wasting)\b', q_low):
+        if gizi_col:
+            clauses.append(f'LOWER(CAST("{gizi_col}" AS VARCHAR)) LIKE \'%stunting%\'')
+            tags.append('Kondisi Gizi: Stunting / Gizi Buruk')
+        else:
+            tags.append('Kondisi Gizi: Stunting (Kolom N/A)')
+        strip_from_residual(r'\b(?:stunting|kerdil|pendek|gizi\s+buruk|wasting)\b')
+        strip_from_residual(r'\b(?:gizi|kondisi\s+gizi)\b')
+
+    disab_rules = [
+        (['penglihatan', 'tunanetra'], r'\b(?:tunanetra|buta|gangguan\s+penglihatan|netra|rabun)\b', 'Disabilitas Penglihatan (Netra)'),
+        (['pendengaran', 'tunarungu'], r'\b(?:tunarungu|tuli|gangguan\s+pendengaran|rungu)\b', 'Disabilitas Pendengaran (Rungu)'),
+        (['berjalan_atau_naik_tangga', 'tunadaksa'], r'\b(?:tunadaksa|lumpuh|tidak\s+bisa\s+jalan|pincang|daksa)\b', 'Disabilitas Fisik (Daksa)'),
+        (['belajar_kemampuan_intelektual', 'tunagrahita'], r'\b(?:tunagrahita|intelektual|down\s+syndrome|grahita)\b', 'Disabilitas Intelektual (Grahita)'),
+        (['berbicara_komunikasi', 'tunawicara'], r'\b(?:tunawicara|bisu|gangguan\s+bicara|wicara|gagap)\b', 'Disabilitas Wicara'),
+        (['kesedihan_depresi', 'gangguan_jiwa'], r'\b(?:depresi|gangguan\s+jiwa|stres\s+berat|tunalaras)\b', 'Kesehatan Mental / Depresi'),
+        (['penyakit_kronis'], r'\b(?:penyakit\s+kronis|kronis|diabetes|hipertensi|stroke|jantung|tbc|kanker|ginjal)\b', 'Penyakit Kronis')
+    ]
+    for d_hints, d_pattern, d_tag in disab_rules:
+        if re.search(d_pattern, q_low):
+            d_col = find_col(d_hints)
+            if d_col:
+                clauses.append(f'(LOWER(CAST("{d_col}" AS VARCHAR)) = \'ya\' OR LOWER(CAST("{d_col}" AS VARCHAR)) LIKE \'%ada%\' OR LOWER(CAST("{d_col}" AS VARCHAR)) LIKE \'%berat%\')')
+                tags.append(d_tag)
+            else:
+                tags.append(f'{d_tag} (Kolom N/A)')
+            strip_from_residual(d_pattern)
+            strip_from_residual(r'\b(?:disabilitas|difabel|penyandang)\b')
+
+    # 10. Bahan Bakar & Sanitasi FIRST (prevents 'kayu bakar' from matching 'dinding kayu')
+    masak_col = find_col(['bahan_bakar_utama_memasak', 'bahan_bakar_memasak'])
+    if re.search(r'\b(?:elpiji\s+3kg|lpg\s+3kg|gas\s+3kg|gas\s+melon)\b', q_low):
+        if masak_col:
+            clauses.append(f'LOWER(CAST("{masak_col}" AS VARCHAR)) LIKE \'%3kg%\'')
+            tags.append('Bahan Bakar: Elpiji 3 Kg')
+        else:
+            tags.append('Bahan Bakar: Elpiji 3 Kg (Kolom N/A)')
+        strip_from_residual(r'\b(?:elpiji\s+3kg|lpg\s+3kg|gas\s+3kg|gas\s+melon)\b')
+        strip_from_residual(r'\b(?:bahan\s+bakar|memasak)\b')
+    elif re.search(r'\b(?:kayu\s+bakar|arang|minyak\s+tanah)\b', q_low):
+        if masak_col:
+            clauses.append(f'(LOWER(CAST("{masak_col}" AS VARCHAR)) LIKE \'%kayu%\' OR LOWER(CAST("{masak_col}" AS VARCHAR)) LIKE \'%arang%\' OR LOWER(CAST("{masak_col}" AS VARCHAR)) LIKE \'%minyak%\')')
+            tags.append('Bahan Bakar: Tradisional (Kayu/Arang)')
+        else:
+            tags.append('Bahan Bakar: Tradisional (Kayu/Arang) (Kolom N/A)')
+        strip_from_residual(r'\b(?:kayu\s+bakar|arang|minyak\s+tanah)\b')
+        strip_from_residual(r'\b(?:bahan\s+bakar|memasak)\b')
+
+    wc_col = find_col(['fasilitas_bab', 'jenis_kloset', 'jamban', 'wc'])
+    if re.search(r'\b(?:tidak\s+ada\s+wc|tanpa\s+wc|bab\s+sembarangan|tanpa\s+jamban|jamban\s+cemplung|cemplung)\b', q_low):
+        if wc_col:
+            clauses.append(f'(LOWER(CAST("{wc_col}" AS VARCHAR)) LIKE \'%tidak%\' OR LOWER(CAST("{wc_col}" AS VARCHAR)) LIKE \'%cemplung%\')')
+            tags.append('Sanitasi: Tanpa WC Layak / Cemplung')
+        else:
+            tags.append('Sanitasi: Tanpa WC Layak (Kolom N/A)')
+        strip_from_residual(r'\b(?:tidak\s+ada\s+wc|tanpa\s+wc|bab\s+sembarangan|tanpa\s+jamban|jamban\s+cemplung|cemplung)\b')
+        strip_from_residual(r'\b(?:wc|jamban|kloset)\b')
+    elif re.search(r'\b(?:wc\s+sendiri|jamban\s+sendiri|leher\s+angsa|septic\s+tank)\b', q_low):
+        if wc_col:
+            clauses.append(f'(LOWER(CAST("{wc_col}" AS VARCHAR)) LIKE \'%sendiri%\' OR LOWER(CAST("{wc_col}" AS VARCHAR)) LIKE \'%angsa%\')')
+            tags.append('Sanitasi: Jamban Sendiri (Layak)')
+        strip_from_residual(r'\b(?:wc\s+sendiri|jamban\s+sendiri|leher\s+angsa|septic\s+tank)\b')
+        strip_from_residual(r'\b(?:wc|jamban|kloset)\b')
+
+    # 11. Perumahan (Atap, Dinding, Lantai, Kepemilikan Rumah)
+    atap_col = find_col(['jenis_atap_terluas', 'atap'])
+    atap_rules = [
+        (r'\b(?:genteng|genting|tanah\s+liat)\b', 'genteng', 'Atap: Genteng'),
+        (r'\bseng\b', 'seng', 'Atap: Seng'),
+        (r'\basbes\b', 'asbes', 'Atap: Asbes'),
+        (r'\b(?:beton|cor|dak)\b', 'beton', 'Atap: Beton / Cor'),
+        (r'\b(?:rumbia|ijuk|jerami|daun)\b', 'rumbia', 'Atap: Rumbia / Jerami')
+    ]
+    for pattern, val_match, tag_name in atap_rules:
+        if re.search(pattern, q_low):
+            if atap_col:
+                clauses.append(f'LOWER(CAST("{atap_col}" AS VARCHAR)) LIKE \'%{val_match}%\'')
+                tags.append(tag_name)
+            else:
+                tags.append(f'{tag_name} (Kolom N/A)')
+            strip_from_residual(pattern)
+            strip_from_residual(r'\b(?:atap\s*rumah|atap)\b')
+            break
+
+    dinding_col = find_col(['jenis_dinding_terluas', 'dinding'])
+    dinding_rules = [
+        (r'\b(?:tembok|bata|batako)\b', 'tembok', 'Dinding: Tembok'),
+        (r'\b(?:dinding\s+kayu|kayu(?!\s*bakar)|papan)\b', 'kayu', 'Dinding: Kayu / Papan'),
+        (r'\b(?:bambu|anyaman|gedek)\b', 'bambu', 'Dinding: Bambu / Anyaman')
+    ]
+    for pattern, val_match, tag_name in dinding_rules:
+        if re.search(pattern, q_low):
+            if dinding_col:
+                clauses.append(f'LOWER(CAST("{dinding_col}" AS VARCHAR)) LIKE \'%{val_match}%\'')
+                tags.append(tag_name)
+            else:
+                tags.append(f'{tag_name} (Kolom N/A)')
+            strip_from_residual(pattern)
+            strip_from_residual(r'\b(?:dinding\s*rumah|dinding)\b')
+            break
+
+    lantai_col = find_col(['jenis_lantai_terluas', 'lantai'])
+    lantai_rules = [
+        (r'\b(?:keramik|granit|marmer)\b', 'keramik', 'Lantai: Keramik / Marmer'),
+        (r'\b(?:ubin|tegel)\b', 'ubin', 'Lantai: Ubin / Tegel'),
+        (r'\b(?:semen|plester)\b', 'semen', 'Lantai: Semen'),
+        (r'\b(?:lantai\s+tanah|tanah(?!\s*liat))\b', 'tanah', 'Lantai: Tanah')
+    ]
+    for pattern, val_match, tag_name in lantai_rules:
+        if re.search(pattern, q_low):
+            if lantai_col:
+                clauses.append(f'LOWER(CAST("{lantai_col}" AS VARCHAR)) LIKE \'%{val_match}%\'')
+                tags.append(tag_name)
+            else:
+                tags.append(f'{tag_name} (Kolom N/A)')
+            strip_from_residual(pattern)
+            strip_from_residual(r'\b(?:lantai\s*rumah|lantai)\b')
+            break
+
+    rumah_col = find_col(['status_kepemilikan_rumah', 'kepemilikan_rumah'])
+    if re.search(r'\b(?:milik\s+sendiri|rumah\s+sendiri)\b', q_low):
+        if rumah_col:
+            clauses.append(f'LOWER(CAST("{rumah_col}" AS VARCHAR)) LIKE \'%sendiri%\'')
+            tags.append('Rumah: Milik Sendiri')
+        strip_from_residual(r'\b(?:milik\s+sendiri|rumah\s+sendiri)\b')
+    elif re.search(r'\b(?:sewa|kontrak|ngontrak)\b', q_low):
+        if rumah_col:
+            clauses.append(f'(LOWER(CAST("{rumah_col}" AS VARCHAR)) LIKE \'%sewa%\' OR LOWER(CAST("{rumah_col}" AS VARCHAR)) LIKE \'%kontrak%\')')
+            tags.append('Rumah: Sewa / Kontrak')
+        strip_from_residual(r'\b(?:sewa|kontrak|ngontrak)\b')
+
+    # 12. Sanitasi, Air, Penerangan & Fasilitas
+    air_col = find_col(['sumber_air_minum_utama', 'sumber_air', 'air_minum'])
+    air_rules = [
+        (r'\b(?:kemasan|galon|isi\s+ulang)\b', 'kemasan', 'Air: Kemasan / Isi Ulang'),
+        (r'\b(?:leding|pam|pdam)\b', 'leding', 'Air: PDAM / Leding'),
+        (r'\b(?:sumur\s+bor|pompa|sanyo)\b', 'bor', 'Air: Sumur Bor / Pompa'),
+        (r'\b(?:sumur|sumur\s+gali)\b', 'sumur', 'Air: Sumur Gali / Terlindung'),
+        (r'\b(?:mata\s+air|air\s+hujan|sungai)\b', 'mata air', 'Air: Alami (Mata Air/Sungai)')
+    ]
+    for pattern, val_match, tag_name in air_rules:
+        if re.search(pattern, q_low):
+            if air_col:
+                clauses.append(f'LOWER(CAST("{air_col}" AS VARCHAR)) LIKE \'%{val_match}%\'')
+                tags.append(tag_name)
+            else:
+                tags.append(f'{tag_name} (Kolom N/A)')
+            strip_from_residual(pattern)
+            strip_from_residual(r'\b(?:sumber\s*air|air\s*minum|air)\b')
+            break
+
+    listrik_col = find_col(['sumber_penerangan_utama', 'sumber_penerangan', 'daya_terpasang'])
+    if re.search(r'\b(?:listrik\s+pln|pln)\b', q_low):
+        if listrik_col:
+            clauses.append(f'LOWER(CAST("{listrik_col}" AS VARCHAR)) LIKE \'%pln%\'')
+            tags.append('Listrik: PLN')
+        strip_from_residual(r'\b(?:listrik\s+pln|pln)\b')
+    elif re.search(r'\b(?:bukan\s+listrik|tanpa\s+listrik|pelita|lilin)\b', q_low):
+        if listrik_col:
+            clauses.append(f'(LOWER(CAST("{listrik_col}" AS VARCHAR)) LIKE \'%bukan%\' OR LOWER(CAST("{listrik_col}" AS VARCHAR)) LIKE \'%non%\')')
+            tags.append('Penerangan: Non-Listrik')
+        strip_from_residual(r'\b(?:bukan\s+listrik|tanpa\s+listrik|pelita|lilin)\b')
+    
+    # Daya 450, 900, 1300
+    daya_col = find_col(['daya_terpasang', 'daya_listrik', 'daya'])
+    daya_match = re.search(r'\b(?:daya\s*)?(450|900|1300|2200)\s*(?:va|watt)?\b', q_low)
+    if daya_match and ('daya' in q_low or daya_match.group(1) in ('450', '900')):
+        d_val = daya_match.group(1)
+        if daya_col:
+            clauses.append(f'CAST("{daya_col}" AS VARCHAR) LIKE \'%{d_val}%\'')
+            tags.append(f'Daya Listrik: {d_val} VA')
+        else:
+            tags.append(f'Daya Listrik: {d_val} VA (Kolom N/A)')
+        strip_from_residual(re.escape(daya_match.group(0)))
+        strip_from_residual(r'\b(?:daya|daya\s+listrik)\b')
+
+    # 13. Aset Rumah Tangga & Elektronik (Multi-match: mobil, motor, ac, kulkas, dll.)
+    asset_defs = [
+        (['aset_bergerak_mobil', 'mobil', 'kendaraan_mobil'], r'\bmobil\b', 'Mobil'),
+        (['aset_bergerak_sepeda_motor', 'sepeda_motor', 'motor'], r'\b(?:sepeda\s+motor|motor)\b', 'Sepeda Motor'),
+        (['aset_bergerak_sepeda', 'sepeda'], r'\bsepeda\b', 'Sepeda'),
+        (['aset_bergerak_ac', 'ac', 'pendingin_ruangan'], r'\bac\b', 'AC'),
+        (['aset_bergerak_lemari_es', 'lemari_es', 'kulkas'], r'\b(?:lemari\s+es|kulkas)\b', 'Kulkas'),
+        (['aset_bergerak_tv_datar', 'tv', 'televisi'], r'\b(?:tv\s+datar|tv|televisi)\b', 'TV'),
+        (['aset_bergerak_tabung_gas', 'tabung_gas'], r'\btabung\s+gas\b', 'Tabung Gas >=5.5kg'),
+        (['aset_bergerak_emas_perhiasan', 'emas', 'perhiasan'], r'\b(?:emas|perhiasan)\b', 'Emas / Perhiasan'),
+        (['aset_bergerak_komputer_laptop_tablet', 'laptop', 'komputer'], r'\b(?:komputer|laptop|pc|tablet)\b', 'Laptop / Komputer'),
+        (['aset_bergerak_smartphone', 'smartphone', 'hp'], r'\b(?:smartphone|handphone|hp)\b', 'Smartphone'),
+        (['aset_bergerak_perahu', 'perahu'], r'\bperahu\b', 'Perahu'),
+        (['aset_bergerak_kapal_perahu_motor', 'kapal'], r'\bkapal\b', 'Kapal Motor'),
+        (['aset_tidak_bergerak_lahan_lainnya', 'lahan_lainnya', 'lahan'], r'\b(?:lahan|tanah)\s+lain(?:nya)?\b', 'Lahan Lainnya'),
+        (['aset_tidak_bergerak_rumah_lainnya', 'rumah_lainnya', 'rumah_lain'], r'\brumah\s+lain(?:nya)?\b', 'Rumah Lainnya')
+    ]
+    for a_hints, a_pattern, a_tag in asset_defs:
+        if re.search(a_pattern, q_low):
+            a_col = find_col(a_hints)
+            if a_col:
+                clauses.append(f'(LOWER(CAST("{a_col}" AS VARCHAR)) = \'ya\' OR LOWER(CAST("{a_col}" AS VARCHAR)) = \'1\' OR LOWER(CAST("{a_col}" AS VARCHAR)) LIKE \'%punya%\' OR LOWER(CAST("{a_col}" AS VARCHAR)) LIKE \'%ada%\' OR LOWER(CAST("{a_col}" AS VARCHAR)) LIKE \'%{a_hints[-1]}%\')')
+                tags.append(f'Aset: {a_tag}')
+            else:
+                tags.append(f'Aset: {a_tag} (Kolom N/A)')
+            strip_from_residual(a_pattern)
+            strip_from_residual(r'\b(?:aset|kendaraan|elektronik)\b')
+
+    # 14. Kepemilikan Ternak (Sapi, Kambing, Kerbau, Kuda, Babi, Ayam)
+    livestock_defs = [
+        (['jumlah_ternak_sapi', 'sapi', 'ternak_sapi'], r'(\d+)\s*(?:ekor\s*)?(?:sapi|lembu)|(?:sapi|lembu)\s*(?:>=|>|minimal|di atas|sebanyak|punya)?\s*(\d+)', r'\b(?:sapi|lembu)\b', 'Sapi'),
+        (['jumlah_ternak_kambing_domba', 'kambing', 'domba', 'ternak_kambing'], r'(\d+)\s*(?:ekor\s*)?(?:kambing|domba)|(?:kambing|domba)\s*(?:>=|>|minimal|di atas|sebanyak|punya)?\s*(\d+)', r'\b(?:kambing|domba)\b', 'Kambing / Domba'),
+        (['jumlah_ternak_kerbau', 'kerbau', 'ternak_kerbau'], r'(\d+)\s*(?:ekor\s*)?kerbau|kerbau\s*(?:>=|>|minimal|di atas|sebanyak|punya)?\s*(\d+)', r'\bkerbau\b', 'Kerbau'),
+        (['jumlah_ternak_kuda', 'kuda', 'ternak_kuda'], r'(\d+)\s*(?:ekor\s*)?kuda|kuda\s*(?:>=|>|minimal|di atas|sebanyak|punya)?\s*(\d+)', r'\bkuda\b', 'Kuda'),
+        (['jumlah_ternak_babi', 'babi', 'ternak_babi'], r'(\d+)\s*(?:ekor\s*)?babi|babi\s*(?:>=|>|minimal|di atas|sebanyak|punya)?\s*(\d+)', r'\bbabi\b', 'Babi'),
+        (['jumlah_ternak_ayam', 'ayam', 'unggas'], r'(\d+)\s*(?:ekor\s*)?(?:ayam|unggas)|(?:ayam|unggas)\s*(?:>=|>|minimal|di atas|sebanyak|punya)?\s*(\d+)', r'\b(?:ayam|unggas)\b', 'Ayam / Unggas')
+    ]
+    for ls_hints, num_pattern, simple_pattern, ls_tag in livestock_defs:
+        ls_match = re.search(num_pattern, q_low)
+        ls_simple = re.search(simple_pattern, q_low)
+        if ls_match or ls_simple:
+            ls_col = find_col(ls_hints)
+            if ls_match:
+                val = ls_match.group(1) or ls_match.group(2)
+                if is_kk_scope or 'kk' in q_low or 'keluarga' in q_low:
+                    if ls_col:
+                        having_clauses.append(f'MAX(COALESCE(TRY_CAST("{ls_col}" AS DOUBLE), 0)) >= {val}')
+                    tags.append(f'Aset {ls_tag} KK: ≥ {val} ekor' + ('' if ls_col else ' (Kolom N/A)'))
+                    is_kk_scope = True
+                else:
+                    if ls_col:
+                        clauses.append(f'COALESCE(TRY_CAST("{ls_col}" AS DOUBLE), 0) >= {val}')
+                    tags.append(f'{ls_tag}: ≥ {val} ekor' + ('' if ls_col else ' (Kolom N/A)'))
+                strip_from_residual(re.escape(ls_match.group(0)))
+            elif ls_simple:
+                if ls_col:
+                    clauses.append(f'COALESCE(TRY_CAST("{ls_col}" AS DOUBLE), 0) > 0')
+                    tags.append(f'Memiliki {ls_tag}')
+                else:
+                    tags.append(f'Memiliki {ls_tag} (Kolom N/A)')
+                strip_from_residual(simple_pattern)
+            strip_from_residual(r'\b(?:ternak|hewan|ekor)\b')
+
+    # 15. Desil Kesejahteraan & Bansos
+    desil_col = find_col(['desil_nasional', 'desil_provinsi', 'desil_kabupaten_kota', 'desil'])
+    desil_match = re.search(r'desil\s*(\d+)', q_low)
+    if desil_match:
+        d_val = desil_match.group(1)
+        if desil_col:
+            clauses.append(f'TRY_CAST("{desil_col}" AS INTEGER) = {d_val}')
+            tags.append(f'Desil: {d_val}')
+        else:
+            tags.append(f'Desil: {d_val} (Kolom N/A)')
+        strip_from_residual(re.escape(desil_match.group(0)))
+        strip_from_residual(r'\b(?:miskin|prasejahtera|rentan|mampu|sejahtera)\b')
+    elif re.search(r'\b(?:miskin\s+ekstrem)\b', q_low):
+        if desil_col:
+            clauses.append(f'TRY_CAST("{desil_col}" AS INTEGER) = 1')
+            tags.append('Kategori: Miskin Ekstrem (Desil 1)')
+        else:
+            tags.append('Kategori: Miskin Ekstrem (Kolom N/A)')
+        strip_from_residual(r'\b(?:miskin\s+ekstrem)\b')
+    elif re.search(r'\b(?:miskin|prasejahtera)\b', q_low):
+        if desil_col:
+            clauses.append(f'TRY_CAST("{desil_col}" AS INTEGER) IN (1, 2)')
+            tags.append('Kategori: Miskin (Desil 1-2)')
+        else:
+            tags.append('Kategori: Miskin (Kolom N/A)')
+        strip_from_residual(r'\b(?:miskin|prasejahtera)\b')
+    elif re.search(r'\b(?:rentan\s+miskin)\b', q_low):
+        if desil_col:
+            clauses.append(f'TRY_CAST("{desil_col}" AS INTEGER) IN (3, 4)')
+            tags.append('Kategori: Rentan Miskin (Desil 3-4)')
+        else:
+            tags.append('Kategori: Rentan Miskin (Kolom N/A)')
+        strip_from_residual(r'\b(?:rentan\s+miskin)\b')
+
+    # Bansos
+    bansos_col = find_col(['status_bantuan', 'bantuan', 'bansos', 'pbi_nasional', 'pbi_pemda'])
+    if re.search(r'\b(?:penerima\s+bansos|dapat\s+bansos|bansos|pkh|bpnt|blt|pbi|kis)\b', q_low) and not 'bukan' in q_low:
+        if bansos_col:
+            clauses.append(f'(LOWER(CAST("{bansos_col}" AS VARCHAR)) LIKE \'%penerima%\' OR LOWER(CAST("{bansos_col}" AS VARCHAR)) = \'ya\' OR LOWER(CAST("{bansos_col}" AS VARCHAR)) = \'1\')')
+            tags.append('Bansos: Penerima')
+        else:
+            tags.append('Bansos: Penerima (Kolom N/A)')
+        strip_from_residual(r'\b(?:penerima\s+bansos|dapat\s+bansos|bansos|pkh|bpnt|blt|pbi|kis)\b')
+        strip_from_residual(r'\b(?:bantuan|penerima)\b')
+    elif re.search(r'\b(?:bukan\s+penerima|tidak\s+dapat\s+bansos|non\s+bansos)\b', q_low):
+        if bansos_col:
+            clauses.append(f'(LOWER(CAST("{bansos_col}" AS VARCHAR)) LIKE \'%bukan%\' OR LOWER(CAST("{bansos_col}" AS VARCHAR)) = \'tidak\' OR LOWER(CAST("{bansos_col}" AS VARCHAR)) = \'0\')')
+            tags.append('Bansos: Bukan Penerima')
+        strip_from_residual(r'\b(?:bukan\s+penerima|tidak\s+dapat\s+bansos|non\s+bansos)\b')
+
+    # 16. Residual keywords handling (Safety net for unparsed location or specific search terms)
+    domain_stop_words = {
+        'dan', 'dengan', 'yang', 'di', 'ke', 'dari', 'pada', 'untuk', 'ada', 'nya', 'atau', 'ini', 'itu',
+        'wilayah', 'daerah', 'kecamatan', 'kabupaten', 'desa', 'kelurahan', 'kota',
+        'punya', 'memiliki', 'tertinggi', 'rumah', 'pendidikan', 'atap', 'dinding', 'lantai',
+        'aset', 'kendaraan', 'disabilitas', 'status', 'gaji', 'kondisi', 'fasilitas', 'bahan', 'bakar',
+        'jamban', 'wc', 'air', 'ternak', 'pekerjaan', 'desil', 'usia', 'umur', 'keluarga', 'kk', 'orang',
+        'bantuan', 'bansos', 'ekor', 'tahun', 'thn', 'jt', 'juta', 'rb', 'ribu', 'va', 'watt',
+        'miskin', 'prasejahtera', 'rentan', 'mampu', 'sejahtera', 'cemplung', 'bakar'
+    }
     tokens = [w.strip() for w in re.split(r'[^a-zA-Z0-9]+', cleaned_for_residuals) if w.strip()]
-    residual_words = [w for w in tokens if len(w) >= 3 and w not in stop_words]
+    residual_words = [w for w in tokens if len(w) >= 3 and w not in domain_stop_words]
 
     if residual_words and not found_wilayah:
+        target_cols_for_residual = find_all_cols(['nama', 'nama_lengkap', 'kecamatan', 'kabupaten_kota', 'desa_kelurahan', 'alamat'])
+        if not target_cols_for_residual:
+            target_cols_for_residual = list(col_map.values())[:5]
         res_terms = []
         for rw in residual_words:
             rw_clean = rw.replace("'", "''")
-            target_cols_for_residual = wilayah_cols if wilayah_cols else list(col_map.values())
             sub_terms = [f'LOWER(CAST("{c}" AS VARCHAR)) LIKE \'%{rw_clean}%\'' for c in target_cols_for_residual]
             if sub_terms:
                 res_terms.append('(' + ' OR '.join(sub_terms) + ')')
@@ -392,7 +670,7 @@ def parse_semantic_nlq(search_str, existing_cols, table_ref):
     if not tags:
         return None, [], None
 
-    kk_col = col_map.get('nomor_kartu_keluarga', col_map.get('no_kk', col_map.get('kk', 'nomor_kartu_keluarga')))
+    kk_col = find_col(['nomor_kartu_keluarga', 'no_kk', 'kk', 'nomor_kartu_keluarga_kel']) or 'nomor_kartu_keluarga'
     
     if is_kk_scope and having_clauses:
         having_sql = " AND ".join(having_clauses)

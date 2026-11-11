@@ -269,9 +269,19 @@
                         </span>
                         <span class="text-xs text-slate-600 font-semibold hidden sm:inline">Kriteria terdeteksi:</span>
                         @foreach($nlqInfo['tags'] as $tag)
-                            <span class="px-2.5 py-1 rounded-xl bg-white border border-indigo-200 text-indigo-900 font-extrabold text-xs shadow-2xs flex items-center gap-1.5">
-                                <i class="fi fi-rr-check text-emerald-600 text-[10px]"></i> {{ $tag }}
-                            </span>
+                            @php
+                                $isMissingCol = str_contains($tag, '(Kolom N/A)');
+                                $displayTag = str_replace(' (Kolom N/A)', '', $tag);
+                            @endphp
+                            @if($isMissingCol)
+                                <span class="px-2.5 py-1 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 font-bold text-xs shadow-2xs flex items-center gap-1.5" title="Kriteria ini dikenali namun kolomnya belum ada di dataset aktif ini">
+                                    <i class="fi fi-rr-info text-amber-600 text-[10px]"></i> {{ $displayTag }} <span class="text-[9px] bg-amber-200/80 text-amber-900 px-1 py-0.5 rounded font-semibold uppercase tracking-wider">Kolom N/A</span>
+                                </span>
+                            @else
+                                <span class="px-2.5 py-1 rounded-xl bg-white border border-indigo-200 text-indigo-900 font-extrabold text-xs shadow-2xs flex items-center gap-1.5">
+                                    <i class="fi fi-rr-check text-emerald-600 text-[10px]"></i> {{ $tag }}
+                                </span>
+                            @endif
                         @endforeach
                     </div>
                     <a href="{{ route('dtsen.data', array_merge(request()->except('search'), ['page' => 1])) }}#tabel-data" 
