@@ -237,13 +237,12 @@ def parse_semantic_nlq(search_str, existing_cols, table_ref):
             if m_p and not m_l:
                 clauses.append(f'LOWER(CAST("{jk_col}" AS VARCHAR)) LIKE \'%perempuan%\'')
                 tags.append('Jenis Kelamin: Perempuan')
-                strip_from_residual(r'\b(perempuan|wanita|cewek|ibu)\b')
+                strip_from_residual(r'\b(?:jenis\s+kelamin\s*)?(?:perempuan|wanita|cewek|ibu)\b')
             elif m_l and not m_p:
                 clauses.append(f'LOWER(CAST("{jk_col}" AS VARCHAR)) LIKE \'%laki%\'')
                 tags.append('Jenis Kelamin: Laki-laki')
-                strip_from_residual(r'\b(laki|laki-laki|pria|cowok|bapak)\b')
-    else:
-        strip_from_residual(r'\b(perempuan|wanita|cewek|laki|laki-laki|pria|cowok)\b')
+                strip_from_residual(r'\b(?:jenis\s+kelamin\s*)?(?:laki|laki-laki|pria|cowok|bapak)\b')
+    strip_from_residual(r'\b(?:jenis\s+kelamin|gender|jk)\b')
 
     # 4. Status Hubungan Keluarga (SHDK)
     shdk_col = find_col(['status_hubungan_keluarga', 'shdk', 'hubungan_keluarga'])
@@ -264,8 +263,9 @@ def parse_semantic_nlq(search_str, existing_cols, table_ref):
             else:
                 tags.append(f'SHDK: {tag_name} (Kolom N/A)')
             strip_from_residual(pattern)
-            strip_from_residual(r'\b(?:shdk|status\s+hubungan)\b')
+            strip_from_residual(r'\b(?:status\s+hubungan(?:\s+keluarga)?|hubungan\s+keluarga|shdk)\b')
             break
+    strip_from_residual(r'\b(?:status\s+hubungan(?:\s+keluarga)?|hubungan\s+keluarga|shdk)\b')
 
     # 5. Status Perkawinan (Status Kawin)
     kawin_col = find_col(['status_kawin', 'status_pernikahan', 'perkawinan'])
@@ -709,12 +709,17 @@ def parse_semantic_nlq(search_str, existing_cols, table_ref):
     # 16. Residual keywords handling (Safety net for unparsed location or specific search terms)
     domain_stop_words = {
         'dan', 'dengan', 'yang', 'di', 'ke', 'dari', 'pada', 'untuk', 'ada', 'nya', 'atau', 'ini', 'itu',
-        'wilayah', 'daerah', 'kecamatan', 'kabupaten', 'desa', 'kelurahan', 'kota',
+        'wilayah', 'daerah', 'kecamatan', 'kabupaten', 'desa', 'kelurahan', 'kota', 'provinsi',
         'punya', 'memiliki', 'tertinggi', 'rumah', 'pendidikan', 'atap', 'dinding', 'lantai',
         'aset', 'kendaraan', 'disabilitas', 'status', 'gaji', 'kondisi', 'fasilitas', 'bahan', 'bakar',
         'jamban', 'wc', 'air', 'ternak', 'pekerjaan', 'desil', 'usia', 'umur', 'keluarga', 'kk', 'orang',
         'bantuan', 'bansos', 'ekor', 'tahun', 'thn', 'jt', 'juta', 'rb', 'ribu', 'va', 'watt',
-        'miskin', 'prasejahtera', 'rentan', 'mampu', 'sejahtera', 'cemplung', 'bakar'
+        'miskin', 'prasejahtera', 'rentan', 'mampu', 'sejahtera', 'cemplung', 'bakar',
+        'jenis', 'kelamin', 'gender', 'jk', 'hubungan', 'shdk', 'perkawinan', 'pernikahan',
+        'jenjang', 'ijazah', 'tamat', 'lulusan', 'terakhir', 'tingkat', 'utama', 'penerima',
+        'anggota', 'kepala', 'sebagai', 'berdasarkan', 'urutkan', 'sesuai', 'kelompokkan',
+        'data', 'tampilkan', 'cari', 'carikan', 'lihat', 'munculkan', 'daftar', 'semua', 'saja', 'hanya',
+        'adalah', 'yaitu', 'sudah', 'belum', 'tidak', 'bukan', 'masih'
     }
     tokens = [w.strip() for w in re.split(r'[^a-zA-Z0-9]+', cleaned_for_residuals) if w.strip()]
     residual_words = [w for w in tokens if len(w) >= 3 and w not in domain_stop_words]
