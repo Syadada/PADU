@@ -375,22 +375,16 @@
                     <div class="demo-accounts-box">
                         <div class="demo-accounts-title">
                             <i class="fi fi-rr-bolt" style="font-size: 14px; color: #2563eb;"></i>
-                            <span>Pilih Cepat Akun Demo (Klik untuk Masuk Langsung):</span>
+                            <span>Pilih Cepat Akun (Klik untuk Masuk Langsung):</span>
                         </div>
                         <div class="demo-account-buttons">
                             <button type="button" 
-                                    @click="quickLogin('superadmin@padu.local', 'PasswordSuperAdmin2026!')" 
+                                    @click="quickLogin('admin@padu.local', 'PasswordAdmin2026!')" 
                                     class="demo-chip"
-                                    title="Klik untuk langsung masuk sebagai Super Administrator">
-                                <span class="chip-role"><i class="fi fi-rr-crown text-amber-500"></i> Super Administrator</span>
-                                <span class="chip-email">superadmin@padu.local &bull; <strong>Masuk Otomatis</strong></span>
-                            </button>
-                            <button type="button" 
-                                    @click="quickLogin('operator@padu.local', 'PasswordOperator2026!')" 
-                                    class="demo-chip"
-                                    title="Klik untuk langsung masuk sebagai Operator Data">
-                                <span class="chip-role"><i class="fi fi-rr-user text-slate-500"></i> Operator Data</span>
-                                <span class="chip-email">operator@padu.local &bull; <strong>Masuk Otomatis</strong></span>
+                                    style="width: 100%; justify-content: center;"
+                                    title="Klik untuk langsung masuk sebagai Administrator">
+                                <span class="chip-role"><i class="fi fi-rr-shield-check text-blue-600"></i> Administrator</span>
+                                <span class="chip-email">admin@padu.local &bull; <strong>Masuk Otomatis</strong></span>
                             </button>
                         </div>
                     </div>
@@ -402,11 +396,11 @@
                     <!-- Box Pengguna Terdeteksi -->
                     <div class="user-detect-box">
                         <div class="user-detect-info">
-                            <div class="user-avatar" :class="userInfo && userInfo.role === 'superadmin' ? 'avatar-superadmin' : (email === 'superadmin@padu.local' ? 'avatar-superadmin' : 'avatar-operator')">
-                                <span x-text="userInfo && userInfo.role === 'superadmin' ? 'Super Admin' : (email === 'superadmin@padu.local' ? 'Super Admin' : 'Operator')"></span>
+                            <div class="user-avatar avatar-superadmin">
+                                <span>Admin</span>
                             </div>
                             <div>
-                                <div class="user-name" x-text="userInfo ? userInfo.name : (email === 'superadmin@padu.local' ? 'Super Administrator (Pimpinan)' : 'Operator Data DTSEN')"></div>
+                                <div class="user-name" x-text="userInfo ? userInfo.name : 'Administrator'"></div>
                                 <div class="user-email-text" x-text="email"></div>
                             </div>
                         </div>
@@ -418,9 +412,8 @@
                     <!-- Role Badge -->
                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
                         <span style="font-size: 11px; font-weight: 700; color: #64748b;">Hak Akses:</span>
-                        <span class="role-tag" 
-                              :class="userInfo && userInfo.role === 'superadmin' ? 'role-superadmin' : (email === 'superadmin@padu.local' ? 'role-superadmin' : 'role-operator')"
-                              x-text="userInfo ? userInfo.role_label : (email === 'superadmin@padu.local' ? 'Super Administrator (Pimpinan)' : 'Operator Data Staf')"></span>
+                        <span class="role-tag role-superadmin" 
+                              x-text="userInfo ? userInfo.role_label : 'Administrator'"></span>
                     </div>
 
                     <div class="form-group">
@@ -451,9 +444,9 @@
 
                         <!-- Auto-fill hint for standard credential -->
                         <div style="margin-top: 8px; font-size: 11px; color: #64748b; background: #f8fafc; padding: 7px 10px; border-radius: 8px; border: 1px dashed #cbd5e1; display: flex; align-items: center; justify-content: space-between;">
-                            <span>Sandi Standar: <code style="font-weight: 700; color: #1e40af;" x-text="email === 'superadmin@padu.local' ? 'PasswordSuperAdmin2026!' : 'PasswordOperator2026!'"></code></span>
+                            <span>Sandi Standar: <code style="font-weight: 700; color: #1e40af;">PasswordAdmin2026!</code></span>
                             <button type="button" 
-                                    @click="password = (email === 'superadmin@padu.local' ? 'PasswordSuperAdmin2026!' : 'PasswordOperator2026!')"
+                                    @click="password = 'PasswordAdmin2026!'"
                                     style="background: #e0f2fe; border: 1px solid #bae6fd; color: #0369a1; font-size: 11px; font-weight: 700; cursor: pointer; text-decoration: none; padding: 3px 8px; border-radius: 6px;">
                                 Isi Otomatis
                             </button>

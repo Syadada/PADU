@@ -34,6 +34,9 @@ class AuthController extends Controller
         ]);
 
         $email = trim(strtolower($request->email));
+        if ($email === 'superadmin@padu.local') {
+            $email = 'admin@padu.local';
+        }
         $user = User::where('email', $email)->first();
 
         if (!$user) {
@@ -75,6 +78,9 @@ class AuthController extends Controller
         ]);
 
         $email = trim(strtolower($request->email));
+        if ($email === 'superadmin@padu.local') {
+            $email = 'admin@padu.local';
+        }
         $user = User::where('email', $email)->first();
 
         if (!$user) {

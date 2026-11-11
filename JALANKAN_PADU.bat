@@ -9,12 +9,12 @@ REM =======================================================================
 REM 0. Memastikan system PATH standar Windows & PowerShell selalu tersedia
 set "PATH=%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem;%SystemRoot%\System32\WindowsPowerShell\v1.0\;%LOCALAPPDATA%\Microsoft\WindowsApps;%PATH%"
 
-title PADU v1.02 - Pengolah dan Analisis Data Terpadu (DTSEN 2026)
+title PADU - Pengolah dan Analisis Data Terpadu (DTSEN 2026)
 color 0A
 
 echo =======================================================================
-echo          PADU v1.02 - PENGOLAH DAN ANALISIS DATA TERPADU (OFFLINE)
-echo             ALL-IN-ONE AUTOMATIC DEPENDENCY ^& SERVER LAUNCHER
+echo          PADU - PENGOLAH DAN ANALISIS DATA TERPADU (DTSEN 2026)
+echo             ALL-IN-ONE AUTOMATIC SETUP ^& SERVER LAUNCHER
 echo =======================================================================
 echo.
 
@@ -296,8 +296,13 @@ rem =======================================================================
 echo.
 echo [6/7] Memeriksa ketersediaan port jaringan web server...
 
+rem Bersihkan proses PHP zombie yang mungkin menggantung dari sesi sebelumnya pada port 8000
+for /f "tokens=5" %%a in ('%SystemRoot%\system32\netstat.exe -ano 2^>nul ^| %SystemRoot%\system32\findstr.exe /C:":8000 " ^| %SystemRoot%\system32\findstr.exe "LISTENING"') do (
+    %SystemRoot%\system32\taskkill.exe /F /PID %%a >nul 2>&1
+)
+
 set "LARAVEL_PORT=8000"
-for %%p in (8000 8001 8002 8003 8004 8005 8080 8081 8082 8083 8084 8085 8086 8087 8088 8089 8888 8008 8090 9000 9001 9002) do (
+for %%p in (8000 8001 8002 8003 8004 8005 8080 8081 8082 8083 8084 8085 8888 9000) do (
     %SystemRoot%\system32\netstat.exe -ano 2>nul | %SystemRoot%\system32\findstr.exe /C:":%%p " | %SystemRoot%\system32\findstr.exe "LISTENING" >nul 2>&1
     if errorlevel 1 (
         set "LARAVEL_PORT=%%p"
@@ -307,7 +312,7 @@ for %%p in (8000 8001 8002 8003 8004 8005 8080 8081 8082 8083 8084 8085 8086 808
 
 :port_found
 if not "%LARAVEL_PORT%"=="8000" (
-    echo [INFO] Port 8000 sedang digunakan oleh sistem/aplikasi lain.
+    echo [INFO] Port 8000 sedang digunakan oleh aplikasi lain.
     echo [PORT] Mengalihkan server secara otomatis ke port bebas: %LARAVEL_PORT%!
 ) else (
     echo [OK] Port %LARAVEL_PORT% bebas dan siap digunakan.
@@ -327,9 +332,9 @@ rem =======================================================================
 rem 7. MEMBUKA PERAMBAN DAN MENJALANKAN SERVER
 rem =======================================================================
 echo.
-echo [7/7] Meluncurkan peramban (browser) dan mengaktifkan Web Server...
+echo [7/7] Mengaktifkan Web Server dan meluncurkan antarmuka sistem...
 echo =======================================================================
-echo  SISTEM PADU v1.02 BERHASIL DIAKTIFKAN!
+echo  SISTEM PADU BERHASIL DIAKTIFKAN!
 echo  - Akses Laptop Ini  : http://127.0.0.1:%LARAVEL_PORT%/
 if defined SERVER_IP (
 echo  - Akses Jaringan LAN: http://%SERVER_IP%:%LARAVEL_PORT%/
@@ -345,17 +350,11 @@ echo  Tekan kombinasi tombol CTRL+C di sini untuk mematikan server kapan saja.
 echo =======================================================================
 echo.
 
-rem Buka browser otomatis ke port yang tepat
-start "" "http://127.0.0.1:%LARAVEL_PORT%/"
+rem Meluncurkan pemantau ketersediaan server di latar belakang (Buka browser HANYA saat server siap listening)
+start /b "" cmd /c "for /l %%k in (1,1,30) do ( timeout /t 1 /nobreak >nul & %SystemRoot%\system32\netstat.exe -ano 2>nul | %SystemRoot%\system32\findstr.exe /C:":!LARAVEL_PORT! " | %SystemRoot%\system32\findstr.exe "LISTENING" >nul && ( timeout /t 1 /nobreak >nul & start "" "http://127.0.0.1:!LARAVEL_PORT!/" & exit ) )"
 
-rem Jalankan Laravel Server pada port bebas yang telah dideteksi
-"%PHP_BIN%" -d variables_order=EGPCS -d memory_limit=1024M -d upload_max_filesize=500M -d post_max_size=550M -d max_execution_time=600 -d max_input_time=600 artisan serve --host=127.0.0.1 --port=%LARAVEL_PORT%
-
-if %errorlevel% neq 0 (
-    echo.
-    echo [INFO] artisan serve mengalami kendala. Menjalankan fallback web server [server.php]...
-    "%PHP_BIN%" -d variables_order=EGPCS -d memory_limit=1024M -d upload_max_filesize=500M -d post_max_size=550M -d max_execution_time=600 -d max_input_time=600 -t "%PROJECT_DIR%public" -S 127.0.0.1:%LARAVEL_PORT% "%PROJECT_DIR%server.php"
-)
+rem Jalankan Web Server berkecepatan tinggi dengan router server.php langsung ke 0.0.0.0
+"%PHP_BIN%" -d variables_order=EGPCS -d memory_limit=1024M -d upload_max_filesize=500M -d post_max_size=550M -d max_execution_time=600 -d max_input_time=600 -t "%PROJECT_DIR%public" -S 0.0.0.0:%LARAVEL_PORT% "%PROJECT_DIR%server.php"
 
 echo.
 echo [INFO] Server PADU telah dihentikan.
