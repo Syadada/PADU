@@ -257,7 +257,6 @@
                             </span>
                             <h3 class="font-extrabold text-slate-900 text-sm">Bulk Search (Pencarian Massal NIK / KK)</h3>
                         </div>
-                        </div>
                         <button type="button" @click="showBulkSearchModal = false" class="text-slate-400 hover:text-slate-600 text-base cursor-pointer">
                             <i class="fi fi-rr-cross"></i>
                         </button>
