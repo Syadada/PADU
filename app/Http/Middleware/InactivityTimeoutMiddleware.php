@@ -26,7 +26,7 @@ class InactivityTimeoutMiddleware
                 
                 AuditLogger::log(
                     'AUTH_TIMEOUT',
-                    "Sesi pengguna '{$user->name}' ({$user->email}) diputus otomatis karena tidak ada aktivitas selama 15 menit (Kepatuhan BSSN No. 4/2021).",
+                    "Sesi pengguna '{$user->name}' ({$user->email}) diputus otomatis karena tidak ada aktivitas selama 15 menit.",
                     'WARNING',
                     ['last_activity' => date('Y-m-d H:i:s', $lastActivity)],
                     $user->id,
@@ -38,7 +38,14 @@ class InactivityTimeoutMiddleware
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
 
-                return redirect()->route('login')->with('warning', '⚠️ Sesi Anda telah berakhir secara otomatis karena tidak ada aktivitas selama 15 menit (Sesuai Standar Keamanan BSSN No. 4/2021). Silakan masuk kembali.');
+                if ($request->expectsJson() || $request->ajax()) {
+                    return response()->json([
+                        'message' => 'Sesi Anda telah berakhir karena tidak ada aktivitas. Silakan masuk kembali.',
+                        'redirect' => route('login'),
+                    ], 401);
+                }
+
+                return redirect()->route('login')->with('warning', 'Sesi Anda telah berakhir karena tidak ada aktivitas. Silakan masuk kembali.');
             }
 
             session(['padu_last_activity_time' => time()]);

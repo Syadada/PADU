@@ -846,5 +846,59 @@
         };
     }
     </script>
+
+    <!-- Global Session Timeout & Request Interceptor -->
+    <script>
+    (function() {
+        const loginUrl = "{{ route('login') }}?timeout=1";
+
+        // 1. Intersep Fetch API Global (Tangani HTTP 401 Unauthorized / HTTP 419 Page Expired)
+        if (window.fetch) {
+            const rawFetch = window.fetch;
+            window.fetch = async function(...args) {
+                try {
+                    const response = await rawFetch.apply(this, args);
+                    if (response.status === 401 || response.status === 419) {
+                        window.location.href = loginUrl;
+                        return response;
+                    }
+                    return response;
+                } catch (err) {
+                    throw err;
+                }
+            };
+        }
+
+        // 2. Intersep XMLHttpRequest Global
+        if (window.XMLHttpRequest) {
+            const rawOpen = XMLHttpRequest.prototype.open;
+            XMLHttpRequest.prototype.open = function() {
+                this.addEventListener('load', function() {
+                    if (this.status === 401 || this.status === 419) {
+                        window.location.href = loginUrl;
+                    }
+                });
+                return rawOpen.apply(this, arguments);
+            };
+        }
+
+        // 3. Monitor Inaktivitas Otomatis 15 Menit
+        let inactivityTimer;
+        const TIMEOUT_MS = 15 * 60 * 1000;
+
+        function resetInactivityTimer() {
+            clearTimeout(inactivityTimer);
+            inactivityTimer = setTimeout(() => {
+                window.location.href = loginUrl;
+            }, TIMEOUT_MS);
+        }
+
+        ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart', 'click'].forEach(evt => {
+            window.addEventListener(evt, resetInactivityTimer, { passive: true });
+        });
+
+        resetInactivityTimer();
+    })();
+    </script>
 </body>
 </html>

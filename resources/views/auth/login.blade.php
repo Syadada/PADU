@@ -301,6 +301,11 @@
                     <i class="fi fi-rr-triangle-warning" style="font-size: 15px;"></i>
                     <span>{{ session('warning') }}</span>
                 </div>
+            @elseif(request()->has('timeout'))
+                <div class="alert-box alert-warning">
+                    <i class="fi fi-rr-triangle-warning" style="font-size: 15px;"></i>
+                    <span>Sesi Anda telah berakhir karena tidak ada aktivitas. Silakan masuk kembali.</span>
+                </div>
             @endif
 
             <!-- Dynamic Error Box -->
