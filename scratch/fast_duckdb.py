@@ -99,25 +99,35 @@ def build_where_clause(con, table_ref, params):
             if alamat_col: w_parts.append(f'LOWER(CAST("{alamat_col}" AS VARCHAR)) LIKE \'%{search_clean}%\'')
             if w_parts:
                 where_clauses.append('(' + ' OR '.join(w_parts) + ')')
+        elif search_by in ('jenis_kelamin', 'jk', 'gender'):
+            jk_col = existing_cols.get('jenis_kelamin', existing_cols.get('jk', existing_cols.get('gender')))
+            if jk_col:
+                where_clauses.append(f'LOWER(CAST("{jk_col}" AS VARCHAR)) LIKE \'%{search_clean}%\'')
+        elif search_by in ('status_kawin', 'status_pernikahan', 'pernikahan'):
+            sk_col = existing_cols.get('status_kawin', existing_cols.get('status_pernikahan'))
+            if sk_col:
+                where_clauses.append(f'LOWER(CAST("{sk_col}" AS VARCHAR)) LIKE \'%{search_clean}%\'')
+        elif search_by in ('status_bekerja', 'pekerjaan'):
+            sb_col = existing_cols.get('status_bekerja', existing_cols.get('pekerjaan'))
+            if sb_col:
+                where_clauses.append(f'LOWER(CAST("{sb_col}" AS VARCHAR)) LIKE \'%{search_clean}%\'')
+        elif search_by in ('status_bantuan', 'bantuan'):
+            sba_col = existing_cols.get('status_bantuan')
+            if sba_col:
+                where_clauses.append(f'LOWER(CAST("{sba_col}" AS VARCHAR)) LIKE \'%{search_clean}%\'')
+        elif search_by in existing_cols:
+            actual_col = existing_cols[search_by]
+            where_clauses.append(f'LOWER(CAST("{actual_col}" AS VARCHAR)) LIKE \'%{search_clean}%\'')
         else:
-            # Global 'all' search
+            # Global 'all' search across all meaningful columns
             if len(search) == 16 and search.isdigit():
                 where_clauses.append(f'(CAST("{nik_col}" AS VARCHAR) = \'{search}\' OR CAST("{kk_col}" AS VARCHAR) = \'{search}\')')
-            elif search.isdigit():
-                where_clauses.append(f'(CAST("{nik_col}" AS VARCHAR) LIKE \'{search}%\' OR CAST("{kk_col}" AS VARCHAR) LIKE \'{search}%\')')
             else:
-                prov_col = existing_cols.get('provinsi')
-                kec_col = existing_cols.get('kecamatan')
-                kab_col = existing_cols.get('kabupaten_kota', existing_cols.get('kabupaten'))
-                or_terms = [
-                    f'LOWER(CAST("{nama_col}" AS VARCHAR)) LIKE \'%{search_clean}%\'',
-                    f'LOWER(CAST("{nik_col}" AS VARCHAR)) LIKE \'%{search_clean}%\'',
-                    f'LOWER(CAST("{kk_col}" AS VARCHAR)) LIKE \'%{search_clean}%\''
-                ]
-                if kec_col: or_terms.append(f'LOWER(CAST("{kec_col}" AS VARCHAR)) LIKE \'%{search_clean}%\'')
-                if kab_col: or_terms.append(f'LOWER(CAST("{kab_col}" AS VARCHAR)) LIKE \'%{search_clean}%\'')
-                if prov_col: or_terms.append(f'LOWER(CAST("{prov_col}" AS VARCHAR)) LIKE \'%{search_clean}%\'')
-                where_clauses.append('(' + ' OR '.join(or_terms) + ')')
+                skip_cols = {'id', 'quality_issues', 'extra_attributes', 'created_at', 'updated_at'}
+                searchable_cols = [col_orig for col_lower, col_orig in existing_cols.items() if col_lower not in skip_cols]
+                if searchable_cols:
+                    or_terms = [f'LOWER(CAST("{c}" AS VARCHAR)) LIKE \'%{search_clean}%\'' for c in searchable_cols]
+                    where_clauses.append('(' + ' OR '.join(or_terms) + ')')
 
     # 1b. Bulk Search (NIK / KK)
     bulk_raw = params.get('bulk_search')

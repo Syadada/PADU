@@ -83,6 +83,9 @@
                             <option value="kk" {{ ($searchBy ?? '') === 'kk' ? 'selected' : '' }}>No. Kartu Keluarga (KK)</option>
                             <option value="nama" {{ ($searchBy ?? '') === 'nama' ? 'selected' : '' }}>Nama Lengkap</option>
                             <option value="wilayah" {{ ($searchBy ?? '') === 'wilayah' ? 'selected' : '' }}>Wilayah Domisili</option>
+                            <option value="jenis_kelamin" {{ ($searchBy ?? '') === 'jenis_kelamin' ? 'selected' : '' }}>Jenis Kelamin</option>
+                            <option value="status_kawin" {{ ($searchBy ?? '') === 'status_kawin' ? 'selected' : '' }}>Status Perkawinan</option>
+                            <option value="status_bekerja" {{ ($searchBy ?? '') === 'status_bekerja' ? 'selected' : '' }}>Status Bekerja</option>
                         </select>
                     </div>
 
@@ -93,7 +96,7 @@
                         <input type="text" 
                                name="search" 
                                value="{{ $search }}" 
-                               placeholder="Ketik kata kunci pencarian (NIK, KK, Nama, atau Wilayah)..." 
+                               placeholder="Ketik kata kunci pencarian (Semua kolom, Nama, NIK, Gender, dll)..." 
                                style="padding-left: 44px !important; padding-right: 80px !important;"
                                class="w-full pl-10 pr-20 py-2.5 bg-slate-50 border border-slate-300 text-slate-900 font-bold text-xs rounded-xl outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all shadow-xs">
                         @if(!empty($search))
