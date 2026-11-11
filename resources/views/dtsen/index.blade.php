@@ -896,7 +896,9 @@
                 <div class="relative w-full flex items-center">
                     <label for="dtsen_table_search" class="sr-only">Cari data tabel</label>
                     <i class="fi fi-rr-search text-slate-400 text-sm pointer-events-none" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); z-index: 5;"></i>
-                    <input type="text" id="dtsen_table_search" name="search" value="{{ $search }}" autocomplete="off" aria-label="Cari data NIK, KK, Nama, Alamat, Wilayah" placeholder="Cari data?..." class="w-full pl-10 pr-16 py-2.5 bg-slate-50 border border-slate-300 text-slate-900 font-bold text-xs rounded-xl outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all shadow-xs">
+                    <input type="text" id="dtsen_table_search" name="search" value="{{ $search }}" autocomplete="off" aria-label="Cari data NIK, KK, Nama, Alamat, Wilayah" placeholder="Cari data?..." 
+                           style="padding-left: 44px !important; padding-right: 70px !important;"
+                           class="w-full pl-10 pr-16 py-2.5 bg-slate-50 border border-slate-300 text-slate-900 font-bold text-xs rounded-xl outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all shadow-xs">
                     @if(!empty($search))
                         <a href="{{ route('dtsen.index') }}#tabel-data" class="text-slate-400 hover:text-slate-700 font-extrabold text-xs flex items-center gap-1" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); z-index: 5;"><i class="fi fi-rr-cross-small"></i> Clear</a>
                     @endif
@@ -1470,6 +1472,7 @@
                            x-model="filterSearchVal" 
                            @keydown.enter.prevent="applyActiveFilter()"
                            :placeholder="'Cari / filter kata kunci ' + activeFilterTitle + '...'"
+                           style="padding-left: 36px !important; padding-right: 32px !important;"
                            class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 pl-9 pr-8 outline-none focus:ring-2 focus:ring-blue-500 font-medium">
                     <button type="button" x-show="filterSearchVal" @click="filterSearchVal = ''" class="text-slate-400 hover:text-slate-600 text-sm font-bold cursor-pointer" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); z-index: 2;">
                         &times;

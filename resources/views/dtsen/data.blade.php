@@ -94,6 +94,7 @@
                                name="search" 
                                value="{{ $search }}" 
                                placeholder="Ketik kata kunci pencarian (NIK, KK, Nama, atau Wilayah)..." 
+                               style="padding-left: 44px !important; padding-right: 80px !important;"
                                class="w-full pl-10 pr-20 py-2.5 bg-slate-50 border border-slate-300 text-slate-900 font-bold text-xs rounded-xl outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all shadow-xs">
                         @if(!empty($search))
                             <a href="{{ route('dtsen.data', array_merge(request()->except('search'), ['page' => 1])) }}#tabel-data" 
@@ -608,6 +609,7 @@
                                    x-model="filterSearchVal" 
                                    @keydown.enter.prevent="applyActiveFilter()"
                                    :placeholder="'Cari / filter kata kunci ' + activeFilterTitle + '...'"
+                                   style="padding-left: 36px !important; padding-right: 32px !important;"
                                    class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 pl-9 pr-8 outline-none focus:ring-2 focus:ring-blue-500 font-medium">
                             <button type="button" 
                                     x-show="filterSearchVal" 

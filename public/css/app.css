@@ -54,6 +54,21 @@ i.fi {
 .-translate-y-1\/2 {
     transform: translateY(-50%) !important;
 }
+.pl-10 {
+    padding-left: 2.5rem !important;
+}
+.pl-11 {
+    padding-left: 2.75rem !important;
+}
+.pl-12 {
+    padding-left: 3rem !important;
+}
+.pr-16 {
+    padding-right: 4rem !important;
+}
+.pr-20 {
+    padding-right: 5rem !important;
+}
 
 /* ==========================================================================
    0. GLOBAL TEXT-DECORATION RESET: HAPUS SEMUA GARIS BAWAH PADA TEKS & LINK
