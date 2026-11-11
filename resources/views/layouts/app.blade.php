@@ -275,27 +275,27 @@
                     <!-- Breadcrumb Trail -->
                     <div class="flex items-center gap-2 text-xs font-semibold text-slate-500">
                         <a href="{{ route('dtsen.data') }}" class="hover:text-blue-600 transition-colors font-bold text-slate-700 flex items-center gap-1.5">
-                            <i class="fi fi-rr-apps text-blue-600"></i>
-                            <span class="hidden sm:inline">PADU</span>
+                            <i class="fi fi-rr-apps text-blue-600 text-sm"></i>
+                            <span>PADU</span>
                         </a>
-                        <span>/</span>
+                        <span class="text-slate-400">/</span>
                         <span class="font-extrabold text-blue-700 inline-flex items-center gap-1.5">
                             @if(request()->routeIs('dtsen.data') || request()->routeIs('dtsen.index'))
-                                <i class="fi fi-rr-table"></i> Data
+                                <i class="fi fi-rr-table text-sm"></i> <span>Data</span>
                             @elseif(request()->routeIs('dtsen.quality'))
-                                <i class="fi fi-rr-shield-check"></i> Kualitas
+                                <i class="fi fi-rr-shield-check text-sm"></i> <span>Kualitas</span>
                             @elseif(request()->routeIs('dtsen.kpi'))
-                                <i class="fi fi-rr-chart-pie-alt"></i> KPI
+                                <i class="fi fi-rr-chart-pie-alt text-sm"></i> <span>KPI</span>
                             @elseif(request()->routeIs('dtsen.salary'))
-                                <i class="fi fi-rr-dollar"></i> Gaji
+                                <i class="fi fi-rr-dollar text-sm"></i> <span>Gaji</span>
                             @elseif(request()->routeIs('dtsen.audit'))
-                                <i class="fi fi-rr-triangle-warning"></i> Audit
+                                <i class="fi fi-rr-triangle-warning text-sm"></i> <span>Audit</span>
                             @elseif(request()->routeIs('dtsen.files'))
-                                <i class="fi fi-rr-folder"></i> Berkas
+                                <i class="fi fi-rr-folder text-sm"></i> <span>Berkas</span>
                             @elseif(request()->routeIs('dtsen.activity-logs'))
-                                <i class="fi fi-rr-list-check"></i> Log
+                                <i class="fi fi-rr-list-check text-sm"></i> <span>Log</span>
                             @else
-                                <i class="fi fi-rr-apps"></i> Modul
+                                <i class="fi fi-rr-apps text-sm"></i> <span>Modul</span>
                             @endif
                         </span>
                     </div>
@@ -312,20 +312,15 @@
                     @endif
 
                     <!-- Quick Privacy Toggle -->
-                    <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
-                        <button @click="setMasked(true)" 
-                                class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
-                                :class="isMasked ? 'bg-rose-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'">
-                            <i class="fi fi-rr-lock text-xs"></i>
-                            <span class="hidden md:inline">Masked</span>
-                        </button>
-                        <button @click="setMasked(false)" 
-                                class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
-                                :class="!isMasked ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'">
-                            <i class="fi fi-rr-unlock text-xs"></i>
-                            <span class="hidden md:inline">Unmasked</span>
-                        </button>
-                    </div>
+                    <button type="button" 
+                            @click="toggleMasking()" 
+                            class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-all text-xs font-bold cursor-pointer shadow-2xs whitespace-nowrap"
+                            :class="isMasked ? 'bg-rose-50 text-rose-700 border-rose-300 hover:bg-rose-100' : 'bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100'"
+                            :title="isMasked ? 'Sensor Aktif: Klik untuk Membuka Masking NIK/KK' : 'Sensor Terbuka: Klik untuk Menutup / Sensor NIK/KK'">
+                        <i class="fi text-xs" :class="isMasked ? 'fi-rr-lock' : 'fi-rr-unlock'"></i>
+                        <span>Sensor:</span>
+                        <span class="font-black uppercase text-[10px] tracking-wider" x-text="isMasked ? 'Masked' : 'Unmasked'"></span>
+                    </button>
 
                     @auth
                         <!-- Dropdown Menu Profil & Pusat Administrasi Sistem -->

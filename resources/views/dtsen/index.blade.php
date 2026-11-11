@@ -893,11 +893,12 @@
 
             <!-- SEARCH ENGINE DATA TABLE (Pencarian Cepat NIK, KK, Nama, Alamat, Wilayah) -->
             <form method="GET" action="{{ route('dtsen.index') }}#tabel-data" id="dataTableSearchForm" class="flex items-center gap-2">
-                <div class="relative w-full">
+                <div class="relative w-full flex items-center">
                     <label for="dtsen_table_search" class="sr-only">Cari data tabel</label>
-                    <input type="text" id="dtsen_table_search" name="search" value="{{ $search }}" autocomplete="off" aria-label="Cari data NIK, KK, Nama, Alamat, Wilayah" placeholder="Cari data?..." class="w-full pl-4 pr-16 py-2.5 bg-slate-50 border border-slate-300 text-slate-900 font-bold text-xs rounded-xl outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all shadow-xs">
+                    <i class="fi fi-rr-search text-slate-400 text-sm pointer-events-none" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); z-index: 5;"></i>
+                    <input type="text" id="dtsen_table_search" name="search" value="{{ $search }}" autocomplete="off" aria-label="Cari data NIK, KK, Nama, Alamat, Wilayah" placeholder="Cari data?..." class="w-full pl-10 pr-16 py-2.5 bg-slate-50 border border-slate-300 text-slate-900 font-bold text-xs rounded-xl outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all shadow-xs">
                     @if(!empty($search))
-                        <a href="{{ route('dtsen.index') }}#tabel-data" class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-slate-700 font-extrabold text-xs"><i class="fi fi-rr-cross-small"></i> Clear</a>
+                        <a href="{{ route('dtsen.index') }}#tabel-data" class="text-slate-400 hover:text-slate-700 font-extrabold text-xs flex items-center gap-1" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); z-index: 5;"><i class="fi fi-rr-cross-small"></i> Clear</a>
                     @endif
                 </div>
                 <button type="submit" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl shadow-sm transition-all flex items-center gap-1.5 shrink-0 cursor-pointer">
@@ -1463,14 +1464,14 @@
                 </template>
 
                 <!-- Search input box -->
-                <div class="relative">
+                <div class="relative flex items-center">
+                    <i class="fi fi-rr-search text-slate-400 text-xs pointer-events-none" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); z-index: 2;"></i>
                     <input type="text" 
                            x-model="filterSearchVal" 
                            @keydown.enter.prevent="applyActiveFilter()"
                            :placeholder="'Cari / filter kata kunci ' + activeFilterTitle + '...'"
                            class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 pl-9 pr-8 outline-none focus:ring-2 focus:ring-blue-500 font-medium">
-                    <i class="fi fi-rr-search absolute left-3 top-3 text-slate-400 text-xs"></i>
-                    <button type="button" x-show="filterSearchVal" @click="filterSearchVal = ''" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 text-sm font-bold cursor-pointer">
+                    <button type="button" x-show="filterSearchVal" @click="filterSearchVal = ''" class="text-slate-400 hover:text-slate-600 text-sm font-bold cursor-pointer" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); z-index: 2;">
                         &times;
                     </button>
                 </div>

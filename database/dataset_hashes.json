@@ -142,5 +142,21 @@
             "matched_individu_count": 3,
             "matched_keluarga_count": 23
         }
+    },
+    "Hasil_Pencarian_DTSEN_20261110_155958.csv": {
+        "sha256": "6a4e746605ed23a76a2863b6294d2af9f80adc8600cefe8c916d4f5dc7157b1a",
+        "size": 21250188,
+        "mtime": 1794360649,
+        "calculated_at": "2026-11-11 08:30:49",
+        "scope": "gabungan",
+        "scope_info": {
+            "scope": "gabungan",
+            "scope_label": "Set Terpadu (Keduanya)",
+            "scope_badge": "bg-indigo-50 text-indigo-700 border-indigo-200",
+            "scope_icon": "fi fi-rr-apps",
+            "total_headers": 21,
+            "matched_individu_count": 11,
+            "matched_keluarga_count": 3
+        }
     }
 }

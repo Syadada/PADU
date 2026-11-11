@@ -32,6 +32,7 @@ __pycache__/
 *.pyc
 src-dtsen/sample_1_juta_data.csv
 src-dtsen/sample_13_juta_data.csv
+src-dtsen/Hasil_Pencarian_*.csv
 database/*.duckdb
 database/*.sqlite
 scratch/import_progress.json

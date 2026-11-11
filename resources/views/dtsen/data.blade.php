@@ -22,13 +22,13 @@
             <!-- Atur Kolom -->
             <button type="button" 
                     @click="showColumnModal = true" 
-                    class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl border border-slate-300 shadow-xs transition-all flex items-center gap-1.5 cursor-pointer">
-                <i class="fi fi-rr-settings-sliders"></i> <span>Atur Kolom</span> (<span x-text="visibleCols.length"></span>/{{ count($activeColumnsMap) }})
+                    class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl border border-slate-300 shadow-xs transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
+                <i class="fi fi-rr-settings-sliders"></i> <span>Atur Kolom ( <span x-text="visibleCols.length"></span>/{{ count($activeColumnsMap) }} )</span>
             </button>
             
             <!-- Unduh Hasil Pencarian (.CSV) -->
             <a href="{{ route('dtsen.export-search', request()->all()) }}" 
-               class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
+               class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
                title="Unduh hasil pencarian dan filter ke berkas CSV">
                 <i class="fi fi-rr-file-download text-sm"></i> <span>Unduh Hasil (.CSV)</span>
             </a>
@@ -36,14 +36,14 @@
             <!-- Ekspor Data Modal Trigger (.ZIP) -->
             <button type="button" 
                     @click="showExportModal = true" 
-                    class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl border border-slate-300 shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
+                    class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl border border-slate-300 shadow-xs transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
                     @if($totalRows === 0) disabled title="Belum ada data untuk diekspor" @endif>
                 <i class="fi fi-rr-upload"></i> <span>Ekspor Paket (.ZIP)</span>
             </button>
 
             <!-- Reset Filter -->
             <a href="{{ route('dtsen.data') }}" 
-               class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl border border-slate-300 shadow-xs transition-all flex items-center gap-1.5 cursor-pointer">
+               class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl border border-slate-300 shadow-xs transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
                 <i class="fi fi-rr-refresh"></i> <span>Reset Filter</span>
             </a>
         </div>
@@ -87,27 +87,32 @@
                     </div>
 
                     <!-- Search Input Field -->
-                    <div class="relative flex-1">
+                    <div class="relative flex-1 flex items-center">
+                        <i class="fi fi-rr-search text-slate-400 text-sm pointer-events-none" 
+                           style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); z-index: 5;"></i>
                         <input type="text" 
                                name="search" 
                                value="{{ $search }}" 
                                placeholder="Ketik kata kunci pencarian (NIK, KK, Nama, atau Wilayah)..." 
                                class="w-full pl-10 pr-20 py-2.5 bg-slate-50 border border-slate-300 text-slate-900 font-bold text-xs rounded-xl outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all shadow-xs">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 text-sm"><i class="fi fi-rr-search"></i></span>
                         @if(!empty($search))
-                            <a href="{{ route('dtsen.data', array_merge(request()->except('search'), ['page' => 1])) }}#tabel-data" class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-slate-700 font-extrabold text-xs"><i class="fi fi-rr-cross-small"></i> Clear</a>
+                            <a href="{{ route('dtsen.data', array_merge(request()->except('search'), ['page' => 1])) }}#tabel-data" 
+                               class="text-slate-400 hover:text-slate-700 font-extrabold text-xs flex items-center gap-1"
+                               style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); z-index: 5;">
+                                <i class="fi fi-rr-cross-small text-sm"></i> <span>Clear</span>
+                            </a>
                         @endif
                     </div>
 
                     <!-- Action Buttons -->
                     <div class="flex items-center gap-2 shrink-0">
-                        <button type="submit" class="flex-1 md:flex-initial px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                        <button type="submit" class="flex-1 md:flex-initial px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap">
                             <i class="fi fi-rr-search"></i> <span>Cari Data</span>
                         </button>
 
                         <button type="button" 
                                 @click="showBulkSearchModal = true" 
-                                class="flex-1 md:flex-initial px-4 py-2.5 rounded-xl border font-black text-xs flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer {{ !empty($bulkSearch) ? 'bg-indigo-600 text-white border-indigo-700 shadow-md shadow-indigo-600/20' : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200' }}">
+                                class="flex-1 md:flex-initial px-4 py-2.5 rounded-xl border font-black text-xs flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer whitespace-nowrap {{ !empty($bulkSearch) ? 'bg-indigo-600 text-white border-indigo-700 shadow-md shadow-indigo-600/20' : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200' }}">
                             <i class="fi fi-rr-users-alt"></i> <span>Bulk Search</span>
                             @if(!empty($bulkSearch))
                                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -115,7 +120,7 @@
                         </button>
 
                         <a href="{{ route('dtsen.export-search', request()->all()) }}" 
-                           class="flex-1 md:flex-initial px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                           class="flex-1 md:flex-initial px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
                            title="Unduh hasil pencarian dan filter ke berkas CSV">
                             <i class="fi fi-rr-file-download text-sm"></i> <span>Unduh CSV</span>
                         </a>
@@ -157,7 +162,9 @@
 
                         <!-- Flexible Sorts Selector -->
                         <div class="flex items-center gap-1.5 pl-1 sm:pl-3 sm:border-l border-slate-200">
-                            <span class="font-bold text-slate-500 text-[11px] uppercase tracking-wider"><i class="fi fi-rr-sort-alt"></i> Urutkan:</span>
+                            <span class="inline-flex items-center gap-1 font-bold text-slate-500 text-[11px] uppercase tracking-wider whitespace-nowrap">
+                                <i class="fi fi-rr-sort-alt text-xs"></i> <span>Urutkan:</span>
+                            </span>
                             <select name="order_by" onchange="document.getElementById('dataTableSearchForm').submit()" aria-label="Urutkan Data" class="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 font-bold text-xs cursor-pointer outline-none focus:border-blue-500">
                                 <option value="id_desc" {{ ($orderBy ?? '') === 'id_desc' ? 'selected' : '' }}>ID / Input Terbaru</option>
                                 <option value="id_asc" {{ ($orderBy ?? '') === 'id_asc' ? 'selected' : '' }}>ID / Input Terlama</option>
@@ -177,7 +184,9 @@
 
                     <!-- Set Row Numbers (Baris Per Halaman) -->
                     <div class="flex items-center gap-1.5">
-                        <span class="font-bold text-slate-500 text-[11px] uppercase tracking-wider"><i class="fi fi-rr-list"></i> Baris:</span>
+                        <span class="inline-flex items-center gap-1 font-bold text-slate-500 text-[11px] uppercase tracking-wider whitespace-nowrap">
+                            <i class="fi fi-rr-list text-xs"></i> <span>Baris:</span>
+                        </span>
                         <select name="per_page" onchange="document.getElementById('dataTableSearchForm').submit()" aria-label="Jumlah Baris Per Halaman" class="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 font-bold text-xs cursor-pointer outline-none focus:border-blue-500">
                             <option value="10" {{ ($perPage ?? 15) == 10 ? 'selected' : '' }}>10 baris</option>
                             <option value="15" {{ ($perPage ?? 15) == 15 ? 'selected' : '' }}>15 baris</option>
@@ -592,14 +601,19 @@
                         </template>
 
                         <!-- Search input box -->
-                        <div class="relative">
+                        <div class="relative flex items-center">
+                            <i class="fi fi-rr-search text-slate-400 text-xs pointer-events-none" 
+                               style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); z-index: 2;"></i>
                             <input type="text" 
                                    x-model="filterSearchVal" 
                                    @keydown.enter.prevent="applyActiveFilter()"
                                    :placeholder="'Cari / filter kata kunci ' + activeFilterTitle + '...'"
                                    class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 pl-9 pr-8 outline-none focus:ring-2 focus:ring-blue-500 font-medium">
-                            <i class="fi fi-rr-search absolute left-3 top-3 text-slate-400 text-xs"></i>
-                            <button type="button" x-show="filterSearchVal" @click="filterSearchVal = ''" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 text-sm font-bold cursor-pointer">
+                            <button type="button" 
+                                    x-show="filterSearchVal" 
+                                    @click="filterSearchVal = ''" 
+                                    class="text-slate-400 hover:text-slate-600 text-sm font-bold cursor-pointer"
+                                    style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); z-index: 2;">
                                 &times;
                             </button>
                         </div>
@@ -684,7 +698,7 @@
                             <th class="px-4 py-3 text-xs font-bold text-slate-700 uppercase tracking-wider bg-slate-100">No</th>
                             
                             <!-- QC Status Header dengan Trigger Filter Modal -->
-                            <th class="px-4 py-3 text-xs font-bold text-slate-700 uppercase tracking-wider bg-slate-100">
+                            <th class="px-4 py-3 text-xs font-bold text-slate-700 uppercase tracking-wider bg-slate-100 whitespace-nowrap">
                                 <div class="flex items-center justify-between gap-2">
                                     <span>QC Status</span>
                                     @php
@@ -696,9 +710,9 @@
                                     @endphp
                                     <button type="button" 
                                             @click="openColumnFilter('quality_status', 'QC Status', 'qc', ['Valid', 'Warning', 'Critical'], {{ json_encode($initialQs) }})" 
-                                            class="px-1.5 py-0.5 rounded transition-colors flex items-center gap-1 cursor-pointer {{ count($initialQs) > 0 ? 'bg-blue-600 text-white font-extrabold text-[10px] shadow-xs' : 'text-slate-400 hover:bg-slate-200 hover:text-slate-700' }}"
+                                            class="h-5 min-w-[20px] px-1 rounded transition-colors flex items-center justify-center gap-0.5 cursor-pointer {{ count($initialQs) > 0 ? 'bg-blue-600 text-white font-extrabold text-[10px] shadow-xs' : 'text-slate-400 hover:bg-slate-200 hover:text-slate-700' }}"
                                             title="Filter QC Status">
-                                        <i class="fi fi-rr-angle-small-down text-[11px]"></i>
+                                        <i class="fi fi-rr-angle-small-down text-[11px] leading-none"></i>
                                         @if(count($initialQs) > 0)
                                             <span class="text-[10px] font-black">{{ count($initialQs) }}</span>
                                         @endif
@@ -754,9 +768,9 @@
 
                                         <button type="button" 
                                                 @click="openColumnFilter('{{ $colKey }}', '{{ addslashes($colTitle) }}', '{{ $filterType }}', {{ json_encode($importColumnDistinctValues[$colKey] ?? []) }}, {{ json_encode($initialSelectedArr) }})" 
-                                                class="px-1.5 py-0.5 rounded transition-all flex items-center gap-1 cursor-pointer {{ count($initialSelectedArr) > 0 ? 'bg-blue-600 text-white font-extrabold text-[10px] shadow-sm' : 'text-slate-400 hover:bg-slate-200 hover:text-slate-700' }}"
+                                                class="h-5 min-w-[20px] px-1 rounded transition-all flex items-center justify-center gap-0.5 cursor-pointer {{ count($initialSelectedArr) > 0 ? 'bg-blue-600 text-white font-extrabold text-[10px] shadow-sm' : 'text-slate-400 hover:bg-slate-200 hover:text-slate-700' }}"
                                                 title="Filter Kolom {{ $colTitle }}">
-                                            <i class="fi fi-rr-angle-small-down text-[11px]"></i>
+                                            <i class="fi fi-rr-angle-small-down text-[11px] leading-none"></i>
                                             @if(count($initialSelectedArr) > 0)
                                                 <span class="text-[10px] font-black bg-white text-blue-900 px-1 py-0.2 rounded-full">{{ count($initialSelectedArr) }}</span>
                                             @endif
