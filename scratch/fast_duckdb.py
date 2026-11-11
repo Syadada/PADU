@@ -3,6 +3,7 @@ import os
 import json
 import base64
 import duckdb
+import re
 
 def resolve_target_column(key, ex_cols):
     k = str(key).strip().lower()
@@ -48,6 +49,270 @@ def clean_str(val):
     s = str(val).strip()
     return '' if s.lower() in ('none', 'null', 'semua') else s
 
+def parse_semantic_nlq(search_str, existing_cols, table_ref):
+    if not search_str or len(search_str.strip()) < 3:
+        return None, [], None
+    
+    q_low = search_str.lower().strip()
+    col_map = {c.lower(): c for c in existing_cols.values()}
+    
+    clauses = []
+    having_clauses = []
+    tags = []
+    is_kk_scope = False
+
+    # Check for KK Scope trigger
+    if any(k in q_low for k in ['per kk', 'dalam satu kk', 'per keluarga', 'tiap kk', 'tiap keluarga', 'dalam 1 kk', '1 kk', 'satu kk']):
+        is_kk_scope = True
+
+    # 1. Livestock / Sapi (e.g. "100 sapi", "sapi >= 100", "sapi 100", "sapi")
+    sapi_match = re.search(r'(\d+)\s*(?:ekor\s*)?(?:sapi|lembu|ternak)|(?:sapi|lembu|ternak)\s*(?:>=|>|minimal|di atas|sebanyak|punya)?\s*(\d+)', q_low)
+    sapi_col = None
+    for hint in ['jumlah_sapi', 'sapi', 'ternak_sapi', 'ternak', 'aset']:
+        for c_low, c_orig in col_map.items():
+            if hint in c_low:
+                sapi_col = c_orig
+                break
+        if sapi_col: break
+
+    if sapi_col:
+        if sapi_match:
+            val = sapi_match.group(1) or sapi_match.group(2)
+            if is_kk_scope or 'kk' in q_low or 'keluarga' in q_low:
+                having_clauses.append(f'MAX(COALESCE(TRY_CAST("{sapi_col}" AS DOUBLE), 0)) >= {val}')
+                tags.append(f'Aset Sapi KK: ≥ {val} ekor')
+                is_kk_scope = True
+            else:
+                clauses.append(f'COALESCE(TRY_CAST("{sapi_col}" AS DOUBLE), 0) >= {val}')
+                tags.append(f'Sapi: ≥ {val} ekor')
+        elif 'sapi' in q_low or 'ternak' in q_low:
+            clauses.append(f'COALESCE(TRY_CAST("{sapi_col}" AS DOUBLE), 0) > 0')
+            tags.append('Memiliki Ternak Sapi')
+
+    # 2. Gender & Count in KK or Individual
+    p_num = re.search(r'(?:minimal|paling sedikit|di atas|>=)?\s*(\d+)\s*(?:orang\s*)?(?:perempuan|wanita)', q_low)
+    l_num = re.search(r'(?:minimal|paling sedikit|di atas|>=)?\s*(\d+)\s*(?:orang\s*)?(?:laki|pria)', q_low)
+    
+    jk_col = None
+    for hint in ['jenis_kelamin', 'jk', 'gender']:
+        for c_low, c_orig in col_map.items():
+            if hint in c_low:
+                jk_col = c_orig
+                break
+        if jk_col: break
+
+    if jk_col:
+        if p_num and (is_kk_scope or 'kk' in q_low or 'keluarga' in q_low):
+            val = p_num.group(1)
+            having_clauses.append(f'COUNT(CASE WHEN LOWER(CAST("{jk_col}" AS VARCHAR)) LIKE \'%perempuan%\' THEN 1 END) >= {val}')
+            tags.append(f'Perempuan dalam KK: ≥ {val} orang')
+            is_kk_scope = True
+        elif l_num and (is_kk_scope or 'kk' in q_low or 'keluarga' in q_low):
+            val = l_num.group(1)
+            having_clauses.append(f'COUNT(CASE WHEN LOWER(CAST("{jk_col}" AS VARCHAR)) LIKE \'%laki%\' THEN 1 END) >= {val}')
+            tags.append(f'Laki-laki dalam KK: ≥ {val} orang')
+            is_kk_scope = True
+        elif 'perempuan per kk' in q_low or 'wanita per kk' in q_low:
+            having_clauses.append(f'COUNT(CASE WHEN LOWER(CAST("{jk_col}" AS VARCHAR)) LIKE \'%perempuan%\' THEN 1 END) >= 1')
+            tags.append('Memiliki Anggota Perempuan dalam KK')
+            is_kk_scope = True
+        else:
+            # Individual Gender Filter
+            if re.search(r'\b(perempuan|wanita|cewek|ibu)\b', q_low) and not re.search(r'\b(laki|pria|cowok)\b', q_low):
+                clauses.append(f'LOWER(CAST("{jk_col}" AS VARCHAR)) LIKE \'%perempuan%\'')
+                tags.append('Jenis Kelamin: Perempuan')
+            elif re.search(r'\b(laki|laki-laki|pria|cowok|bapak)\b', q_low) and not re.search(r'\b(perempuan|wanita)\b', q_low):
+                clauses.append(f'LOWER(CAST("{jk_col}" AS VARCHAR)) LIKE \'%laki%\'')
+                tags.append('Jenis Kelamin: Laki-laki')
+
+    # 3. Education / Pendidikan
+    pdd_col = None
+    for hint in ['ijazah_tertinggi', 'pendidikan', 'ijazah', 'pendidikan_terakhir']:
+        for c_low, c_orig in col_map.items():
+            if hint in c_low:
+                pdd_col = c_orig
+                break
+        if pdd_col: break
+    
+    if pdd_col:
+        if re.search(r'\b(sma|slta|smk|aliyah|menengah atas)\b', q_low):
+            clauses.append(f'(LOWER(CAST("{pdd_col}" AS VARCHAR)) LIKE \'%sma%\' OR LOWER(CAST("{pdd_col}" AS VARCHAR)) LIKE \'%slta%\' OR LOWER(CAST("{pdd_col}" AS VARCHAR)) LIKE \'%smk%\')')
+            tags.append('Pendidikan: SMA / Sederajat')
+        elif re.search(r'\b(smp|sltp|mts|menengah pertama)\b', q_low):
+            clauses.append(f'(LOWER(CAST("{pdd_col}" AS VARCHAR)) LIKE \'%smp%\' OR LOWER(CAST("{pdd_col}" AS VARCHAR)) LIKE \'%sltp%\')')
+            tags.append('Pendidikan: SMP / Sederajat')
+        elif re.search(r'\b(sd|sekolah dasar|mi)\b', q_low):
+            clauses.append(f'LOWER(CAST("{pdd_col}" AS VARCHAR)) LIKE \'%sd%\'')
+            tags.append('Pendidikan: SD / Sederajat')
+        elif re.search(r'\b(s1|s2|s3|diploma|sarjana|kuliah|perguruan tinggi)\b', q_low):
+            clauses.append(f'(LOWER(CAST("{pdd_col}" AS VARCHAR)) LIKE \'%s1%\' OR LOWER(CAST("{pdd_col}" AS VARCHAR)) LIKE \'%diploma%\' OR LOWER(CAST("{pdd_col}" AS VARCHAR)) LIKE \'%sarjana%\')')
+            tags.append('Pendidikan: Perguruan Tinggi')
+        elif re.search(r'\b(tidak sekolah|belum sekolah|putus sekolah)\b', q_low):
+            clauses.append(f'LOWER(CAST("{pdd_col}" AS VARCHAR)) LIKE \'%tidak%\'')
+            tags.append('Pendidikan: Tidak / Belum Sekolah')
+
+    # 4. Marital Status
+    kawin_col = None
+    for hint in ['status_kawin', 'status_pernikahan', 'perkawinan']:
+        for c_low, c_orig in col_map.items():
+            if hint in c_low:
+                kawin_col = c_orig
+                break
+        if kawin_col: break
+    
+    if kawin_col:
+        if re.search(r'\b(?:belum\s+(?:menikah|kawin|nikah)|lajang|single|bujang)\b', q_low):
+            clauses.append(f'LOWER(CAST("{kawin_col}" AS VARCHAR)) LIKE \'%belum%\'')
+            tags.append('Status: Belum Kawin')
+        elif re.search(r'\b(?:sudah\s+menikah|menikah|kawin|nikah|berkeluarga)\b', q_low):
+            clauses.append(f'(LOWER(CAST("{kawin_col}" AS VARCHAR)) LIKE \'%kawin%\' OR LOWER(CAST("{kawin_col}" AS VARCHAR)) LIKE \'%nikah%\')')
+            tags.append('Status: Sudah Menikah')
+        elif re.search(r'\b(?:cerai|janda|duda)\b', q_low):
+            clauses.append(f'LOWER(CAST("{kawin_col}" AS VARCHAR)) LIKE \'%cerai%\'')
+            tags.append('Status: Cerai')
+
+    # 5. Employment / Status Bekerja
+    kerja_col = None
+    for hint in ['status_bekerja', 'pekerjaan_utama', 'pekerjaan']:
+        for c_low, c_orig in col_map.items():
+            if hint in c_low:
+                kerja_col = c_orig
+                break
+        if kerja_col: break
+    
+    if kerja_col:
+        if re.search(r'\b(?:tidak\s+bekerja|menganggur|belum\s+kerja|pengangguran)\b', q_low):
+            clauses.append(f'(LOWER(CAST("{kerja_col}" AS VARCHAR)) LIKE \'%tidak%\' OR LOWER(CAST("{kerja_col}" AS VARCHAR)) LIKE \'%belum%\')')
+            tags.append('Status Kerja: Tidak Bekerja')
+        elif re.search(r'\b(?:sudah\s+kerja|aktif\s+bekerja|bekerja|kerja)\b', q_low) and not ('tidak' in q_low or 'belum' in q_low):
+            clauses.append(f'(LOWER(CAST("{kerja_col}" AS VARCHAR)) = \'ya\' OR LOWER(CAST("{kerja_col}" AS VARCHAR)) LIKE \'%bekerja%\')')
+            tags.append('Status Kerja: Bekerja')
+        
+        # Specific profession
+        for prof in ['pns', 'asn', 'tni', 'polri', 'petani', 'nelayan', 'buruh', 'wiraswasta', 'pedagang', 'karyawan', 'guru']:
+            if re.search(r'\b' + prof + r'\b', q_low):
+                clauses.append(f'LOWER(CAST("{kerja_col}" AS VARCHAR)) LIKE \'%{prof}%\'')
+                tags.append(f'Pekerjaan: {prof.upper()}')
+                break
+
+    # 6. Roof / Atap
+    atap_col = None
+    for hint in ['atap', 'jenis_atap']:
+        for c_low, c_orig in col_map.items():
+            if hint in c_low:
+                atap_col = c_orig
+                break
+        if atap_col: break
+    
+    if atap_col:
+        for atap_val in ['genteng', 'seng', 'asbes', 'rumbia']:
+            if atap_val in q_low:
+                clauses.append(f'LOWER(CAST("{atap_col}" AS VARCHAR)) LIKE \'%{atap_val}%\'')
+                tags.append(f'Atap: {atap_val.capitalize()}')
+                break
+
+    # 7. Vehicle / Mobil / Motor
+    kendaraan_col = None
+    for hint in ['kendaraan', 'mobil', 'motor', 'aset_kendaraan']:
+        for c_low, c_orig in col_map.items():
+            if hint in c_low:
+                kendaraan_col = c_orig
+                break
+        if kendaraan_col: break
+    
+    if kendaraan_col:
+        if 'mobil' in q_low:
+            clauses.append(f'(LOWER(CAST("{kendaraan_col}" AS VARCHAR)) LIKE \'%mobil%\' OR LOWER(CAST("{kendaraan_col}" AS VARCHAR)) = \'ya\' OR LOWER(CAST("{kendaraan_col}" AS VARCHAR)) = \'1\')')
+            tags.append('Kendaraan: Mobil')
+        elif 'motor' in q_low:
+            clauses.append(f'(LOWER(CAST("{kendaraan_col}" AS VARCHAR)) LIKE \'%motor%\' OR LOWER(CAST("{kendaraan_col}" AS VARCHAR)) = \'ya\' OR LOWER(CAST("{kendaraan_col}" AS VARCHAR)) = \'1\')')
+            tags.append('Kendaraan: Motor')
+
+    # 8. Facility / AC
+    if re.search(r'\bac\b', q_low):
+        ac_col = None
+        for hint in ['fasilitas', 'ac', 'aset']:
+            for c_low, c_orig in col_map.items():
+                if hint in c_low:
+                    ac_col = c_orig
+                    break
+            if ac_col: break
+        if ac_col:
+            clauses.append(f'LOWER(CAST("{ac_col}" AS VARCHAR)) LIKE \'%ac%\'')
+            tags.append('Fasilitas: AC')
+
+    # 9. Poverty & Desil
+    desil_col = None
+    for hint in ['desil_nasional', 'desil']:
+        for c_low, c_orig in col_map.items():
+            if hint in c_low:
+                desil_col = c_orig
+                break
+        if desil_col: break
+    
+    desil_match = re.search(r'desil\s*(\d+)', q_low)
+    if desil_match and desil_col:
+        d_val = desil_match.group(1)
+        clauses.append(f'TRY_CAST("{desil_col}" AS INTEGER) = {d_val}')
+        tags.append(f'Desil: {d_val}')
+    elif re.search(r'\b(miskin|prasejahtera)\b', q_low) and desil_col:
+        clauses.append(f'TRY_CAST("{desil_col}" AS INTEGER) IN (1, 2)')
+        tags.append('Kategori: Miskin (Desil 1-2)')
+
+    # 10. Bansos
+    bansos_col = None
+    for hint in ['status_bantuan', 'bantuan', 'bansos']:
+        for c_low, c_orig in col_map.items():
+            if hint in c_low:
+                bansos_col = c_orig
+                break
+        if bansos_col: break
+    
+    if bansos_col:
+        if re.search(r'\b(?:penerima\s+bansos|dapat\s+bansos|pkh|bpnt)\b', q_low) and not 'bukan' in q_low:
+            clauses.append(f'LOWER(CAST("{bansos_col}" AS VARCHAR)) LIKE \'%penerima%\'')
+            tags.append('Bansos: Penerima')
+        elif re.search(r'\bbukan\s+penerima\b', q_low):
+            clauses.append(f'LOWER(CAST("{bansos_col}" AS VARCHAR)) LIKE \'%bukan%\'')
+            tags.append('Bansos: Bukan Penerima')
+
+    # 11. Salary / Gaji
+    gaji_col = col_map.get('gaji_bulanan', col_map.get('gaji', None))
+    if gaji_col:
+        gaji_match = re.search(r'(?:gaji|penghasilan|pendapatan)\s*(?:>=|>|minimal|di atas|lebih dari)?\s*(\d+(?:[.,]\d+)?)\s*(juta|jt|ribu|rb)?', q_low)
+        if gaji_match:
+            raw_num = float(gaji_match.group(1).replace(',', '.'))
+            unit = (gaji_match.group(2) or '').lower()
+            if unit in ('juta', 'jt'):
+                gaji_val = raw_num * 1000000
+            elif unit in ('ribu', 'rb'):
+                gaji_val = raw_num * 1000
+            else:
+                gaji_val = raw_num if raw_num > 10000 else raw_num * 1000000
+            
+            clauses.append(f'COALESCE(TRY_CAST("{gaji_col}" AS DOUBLE), 0) >= {gaji_val}')
+            tags.append(f'Gaji: ≥ Rp {int(gaji_val):,}')
+
+    if not tags:
+        return None, [], None
+
+    kk_col = col_map.get('nomor_kartu_keluarga', col_map.get('no_kk', col_map.get('kk', 'nomor_kartu_keluarga')))
+    
+    if is_kk_scope and having_clauses:
+        having_sql = " AND ".join(having_clauses)
+        where_sub = f'"{kk_col}" IN (SELECT "{kk_col}" FROM {table_ref} GROUP BY "{kk_col}" HAVING {having_sql})'
+        if clauses:
+            final_sql = f"({where_sub}) AND (" + " AND ".join(clauses) + ")"
+        else:
+            final_sql = where_sub
+    elif clauses:
+        final_sql = " AND ".join(clauses)
+    else:
+        final_sql = None
+
+    explanation = "Filter cerdas alami: " + ", ".join(tags)
+    return final_sql, tags, explanation
+
 def build_where_clause(con, table_ref, params):
     try:
         cols_info = con.execute(f"DESCRIBE {table_ref};").fetchall()
@@ -56,6 +321,7 @@ def build_where_clause(con, table_ref, params):
         existing_cols = {}
 
     where_clauses = []
+    nlq_info = {"is_nlq": False, "tags": [], "explanation": ""}
 
     # 1. Search filter & Search By
     search = clean_str(params.get('search'))
@@ -119,8 +385,16 @@ def build_where_clause(con, table_ref, params):
             actual_col = existing_cols[search_by]
             where_clauses.append(f'LOWER(CAST("{actual_col}" AS VARCHAR)) LIKE \'%{search_clean}%\'')
         else:
-            # Global 'all' search across all meaningful columns
-            if len(search) == 16 and search.isdigit():
+            # Global 'all' search: first check Smart Semantic NLQ Parser
+            nlq_sql, nlq_tags, nlq_expl = parse_semantic_nlq(search, existing_cols, table_ref)
+            if nlq_sql and nlq_tags:
+                where_clauses.append(f'({nlq_sql})')
+                nlq_info = {
+                    "is_nlq": True,
+                    "tags": nlq_tags,
+                    "explanation": nlq_expl
+                }
+            elif len(search) == 16 and search.isdigit():
                 where_clauses.append(f'(CAST("{nik_col}" AS VARCHAR) = \'{search}\' OR CAST("{kk_col}" AS VARCHAR) = \'{search}\')')
             else:
                 skip_cols = {'id', 'quality_issues', 'extra_attributes', 'created_at', 'updated_at'}
@@ -352,7 +626,7 @@ def build_where_clause(con, table_ref, params):
                 where_clauses.append('(' + ' OR '.join(or_parts) + ')')
 
     where_sql = (' WHERE ' + ' AND '.join(where_clauses)) if where_clauses else ''
-    return where_sql, existing_cols
+    return where_sql, existing_cols, nlq_info
 
 def run_duckdb_query():
     db_path = sys.argv[1] if len(sys.argv) > 1 else 'database/database.sqlite'
@@ -377,7 +651,7 @@ def run_duckdb_query():
         print(f"[DUCKDB_EMPTY] Dataset duckdb file missing", flush=True)
         sys.exit(0)
 
-    where_sql, existing_cols = build_where_clause(con, table_ref, params)
+    where_sql, existing_cols, nlq_info = build_where_clause(con, table_ref, params)
 
     if mode == 'total_system_rows':
         try:
@@ -511,7 +785,8 @@ def run_duckdb_query():
                 "items": items,
                 "stats": stats,
                 "issue_items": issue_items,
-                "db_columns": cols_list
+                "db_columns": cols_list,
+                "nlq_info": nlq_info
             }
 
             print(f"[DUCKDB_PAGE_RESULT] {json.dumps(result)}", flush=True)

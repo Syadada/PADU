@@ -96,7 +96,7 @@
                         <input type="text" 
                                name="search" 
                                value="{{ $search }}" 
-                               placeholder="Ketik kata kunci pencarian (Semua kolom, Nama, NIK, Gender, dll)..." 
+                               placeholder="Ketik kata kunci atau bahasa alami (misal: laki sma sudah menikah mobil, minimal 2 perempuan per kk)..." 
                                style="padding-left: 44px !important; padding-right: 80px !important;"
                                class="w-full pl-10 pr-20 py-2.5 bg-slate-50 border border-slate-300 text-slate-900 font-bold text-xs rounded-xl outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all shadow-xs">
                         @if(!empty($search))
@@ -260,6 +260,26 @@
                     </div>
                 @endif
             </div>
+
+            @if(!empty($nlqInfo) && !empty($nlqInfo['is_nlq']) && !empty($nlqInfo['tags']))
+                <div class="p-3.5 bg-gradient-to-r from-blue-50/90 via-indigo-50/80 to-purple-50/90 border border-indigo-200/90 rounded-2xl flex flex-wrap items-center justify-between gap-3 shadow-xs">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-xs shadow-xs">
+                            <i class="fi fi-rr-sparkles"></i> <span>Pencarian Cerdas Alami</span>
+                        </span>
+                        <span class="text-xs text-slate-600 font-semibold hidden sm:inline">Kriteria terdeteksi:</span>
+                        @foreach($nlqInfo['tags'] as $tag)
+                            <span class="px-2.5 py-1 rounded-xl bg-white border border-indigo-200 text-indigo-900 font-extrabold text-xs shadow-2xs flex items-center gap-1.5">
+                                <i class="fi fi-rr-check text-emerald-600 text-[10px]"></i> {{ $tag }}
+                            </span>
+                        @endforeach
+                    </div>
+                    <a href="{{ route('dtsen.data', array_merge(request()->except('search'), ['page' => 1])) }}#tabel-data" 
+                       class="px-3 py-1 bg-white hover:bg-rose-50 text-rose-600 hover:text-rose-700 border border-rose-200 rounded-xl text-xs font-bold transition-all shadow-2xs flex items-center gap-1 cursor-pointer">
+                        <i class="fi fi-rr-cross-small"></i> <span>Hapus Filter Alami</span>
+                    </a>
+                </div>
+            @endif
 
             <!-- MODAL BULK SEARCH BY NIK & KK -->
             <div x-show="showBulkSearchModal" 

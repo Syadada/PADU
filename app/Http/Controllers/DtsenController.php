@@ -239,6 +239,7 @@ class DtsenController extends Controller
             'issue_items' => []
         ];
 
+        $nlqInfo = $duckPageData['nlq_info'] ?? null;
         $totalSystemRows = (int)($duckPageData['total_system_rows'] ?? 0);
 
         $activeDatasetFile = null;
@@ -608,6 +609,7 @@ class DtsenController extends Controller
             'issueRecords',
             'search',
             'searchBy',
+            'nlqInfo',
             'bulkSearch',
             'bulkField',
             'perPage',
