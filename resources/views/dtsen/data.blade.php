@@ -172,6 +172,7 @@
                             <select name="order_by" onchange="document.getElementById('dataTableSearchForm').submit()" aria-label="Urutkan Data" class="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 font-bold text-xs cursor-pointer outline-none focus:border-blue-500">
                                 <option value="id_desc" {{ ($orderBy ?? '') === 'id_desc' ? 'selected' : '' }}>ID / Input Terbaru</option>
                                 <option value="id_asc" {{ ($orderBy ?? '') === 'id_asc' ? 'selected' : '' }}>ID / Input Terlama</option>
+                                <option value="kk_asc" {{ ($orderBy ?? '') === 'kk_asc' ? 'selected' : '' }}>Nomor KK Sama (Per KK)</option>
                                 <option value="nik_asc" {{ ($orderBy ?? '') === 'nik_asc' ? 'selected' : '' }}>NIK (0 - 9)</option>
                                 <option value="nik_desc" {{ ($orderBy ?? '') === 'nik_desc' ? 'selected' : '' }}>NIK (9 - 0)</option>
                                 <option value="nama_asc" {{ ($orderBy ?? '') === 'nama_asc' ? 'selected' : '' }}>Nama (A - Z)</option>

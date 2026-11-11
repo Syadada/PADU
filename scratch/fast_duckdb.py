@@ -51,7 +51,7 @@ def clean_str(val):
 
 def parse_semantic_nlq(search_str, existing_cols, table_ref):
     if not search_str or len(search_str.strip()) < 2:
-        return None, [], None
+        return None, [], None, None
     
     q_low = search_str.lower().strip()
     col_map = {c.lower(): c for c in existing_cols.values()}
@@ -85,7 +85,73 @@ def parse_semantic_nlq(search_str, existing_cols, table_ref):
                     matched.append(c_orig)
         return matched
 
-    # 0. Check for KK Scope trigger
+    # 0. Check for Sort / Order instructions FIRST (so 'urutkan per kk' is stripped before kk_scope check)
+    nlq_order = None
+    sort_rules = [
+        # KK (Per KK / Nomor KK Sama)
+        (r'\b(?:urutkan|susun|kelompokkan|sort)\s*(?:per\s+)?(?:berdasarkan\s+)?(?:nomor\s+)?kk(?:\s+yang\s+sama)?\b|\b(?:berdasarkan|sesuai)\s+(?:nomor\s+)?kk(?:\s+yang\s+sama)?\b|\b(?:nomor\s+)?kk\s+yang\s+sama\b',
+         'kk_asc', 'Urutan: Nomor KK Sama (Per KK)'),
+        (r'\b(?:urutkan\s+)?(?:nomor\s+)?kk\s+(?:terbesar|tertinggi|9\s*-\s*0|z\s*-\s*a)\b',
+         'kk_desc', 'Urutan: Nomor KK (9 - 0)'),
+
+        # Gaji / Pendapatan
+        (r'\b(?:urutkan\s+)?(?:gaji|penghasilan|pendapatan)\s+(?:tertinggi|terbesar|maksimal|paling\s+tinggi|paling\s+besar)\b|\b(?:terkaya|paling\s+kaya)\b',
+         'gaji_desc', 'Urutan: Gaji Tertinggi'),
+        (r'\b(?:urutkan\s+)?(?:gaji|penghasilan|pendapatan)\s+(?:terendah|terkecil|minimal|paling\s+rendah|paling\s+kecil)\b|\b(?:termiskin|paling\s+miskin)\b',
+         'gaji_asc', 'Urutan: Gaji Terendah'),
+
+        # Usia / Umur
+        (r'\b(?:urutkan\s+)?(?:usia|umur)\s+(?:tertua|paling\s+tua|maksimal)\b|\b(?:paling\s+tua|dari\s+yang\s+tertua)\b',
+         'usia_desc', 'Urutan: Usia Tertua'),
+        (r'\b(?:urutkan\s+)?(?:usia|umur)\s+(?:termuda|paling\s+muda|minimal)\b|\b(?:paling\s+muda|dari\s+yang\s+termuda)\b',
+         'usia_asc', 'Urutan: Usia Termuda'),
+
+        # Nama
+        (r'\b(?:urutkan\s+)?nama\s*(?:a\s*-\s*z|a\s+ke\s+z|a\s+sampai\s+z|abjad|alfabet)\b|\b(?:urutkan\s+(?:berdasarkan\s+)?nama|sesuai\s+abjad)\b',
+         'nama_asc', 'Urutan: Nama (A - Z)'),
+        (r'\b(?:urutkan\s+)?nama\s*(?:z\s*-\s*a|z\s+ke\s+a|z\s+sampai\s+a|terbalik)\b|\bnama\s+terbalik\b',
+         'nama_desc', 'Urutan: Nama (Z - A)'),
+
+        # Desil
+        (r'\b(?:urutkan\s+)?desil\s+(?:terendah|1\s+sampai\s+10|dari\s+1)\b',
+         'desil_asc', 'Urutan: Desil Terendah (1 - 10)'),
+        (r'\b(?:urutkan\s+)?desil\s+(?:tertinggi|10\s+sampai\s+1)\b',
+         'desil_desc', 'Urutan: Desil Tertinggi (10 - 1)'),
+
+        # NIK
+        (r'\b(?:urutkan\s+)?nik\s*(?:0\s*-\s*9|kecil\s+ke\s+besar)\b|\burutkan\s+(?:berdasarkan\s+)?nik\b',
+         'nik_asc', 'Urutan: NIK (0 - 9)'),
+        (r'\b(?:urutkan\s+)?nik\s*(?:9\s*-\s*0|besar\s+ke\s+kecil)\b',
+         'nik_desc', 'Urutan: NIK (9 - 0)'),
+
+        # Wilayah / Kecamatan
+        (r'\b(?:urutkan\s+(?:berdasarkan\s+)?(?:wilayah|kecamatan|daerah))\b',
+         'wilayah_asc', 'Urutan: Wilayah / Kecamatan (A - Z)'),
+
+        # Tanggal Lahir
+        (r'\b(?:urutkan\s+)?(?:tgl|tanggal)\s+lahir\s+(?:tertua|terlama)\b',
+         'tgl_asc', 'Urutan: Tanggal Lahir (Tertua)'),
+        (r'\b(?:urutkan\s+)?(?:tgl|tanggal)\s+lahir\s+(?:termuda|terbaru)\b',
+         'tgl_desc', 'Urutan: Tanggal Lahir (Termuda)'),
+
+        # Waktu Input / ID
+        (r'\b(?:urutkan\s+)?(?:input\s+)?terbaru\b',
+         'id_desc', 'Urutan: Input Terbaru'),
+        (r'\b(?:urutkan\s+)?(?:input\s+)?terlama\b',
+         'id_asc', 'Urutan: Input Terlama')
+    ]
+
+    for pattern, order_val, tag_title in sort_rules:
+        if re.search(pattern, q_low):
+            nlq_order = order_val
+            tags.append(tag_title)
+            strip_from_residual(pattern)
+            strip_from_residual(r'\b(?:urutkan|urut|susun|berdasarkan|kelompokkan|kelompok|sort)\b')
+            q_low = re.sub(pattern, ' ', q_low)
+            q_low = re.sub(r'\b(?:urutkan|urut|susun|berdasarkan|kelompokkan|kelompok|sort)\b', ' ', q_low)
+            break
+
+    # 0b. Check for KK Scope trigger
     if any(k in q_low for k in ['per kk', 'dalam satu kk', 'per keluarga', 'tiap kk', 'tiap keluarga', 'dalam 1 kk', '1 kk', 'satu kk']):
         is_kk_scope = True
         strip_from_residual(r'\b(?:per|dalam|tiap|satu)?\s*(?:kk|keluarga|rumah\s*tangga)\b')
@@ -114,7 +180,7 @@ def parse_semantic_nlq(search_str, existing_cols, table_ref):
     # 2. Wilayah / Lokasi Explicit
     wilayah_cols = find_all_cols(['kecamatan', 'kabupaten_kota', 'kabupaten', 'kota', 'provinsi', 'desa_kelurahan', 'kelurahan_desa', 'desa', 'kelurahan', 'alamat'])
     
-    w_match = re.search(r'\b(?:di\s+wilayah|di\s+daerah|di\s+kecamatan|di\s+kabupaten|di\s+kota|di\s+desa|di\s+kelurahan|wilayah|daerah|kecamatan|kabupaten|desa|kelurahan)\s+([a-z0-9\s]+?)(?:(?=\s+(?:dan|dengan|yang|status|gaji|pendidikan|desil|kk|umur|usia|punya|atap|dinding|lantai|$))|$)', q_low)
+    w_match = re.search(r'\b(?:di\s+wilayah|di\s+daerah|di\s+kecamatan|di\s+kabupaten|di\s+kota|di\s+desa|di\s+kelurahan|wilayah|daerah|kecamatan|kabupaten|desa|kelurahan)\s+([a-z0-9\s]+?)(?:(?=\s+(?:dan|dengan|yang|status|gaji|pendidikan|desil|kk|umur|usia|punya|atap|dinding|lantai|urutkan|susun|kelompokkan|sort|sesuai|berdasarkan|$))|$)', q_low)
     found_wilayah = None
     if w_match:
         raw_val = w_match.group(1).strip()
@@ -123,7 +189,7 @@ def parse_semantic_nlq(search_str, existing_cols, table_ref):
             strip_from_residual(re.escape(w_match.group(0)))
     
     if not found_wilayah:
-        di_match = re.search(r'\bdi\s+([a-z0-9\s]+?)(?:(?=\s+(?:dan|dengan|yang|status|gaji|pendidikan|desil|kk|umur|usia|punya|atap|dinding|lantai|$))|$)', q_low)
+        di_match = re.search(r'\bdi\s+([a-z0-9\s]+?)(?:(?=\s+(?:dan|dengan|yang|status|gaji|pendidikan|desil|kk|umur|usia|punya|atap|dinding|lantai|urutkan|susun|kelompokkan|sort|sesuai|berdasarkan|$))|$)', q_low)
         if di_match:
             raw_val = di_match.group(1).strip()
             if raw_val and len(raw_val) >= 2 and not raw_val.startswith(('atas', 'bawah', 'antara', 'luar', 'dalam', 'samping', 'yang', 'dan', 'dengan')):
@@ -667,8 +733,8 @@ def parse_semantic_nlq(search_str, existing_cols, table_ref):
         if res_terms:
             clauses.append('(' + ' AND '.join(res_terms) + ')')
 
-    if not tags:
-        return None, [], None
+    if not tags and not nlq_order:
+        return None, [], None, None
 
     kk_col = find_col(['nomor_kartu_keluarga', 'no_kk', 'kk', 'nomor_kartu_keluarga_kel']) or 'nomor_kartu_keluarga'
     
@@ -685,7 +751,7 @@ def parse_semantic_nlq(search_str, existing_cols, table_ref):
         final_sql = None
 
     explanation = "Filter cerdas alami: " + ", ".join(tags)
-    return final_sql, tags, explanation
+    return final_sql, tags, explanation, nlq_order
 
 def build_where_clause(con, table_ref, params):
     try:
@@ -760,13 +826,15 @@ def build_where_clause(con, table_ref, params):
             where_clauses.append(f'LOWER(CAST("{actual_col}" AS VARCHAR)) LIKE \'%{search_clean}%\'')
         else:
             # Global 'all' search: first check Smart Semantic NLQ Parser
-            nlq_sql, nlq_tags, nlq_expl = parse_semantic_nlq(search, existing_cols, table_ref)
-            if nlq_sql and nlq_tags:
-                where_clauses.append(f'({nlq_sql})')
+            nlq_sql, nlq_tags, nlq_expl, nlq_order = parse_semantic_nlq(search, existing_cols, table_ref)
+            if nlq_tags or nlq_order:
+                if nlq_sql:
+                    where_clauses.append(f'({nlq_sql})')
                 nlq_info = {
                     "is_nlq": True,
                     "tags": nlq_tags,
-                    "explanation": nlq_expl
+                    "explanation": nlq_expl,
+                    "order_by": nlq_order
                 }
             elif len(search) == 16 and search.isdigit():
                 where_clauses.append(f'(CAST("{nik_col}" AS VARCHAR) = \'{search}\' OR CAST("{kk_col}" AS VARCHAR) = \'{search}\')')
@@ -1051,9 +1119,14 @@ def run_duckdb_query():
             select_cols = ", ".join([f'"{c}"' for c in cols_list])
             
             order_param = str(params.get('order_by', params.get('sort_by', ''))).lower().strip()
+            if nlq_info and nlq_info.get('order_by'):
+                order_param = nlq_info['order_by']
+
             salary_col = existing_cols.get('gaji_bulanan', existing_cols.get('gaji', None))
             usia_col = existing_cols.get('usia', existing_cols.get('umur', None))
             nama_col = existing_cols.get('nama', existing_cols.get('nama_lengkap', None))
+            kk_col = existing_cols.get('nomor_kartu_keluarga', existing_cols.get('no_kk', existing_cols.get('kk', None)))
+            kec_col = existing_cols.get('kecamatan', existing_cols.get('kabupaten_kota', None))
             
             if 'gaji' in existing_cols:
                 num_salary = '"gaji"'
@@ -1074,7 +1147,13 @@ def run_duckdb_query():
             desil_col = existing_cols.get('desil_nasional', existing_cols.get('desil', None))
             num_desil = f'TRY_CAST("{desil_col}" AS INTEGER)' if desil_col else 'id'
 
-            if order_param in ('gaji_desc', 'salary_desc', 'max_gaji', 'avg_desc', 'tertinggi'):
+            if order_param in ('kk_asc', 'kk', 'per_kk', 'no_kk', 'nomor_kk', 'kk_sama') and kk_col:
+                order_clause = f'CAST("{kk_col}" AS VARCHAR) ASC, id ASC'
+            elif order_param in ('kk_desc', 'no_kk_desc') and kk_col:
+                order_clause = f'CAST("{kk_col}" AS VARCHAR) DESC, id DESC'
+            elif order_param in ('wilayah_asc', 'kecamatan_asc', 'wilayah', 'kecamatan') and kec_col:
+                order_clause = f'"{kec_col}" ASC, id ASC'
+            elif order_param in ('gaji_desc', 'salary_desc', 'max_gaji', 'avg_desc', 'tertinggi'):
                 order_clause = f"{num_salary} DESC NULLS LAST, id DESC"
             elif order_param in ('gaji_asc', 'salary_asc', 'min_gaji', 'avg_asc', 'terendah'):
                 order_clause = f"{num_salary} ASC NULLS LAST, id ASC"
@@ -1460,9 +1539,15 @@ def run_duckdb_query():
         select_cols = ", ".join([f'"{c}"' for c in cols_list])
         
         order_param = str(params.get('order_by', params.get('sort_by', ''))).lower().strip()
+        if nlq_info and nlq_info.get('order_by'):
+            order_param = nlq_info['order_by']
+
         salary_col = existing_cols.get('gaji_bulanan', existing_cols.get('gaji', None))
+        usia_col = existing_cols.get('usia', existing_cols.get('umur', None))
         nama_col = existing_cols.get('nama', existing_cols.get('nama_lengkap', None))
         nik_col = existing_cols.get('nomor_induk_kependudukan', existing_cols.get('nik', 'nik'))
+        kk_col = existing_cols.get('nomor_kartu_keluarga', existing_cols.get('no_kk', existing_cols.get('kk', None)))
+        kec_col = existing_cols.get('kecamatan', existing_cols.get('kabupaten_kota', None))
         
         if 'gaji' in existing_cols:
             num_salary = '"gaji"'
@@ -1471,10 +1556,31 @@ def run_duckdb_query():
         else:
             num_salary = 'id'
 
-        if order_param in ('gaji_desc', 'salary_desc'):
+        if 'umur' in existing_cols:
+            num_usia = '"umur"'
+        elif usia_col:
+            num_usia = f'TRY_CAST(REGEXP_REPLACE(CAST("{usia_col}" AS VARCHAR), \'[^0-9.]\', \'\', \'g\') AS INTEGER)'
+        else:
+            num_usia = 'id'
+
+        tgl_col = existing_cols.get('tanggal_lahir', existing_cols.get('tgl_lahir', None))
+        desil_col = existing_cols.get('desil_nasional', existing_cols.get('desil', None))
+        num_desil = f'TRY_CAST("{desil_col}" AS INTEGER)' if desil_col else 'id'
+
+        if order_param in ('kk_asc', 'kk', 'per_kk', 'no_kk', 'nomor_kk', 'kk_sama') and kk_col:
+            order_clause = f'CAST("{kk_col}" AS VARCHAR) ASC, id ASC'
+        elif order_param in ('kk_desc', 'no_kk_desc') and kk_col:
+            order_clause = f'CAST("{kk_col}" AS VARCHAR) DESC, id DESC'
+        elif order_param in ('wilayah_asc', 'kecamatan_asc', 'wilayah', 'kecamatan') and kec_col:
+            order_clause = f'"{kec_col}" ASC, id ASC'
+        elif order_param in ('gaji_desc', 'salary_desc', 'max_gaji', 'avg_desc', 'tertinggi'):
             order_clause = f"{num_salary} DESC NULLS LAST, id DESC"
-        elif order_param in ('gaji_asc', 'salary_asc'):
+        elif order_param in ('gaji_asc', 'salary_asc', 'min_gaji', 'avg_asc', 'terendah'):
             order_clause = f"{num_salary} ASC NULLS LAST, id ASC"
+        elif order_param in ('usia_desc', 'umur_desc'):
+            order_clause = f"{num_usia} DESC NULLS LAST, id DESC"
+        elif order_param in ('usia_asc', 'umur_asc'):
+            order_clause = f"{num_usia} ASC NULLS LAST, id ASC"
         elif order_param in ('nama_asc', 'name_asc') and nama_col:
             order_clause = f'"{nama_col}" ASC, id ASC'
         elif order_param in ('nama_desc', 'name_desc') and nama_col:
@@ -1483,6 +1589,14 @@ def run_duckdb_query():
             order_clause = f'CAST("{nik_col}" AS VARCHAR) ASC, id ASC'
         elif order_param in ('nik_desc', 'nik_down'):
             order_clause = f'CAST("{nik_col}" AS VARCHAR) DESC, id DESC'
+        elif order_param in ('tgl_asc', 'tgl_lahir_asc', 'lahir_asc') and tgl_col:
+            order_clause = f'"{tgl_col}" ASC NULLS LAST, id ASC'
+        elif order_param in ('tgl_desc', 'tgl_lahir_desc', 'lahir_desc') and tgl_col:
+            order_clause = f'"{tgl_col}" DESC NULLS LAST, id DESC'
+        elif order_param in ('desil_asc', 'desil_up') and desil_col:
+            order_clause = f"{num_desil} ASC NULLS LAST, id ASC"
+        elif order_param in ('desil_desc', 'desil_down') and desil_col:
+            order_clause = f"{num_desil} DESC NULLS LAST, id DESC"
         elif order_param == 'id_asc':
             order_clause = "id ASC"
         else:
