@@ -60,38 +60,45 @@
     @endif
 
     <!-- 2. UNGGAH DATASET BARU KE src-dtsen/ -->
-    <div class="p-6 rounded-2xl shadow-sm bg-white text-slate-900 border border-emerald-200 space-y-4">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-emerald-100 pb-3">
-            <div class="flex items-center gap-2.5">
-                <span class="p-2 rounded-xl bg-emerald-100 text-emerald-800 font-bold text-base flex items-center justify-center"><i class="fi fi-rr-upload"></i></span>
+    <div class="p-6 sm:p-7 rounded-2xl shadow-sm bg-white text-slate-900 border border-emerald-200 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-emerald-100 pb-3.5">
+            <div class="flex items-center gap-3">
+                <span class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-800 font-bold text-base flex items-center justify-center shrink-0">
+                    <i class="fi fi-rr-upload"></i>
+                </span>
                 <h3 class="text-xs font-black uppercase tracking-wider text-emerald-950 flex items-center gap-1.5">
                     <span>UNGGAH DATASET BARU KE FOLDER</span>
                     <code class="px-2 py-0.5 rounded font-mono text-xs bg-emerald-50 text-emerald-800 border border-emerald-200">src-dtsen/</code>
                 </h3>
             </div>
-            <span class="text-[10px] font-black uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3 py-1 rounded-xl border border-emerald-200 self-start sm:self-auto">
+            <span class="text-[10px] font-black uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3 py-1 rounded-xl border border-emerald-200 self-start sm:self-auto shrink-0">
                 CSV / XLSX / XLS / ZIP
             </span>
         </div>
 
-        <form action="{{ route('dtsen.upload') }}" method="POST" enctype="multipart/form-data" class="space-y-3"
+        <form action="{{ route('dtsen.upload') }}" method="POST" enctype="multipart/form-data" class="space-y-3 pt-1"
               x-data="{ fileName: '', uploading: false }" @submit="uploading = true">
             @csrf
-            <div class="flex flex-col md:flex-row items-center gap-3">
-                <div class="flex-1 w-full relative">
-                    <label for="dataset_file" class="sr-only">Pilih Berkas Dataset Baru</label>
-                    <input type="file" id="dataset_file" name="dataset_file" required accept=".csv,.xlsx,.xls,.zip"
+            <div class="flex flex-col md:flex-row items-stretch md:items-center gap-3">
+                <div class="flex-1 min-w-0" style="flex: 1 1 auto;">
+                    <input type="file" 
+                           id="dataset_file" 
+                           name="dataset_file" 
+                           required 
+                           accept=".csv,.xlsx,.xls,.zip"
                            aria-label="Pilih Berkas Dataset Baru"
                            @change="fileName = $event.target.files[0]?.name || ''"
-                           class="w-full text-xs text-slate-700 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 file:cursor-pointer p-1.5 border border-slate-300 rounded-xl bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                           class="w-full text-xs text-slate-700 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 file:cursor-pointer p-2 border border-slate-300 rounded-xl bg-slate-50/70 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer transition-all">
                 </div>
-                <button type="submit" :disabled="uploading"
-                        class="w-full md:w-auto px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-400 text-white font-bold text-xs rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0">
-                    <span x-show="!uploading" class="flex items-center gap-1.5"><i class="fi fi-rr-upload"></i> Unggah ke src-dtsen/</span>
+                <button type="submit" 
+                        :disabled="uploading"
+                        class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-400 text-white font-black text-xs rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0 whitespace-nowrap"
+                        style="width: auto !important; min-width: 210px; height: 42px;">
+                    <span x-show="!uploading" class="flex items-center gap-1.5"><i class="fi fi-rr-upload text-sm"></i> <span>Unggah ke src-dtsen/</span></span>
                     <span x-show="uploading">Mengunggah berkas...</span>
                 </button>
             </div>
-            <div x-show="fileName" class="text-right text-[11px] text-slate-500 font-medium">
+            <div x-show="fileName" class="text-right text-[11px] text-slate-500 font-medium pt-1">
                 <span class="font-mono font-bold text-emerald-700" x-text="'File dipilih: ' + fileName"></span>
             </div>
         </form>
