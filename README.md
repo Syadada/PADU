@@ -25,8 +25,7 @@ Sistem menerapkan **Role-Based Access Control (RBAC)** dua tingkat dengan alur a
 
 | Tingkat Peran | Alamat Surel Dinas | Kata Sandi Bawaan Sementara | Prosedur Masuk Pertama Kali |
 | :--- | :--- | :--- | :--- |
-| **👑 Super Administrator** | `superadmin@padu.local` | `PasswordSuperAdmin2026!` | **Wajib Langsung Ubah Kata Sandi Baru** (Min. 15 Karakter BSSN) & Aktivasi 2FA TOTP HP Offline |
-| **👤 Operator Data Staf** | `operator@padu.local` | `PasswordOperator2026!` | Masuk langsung ke 12 Modul Analisis DTSEN 2026 |
+| **👑 Super Administrator** | `PADU@local.id` | `PaduKalkulator1#` | **Wajib Langsung Ubah Kata Sandi Baru** (Min. 15 Karakter, Capital di awal, angka & simbol) |
 
 > [!IMPORTANT]
 > **Kebijakan Keamanan Akun BSSN No. 4/2021**:

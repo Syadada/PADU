@@ -323,7 +323,7 @@
                                    x-model="email" 
                                    @keydown.enter.prevent="submitEmail()"
                                    :disabled="isLocked || loading"
-                                   placeholder="nama@padu.local" 
+                                   placeholder="PADU@local.id" 
                                    autofocus
                                    class="form-input">
                         </div>

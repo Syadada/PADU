@@ -52,9 +52,9 @@ class TransactionLogger
         $newSession = [
             'session_id' => 'SESI_' . date('Ymd_His') . '_' . bin2hex(random_bytes(3)),
             'started_at' => date('Y-m-d H:i:s'),
-            'user_name' => $user ? $user->name : 'Operator / Sistem',
-            'user_email' => $user ? $user->email : 'admin@padu.local',
-            'user_role' => $user ? ($user->isSuperAdmin() ? 'Super Administrator' : 'Operator Data') : 'Administrator',
+            'user_name' => $user ? $user->name : 'PADU',
+            'user_email' => $user ? $user->email : 'padu@local.id',
+            'user_role' => $user ? ($user->isSuperAdmin() ? 'Super Administrator' : 'Operator Data') : 'Super Administrator',
             'ip_address' => Request::ip() ?? '127.0.0.1',
             'events' => [],
         ];
@@ -127,8 +127,8 @@ class TransactionLogger
 
             $closedAt = date('Y-m-d H:i:s');
             $startedAt = $session['started_at'] ?? $closedAt;
-            $userName = $session['user_name'] ?? 'Administrator';
-            $userEmail = $session['user_email'] ?? 'admin@padu.local';
+            $userName = $session['user_name'] ?? 'PADU';
+            $userEmail = $session['user_email'] ?? 'padu@local.id';
             $userRole = $session['user_role'] ?? 'Super Administrator';
             $ipAddress = $session['ip_address'] ?? '127.0.0.1';
             $events = $session['events'] ?? [];

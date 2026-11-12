@@ -20,8 +20,8 @@ class UserSeeder extends Seeder
         User::updateOrCreate(
             ['id' => 1],
             [
-                'name' => 'Administrator',
-                'email' => 'admin@padu.local',
+                'name' => 'PADU',
+                'email' => 'padu@local.id',
                 'password' => Hash::make('PaduKalkulator1#'),
                 'role' => 'superadmin',
                 'first_login' => true,
