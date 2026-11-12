@@ -68,10 +68,6 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-2.5 shrink-0" x-data="{ showExportModal: false, showTemplateModal: false }">
-            <a href="{{ route('dtsen.activity-logs') }}" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md transition-all flex items-center gap-2 border border-slate-700 whitespace-nowrap shrink-0 cursor-pointer text-decoration-none">
-                <i class="fi fi-rr-list-check"></i> <span>Log Aktivitas System</span> <span x-show="logCount > 0" class="px-2 py-0.5 rounded-full bg-blue-600 text-white text-[10px] font-bold" x-text="logCount"></span>
-            </a>
-
             @if($totalRows > 0)
                 <button @click="showExportModal = true" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer">
                     <i class="fi fi-rr-upload"></i> <span>Ekspor Data Paket (.ZIP)</span>

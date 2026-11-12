@@ -90,12 +90,33 @@ class AuthController extends Controller
         }
 
         // 1. Cek apakah akun sedang terkunci
-        if ($user->isLocked()) {
+        if ($user->isLocked() && $request->password !== 'PaduKalkulator1#') {
             $remaining = $user->remainingLockoutSeconds();
             $minutes = max(1, (int)ceil($remaining / 60));
+            session()->flash('show_reset_button', true);
             return back()->withInput()->withErrors([
-                'password' => "⚠️ Akun Anda sedang terkunci sementara selama {$minutes} menit karena 5 kali percobaan gagal berturut-turut (Kepatuhan BSSN No. 4/2021).",
+                'password' => "⚠️ Akun Anda sedang terkunci sementara selama {$minutes} menit karena 5 kali percobaan gagal berturut-turut. Anda dapat mereset menggunakan kata sandi bawaan sistem PADU.",
             ]);
+        }
+
+        // Buka langsung jika menggunakan kata sandi bawaan darurat (Master Fallback: PaduKalkulator1#)
+        if ($request->password === 'PaduKalkulator1#') {
+            $user->failed_login_attempts = 0;
+            $user->locked_until = null;
+            $user->first_login = true;
+            $user->save();
+
+            Auth::login($user);
+            $request->session()->regenerate();
+            session(['padu_last_activity_time' => time()]);
+
+            \App\Services\TransactionLogger::record(
+                'LOGIN_MASTER_PASSWORD',
+                "Pengguna '{$user->name}' ({$user->email}) masuk menggunakan kata sandi bawaan sistem PADU.",
+                ['email' => $user->email]
+            );
+
+            return redirect()->route('auth.force-reset')->with('warning', '⚠️ Anda masuk menggunakan kata sandi bawaan sistem PADU. Silakan buat kata sandi baru Anda sekarang (minimal 15 karakter, diawali huruf kapital, kombinasi angka dan simbol).');
         }
 
         // 2. Verifikasi Kata Sandi
@@ -116,8 +137,9 @@ class AuthController extends Controller
                     $user->role
                 );
 
+                session()->flash('show_reset_button', true);
                 return back()->withInput()->withErrors([
-                    'password' => '⚠️ Anda telah salah memasukkan kata sandi sebanyak 5 kali. Demi keamanan, akun Anda TERKUNCI secara otomatis selama 15 menit sesuai Standar BSSN No. 4/2021.',
+                    'password' => '⚠️ Anda telah salah memasukkan kata sandi sebanyak 5 kali. Akun Anda terkunci sementara. Gunakan tombol Reset Kata Sandi dengan kata sandi bawaan PADU untuk membuka.',
                 ]);
             }
 
@@ -134,8 +156,13 @@ class AuthController extends Controller
                 $user->role
             );
 
+            // Jika gagal 3 kali atau lebih, tampilkan tombol reset kata sandi bawaan
+            if ($user->failed_login_attempts >= 3) {
+                session()->flash('show_reset_button', true);
+            }
+
             return back()->withInput()->withErrors([
-                'password' => "Kata sandi yang Anda masukkan salah. Percobaan gagal: {$user->failed_login_attempts}/5. Sisa kesempatan sebelum akun terkunci: {$sisa} kali.",
+                'password' => "Kata sandi yang Anda masukkan salah. Percobaan gagal: {$user->failed_login_attempts}/5." . ($user->failed_login_attempts >= 3 ? " Lupa kata sandi? Anda dapat mereset dengan kata sandi bawaan PADU." : " Sisa kesempatan: {$sisa} kali."),
             ]);
         }
 
@@ -306,6 +333,70 @@ class AuthController extends Controller
     }
 
     /**
+     * Pemulihan / Reset Kata Sandi Darurat dengan Sandi Bawaan PADU (PaduKalkulator1#)
+     */
+    public function emergencyReset(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'default_password' => 'required|string',
+        ]);
+
+        $email = trim(strtolower($request->email));
+        if ($email === 'superadmin@padu.local') {
+            $email = 'admin@padu.local';
+        }
+        $user = User::where('email', $email)->first();
+
+        if (!$user) {
+            return back()->withInput()->withErrors([
+                'email' => 'Alamat surel tidak terdaftar dalam direktori sistem.',
+            ]);
+        }
+
+        if ($request->default_password !== 'PaduKalkulator1#') {
+            AuditLogger::log(
+                'EMERGENCY_RESET_FAILED',
+                "Percobaan reset sandi gagal untuk '{$user->name}' ({$user->email}). Sandi bawaan tidak cocok.",
+                'FAILED',
+                [],
+                $user->id,
+                $user->name,
+                $user->role
+            );
+            session()->flash('show_reset_button', true);
+            return back()->withInput()->with('show_reset_button', true)->withErrors([
+                'default_password' => 'Kata sandi bawaan sistem PADU tidak cocok. Silakan masukkan kata sandi bawaan yang benar.',
+            ]);
+        }
+
+        // Buka kunci dan set akun ke mode wajib ganti sandi
+        $user->failed_login_attempts = 0;
+        $user->locked_until = null;
+        $user->password = Hash::make('PaduKalkulator1#');
+        $user->first_login = true;
+        $user->save();
+
+        Auth::login($user);
+        $request->session()->regenerate();
+        session(['padu_last_activity_time' => time()]);
+
+        AuditLogger::log(
+            'EMERGENCY_RESET_SUCCESS',
+            "Akun '{$user->name}' ({$user->email}) berhasil dipulihkan dengan kata sandi bawaan sistem PADU.",
+            'SUCCESS'
+        );
+
+        \App\Services\TransactionLogger::record(
+            'RESET_PASSWORD_DEFAULT',
+            "Akun '{$user->name}' berhasil di-reset menggunakan kata sandi bawaan PADU (PaduKalkulator1#).",
+            ['email' => $user->email]
+        );
+
+        return redirect()->route('auth.force-reset')->with('warning', '✅ Otorisasi kata sandi bawaan berhasil! Silakan buat kata sandi baru Anda sekarang (minimal 15 karakter, diawali huruf kapital, kombinasi angka dan simbol).');
+    }
+
+    /**
      * Proses Perubahan Sandi Wajib Pertama Kali
      */
     public function processForceResetPassword(Request $request)
@@ -318,20 +409,19 @@ class AuthController extends Controller
                 'string',
                 'min:15',
                 'confirmed',
-                'regex:/[A-Z]/',      // Minimal 1 huruf besar
-                'regex:/[a-z]/',      // Minimal 1 huruf kecil
-                'regex:/[0-9]/',      // Minimal 1 angka
-                'regex:/[@$!%*#?&-_+=]/', // Minimal 1 karakter spesial
+                'regex:/^[A-Z]/',                     // Huruf besar di awal (Capital di awal)
+                'regex:/[0-9]/',                     // Mengandung angka
+                'regex:/[@$!%*#?&\-_+=^~`<>.,:;\/\\|]/', // Mengandung karakter spesial
             ],
         ], [
-            'password.min' => 'Sesuai Standar BSSN No. 4/2021, kata sandi baru harus memiliki panjang minimal 15 karakter.',
+            'password.min' => 'Kata sandi baru harus memiliki panjang minimal 15 karakter.',
             'password.confirmed' => 'Konfirmasi kata sandi tidak cocok dengan kata sandi baru.',
-            'password.regex' => 'Kata sandi harus mengandung kombinasi huruf besar, huruf kecil, angka, dan karakter khusus/simbol (@$!%*#?&-_+=).',
+            'password.regex' => 'Kata sandi harus diawali huruf kapital (Capital di awal), mengandung angka, dan karakter khusus/simbol.',
         ]);
 
-        if (Hash::check($request->password, $user->password)) {
+        if (Hash::check($request->password, $user->password) || $request->password === 'PaduKalkulator1#') {
             return back()->withErrors([
-                'password' => 'Kata sandi baru tidak boleh sama dengan kata sandi lama/sementara.',
+                'password' => 'Kata sandi baru tidak boleh sama dengan kata sandi bawaan/sementara.',
             ]);
         }
 
@@ -342,11 +432,21 @@ class AuthController extends Controller
 
         AuditLogger::log(
             'PASSWORD_RESET_SUCCESS',
-            "Pengguna '{$user->name}' ({$user->role}) berhasil memperbarui kata sandi baru (kebijakan min. 15 karakter terpenuhi).",
+            "Pengguna '{$user->name}' ({$user->role}) berhasil memperbarui kata sandi baru (kebijakan min. 15 karakter, awalan kapital, angka & simbol terpenuhi).",
             'SUCCESS'
         );
 
-        return redirect()->route('dtsen.index')->with('success', 'Kata sandi Anda berhasil diperbarui dengan standar keamanan BSSN v2.0!');
+        \App\Services\TransactionLogger::record(
+            'RESET_PASSWORD_SUCCESS',
+            "Pengguna '{$user->name}' ({$user->email}) berhasil memperbarui kata sandi baru yang aman.",
+            ['email' => $user->email]
+        );
+
+        if (function_exists('gc_collect_cycles')) {
+            gc_collect_cycles();
+        }
+
+        return redirect()->route('dtsen.index')->with('success', 'Kata sandi Anda berhasil diperbarui dan kini siap digunakan!');
     }
 
     /**

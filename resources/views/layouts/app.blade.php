@@ -191,16 +191,6 @@
                     <span>Ekspor</span>
                 </button>
 
-                <!-- Log (Halaman Khusus / Full Page) -->
-                <a href="{{ route('dtsen.activity-logs') }}" 
-                   class="w-full sidebar-nav-item flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all {{ request()->routeIs('dtsen.activity-logs') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 font-black' : 'bg-white hover:bg-slate-50 text-slate-700 border border-slate-200' }} shadow-xs">
-                    <div class="flex items-center gap-2.5">
-                        <i class="fi fi-rr-list-check text-sm"></i>
-                        <span>Log</span>
-                    </div>
-                    <span x-show="logList && logList.length > 0" class="px-1.5 py-0.2 rounded-full {{ request()->routeIs('dtsen.activity-logs') ? 'bg-white text-blue-700' : 'bg-blue-600 text-white' }} text-[9px] font-mono font-bold" x-text="logList.length"></span>
-                </a>
-
                 <!-- Unduh Format Master Template -->
                 <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
                     <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Template Master</span>

@@ -194,9 +194,29 @@ class DtsenController extends Controller
             $activeFilterSummaries[] = "Target Variabel KPI: " . $request->input('kpi_var');
         }
 
-        // Hanya catat log jika pengguna benar-benar menerapkan parameter filter aktif
-        if (!empty($activeFilterSummaries) && $request->hasAny(['search', 'filter_col', 'salary_search', 'desil', 'jenis_kelamin', 'pendidikan', 'status_bekerja', 'status_kawin', 'quality_status'])) {
+        // Catat Log Transaksi ke berkas .txt di folder logs-transaksi/
+        if (!empty($activeFilterSummaries) && $request->hasAny(['search', 'filter_col', 'salary_search', 'desil', 'jenis_kelamin', 'pendidikan', 'status_bekerja', 'status_kawin', 'quality_status', 'kecamatan', 'kabupaten', 'provinsi'])) {
             self::logActivity('INFO', 'Penerapan Filter Data: ' . implode(' | ', $activeFilterSummaries));
+
+            $filterDetails = [];
+            if (!empty($search)) $filterDetails['kata_kunci'] = $search;
+            if ($qualityStatus !== 'semua') $filterDetails['status_qc'] = $qualityStatus;
+            if ($desil !== 'semua') $filterDetails['desil'] = $desil;
+            if ($jenisKelamin !== 'semua') $filterDetails['jenis_kelamin'] = $jenisKelamin;
+            if ($pendidikan !== 'semua') $filterDetails['pendidikan'] = $pendidikan;
+            if ($statusBekerja !== 'semua') $filterDetails['status_bekerja'] = $statusBekerja;
+            if ($statusKawin !== 'semua') $filterDetails['status_kawin'] = $statusKawin;
+            if ($filterCol && $filterVal) $filterDetails[$filterCol] = $filterVal;
+
+            \App\Services\TransactionLogger::record(
+                'PENCARIAN_FILTER',
+                'Pencarian data dengan filter: ' . implode(' | ', $activeFilterSummaries),
+                $filterDetails
+            );
+
+            if (function_exists('gc_collect_cycles')) {
+                gc_collect_cycles();
+            }
         }
 
         // Scan folder src-dtsen di root folder project dengan verifikasi integritas SHA-256 & deteksi duplikat
@@ -725,6 +745,22 @@ class DtsenController extends Controller
         if (file_exists($exportPath) && filesize($exportPath) > 0) {
             $fileSize = filesize($exportPath);
             self::logActivity('SUCCESS', "Hasil pencarian berhasil diekspor ke berkas 'src-export/{$fileName}' (" . number_format($fileSize) . " bytes).");
+
+            \App\Services\TransactionLogger::record(
+                'EKSPOR_DATA',
+                "Ekspor hasil pencarian berhasil disimpan: 'src-export/{$fileName}'",
+                [
+                    'berkas' => $fileName,
+                    'ukuran' => number_format($fileSize) . ' bytes',
+                    'kata_kunci' => $search ?: '(Semua data terfilter)',
+                    'urutan' => $orderBy,
+                ]
+            );
+
+            if (function_exists('gc_collect_cycles')) {
+                gc_collect_cycles();
+            }
+
             return response()->streamDownload(function () use ($exportPath) {
                 $stream = fopen($exportPath, 'rb');
                 if ($stream) {
@@ -1033,6 +1069,16 @@ class DtsenController extends Controller
                 "Pengguna '{$userName}' berhasil mengunggah berkas dataset '{$safeName}' (SHA-256: {$shaShort}) ke folder src-dtsen/.",
                 'SUCCESS'
             );
+
+            \App\Services\TransactionLogger::record(
+                'UNGGAH_DATASET',
+                "Unggah berkas dataset baru: '{$safeName}'",
+                ['berkas' => $safeName, 'sha256' => $shaShort]
+            );
+
+            if (function_exists('gc_collect_cycles')) {
+                gc_collect_cycles();
+            }
 
             return redirect()->route('dtsen.files')->with('success', "Berkas '{$safeName}' (SHA-256: {$shaShort}...) berhasil disimpan ke folder src-dtsen/ dan siap untuk diproses!");
         } catch (\Throwable $e) {
@@ -1735,104 +1781,26 @@ class DtsenController extends Controller
     }
 
     /**
-     * Halaman Utama Log Aktivitas Sistem (Tema Mengikuti Folder Formulir)
+     * Halaman Utama Log Aktivitas Sistem (Dialihkan ke Folder Berkas Teks logs-transaksi/)
      */
     public function activityLogsPage(Request $request)
     {
-        $logFile = storage_path('logs/dtsen_activity.log');
-        $allLogs = [];
+        return redirect()->route('dtsen.index')->with('info', 'Catatan aktivitas dan riwayat transaksi sistem kini otomatis disimpan dalam format berkas teks (.txt) di folder "logs-transaksi/" setiap kali aplikasi ditutup.');
+    }
 
-        if (!file_exists($logFile)) {
-            self::logActivity('INFO', 'Sistem PADU Analytics beroperasi dalam mode 100% Offline.');
+    /**
+     * API Finalisasi Sesi & Pembersihan Residu RAM (Dipanggil oleh PADU.exe saat ditutup)
+     */
+    public function closeSessionApi(Request $request)
+    {
+        $logFile = \App\Services\TransactionLogger::finalizeSession();
+        if (function_exists('gc_collect_cycles')) {
+            gc_collect_cycles();
         }
-
-        if (file_exists($logFile)) {
-            $lines = file($logFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-            foreach ($lines as $idx => $line) {
-                if (preg_match('/^\[(.*?)\]\s*\[(.*?)\]\s*(.*)$/', $line, $m)) {
-                    $allLogs[] = [
-                        'id' => $idx + 1,
-                        'timestamp' => $m[1],
-                        'level' => strtoupper(trim($m[2])),
-                        'message' => trim($m[3]),
-                    ];
-                } else {
-                    $allLogs[] = [
-                        'id' => $idx + 1,
-                        'timestamp' => date('Y-m-d H:i:s'),
-                        'level' => 'INFO',
-                        'message' => $line,
-                    ];
-                }
-            }
-        }
-
-        // Urutkan dari yang terbaru ke terlama
-        $allLogs = array_reverse($allLogs);
-
-        // Hitung statistik ringkas (KPI)
-        $totalLogs = count($allLogs);
-        $todayDate = date('Y-m-d');
-        $todayCount = 0;
-        $successCount = 0;
-        $warningCount = 0;
-        $errorCount = 0;
-        $infoCount = 0;
-
-        foreach ($allLogs as $l) {
-            if (str_starts_with($l['timestamp'], $todayDate)) {
-                $todayCount++;
-            }
-            if ($l['level'] === 'SUCCESS') $successCount++;
-            elseif ($l['level'] === 'WARNING' || $l['level'] === 'CANCEL') $warningCount++;
-            elseif ($l['level'] === 'ERROR') $errorCount++;
-            elseif ($l['level'] === 'INFO') $infoCount++;
-        }
-
-        // Filter Level & Pencarian Kata Kunci
-        $levelFilter = strtoupper(trim($request->input('level', 'ALL')));
-        $search = trim($request->input('search', ''));
-
-        $filtered = collect($allLogs)->filter(function ($item) use ($levelFilter, $search) {
-            if ($levelFilter !== 'ALL' && $levelFilter !== '') {
-                if ($levelFilter === 'WARNING') {
-                    if ($item['level'] !== 'WARNING' && $item['level'] !== 'CANCEL') return false;
-                } elseif ($item['level'] !== $levelFilter) {
-                    return false;
-                }
-            }
-            if (!empty($search)) {
-                $keyword = mb_strtolower($search);
-                if (!str_contains(mb_strtolower($item['message']), $keyword) &&
-                    !str_contains(mb_strtolower($item['timestamp']), $keyword) &&
-                    !str_contains(mb_strtolower($item['level']), $keyword)) {
-                    return false;
-                }
-            }
-            return true;
-        });
-
-        // Pagination 25 entri per halaman
-        $page = max(1, (int) $request->input('page', 1));
-        $perPage = 25;
-        $paginatedLogs = new \Illuminate\Pagination\LengthAwarePaginator(
-            $filtered->forPage($page, $perPage)->values(),
-            $filtered->count(),
-            $perPage,
-            $page,
-            ['path' => $request->url(), 'query' => $request->query()]
-        );
-
-        return view('dtsen.activity-logs', [
-            'logs' => $paginatedLogs,
-            'totalLogs' => $totalLogs,
-            'todayCount' => $todayCount,
-            'successCount' => $successCount,
-            'warningCount' => $warningCount,
-            'errorCount' => $errorCount,
-            'infoCount' => $infoCount,
-            'levelFilter' => $levelFilter,
-            'search' => $search,
+        return response()->json([
+            'success' => true,
+            'message' => 'Sesi berhasil ditutup dan residu RAM dibersihkan.',
+            'log_file' => $logFile,
         ]);
     }
 

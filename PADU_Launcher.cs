@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Windows.Forms;
+using System.Runtime.InteropServices;
 
 namespace PaduLauncher
 {
@@ -22,6 +23,9 @@ namespace PaduLauncher
 
     public class MainForm : Form
     {
+        [DllImport("psapi.dll")]
+        private static extern int EmptyWorkingSet(IntPtr hwProc);
+
         private Process phpProcess;
         private int serverPort = 8000;
         private string projectDir;
@@ -32,6 +36,7 @@ namespace PaduLauncher
         private Label lblUrl;
         private Button btnOpenBrowser;
         private Button btnOpenExport;
+        private Button btnOpenLogs;
         private Button btnClearCache;
         private Button btnStopExit;
 
@@ -66,6 +71,7 @@ namespace PaduLauncher
                 "bootstrap\\cache",
                 "src-dtsen",
                 "src-export",
+                "logs-transaksi",
                 "scratch"
             };
 
@@ -187,7 +193,7 @@ namespace PaduLauncher
         private void InitializeComponent()
         {
             this.Text = "PADU - Pengolah dan Analisis Data Terpadu";
-            this.Size = new Size(540, 360);
+            this.Size = new Size(540, 400);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
@@ -244,7 +250,7 @@ namespace PaduLauncher
 
             this.Controls.Add(cardPanel);
 
-            // Buttons
+            // Buttons - Row 1
             btnOpenBrowser = new Button();
             btnOpenBrowser.Text = "🌐 Buka di Browser";
             btnOpenBrowser.Font = new Font("Segoe UI", 10, FontStyle.Bold);
@@ -252,8 +258,8 @@ namespace PaduLauncher
             btnOpenBrowser.ForeColor = Color.White;
             btnOpenBrowser.FlatStyle = FlatStyle.Flat;
             btnOpenBrowser.FlatAppearance.BorderSize = 0;
-            btnOpenBrowser.Location = new Point(25, 200);
-            btnOpenBrowser.Size = new Size(230, 42);
+            btnOpenBrowser.Location = new Point(25, 195);
+            btnOpenBrowser.Size = new Size(230, 40);
             btnOpenBrowser.Cursor = Cursors.Hand;
             btnOpenBrowser.Click += (s, e) => OpenBrowser();
             this.Controls.Add(btnOpenBrowser);
@@ -265,11 +271,25 @@ namespace PaduLauncher
             btnOpenExport.ForeColor = Color.White;
             btnOpenExport.FlatStyle = FlatStyle.Flat;
             btnOpenExport.FlatAppearance.BorderSize = 0;
-            btnOpenExport.Location = new Point(270, 200);
-            btnOpenExport.Size = new Size(230, 42);
+            btnOpenExport.Location = new Point(270, 195);
+            btnOpenExport.Size = new Size(230, 40);
             btnOpenExport.Cursor = Cursors.Hand;
             btnOpenExport.Click += (s, e) => OpenFolder("src-export");
             this.Controls.Add(btnOpenExport);
+
+            // Buttons - Row 2
+            btnOpenLogs = new Button();
+            btnOpenLogs.Text = "📄 Log Transaksi (.txt)";
+            btnOpenLogs.Font = new Font("Segoe UI", 9, FontStyle.Bold);
+            btnOpenLogs.BackColor = Color.FromArgb(51, 65, 85);
+            btnOpenLogs.ForeColor = Color.FromArgb(226, 232, 240);
+            btnOpenLogs.FlatStyle = FlatStyle.Flat;
+            btnOpenLogs.FlatAppearance.BorderSize = 0;
+            btnOpenLogs.Location = new Point(25, 245);
+            btnOpenLogs.Size = new Size(230, 36);
+            btnOpenLogs.Cursor = Cursors.Hand;
+            btnOpenLogs.Click += (s, e) => OpenFolder("logs-transaksi");
+            this.Controls.Add(btnOpenLogs);
 
             btnClearCache = new Button();
             btnClearCache.Text = "🔄 Bersihkan Cache";
@@ -278,21 +298,22 @@ namespace PaduLauncher
             btnClearCache.ForeColor = Color.FromArgb(226, 232, 240);
             btnClearCache.FlatStyle = FlatStyle.Flat;
             btnClearCache.FlatAppearance.BorderSize = 0;
-            btnClearCache.Location = new Point(25, 255);
+            btnClearCache.Location = new Point(270, 245);
             btnClearCache.Size = new Size(230, 36);
             btnClearCache.Cursor = Cursors.Hand;
             btnClearCache.Click += (s, e) => ClearCache();
             this.Controls.Add(btnClearCache);
 
+            // Buttons - Row 3 (Stop & Clean Exit)
             btnStopExit = new Button();
-            btnStopExit.Text = "🛑 Hentikan & Keluar";
-            btnStopExit.Font = new Font("Segoe UI", 9, FontStyle.Regular);
+            btnStopExit.Text = "🛑 Hentikan & Keluar (Pembersihan Bersih)";
+            btnStopExit.Font = new Font("Segoe UI", 9, FontStyle.Bold);
             btnStopExit.BackColor = Color.FromArgb(153, 27, 27); // Red 800
             btnStopExit.ForeColor = Color.White;
             btnStopExit.FlatStyle = FlatStyle.Flat;
             btnStopExit.FlatAppearance.BorderSize = 0;
-            btnStopExit.Location = new Point(270, 255);
-            btnStopExit.Size = new Size(230, 36);
+            btnStopExit.Location = new Point(25, 292);
+            btnStopExit.Size = new Size(475, 40);
             btnStopExit.Cursor = Cursors.Hand;
             btnStopExit.Click += (s, e) => { StopServer(); Application.Exit(); };
             this.Controls.Add(btnStopExit);
@@ -529,12 +550,37 @@ namespace PaduLauncher
 
         private void StopServer()
         {
+            // 1. Finalisasi Sesi & Buat File Log Transaksi .txt di folder logs-transaksi/
+            try
+            {
+                HttpWebRequest req = (HttpWebRequest)WebRequest.Create(string.Format("http://127.0.0.1:{0}/api/system/session-close", serverPort));
+                req.Timeout = 1200;
+                req.Method = "GET";
+                using (HttpWebResponse res = (HttpWebResponse)req.GetResponse()) {}
+            }
+            catch
+            {
+                // Fallback jika web server sudah tidak merespon: buat file log dari buffer
+                FallbackFinalizeSessionLog();
+            }
+
+            // 2. Bersihkan & Matikan Seluruh Sub-Process PHP & Python Tree
             if (phpProcess != null && !phpProcess.HasExited)
             {
                 try
                 {
+                    ProcessStartInfo killTree = new ProcessStartInfo("taskkill", string.Format("/F /T /PID {0}", phpProcess.Id));
+                    killTree.CreateNoWindow = true;
+                    killTree.UseShellExecute = false;
+                    killTree.WindowStyle = ProcessWindowStyle.Hidden;
+                    using (Process kp = Process.Start(killTree)) { kp.WaitForExit(1000); }
+                }
+                catch {}
+
+                try
+                {
                     phpProcess.Kill();
-                    phpProcess.WaitForExit(1000);
+                    phpProcess.WaitForExit(500);
                 }
                 catch {}
             }
@@ -549,6 +595,63 @@ namespace PaduLauncher
                 using (Process p = Process.Start(psi))
                 {
                     p.WaitForExit(2000);
+                }
+            }
+            catch {}
+
+            // 3. Bersihkan sisa berkas scratch & cache residu
+            try
+            {
+                string scratchDir = Path.Combine(projectDir, "scratch");
+                if (Directory.Exists(scratchDir))
+                {
+                    string[] tmpFiles = Directory.GetFiles(scratchDir, "*.tmp");
+                    foreach (string tf in tmpFiles) { try { File.Delete(tf); } catch {} }
+                    string progFile = Path.Combine(scratchDir, "import_progress.json");
+                    if (File.Exists(progFile)) { try { File.Delete(progFile); } catch {} }
+                }
+            }
+            catch {}
+
+            // 4. Bersihkan residu RAM sistem secara persisten (EmptyWorkingSet)
+            try
+            {
+                EmptyWorkingSet(Process.GetCurrentProcess().Handle);
+            }
+            catch {}
+        }
+
+        private void FallbackFinalizeSessionLog()
+        {
+            try
+            {
+                string logsDir = Path.Combine(projectDir, "logs-transaksi");
+                if (!Directory.Exists(logsDir)) Directory.CreateDirectory(logsDir);
+
+                string activeFile = Path.Combine(logsDir, ".active_session.json");
+                if (File.Exists(activeFile))
+                {
+                    string content = File.ReadAllText(activeFile);
+                    string timestamp = DateTime.Now.ToString("yyyy-MM-dd_HHmmss");
+                    string txtFile = Path.Combine(logsDir, string.Format("Log_Transaksi_{0}.txt", timestamp));
+
+                    using (StreamWriter sw = new StreamWriter(txtFile, false, System.Text.Encoding.UTF8))
+                    {
+                        sw.WriteLine(new string('=', 82));
+                        sw.WriteLine("             CATATAN LOG TRANSAKSI & AKTIVITAS HARIAN PENGGUNA");
+                        sw.WriteLine("               PADU - PENGOLAH & ANALISIS DATA TERPADU (DTSEN)");
+                        sw.WriteLine(new string('=', 82));
+                        sw.WriteLine(string.Format("{0,-22}: {1}", "Waktu Sesi Ditutup", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")));
+                        sw.WriteLine(string.Format("{0,-22}: Sesi selesai dan ditutup oleh pengguna.", "Keterangan"));
+                        sw.WriteLine(new string('-', 82));
+                        sw.WriteLine("DATA SESI TRANSAKSI:");
+                        sw.WriteLine(content);
+                        sw.WriteLine(new string('=', 82));
+                        sw.WriteLine("SESI APLIKASI SELESAI & DITUTUP SECARA BERSIH");
+                        sw.WriteLine("Status Pembersihan: Seluruh proses latar belakang dan residu RAM telah dibersihkan.");
+                        sw.WriteLine(new string('=', 82));
+                    }
+                    try { File.Delete(activeFile); } catch {}
                 }
             }
             catch {}

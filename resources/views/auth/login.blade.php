@@ -196,58 +196,23 @@
             transform: none;
             box-shadow: none;
         }
-        .demo-accounts-box {
-            margin-top: 20px;
-            padding-top: 16px;
-            border-top: 1px dashed #cbd5e1;
-        }
-        .demo-accounts-title {
-            display: flex;
-            align-items: center;
-            gap: 6px;
+        .btn-reset-link {
+            background: none;
+            border: none;
+            color: #dc2626;
             font-size: 11px;
             font-weight: 700;
-            color: #475569;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .demo-account-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-        .demo-chip {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            padding: 8px 12px;
-            background: #f8fafc;
-            border: 1px solid #cbd5e1;
-            border-radius: 10px;
             cursor: pointer;
-            text-align: left;
-            transition: all 0.2s ease;
-        }
-        .demo-chip:hover {
-            background: #eff6ff;
-            border-color: #3b82f6;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
-        }
-        .chip-role {
-            font-size: 11px;
-            font-weight: 700;
-            color: #0f172a;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 4px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.2s;
         }
-        .chip-email {
-            font-size: 10px;
-            color: #64748b;
-            margin-top: 2px;
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        .btn-reset-link:hover {
+            background: #fee2e2;
+            text-decoration: underline;
         }
         .auth-footer {
             margin-top: 24px;
@@ -375,24 +340,6 @@
                         <span x-show="loading" x-cloak>Memeriksa Direktori...</span>
                         <i x-show="!loading" class="fi fi-rr-arrow-right" style="font-size: 13px;"></i>
                     </button>
-
-                    <!-- Quick Demo / Testing Accounts Helper (1-Click Instant Login) -->
-                    <div class="demo-accounts-box">
-                        <div class="demo-accounts-title">
-                            <i class="fi fi-rr-bolt" style="font-size: 14px; color: #2563eb;"></i>
-                            <span>Pilih Cepat Akun (Klik untuk Masuk Langsung):</span>
-                        </div>
-                        <div class="demo-account-buttons">
-                            <button type="button" 
-                                    @click="quickLogin('admin@padu.local', 'PasswordAdmin2026!')" 
-                                    class="demo-chip"
-                                    style="width: 100%; justify-content: center;"
-                                    title="Klik untuk langsung masuk sebagai Administrator">
-                                <span class="chip-role"><i class="fi fi-rr-shield-check text-blue-600"></i> Administrator</span>
-                                <span class="chip-email">admin@padu.local &bull; <strong>Masuk Otomatis</strong></span>
-                            </button>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- ================= TAHAP 2: INPUT KATA SANDI (ROLE-AWARE) ================= -->
@@ -447,13 +394,10 @@
                             </button>
                         </div>
 
-                        <!-- Auto-fill hint for standard credential -->
-                        <div style="margin-top: 8px; font-size: 11px; color: #64748b; background: #f8fafc; padding: 7px 10px; border-radius: 8px; border: 1px dashed #cbd5e1; display: flex; align-items: center; justify-content: space-between;">
-                            <span>Sandi Standar: <code style="font-weight: 700; color: #1e40af;">PasswordAdmin2026!</code></span>
-                            <button type="button" 
-                                    @click="password = 'PasswordAdmin2026!'"
-                                    style="background: #e0f2fe; border: 1px solid #bae6fd; color: #0369a1; font-size: 11px; font-weight: 700; cursor: pointer; text-decoration: none; padding: 3px 8px; border-radius: 6px;">
-                                Isi Otomatis
+                        <!-- Link Reset Kata Sandi jika Lupa -->
+                        <div style="display: flex; justify-content: flex-end; margin-top: 6px;">
+                            <button type="button" @click="showResetModal = true" class="btn-reset-link">
+                                <i class="fi fi-rr-key"></i> Lupa kata sandi? Reset di sini
                             </button>
                         </div>
                     </div>
@@ -461,16 +405,93 @@
                     <button type="submit" 
                             :disabled="submitting || !password"
                             class="btn-primary"
-                            style="margin-top: 14px;">
+                            style="margin-top: 10px;">
                         <span x-show="!submitting">Masuk ke Sistem</span>
                         <span x-show="submitting" x-cloak>Mengautentikasi...</span>
                         <i x-show="!submitting" class="fi fi-rr-sign-in-alt" style="font-size: 13px;"></i>
                     </button>
 
+                    <!-- Alert Reset Khusus jika gagal 3x atau akun terkunci -->
+                    @if(session('show_reset_button'))
+                        <div style="margin-top: 16px; padding: 12px 14px; background: #fef2f2; border: 1.5px solid #fecaca; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 12px; font-weight: 800; color: #b91c1c; display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 4px;">
+                                <i class="fi fi-rr-triangle-warning"></i>
+                                <span>Lupa Kata Sandi (3x Percobaan Gagal)</span>
+                            </div>
+                            <p style="font-size: 11px; color: #475569; margin-bottom: 8px;">
+                                Gunakan kata sandi bawaan sistem PADU (<code>PaduKalkulator1#</code>) untuk mereset kata sandi Anda.
+                            </p>
+                            <button type="button" @click="showResetModal = true" 
+                                    style="background: #dc2626; color: white; border: none; border-radius: 8px; padding: 7px 14px; font-size: 11px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;">
+                                <i class="fi fi-rr-refresh"></i> Buka Menu Reset Kata Sandi
+                            </button>
+                        </div>
+                    @endif
+
                 </div>
 
             </form>
 
+        </div>
+
+        <!-- Modal Reset Sandi Bawaan PADU -->
+        <div x-show="showResetModal" x-cloak 
+             style="position: fixed; inset: 0; z-index: 99999; display: flex; align-items: center; justify-content: center; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); padding: 16px;">
+            <div @click.away="showResetModal = false" 
+                 style="background: #ffffff; border-radius: 20px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); max-width: 420px; width: 100%; padding: 26px; border: 1px solid #e2e8f0; position: relative;">
+                
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div style="width: 34px; height: 34px; border-radius: 10px; background: #fee2e2; color: #dc2626; display: flex; align-items: center; justify-content: center; font-size: 16px;">
+                            <i class="fi fi-rr-key"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 14px; font-weight: 900; color: #0f172a;">Reset Kata Sandi Akun</div>
+                            <div style="font-size: 11px; color: #64748b;">Pemulihan Otoritas Bawaan PADU</div>
+                        </div>
+                    </div>
+                    <button type="button" @click="showResetModal = false" style="background: none; border: none; font-size: 18px; color: #94a3b8; cursor: pointer;">&times;</button>
+                </div>
+
+                <form action="{{ route('auth.emergency-reset') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="email" :value="email">
+
+                    <div style="margin-bottom: 14px;">
+                        <label style="display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 6px;">
+                            Surel Akun
+                        </label>
+                        <input type="email" name="email_display" :value="email" disabled 
+                               style="width: 100%; padding: 10px 12px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 12px; color: #64748b; font-weight: 600;">
+                    </div>
+
+                    <div style="margin-bottom: 18px;">
+                        <label style="display: block; font-size: 11px; font-weight: 700; color: #0f172a; margin-bottom: 6px;">
+                            Masukkan Kata Sandi Bawaan PADU:
+                        </label>
+                        <input type="password" 
+                               name="default_password" 
+                               required 
+                               autofocus
+                               placeholder="Masukkan kata sandi bawaan (PaduKalkulator1#)..." 
+                               style="width: 100%; padding: 11px 13px; background: #ffffff; border: 1.5px solid #3b82f6; border-radius: 10px; font-size: 13px; color: #0f172a; font-weight: 600; outline: none; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);">
+                        <p style="font-size: 11px; color: #64748b; margin-top: 6px; line-height: 1.4;">
+                            ℹ️ Masukkan sandi bawaan sistem PADU: <code style="font-weight: 800; color: #1d4ed8;">PaduKalkulator1#</code>. Setelah diverifikasi, Anda akan diarahkan untuk menyetel kata sandi baru Anda.
+                        </p>
+                    </div>
+
+                    <div style="display: flex; gap: 10px;">
+                        <button type="button" @click="showResetModal = false" 
+                                style="flex: 1; padding: 11px; background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer;">
+                            Batal
+                        </button>
+                        <button type="submit" 
+                                style="flex: 2; padding: 11px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #ffffff; border: none; border-radius: 10px; font-size: 12px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);">
+                            Verifikasi & Buat Sandi Baru
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
 
         <!-- Footer -->

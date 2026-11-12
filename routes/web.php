@@ -22,7 +22,13 @@ Route::middleware('guest')->group(function () {
     Route::get('/login/2fa', [AuthController::class, 'showTwoFactor'])->name('auth.two-factor');
     Route::post('/login/2fa', [AuthController::class, 'verifyTwoFactor'])->name('auth.two-factor.verify');
     Route::post('/login/2fa-recovery', [AuthController::class, 'verifyEmergencyRecovery'])->name('auth.two-factor.recovery');
+    
+    // Pemulihan / Reset Sandi Bawaan PADU (PaduKalkulator1#)
+    Route::post('/auth/emergency-reset', [AuthController::class, 'emergencyReset'])->name('auth.emergency-reset');
 });
+
+// Penutupan Sesi Sistem & Finalisasi Log Transaksi ke Folder logs-transaksi/
+Route::match(['GET', 'POST'], '/api/system/session-close', [DtsenController::class, 'closeSessionApi'])->name('system.session-close');
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 

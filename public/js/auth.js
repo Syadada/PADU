@@ -23,6 +23,7 @@ function loginForm(config) {
         userInfo: config.userInfo || null,
         errorMessage: '',
         isLocked: false,
+        showResetModal: false,
         lockCountdown: 0,
         timerInterval: null,
         checkEmailUrl: config.checkEmailUrl || '/auth/check-email',
@@ -233,13 +234,12 @@ function forceResetForm() {
         password_confirmation: '',
         showPass: false,
         get hasMinLen() { return this.password.length >= 15; },
-        get hasUpper() { return /[A-Z]/.test(this.password); },
-        get hasLower() { return /[a-z]/.test(this.password); },
+        get hasCapitalStart() { return /^[A-Z]/.test(this.password); },
         get hasNumber() { return /[0-9]/.test(this.password); },
-        get hasSymbol() { return /[@$!%*#?&\-_+=]/.test(this.password); },
+        get hasSymbol() { return /[@$!%*#?&\-_+=^~`<>.,:;\/\\|]/.test(this.password); },
         get isMatch() { return this.password && this.password === this.password_confirmation; },
         get isValidAll() {
-            return this.hasMinLen && this.hasUpper && this.hasLower && this.hasNumber && this.hasSymbol && this.isMatch;
+            return this.hasMinLen && this.hasCapitalStart && this.hasNumber && this.hasSymbol && this.isMatch;
         }
     };
 }

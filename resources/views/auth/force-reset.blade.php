@@ -103,21 +103,17 @@
                             <span x-text="hasMinLen ? 'Patuh' : 'Belum'"></span>
                             <span>Min. 15 Karakter (<span x-text="password.length"></span>/15)</span>
                         </div>
-                        <div class="checklist-item" :class="hasUpper ? 'item-valid' : 'item-invalid'">
-                            <span x-text="hasUpper ? 'Patuh' : 'Belum'"></span>
-                            <span>Huruf Besar (A-Z)</span>
-                        </div>
-                        <div class="checklist-item" :class="hasLower ? 'item-valid' : 'item-invalid'">
-                            <span x-text="hasLower ? 'Patuh' : 'Belum'"></span>
-                            <span>Huruf Kecil (a-z)</span>
+                        <div class="checklist-item" :class="hasCapitalStart ? 'item-valid' : 'item-invalid'">
+                            <span x-text="hasCapitalStart ? 'Patuh' : 'Belum'"></span>
+                            <span>Capital di Awal (A-Z)</span>
                         </div>
                         <div class="checklist-item" :class="hasNumber ? 'item-valid' : 'item-invalid'">
                             <span x-text="hasNumber ? 'Patuh' : 'Belum'"></span>
-                            <span>Angka (0-9)</span>
+                            <span>Mengandung Angka (0-9)</span>
                         </div>
                         <div class="checklist-item" :class="hasSymbol ? 'item-valid' : 'item-invalid'">
                             <span x-text="hasSymbol ? 'Patuh' : 'Belum'"></span>
-                            <span>Simbol (@$!%*#?&...)</span>
+                            <span>Karakter Spesial / Simbol</span>
                         </div>
                         <div class="checklist-item" :class="isMatch && password ? 'item-valid' : 'item-invalid'">
                             <span x-text="isMatch && password ? 'Cocok' : 'Belum'"></span>
