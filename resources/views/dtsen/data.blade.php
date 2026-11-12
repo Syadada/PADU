@@ -889,19 +889,258 @@
                                 </td>
                             </tr>
                         @empty
+                            @php
+                                $trimmedSearch = trim($search ?? '');
+                                $digitsOnly = preg_replace('/\D/', '', $trimmedSearch);
+                                $digitLen = strlen($digitsOnly);
+                                
+                                // 1. Diagnostik Kesalahan Format / Input Error
+                                $isInputError = false;
+                                $errorBadge = '';
+                                $errorTitle = '';
+                                $errorMessage = '';
+                                $errorTip = '';
+                                
+                                // Cek apakah user berniat mencari NIK / KK tapi panjang digit salah
+                                if ($searchBy === 'nik' || $searchBy === 'kk' || (!empty($trimmedSearch) && preg_match('/^[0-9\s.-]+$/', $trimmedSearch) && $digitLen >= 6 && $digitLen <= 25)) {
+                                    if ($digitLen !== 16) {
+                                        $isInputError = true;
+                                        $errorBadge = 'Indikasi Input Error • Jumlah Digit Tidak Standar';
+                                        $errorTitle = 'Panjang Nomor Identitas Tidak Standar (' . $digitLen . ' Digit)';
+                                        $errorMessage = 'Anda memasukkan ' . $digitLen . ' digit angka ("' . e($digitsOnly) . '"). Di Indonesia, standar baku Nomor Induk Kependudukan (NIK) dan Nomor Kartu Keluarga (KK) selalu terdiri dari tepat 16 digit.';
+                                        $errorTip = ($digitLen < 16) 
+                                            ? 'Angka kurang ' . (16 - $digitLen) . ' digit. Periksa apakah ada angka 0 di depan atau angka akhir yang terpotong saat copy-paste.'
+                                            : 'Angka berlebih ' . ($digitLen - 16) . ' digit. Periksa apakah ada spasi atau karakter ganda yang ikut terketik.';
+                                    }
+                                } 
+                                // Cek jika memilih kolom NIK / KK tapi memasukkan karakter huruf
+                                elseif (($searchBy === 'nik' || $searchBy === 'kk') && !empty($trimmedSearch) && preg_match('/[a-zA-Z]/', $trimmedSearch)) {
+                                    $isInputError = true;
+                                    $errorBadge = 'Indikasi Input Error • Tipe Karakter Tidak Cocok';
+                                    $errorTitle = 'Target Kolom ' . strtoupper($searchBy) . ' Hanya Menerima Angka';
+                                    $errorMessage = 'Anda memilih target pencarian kolom ' . strtoupper($searchBy) . ', namun kata kunci "' . e($trimmedSearch) . '" mengandung huruf. Kolom ' . strtoupper($searchBy) . ' murni berisi 16 digit angka.';
+                                    $errorTip = 'Ganti target pencarian ke "Semua Kolom" atau "Nama Lengkap" jika Anda mencari nama orang.';
+                                }
+                                // Cek simbol aneh / SQL syntax typo
+                                elseif (!empty($trimmedSearch) && preg_match('/[\'"><}{;=]/', $trimmedSearch)) {
+                                    $isInputError = true;
+                                    $errorBadge = 'Indikasi Input Error • Karakter Simbol Tidak Valid';
+                                    $errorTitle = 'Terdapat Karakter Simbol yang Tidak Dikenali';
+                                    $errorMessage = 'Pencarian mengandung karakter simbol khusus (' . e($trimmedSearch) . ') yang tidak sesuai dengan format data kependudukan.';
+                                    $errorTip = 'Hapus karakter tanda kutip, kurung kurawal, atau simbol perbandingan kecuali tanda hubung (-) atau titik (.)';
+                                }
+
+                                // 2. Kumpulkan Semua Kriteria Aktif
+                                $activeCriteria = [];
+                                if (!empty($nlqInfo['tags'])) {
+                                    foreach ($nlqInfo['tags'] as $t) {
+                                        $activeCriteria[] = [
+                                            'type' => 'nlq',
+                                            'label' => $t,
+                                            'is_missing' => str_contains($t, '(Kolom N/A)')
+                                        ];
+                                    }
+                                } elseif (!empty($trimmedSearch)) {
+                                    $activeCriteria[] = [
+                                        'type' => 'keyword',
+                                        'label' => 'Kata Kunci: "' . $trimmedSearch . '" (' . ($searchBy === 'all' ? 'Semua Kolom' : $searchBy) . ')',
+                                        'is_missing' => false
+                                    ];
+                                }
+
+                                if ($desil !== 'semua' && !empty($desil)) {
+                                    $activeCriteria[] = [
+                                        'type' => 'filter',
+                                        'label' => 'Desil ' . $desil,
+                                        'is_missing' => false
+                                    ];
+                                }
+                                if ($qualityStatus !== 'semua' && !empty($qualityStatus)) {
+                                    $activeCriteria[] = [
+                                        'type' => 'filter',
+                                        'label' => 'Status QC: ' . $qualityStatus,
+                                        'is_missing' => false
+                                    ];
+                                }
+                                if (!empty($bulkSearch)) {
+                                    $activeCriteria[] = [
+                                        'type' => 'filter',
+                                        'label' => 'Bulk Search ' . strtoupper($bulkField ?? 'NIK'),
+                                        'is_missing' => false
+                                    ];
+                                }
+
+                                // Deteksi apakah ada filter wilayah aktif
+                                $hasWilayahFilter = false;
+                                foreach ($activeCriteria as $ac) {
+                                    if (str_contains(strtolower($ac['label']), 'wilayah:')) {
+                                        $hasWilayahFilter = true;
+                                        break;
+                                    }
+                                }
+                            @endphp
                             <tr>
-                                <td colspan="{{ count($activeColumnsMap) + 3 }}" class="px-4 py-16 text-center">
-                                    <div class="space-y-3 max-w-md mx-auto py-6">
-                                        <div class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center text-2xl font-bold mx-auto shadow-xs"><i class="fi fi-rr-search"></i></div>
-                                        <div class="space-y-1">
-                                            <h4 class="font-extrabold text-sm text-slate-800">Tidak ada data yang sesuai dengan kriteria</h4>
-                                            <p class="text-xs text-slate-500 font-medium">Coba sesuaikan kata kunci pencarian atau bersihkan filter.</p>
+                                <td colspan="{{ count($activeColumnsMap) + 3 }}" class="px-4 py-12 text-center">
+                                    <div class="max-w-2xl mx-auto space-y-5 py-4">
+                                        
+                                        @if($isInputError)
+                                            <!-- KONDISI A: INDIKASI FORMAT / INPUT ERROR -->
+                                            <div class="p-6 rounded-2xl bg-rose-50/70 border border-rose-200 text-slate-800 space-y-4 shadow-xs">
+                                                <div class="w-14 h-14 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center text-2xl font-black mx-auto shadow-xs">
+                                                    <i class="fi fi-rr-exclamation"></i>
+                                                </div>
+                                                <div class="space-y-1.5">
+                                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider bg-rose-100 text-rose-800 border border-rose-300">
+                                                        <i class="fi fi-rr-shield-exclamation text-xs"></i> {{ $errorBadge }}
+                                                    </span>
+                                                    <h3 class="font-extrabold text-base text-rose-950">{{ $errorTitle }}</h3>
+                                                    <p class="text-xs text-rose-900/80 leading-relaxed max-w-lg mx-auto">{{ $errorMessage }}</p>
+                                                </div>
+
+                                                <div class="p-3.5 bg-white/90 rounded-xl border border-rose-200 text-left text-xs text-rose-900 space-y-1 shadow-2xs">
+                                                    <div class="font-black text-rose-950 flex items-center gap-1.5">
+                                                        <i class="fi fi-rr-bulb text-amber-600 text-sm"></i> Petunjuk Perbaikan:
+                                                    </div>
+                                                    <p class="text-[11.5px] text-slate-700 leading-normal">{{ $errorTip }}</p>
+                                                </div>
+
+                                                <!-- Rekomendasi Tombol Tindakan Cepat -->
+                                                <div class="pt-2 flex flex-wrap items-center justify-center gap-2">
+                                                    @if($searchBy !== 'all')
+                                                        <a href="{{ route('dtsen.data', array_merge(request()->all(), ['search_by' => 'all'])) }}#tabel-data" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black shadow-xs inline-flex items-center gap-1.5 transition-all cursor-pointer">
+                                                            <i class="fi fi-rr-search-alt"></i> <span>Cari di Semua Kolom</span>
+                                                        </a>
+                                                    @endif
+                                                    <a href="{{ route('dtsen.data', array_merge(request()->except('search'), ['page' => 1])) }}#tabel-data" class="px-4 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-xl text-xs font-black shadow-2xs inline-flex items-center gap-1.5 transition-all cursor-pointer">
+                                                        <i class="fi fi-rr-cross-small"></i> <span>Kosongkan Kata Kunci</span>
+                                                    </a>
+                                                    <a href="{{ route('dtsen.data') }}#tabel-data" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-black shadow-xs inline-flex items-center gap-1.5 transition-all cursor-pointer">
+                                                        <i class="fi fi-rr-refresh"></i> <span>Reset Semua Filter</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                        @else
+                                            <!-- KONDISI B: FORMAT VALID TETAPI DATA TIDAK SESUAI -->
+                                            <div class="p-6 rounded-2xl bg-slate-50/90 border border-slate-200 text-slate-800 space-y-4 shadow-xs">
+                                                <div class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center text-2xl font-black mx-auto shadow-xs">
+                                                    <i class="fi fi-rr-search"></i>
+                                                </div>
+                                                <div class="space-y-1.5">
+                                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-300">
+                                                        <i class="fi fi-rr-info text-xs"></i> Format Pencarian Valid &bull; 0 Data Sesuai
+                                                    </span>
+                                                    <h3 class="font-extrabold text-base text-slate-900">Tidak Ditemukan Data yang Memenuhi Seluruh Kriteria</h3>
+                                                    <p class="text-xs text-slate-600 leading-relaxed max-w-xl mx-auto">
+                                                        Sistem telah memeriksa seluruh <strong>{{ number_format($totalSystemRows ?? $totalRows) }}</strong> baris penduduk pada berkas <em>"{{ $activeDatasetFile ?? 'Dataset Aktif' }}"</em>, namun tidak ditemukan individu yang memenuhi seluruh kriteria di bawah ini secara bersamaan.
+                                                    </p>
+                                                </div>
+
+                                                <!-- Chips Kriteria Aktif -->
+                                                @if(!empty($activeCriteria))
+                                                    <div class="p-3 bg-white rounded-xl border border-slate-200 text-left space-y-2 shadow-2xs">
+                                                        <div class="text-[11px] font-black text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                                                            <i class="fi fi-rr-filter text-blue-600"></i> Kriteria yang Sedang Diterapkan ({{ count($activeCriteria) }} Kriteria):
+                                                        </div>
+                                                        <div class="flex flex-wrap items-center gap-1.5">
+                                                            @foreach($activeCriteria as $crit)
+                                                                @if($crit['is_missing'])
+                                                                    <span class="px-2.5 py-1 rounded-lg bg-amber-50 text-amber-800 border border-amber-200 text-[11px] font-bold flex items-center gap-1" title="Kolom ini belum tersedia di dataset aktif">
+                                                                        <i class="fi fi-rr-exclamation text-amber-600"></i> {{ $crit['label'] }}
+                                                                    </span>
+                                                                @else
+                                                                    <span class="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-900 border border-indigo-200 text-[11px] font-extrabold flex items-center gap-1">
+                                                                        <i class="fi fi-rr-check text-emerald-600"></i> {{ $crit['label'] }}
+                                                                    </span>
+                                                                @endif
+                                                            @endforeach
+                                                        </div>
+                                                    </div>
+                                                @endif
+
+                                                <!-- Followback Action Buttons (Solusi Cepat) -->
+                                                <div class="pt-2 flex flex-wrap items-center justify-center gap-2">
+                                                    @if($hasWilayahFilter && !empty($trimmedSearch))
+                                                        <a href="{{ route('dtsen.data', array_merge(request()->all(), ['search' => trim(preg_replace('/\b(di\s+[a-zA-Z0-9\s]+|wilayah\s+[a-zA-Z0-9\s]+|kecamatan\s+[a-zA-Z0-9\s]+)\b/i', ' ', $trimmedSearch))])) }}#tabel-data" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-black shadow-xs inline-flex items-center gap-1.5 transition-all cursor-pointer" title="Cari kriteria yang sama tanpa dibatasi wilayah">
+                                                            <i class="fi fi-rr-marker"></i> <span>Cari Tanpa Filter Wilayah</span>
+                                                        </a>
+                                                    @endif
+
+                                                    @if($searchBy !== 'all')
+                                                        <a href="{{ route('dtsen.data', array_merge(request()->all(), ['search_by' => 'all'])) }}#tabel-data" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black shadow-xs inline-flex items-center gap-1.5 transition-all cursor-pointer">
+                                                            <i class="fi fi-rr-expand"></i> <span>Perluas ke Semua Kolom</span>
+                                                        </a>
+                                                    @endif
+
+                                                    @if(($desil !== 'semua' && !empty($desil)) || ($qualityStatus !== 'semua' && !empty($qualityStatus)))
+                                                        <a href="{{ route('dtsen.data', array_merge(request()->except(['desil', 'quality_status']), ['page' => 1])) }}#tabel-data" class="px-3.5 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-black shadow-xs inline-flex items-center gap-1.5 transition-all cursor-pointer">
+                                                            <i class="fi fi-rr-filter-slash"></i> <span>Longgarkan Filter Desil & QC</span>
+                                                        </a>
+                                                    @endif
+
+                                                    @if(!empty($trimmedSearch))
+                                                        <a href="{{ route('dtsen.data', array_merge(request()->except('search'), ['page' => 1])) }}#tabel-data" class="px-3.5 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-xl text-xs font-black shadow-2xs inline-flex items-center gap-1.5 transition-all cursor-pointer">
+                                                            <i class="fi fi-rr-cross-small"></i> <span>Hapus Pencarian</span>
+                                                        </a>
+                                                    @endif
+
+                                                    <a href="{{ route('dtsen.data') }}#tabel-data" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-black shadow-xs inline-flex items-center gap-1.5 transition-all cursor-pointer">
+                                                        <i class="fi fi-rr-refresh"></i> <span>Reset Semua Filter</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        @endif
+
+                                        <!-- PUSTAKA SINONIM OTOMATIS (SMART NLQ ASSISTANT) -->
+                                        <div class="text-left text-xs bg-white p-4 sm:p-5 rounded-2xl border border-indigo-100 shadow-sm space-y-3">
+                                            <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                                                <span class="font-black text-slate-900 text-xs flex items-center gap-2">
+                                                    <span class="w-6 h-6 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs"><i class="fi fi-rr-sparkles"></i></span>
+                                                    Pustaka Sinonim Otomatis DTSEN (Padu Smart NLQ)
+                                                </span>
+                                                <span class="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full font-extrabold uppercase tracking-wider">
+                                                    <i class="fi fi-rr-check text-[9px]"></i> Aktif & Siap Pakai
+                                                </span>
+                                            </div>
+                                            <p class="text-[11.5px] text-slate-600 font-medium leading-relaxed">
+                                                Aplikasi PADU secara otomatis menyamakan kata-kata populer di bawah ini, sehingga Anda dapat mengetik istilah umum sehari-hari secara bebas tanpa khawatir perbedaan istilah dalam tabel:
+                                            </p>
+                                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-[11px]">
+                                                <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/90 space-y-1">
+                                                    <div class="font-extrabold text-slate-800 flex items-center gap-1"><i class="fi fi-rr-venus-mars text-indigo-600"></i> Jenis Kelamin:</div>
+                                                    <div class="text-slate-600 leading-normal"><strong class="text-indigo-700">wanita</strong> = perempuan = cewek = p / w</div>
+                                                    <div class="text-slate-600 leading-normal"><strong class="text-indigo-700">pria</strong> = laki-laki = cowok = l / m</div>
+                                                </div>
+                                                <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/90 space-y-1">
+                                                    <div class="font-extrabold text-slate-800 flex items-center gap-1"><i class="fi fi-rr-heart text-rose-600"></i> Status Kawin:</div>
+                                                    <div class="text-slate-600 leading-normal"><strong class="text-indigo-700">lajang</strong> = single = bujang = belum kawin</div>
+                                                    <div class="text-slate-600 leading-normal"><strong class="text-indigo-700">menikah</strong> = kawin | <strong class="text-indigo-700">janda/duda</strong> = cerai</div>
+                                                </div>
+                                                <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/90 space-y-1">
+                                                    <div class="font-extrabold text-slate-800 flex items-center gap-1"><i class="fi fi-rr-briefcase text-amber-600"></i> Pekerjaan / Profesi:</div>
+                                                    <div class="text-slate-600 leading-normal"><strong class="text-indigo-700">irt</strong> = ibu rumah tangga</div>
+                                                    <div class="text-slate-600 leading-normal"><strong class="text-indigo-700">tani</strong> = petani | <strong class="text-indigo-700">sopir</strong> = driver / ojek</div>
+                                                    <div class="text-slate-600 leading-normal"><strong class="text-indigo-700">pedagang</strong> = wiraswasta | <strong class="text-indigo-700">nakes</strong> = bidan/perawat</div>
+                                                </div>
+                                                <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/90 space-y-1">
+                                                    <div class="font-extrabold text-slate-800 flex items-center gap-1"><i class="fi fi-rr-graduation-cap text-blue-600"></i> Pendidikan:</div>
+                                                    <div class="text-slate-600 leading-normal"><strong class="text-indigo-700">sma</strong> = smk = slta = aliyah = kejuruan</div>
+                                                    <div class="text-slate-600 leading-normal"><strong class="text-indigo-700">sarjana</strong> = s1 = universitas / kuliah</div>
+                                                    <div class="text-slate-600 leading-normal"><strong class="text-indigo-700">smp</strong> = sltp = mts | <strong class="text-indigo-700">sd</strong> = dasar = mi</div>
+                                                </div>
+                                                <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/90 space-y-1">
+                                                    <div class="font-extrabold text-slate-800 flex items-center gap-1"><i class="fi fi-rr-users text-emerald-600"></i> Hubungan Keluarga (SHDK):</div>
+                                                    <div class="text-slate-600 leading-normal"><strong class="text-indigo-700">kepala keluarga</strong> = kk = krt</div>
+                                                    <div class="text-slate-600 leading-normal">istri | anak | cucu | orang tua / mertua</div>
+                                                </div>
+                                                <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/90 space-y-1">
+                                                    <div class="font-extrabold text-slate-800 flex items-center gap-1"><i class="fi fi-rr-calendar text-purple-600"></i> Kelompok Umur:</div>
+                                                    <div class="text-slate-600 leading-normal"><strong class="text-indigo-700">balita</strong> (&le; 5 thn) | <strong class="text-indigo-700">anak</strong> (&lt; 18 thn)</div>
+                                                    <div class="text-slate-600 leading-normal"><strong class="text-indigo-700">remaja</strong> (12-25) | <strong class="text-indigo-700">lansia</strong> (&ge; 60 thn)</div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="pt-2">
-                                            <a href="{{ route('dtsen.data') }}" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-sm transition-all inline-flex items-center gap-1.5 cursor-pointer">
-                                                <i class="fi fi-rr-refresh"></i> <span>Reset Semua Filter</span>
-                                            </a>
-                                        </div>
+
                                     </div>
                                 </td>
                             </tr>
