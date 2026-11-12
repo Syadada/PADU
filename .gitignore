@@ -42,6 +42,8 @@ scratch/script_*
 ~$*
 src-export/*
 !src-export/.gitkeep
+logs-transaksi/*
+!logs-transaksi/.gitkeep
 python/
 python_portable.zip
 

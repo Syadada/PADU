@@ -238,6 +238,26 @@ function forceResetForm() {
         get hasNumber() { return /[0-9]/.test(this.password); },
         get hasSymbol() { return /[@$!%*#?&\-_+=^~`<>.,:;\/\\|]/.test(this.password); },
         get isMatch() { return this.password && this.password === this.password_confirmation; },
+        get score() {
+            let s = 0;
+            if (this.hasMinLen) s += 25;
+            if (this.hasCapitalStart) s += 25;
+            if (this.hasNumber) s += 25;
+            if (this.hasSymbol) s += 25;
+            return s;
+        },
+        get scoreLabel() {
+            if (!this.password) return 'Ketik kata sandi baru untuk mulai';
+            if (this.score <= 25) return 'Terlalu pendek & belum lengkap';
+            if (this.score < 100) return 'Hampir memenuhi kriteria...';
+            if (!this.isMatch) return 'Kriteria lengkap! Harap ketik ulang pada konfirmasi';
+            return 'Sempurna! Kata sandi sangat kuat & siap disimpan 🎉';
+        },
+        get scoreColor() {
+            if (this.score <= 25) return '#ef4444';
+            if (this.score < 100) return '#f59e0b';
+            return '#10b981';
+        },
         get isValidAll() {
             return this.hasMinLen && this.hasCapitalStart && this.hasNumber && this.hasSymbol && this.isMatch;
         }
