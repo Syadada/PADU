@@ -126,8 +126,8 @@ Antarmuka pengguna berbasis Enterprise Light Theme dengan 12 tab analisis terded
 ### Mode 1: Versi Klien Portabel (Siap Pakai untuk Operator)
 Aplikasi didistribusikan dalam folder `aplikasi-cepat-analytics-client` yang telah menyertakan binary PHP 8.2 dan Python portabel murni:
 1. Ekstrak paket `PADU_v2.0_Enterprise_Client.zip`.
-2. Klik ganda berkas peluncur **`JALANKAN_PADU.bat`**.
-3. Browser akan otomatis terbuka atau navigasikan ke: **`http://127.0.0.1:8000/`**.
+2. Klik ganda berkas peluncur **`PADU.exe`**.
+3. Browser akan otomatis terbuka atau navigasikan ke: **`http://127.0.0.1:8000/`** (atau port yang dialokasikan otomatis).
 4. Masuk dengan akun **Super Administrator** atau **Operator**.
 
 ### Mode 2: Versi Pengembangan / Server (Developer Mode)

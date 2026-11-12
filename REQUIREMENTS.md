@@ -28,5 +28,5 @@ Aplikasi **PADU (Pengolah dan Analisis Data Terpadu)** dirancang agar dapat lang
 
 ## 🚀 4. Cara Peluncuran Instan (Zero-Config & 100% Offline):
 1. Ekstrak folder ZIP proyek di laptop pengguna.
-2. Klik ganda berkas peluncur **`JALANKAN_PADU.bat`**.
-3. Aplikasi akan otomatis mengaktifkan server di Port 8000 dan membuka browser di **http://127.0.0.1:8000/**!
+2. Klik ganda berkas peluncur **`PADU.exe`**.
+3. Aplikasi akan otomatis mengaktifkan server di Port 8000 (atau port kosong berikutnya) dan membuka browser di **http://127.0.0.1:8000/**!

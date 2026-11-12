@@ -33,3 +33,4 @@ Name: "{autodesktop}\PADU (DTSEN 2026)"; Filename: "{app}\PADU.exe"; IconFilenam
 
 [Run]
 Filename: "{app}\PADU.exe"; Description: "Jalankan PADU sekarang"; Flags: nowait postinstall skipifsilent
+
