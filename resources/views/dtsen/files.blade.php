@@ -17,6 +17,9 @@
                 <i class="fi fi-rr-refresh"></i> <span>Refresh Berkas</span>
             </a>
             @if(isset($totalRows) && $totalRows > 0)
+                <button type="button" @click="showClearModal = true; window.dispatchEvent(new CustomEvent('open-clear-modal'))" class="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 font-extrabold text-xs rounded-xl border border-rose-300 shadow-xs transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap" title="Kosongkan seluruh dataset yang sedang aktif dimuat dari sistem">
+                    <i class="fi fi-rr-trash"></i> <span>Kosongkan Data</span>
+                </button>
                 <a href="{{ route('dtsen.data') }}" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer">
                     <i class="fi fi-rr-table"></i> <span>Buka Tabel Master</span>
                 </a>
@@ -85,7 +88,7 @@
                            id="dataset_file" 
                            name="dataset_file" 
                            required 
-                           accept=".csv,.xlsx,.xls,.zip"
+                           accept=".csv,.xlsx,.xls,.dbf,.zip"
                            aria-label="Pilih Berkas Dataset Baru"
                            @change="fileName = $event.target.files[0]?.name || ''"
                            class="w-full text-xs text-slate-700 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 file:cursor-pointer p-2 border border-slate-300 rounded-xl bg-slate-50/70 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer transition-all">

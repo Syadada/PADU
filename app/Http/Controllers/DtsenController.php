@@ -86,7 +86,8 @@ class DtsenController extends Controller
             'kode_kelurahan_desa' => '7. Kode Kelurahan/Desa (Keluarga)',
             'kelurahan_desa' => '8. Kelurahan/Desa (Keluarga)',
             'alamat' => '9. Alamat (Keluarga)',
-            'nomor_kartu_keluarga_kel' => '10. Nomor Kartu Keluarga (Keluarga)',
+            'status_pemerintahan_desa' => '10. Status Pemerintahan Desa/Kelurahan',
+            'nomor_kartu_keluarga_kel' => '11. Nomor Kartu Keluarga (Keluarga)',
             'jumlah_anggota_keluarga' => '11. Jumlah Anggota Keluarga',
             'nama_anggota_keluarga' => '12. Nama Anggota Keluarga',
             'desil_nasional' => '13. Desil Nasional (Keluarga)',
@@ -337,8 +338,16 @@ class DtsenController extends Controller
                 $duckDbCols = array_keys((array)$duckPageData['items'][0]);
             }
 
-            // Exclude system internal / alias columns
-            $systemAliases = ['id', 'created_at', 'updated_at', 'extra_attributes', 'quality_status', 'quality_issues', 'nik', 'no_kk', 'kk', 'nama_lengkap', 'gaji', 'desil', 'umur'];
+            // Exclude system internal, alias, and companion columns from raw list
+            $systemAliases = [
+                'id', 'created_at', 'updated_at', 'extra_attributes', 'quality_status', 'quality_issues', 
+                'nik', 'no_kk', 'kk', 'nama_lengkap', 'gaji', 'desil', 'umur',
+                'r101n', 'r102n', 'r103n', 'r104n',
+                'provinsi_nama', 'kabupaten_nama', 'kecamatan_nama', 'kelurahan_nama', 'desa_nama',
+                'nama_provinsi', 'nama_kabupaten', 'nama_kecamatan', 'nama_desa', 'nama_kelurahan',
+                'prov_nama', 'kab_nama', 'kec_nama', 'des_nama',
+                'kd_prov_nama', 'kd_kab_nama', 'kd_kec_nama', 'kd_desa_nama'
+            ];
             $activeColumnsMap = [];
 
             if (!empty($duckDbCols)) {
@@ -1026,8 +1035,8 @@ class DtsenController extends Controller
             $originalName = $file->getClientOriginalName();
             $ext = strtolower($file->getClientOriginalExtension());
 
-            if (!in_array($ext, ['csv', 'xlsx', 'xls', 'zip'])) {
-                return back()->with('error', 'Format berkas tidak didukung. Harap unggah berkas CSV, XLSX, XLS, atau ZIP.');
+            if (!in_array($ext, ['csv', 'xlsx', 'xls', 'dbf', 'zip'])) {
+                return back()->with('error', 'Format berkas tidak didukung. Harap unggah berkas CSV, XLSX, XLS, DBF, atau ZIP.');
             }
 
             $srcDtsenDir = base_path('src-dtsen');
@@ -1180,11 +1189,11 @@ class DtsenController extends Controller
         $fileSize = $file->getSize();
 
         $pyBin = $this->getPythonBinary();
-        if (in_array($extension, ['csv', 'txt']) && $pyBin) {
+        if (in_array($extension, ['csv', 'txt', 'dbf']) && $pyBin) {
             $pyScript = base_path('scratch/fast_import.py');
             $dbPath = database_path('database.sqlite');
             if (file_exists($pyScript)) {
-                $cmd = "{$pyBin} " . escapeshellarg($pyScript) . " " . escapeshellarg($file->getRealPath()) . " " . escapeshellarg($dbPath) . " 2>&1";
+                $cmd = "{$pyBin} " . escapeshellarg($pyScript) . " " . escapeshellarg($file->getRealPath()) . " " . escapeshellarg($dbPath) . " " . escapeshellarg($originalName) . " 2>&1";
                 $startT = microtime(true);
                 $output = shell_exec($cmd);
                 $elapsedT = round(microtime(true) - $startT, 2);
@@ -1192,6 +1201,8 @@ class DtsenController extends Controller
                 if ($output && str_contains($output, '[SUCCESS]')) {
                     $this->processImportOutput($output, $originalName, $fileSize);
                     return redirect()->route('dtsen.index')->with('success', "Berhasil mengimpor berkas '{$originalName}' dalam {$elapsedT} detik.");
+                } else {
+                    \Illuminate\Support\Facades\Log::error('[DTSEN UPLOAD ERROR]', ['output' => $output]);
                 }
             }
         }
@@ -1246,11 +1257,11 @@ class DtsenController extends Controller
                 $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION)) ?: 'csv';
                 try {
                     $pyBin = $this->getPythonBinary();
-                    if (in_array($extension, ['csv', 'txt']) && $pyBin) {
+                    if (in_array($extension, ['csv', 'txt', 'dbf']) && $pyBin) {
                         $pyScript = base_path('scratch/fast_import.py');
                         $dbPath = database_path('database.sqlite');
                         if (file_exists($pyScript)) {
-                            $cmd = "{$pyBin} " . escapeshellarg($pyScript) . " " . escapeshellarg($tempPath) . " " . escapeshellarg($dbPath) . " 2>&1";
+                            $cmd = "{$pyBin} " . escapeshellarg($pyScript) . " " . escapeshellarg($tempPath) . " " . escapeshellarg($dbPath) . " " . escapeshellarg($fileName) . " 2>&1";
                             $startT = microtime(true);
                             $output = shell_exec($cmd);
                             $elapsedT = round(microtime(true) - $startT, 2);
@@ -1337,13 +1348,13 @@ class DtsenController extends Controller
 
         self::logActivity('INFO', "Memulai pemrosesan & injeksi dataset 'src-dtsen/{$fileName}' (" . DtsenImportService::formatBytes($fileSize) . ")...");
 
-        // Jika file CSV/TXT, gunakan High-Speed Python Engine jika ada, atau fallback ke PHP
+        // Jika file CSV/TXT/DBF, gunakan High-Speed Python Engine jika ada, atau fallback ke PHP
         $pyBin = $this->getPythonBinary();
-        if (in_array($extension, ['csv', 'txt']) && $pyBin) {
+        if (in_array($extension, ['csv', 'txt', 'dbf']) && $pyBin) {
             $pyScript = base_path('scratch/fast_import.py');
             $dbPath = database_path('database.sqlite');
             if (file_exists($pyScript)) {
-                $cmd = "{$pyBin} " . escapeshellarg($pyScript) . " " . escapeshellarg($fullPath) . " " . escapeshellarg($dbPath) . " 2>&1";
+                $cmd = "{$pyBin} " . escapeshellarg($pyScript) . " " . escapeshellarg($fullPath) . " " . escapeshellarg($dbPath) . " " . escapeshellarg($fileName) . " 2>&1";
                 $startT = microtime(true);
                 $output = shell_exec($cmd);
                 $elapsedT = round(microtime(true) - $startT, 2);
@@ -1578,6 +1589,26 @@ class DtsenController extends Controller
         $kk = (string)($row['nomor_kartu_keluarga'] ?? $row['no_kk'] ?? $row['kk'] ?? '-');
         $maskedKk = strlen($kk) >= 8 ? (substr($kk, 0, 4) . '********' . substr($kk, -4)) : '****************';
 
+        // Terjemahkan nilai-nilai kode numerik menjadi teks manusiawi menggunakan MetadataTranslatorService
+        $rawJk = $row['jenis_kelamin'] ?? null;
+        $transJk = \App\Services\MetadataTranslatorService::translate('jenis_kelamin', $rawJk);
+
+        $rawHub = $row['status_hubungan_keluarga'] ?? null;
+        $transHub = \App\Services\MetadataTranslatorService::translate('status_hubungan_keluarga', $rawHub);
+
+        $rawKerja = $row['status_bekerja'] ?? null;
+        $transKerja = \App\Services\MetadataTranslatorService::translate('status_bekerja', $rawKerja);
+
+        $rawLantai = $row['jenis_lantai_terluas'] ?? null;
+        $transLantai = \App\Services\MetadataTranslatorService::translate('jenis_lantai_terluas', $rawLantai);
+
+        $rawAtap = $row['jenis_atap_terluas'] ?? null;
+        $transAtap = \App\Services\MetadataTranslatorService::translate('jenis_atap_terluas', $rawAtap);
+
+        // Ambil rincian lengkap seluruh variabel & terjemahannya untuk modal detail
+        $columnsMap = self::getOfficialIndividuVariables() + self::getOfficialKeluargaVariables();
+        $allFields = \App\Services\MetadataTranslatorService::getAllFieldsDetailed($row, $columnsMap);
+
         return response()->json([
             'success' => true,
             'data' => [
@@ -1588,21 +1619,22 @@ class DtsenController extends Controller
                 'masked_nama' => $maskedNama,
                 'nomor_kartu_keluarga' => $kk,
                 'masked_nomor_kartu_keluarga' => $maskedKk,
-                'jenis_kelamin' => $row['jenis_kelamin'] ?? '-',
+                'jenis_kelamin' => $transJk ? "{$transJk} (Kode: {$rawJk})" : ($rawJk ?: '-'),
                 'tanggal_lahir' => $row['tanggal_lahir'] ?? '-',
                 'usia' => ($row['usia'] ?? '-') . ' Tahun',
-                'status_hubungan' => $row['status_hubungan_keluarga'] ?? '-',
-                'status_bekerja' => $row['status_bekerja'] ?? '-',
+                'status_hubungan' => $transHub ? "{$transHub} (Kode: {$rawHub})" : ($rawHub ?: '-'),
+                'status_bekerja' => $transKerja ? "{$transKerja} (Kode: {$rawKerja})" : ($rawKerja ?: '-'),
                 'quality_status' => $row['quality_status'] ?? 'Valid',
                 'quality_issues' => $qualityIssues ?: [],
+                'all_fields' => $allFields,
                 'keluarga' => [
                     'desil_nasional' => $row['desil_nasional'] ?? $row['desil'] ?? '-',
                     'provinsi' => $row['provinsi'] ?? '-',
                     'kabupaten_kota' => $row['kabupaten_kota'] ?? '-',
                     'kecamatan' => $row['kecamatan'] ?? '-',
                     'alamat' => $row['alamat'] ?? '-',
-                    'jenis_lantai' => $row['jenis_lantai_terluas'] ?? '-',
-                    'jenis_atap' => $row['jenis_atap_terluas'] ?? '-',
+                    'jenis_lantai' => $transLantai ? "{$transLantai} (Kode: {$rawLantai})" : ($rawLantai ?: '-'),
+                    'jenis_atap' => $transAtap ? "{$transAtap} (Kode: {$rawAtap})" : ($rawAtap ?: '-'),
                     'jumlah_ternak_sapi' => $row['jumlah_ternak_sapi'] ?? 0,
                     'jumlah_ternak_kambing' => $row['jumlah_ternak_kambing_domba'] ?? 0,
                 ]
@@ -1622,37 +1654,81 @@ class DtsenController extends Controller
     }
 
     /**
-     * Clear / Reset Data Sistem (100% Python Fast Engine - Kosongkan 15M+ Data dalam 0.2 Detik)
+     * Eksekusi pembersihan total dataset dari sistem (DuckDB, SQLite, JSON active, cache & session)
      */
-    public function clearData()
+    public static function executeDataPurge(): void
     {
-        self::logActivity('WARNING', 'Aksi KOSONGKAN DATA dijalankan oleh pengguna. Seluruh dataset pada database dibersihkan.');
+        self::logActivity('WARNING', 'Pembersihan total dataset (Data Purge) dijalankan. Menghapus dataset DuckDB & SQLite.');
 
         $pyScript = base_path('scratch/fast_delete.py');
         $dbPath = database_path('database.sqlite');
+        $duckPath = database_path('dataset.duckdb');
+        $activeJson = database_path('active_dataset.json');
+        $hashesJson = database_path('dataset_hashes.json');
 
-        $pyBin = $this->getPythonBinary();
+        // 1. Eksekusi Python Fast Delete jika tersedia
+        $pyBin = (new self())->getPythonBinary();
         if (file_exists($pyScript) && $pyBin) {
             $cmd = "{$pyBin} " . escapeshellarg($pyScript) . " " . escapeshellarg($dbPath) . " 2>&1";
-            shell_exec($cmd);
-        } else {
-            Individu::query()->delete();
-            Keluarga::query()->delete();
-            Demographic::query()->delete();
+            @shell_exec($cmd);
         }
 
-        session([
-            'uploaded_headers' => null, 
-            'uploaded_file_metrics' => null, 
-            'dataset_summary_stats' => null, 
-            'import_distinct_values' => null,
-            'active_dataset_file' => null
-        ]);
-        \Illuminate\Support\Facades\Cache::forget('active_dataset_file');
-        @unlink(database_path('active_dataset.json'));
-        self::logActivity('SUCCESS', 'Seluruh data dataset di sistem berhasil dikosongkan.');
+        // 2. Direct Unlink Fallback jika file masih ada
+        if (file_exists($duckPath)) {
+            @unlink($duckPath);
+        }
+        if (file_exists($activeJson)) {
+            @unlink($activeJson);
+        }
+        if (file_exists($hashesJson)) {
+            @unlink($hashesJson);
+        }
 
-        return redirect()->route('dtsen.index')->with('success', 'Seluruh data dataset berhasil dikosongkan.');
+        // 3. Bersihkan tabel SQLite jika ada
+        try {
+            Individu::query()->truncate();
+        } catch (\Throwable $e) {
+            try { Individu::query()->delete(); } catch (\Throwable $e2) {}
+        }
+        try {
+            Keluarga::query()->truncate();
+        } catch (\Throwable $e) {
+            try { Keluarga::query()->delete(); } catch (\Throwable $e2) {}
+        }
+        try {
+            Demographic::query()->truncate();
+        } catch (\Throwable $e) {
+            try { Demographic::query()->delete(); } catch (\Throwable $e2) {}
+        }
+
+        // 4. Bersihkan Cache & Session
+        try {
+            \Illuminate\Support\Facades\Cache::forget('active_dataset_file');
+            \Illuminate\Support\Facades\Cache::forget('active_columns_map');
+            \Illuminate\Support\Facades\Cache::forget('dataset_summary_stats');
+            \Illuminate\Support\Facades\Cache::flush();
+        } catch (\Throwable $e) {}
+
+        if (session()) {
+            session([
+                'uploaded_headers' => null, 
+                'uploaded_file_metrics' => null, 
+                'dataset_summary_stats' => null, 
+                'import_distinct_values' => null,
+                'active_dataset_file' => null
+            ]);
+        }
+
+        self::logActivity('SUCCESS', 'Dataset aktif berhasil dikosongkan secara total.');
+    }
+
+    /**
+     * Clear / Reset Data Sistem (Kosongkan seluruh data yang sedang ditampilkan)
+     */
+    public function clearData()
+    {
+        self::executeDataPurge();
+        return redirect()->route('dtsen.data')->with('success', 'Seluruh data dataset yang sedang ditampilkan berhasil dikosongkan dari sistem.');
     }
 
     /**
@@ -1789,17 +1865,18 @@ class DtsenController extends Controller
     }
 
     /**
-     * API Finalisasi Sesi & Pembersihan Residu RAM (Dipanggil oleh PADU.exe saat ditutup)
+     * API Finalisasi Sesi & Pembersihan Total Data / RAM (Dipanggil oleh PADU.exe saat ditutup)
      */
     public function closeSessionApi(Request $request)
     {
+        self::executeDataPurge();
         $logFile = \App\Services\TransactionLogger::finalizeSession();
         if (function_exists('gc_collect_cycles')) {
             gc_collect_cycles();
         }
         return response()->json([
             'success' => true,
-            'message' => 'Sesi berhasil ditutup dan residu RAM dibersihkan.',
+            'message' => 'Sesi berhasil ditutup, dataset aktif dikosongkan, dan residu RAM dibersihkan.',
             'log_file' => $logFile,
         ]);
     }

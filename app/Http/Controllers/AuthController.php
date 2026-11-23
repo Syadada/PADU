@@ -17,6 +17,8 @@ class AuthController extends Controller
      */
     public function showLogin()
     {
+        $this->ensureDefaultAdminExists();
+
         if (Auth::check()) {
             return redirect()->route('dtsen.index');
         }
@@ -25,10 +27,37 @@ class AuthController extends Controller
     }
 
     /**
+     * Memastikan Akun Administrator Bawaan (PADU) Selalu Tersedia di Database
+     */
+    private function ensureDefaultAdminExists(): void
+    {
+        try {
+            if (User::count() === 0 || !User::where('email', 'padu@local.id')->exists()) {
+                User::updateOrCreate(
+                    ['email' => 'padu@local.id'],
+                    [
+                        'name' => 'PADU',
+                        'password' => Hash::make('PaduKalkulator1#'),
+                        'role' => 'superadmin',
+                        'first_login' => false,
+                        'failed_login_attempts' => 0,
+                        'locked_until' => null,
+                        'two_factor_enabled' => false,
+                    ]
+                );
+            }
+        } catch (\Throwable $e) {
+            // Abaikan jika migrasi tabel belum selesai
+        }
+    }
+
+    /**
      * Langkah 1: Cek Status Surel & Deteksi Role / Status Kunci Akun (AJAX / Form)
      */
     public function checkEmail(Request $request)
     {
+        $this->ensureDefaultAdminExists();
+
         $request->validate([
             'email' => 'required|email',
         ]);
@@ -404,6 +433,7 @@ class AuthController extends Controller
         $user = Auth::user();
 
         $request->validate([
+            'name' => 'required|string|min:3|max:100',
             'password' => [
                 'required',
                 'string',
@@ -414,6 +444,8 @@ class AuthController extends Controller
                 'regex:/[@$!%*#?&\-_+=^~`<>.,:;\/\\|]/', // Mengandung karakter spesial
             ],
         ], [
+            'name.required' => 'Nama pengguna/administrator wajib diisi.',
+            'name.min' => 'Nama minimal terdiri dari 3 karakter.',
             'password.min' => 'Kata sandi baru harus memiliki panjang minimal 15 karakter.',
             'password.confirmed' => 'Konfirmasi kata sandi tidak cocok dengan kata sandi baru.',
             'password.regex' => 'Kata sandi harus diawali huruf kapital (Capital di awal), mengandung angka, dan karakter khusus/simbol.',
@@ -425,32 +457,37 @@ class AuthController extends Controller
             ]);
         }
 
+        $oldName = $user->name;
+        $user->name = trim($request->name);
         $user->password = Hash::make($request->password);
         $user->first_login = false;
         $user->password_changed_at = Carbon::now();
         $user->save();
 
+        // Cadangkan perubahan nama dan sandi baru ke brankas
+        \App\Services\AccountProtectionService::backupAccounts();
+
         AuditLogger::log(
             'PASSWORD_RESET_SUCCESS',
-            "Pengguna '{$user->name}' ({$user->role}) berhasil memperbarui kata sandi baru (kebijakan min. 15 karakter, awalan kapital, angka & simbol terpenuhi).",
+            "Pengguna '{$user->name}' (sebelumnya '{$oldName}') berhasil memperbarui nama akun dan kata sandi baru.",
             'SUCCESS'
         );
 
         \App\Services\TransactionLogger::record(
             'RESET_PASSWORD_SUCCESS',
-            "Pengguna '{$user->name}' ({$user->email}) berhasil memperbarui kata sandi baru yang aman.",
-            ['email' => $user->email]
+            "Pengguna '{$user->name}' ({$user->email}) berhasil memperbarui nama dan kata sandi baru yang aman.",
+            ['email' => $user->email, 'name' => $user->name]
         );
 
         if (function_exists('gc_collect_cycles')) {
             gc_collect_cycles();
         }
 
-        return redirect()->route('dtsen.index')->with('success', 'Kata sandi Anda berhasil diperbarui dan kini siap digunakan!');
+        return redirect()->route('dtsen.index')->with('success', "Selamat datang, {$user->name}! Nama dan kata sandi Anda telah berhasil disetel. Sistem PADU kini siap digunakan.");
     }
 
     /**
-     * Logout Pengguna & Penghapusan Sesi Aman
+     * Logout Pengguna, Pembersihan Dataset Aktif, & Penghapusan Sesi Aman
      */
     public function logout(Request $request)
     {
@@ -463,10 +500,15 @@ class AuthController extends Controller
             );
         }
 
+        // Otomatis kosongkan dataset aktif saat logout sesuai kebijakan keamanan
+        try {
+            \App\Http\Controllers\DtsenController::executeDataPurge();
+        } catch (\Throwable $e) {}
+
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login')->with('success', 'Anda telah berhasil keluar dari sistem secara aman.');
+        return redirect()->route('login')->with('success', 'Anda telah berhasil keluar dari sistem. Seluruh dataset aktif telah dikosongkan secara aman.');
     }
 }

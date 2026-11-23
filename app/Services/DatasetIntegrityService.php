@@ -123,6 +123,25 @@ class DatasetIntegrityService
                     }
                 }
             } catch (\Throwable $e) {}
+        } elseif ($ext === 'dbf') {
+            $handle = @fopen($filePath, 'rb');
+            if ($handle) {
+                $headerBytes = fread($handle, 32);
+                if (strlen($headerBytes) >= 32) {
+                    while (!feof($handle)) {
+                        $b = fread($handle, 1);
+                        if (!$b || $b === "\r") break;
+                        $desc = $b . fread($handle, 31);
+                        if (strlen($desc) < 32) break;
+                        $rawName = explode("\x00", substr($desc, 0, 11))[0];
+                        $colName = trim($rawName);
+                        if ($colName !== '') {
+                            $headers[] = $colName;
+                        }
+                    }
+                }
+                fclose($handle);
+            }
         }
 
         return $headers;

@@ -228,11 +228,13 @@ function twoFactorVerify() {
     };
 }
 
-function forceResetForm() {
+function forceResetForm(initialName = '') {
     return {
+        name: initialName,
         password: '',
         password_confirmation: '',
         showPass: false,
+        get hasName() { return this.name && this.name.trim().length >= 3; },
         get hasMinLen() { return this.password.length >= 15; },
         get hasCapitalStart() { return /^[A-Z]/.test(this.password); },
         get hasNumber() { return /[0-9]/.test(this.password); },
@@ -259,7 +261,7 @@ function forceResetForm() {
             return '#10b981';
         },
         get isValidAll() {
-            return this.hasMinLen && this.hasCapitalStart && this.hasNumber && this.hasSymbol && this.isMatch;
+            return this.hasName && this.hasMinLen && this.hasCapitalStart && this.hasNumber && this.hasSymbol && this.isMatch;
         }
     };
 }

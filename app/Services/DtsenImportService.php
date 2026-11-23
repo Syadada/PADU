@@ -71,7 +71,8 @@ class DtsenImportService
             'kelurahan_desa' => ['kelurahan_desa', 'kelurahan', 'desa', 'kel', 'kd_kel', 'kd_desa'],
             'rt_ktp' => ['rt_ktp', 'rt', 'no_rt'],
             'rw_ktp' => ['rw_ktp', 'rw', 'no_rw'],
-            'alamat_ktp' => ['alamat_ktp', 'alamat', 'alamat_lengkap', 'domisili', 'address', 'alamat_rumah', 'b1_r105', 'r105'],
+            'alamat_ktp' => ['alamat_ktp', 'alamat', 'alamat_lengkap', 'domisili', 'address', 'alamat_rumah', 'nama_jalan'],
+            'status_pemerintahan_desa' => ['status_pemerintahan_desa', 'status_desa', 'status_kelurahan', 'b1_r105', 'r105'],
             'pekerjaan_ktp' => ['pekerjaan_ktp', 'pekerjaan_ktp_elektronik', 'pekerjaan_ktpel'],
             'pendidikan_akhir_ktp' => ['pendidikan_akhir_ktp', 'pendidikan_ktp', 'ijazah_ktp'],
 
@@ -277,6 +278,35 @@ class DtsenImportService
         $realSize = $fileSize ?? (is_file($filePath) ? filesize($filePath) : 0);
         $name = $originalName ?? ('dataset_dtsen.' . $extension);
 
+        // Jika DBF, olah langsung via Pure Python DuckDB Native Engine
+        if ($extension === 'dbf') {
+            $pyScript = base_path('scratch/fast_import.py');
+            $dbPath = database_path('database.sqlite');
+            $pyBin = env('PYTHON_BINARY');
+            if (!$pyBin) {
+                $candidates = [base_path('python/python.exe'), 'python', 'py', 'python3', 'C:\\Python312\\python.exe', 'C:\\Python311\\python.exe', 'C:\\Python310\\python.exe'];
+                foreach ($candidates as $cand) {
+                    if (file_exists($cand) || (!str_contains($cand, '\\') && !str_contains($cand, '/'))) {
+                        $pyBin = $cand;
+                        break;
+                    }
+                }
+            }
+            $cmd = "{$pyBin} " . escapeshellarg($pyScript) . " " . escapeshellarg($filePath) . " " . escapeshellarg($dbPath) . " " . escapeshellarg($name) . " 2>&1";
+            $output = shell_exec($cmd);
+
+            $totalRows = 0;
+            if (preg_match('/Impor\s+([0-9.,]+)\s+baris/', $output, $matches)) {
+                $totalRows = (int)str_replace([',', '.'], '', $matches[1]);
+            }
+            return [
+                'total_rows' => $totalRows,
+                'inserted' => $totalRows,
+                'updated' => 0,
+                'invalid' => 0
+            ];
+        }
+
         // Jika Excel (.xlsx/.xls), parse dengan PhpSpreadsheet, konversi ke CSV sementara, lalu olah via DuckDB
         if (in_array($extension, ['xls', 'xlsx'])) {
             $rowsArr = self::parseExcelFile($filePath);
@@ -294,7 +324,16 @@ class DtsenImportService
 
             $pyScript = base_path('scratch/fast_import.py');
             $dbPath = database_path('database.sqlite');
-            $pyBin = env('PYTHON_BINARY') ?: 'python';
+            $pyBin = env('PYTHON_BINARY');
+            if (!$pyBin) {
+                $candidates = [base_path('python/python.exe'), 'python', 'py', 'python3', 'C:\\Python312\\python.exe', 'C:\\Python311\\python.exe', 'C:\\Python310\\python.exe'];
+                foreach ($candidates as $cand) {
+                    if (file_exists($cand) || (!str_contains($cand, '\\') && !str_contains($cand, '/'))) {
+                        $pyBin = $cand;
+                        break;
+                    }
+                }
+            }
             $cmd = "{$pyBin} " . escapeshellarg($pyScript) . " " . escapeshellarg($tempCsvPath) . " " . escapeshellarg($dbPath) . " 2>&1";
             $output = shell_exec($cmd);
             @unlink($tempCsvPath);
@@ -315,7 +354,7 @@ class DtsenImportService
         if (in_array($extension, ['csv', 'txt'])) {
             $rowGenerator = self::streamCsvRows($filePath);
         } else {
-            throw new \Exception("Format file .{$extension} tidak didukung. Harap upload file .csv, .xls, atau .xlsx.");
+            throw new \Exception("Format file .{$extension} tidak didukung. Harap upload file .csv, .xls, .xlsx, atau .dbf.");
         }
 
         // Ambil header baris pertama dari generator

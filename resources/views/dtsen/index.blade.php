@@ -67,8 +67,13 @@
             @endif
         </div>
 
-        <div class="flex flex-wrap items-center gap-2.5 shrink-0" x-data="{ showExportModal: false, showTemplateModal: false }">
+        <div class="flex flex-wrap items-center gap-2.5 shrink-0">
+            <div class="flex flex-wrap items-center gap-2.5 shrink-0" x-data="{ showExportModal: false, showTemplateModal: false }">
+
             @if($totalRows > 0)
+                <button type="button" @click="showClearModal = true; window.dispatchEvent(new CustomEvent('open-clear-modal'))" class="px-4 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 font-bold text-xs shadow-xs transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer" title="Kosongkan seluruh dataset yang sedang aktif ditampilkan">
+                    <i class="fi fi-rr-trash"></i> <span>Kosongkan Data</span>
+                </button>
                 <button @click="showExportModal = true" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer">
                     <i class="fi fi-rr-upload"></i> <span>Ekspor Data Paket (.ZIP)</span>
                 </button>
@@ -174,6 +179,7 @@
             </div>
         </div>
     </div>
+</div>
 
     @if(!empty($srcExportFiles) && count($srcExportFiles) > 0)
         <!-- Kartu Berkas Hasil Ekspor di Folder src-export/ -->
@@ -952,22 +958,47 @@
                             </div>
                         @endif
 
-                        <!-- Group 3: Variabel Berkas CSV / Custom -->
+                        <!-- Group 3: Variabel Kuesioner Mentah / Tambahan (Survei) -->
                         @php
                             $extraCols = array_diff_key($activeColumnsMap, $officialIndividuVars, $officialKeluargaVars);
                         @endphp
                         @if(!empty($extraCols))
-                            <div class="p-3 bg-purple-50/60 rounded-xl border border-purple-200 space-y-2">
-                                <h4 class="text-xs font-black uppercase text-purple-900 flex items-center gap-1.5 border-b border-purple-200 pb-1.5">
-                                    <i class="fi fi-rr-thumbtack"></i> Variabel Berkas CSV / Custom ({{ count($extraCols) }} Variabel)
-                                </h4>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                                    @foreach($extraCols as $cKey => $cTitle)
-                                        <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:bg-purple-100/60 cursor-pointer text-xs font-bold text-slate-800 transition-colors">
-                                            <input type="checkbox" id="toggle_idx_col_{{ $cKey }}" name="toggle_col_{{ $cKey }}" aria-label="Tampilkan kolom {{ $cTitle }}" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-purple-600 rounded border-slate-300 focus:ring-purple-500">
-                                            <span class="truncate" title="{{ $cTitle }}">{{ $cTitle }}</span>
-                                        </label>
-                                    @endforeach
+                            <div class="p-3 bg-purple-50/60 rounded-xl border border-purple-200 space-y-2.5" x-data="{ showRawCols: false }">
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-purple-200 pb-2">
+                                    <div>
+                                        <h4 class="text-xs font-black uppercase text-purple-900 flex items-center gap-1.5">
+                                            <i class="fi fi-rr-boxes"></i> Variabel Kuesioner Mentah / Tambahan (Survei)
+                                        </h4>
+                                        <p class="text-[11px] text-purple-700 font-medium">
+                                            {{ count($extraCols) }} kolom kode instrumen survei (misal: kode R801-R1207). Disembunyikan agar tampilan data inti tetap bersih.
+                                        </p>
+                                    </div>
+                                    <div class="flex items-center gap-2 shrink-0">
+                                        <button type="button" 
+                                                @click="showRawCols = !showRawCols" 
+                                                class="px-3 py-1.5 rounded-lg bg-purple-200 hover:bg-purple-300 text-purple-950 font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer">
+                                            <span x-text="showRawCols ? 'Sembunyikan Variabel Mentah ▲' : 'Buka & Pilih Variabel Mentah ({{ count($extraCols) }}) ▼'"></span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div x-show="showRawCols" x-cloak class="space-y-2 pt-1">
+                                    <div class="flex items-center justify-between pb-1.5 border-b border-purple-100 text-xs">
+                                        <span class="text-[11px] text-slate-500 font-medium">Centang untuk menampilkan kolom kuesioner tertentu:</span>
+                                        <button type="button" 
+                                                @click="deselectAllExtraCols(@json(array_keys($extraCols)))" 
+                                                class="px-2.5 py-1 rounded bg-slate-200 hover:bg-slate-300 text-slate-700 text-[11px] font-bold cursor-pointer transition-colors">
+                                            Hapus Semua Centang Mentah
+                                        </button>
+                                    </div>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-64 overflow-y-auto pr-1">
+                                        @foreach($extraCols as $cKey => $cTitle)
+                                            <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:bg-purple-100/60 cursor-pointer text-xs font-bold text-slate-800 transition-colors">
+                                                <input type="checkbox" id="toggle_idx_col_{{ $cKey }}" name="toggle_col_{{ $cKey }}" aria-label="Tampilkan kolom {{ $cTitle }}" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-purple-600 rounded border-slate-300 focus:ring-purple-500">
+                                                <span class="truncate" title="{{ $cTitle }}">{{ $cTitle }}</span>
+                                            </label>
+                                        @endforeach
+                                    </div>
                                 </div>
                             </div>
                         @endif
@@ -1123,13 +1154,24 @@
                                         @else
                                             @php
                                                 $rawVal = $row->$colKey ?? null;
-                                                if (is_numeric($rawVal) && strlen((string)$rawVal) < 15) {
-                                                    $displayVal = number_format((float)$rawVal, (floor((float)$rawVal) == (float)$rawVal ? 0 : 2), ',', '.');
-                                                } else {
-                                                    $displayVal = $rawVal ?: '-';
-                                                }
+                                                $translatedLabel = \App\Services\MetadataTranslatorService::translate($colKey, $rawVal, $row);
                                             @endphp
-                                            <span class="font-semibold text-slate-900">{{ $displayVal }}</span>
+                                            @if($translatedLabel !== null)
+                                                <span class="px-2 py-0.5 rounded-md bg-blue-50 text-blue-800 font-bold text-[11px] border border-blue-200 shadow-2xs inline-flex items-center gap-1.5 max-w-[280px] truncate" 
+                                                      title="Kode Asli: {{ $rawVal }} &bull; {{ $translatedLabel }}">
+                                                    <span class="truncate font-bold">{{ $translatedLabel }}</span>
+                                                    <span class="text-[10px] text-blue-500 font-mono font-normal shrink-0">({{ $rawVal }})</span>
+                                                </span>
+                                            @else
+                                                @php
+                                                    if (is_numeric($rawVal) && strlen((string)$rawVal) < 15) {
+                                                        $displayVal = number_format((float)$rawVal, (floor((float)$rawVal) == (float)$rawVal ? 0 : 2), ',', '.');
+                                                    } else {
+                                                        $displayVal = $rawVal ?: '-';
+                                                    }
+                                                @endphp
+                                                <span class="font-semibold text-slate-900">{{ $displayVal }}</span>
+                                            @endif
                                         @endif
                                     </td>
                                 @endforeach
@@ -1238,7 +1280,15 @@
                         </div>
                         <div>
                             <span class="text-slate-500 block text-[11px]">Jenis Kelamin:</span>
-                            <span class="text-slate-900" x-text="previewData.jenis_kelamin"></span>
+                            <span class="text-slate-900 font-bold" x-text="previewData.jenis_kelamin"></span>
+                        </div>
+                        <div x-show="previewData.status_hubungan && previewData.status_hubungan !== '-'">
+                            <span class="text-slate-500 block text-[11px]">Status Hubungan:</span>
+                            <span class="text-slate-900 font-bold" x-text="previewData.status_hubungan"></span>
+                        </div>
+                        <div x-show="previewData.status_bekerja && previewData.status_bekerja !== '-'">
+                            <span class="text-slate-500 block text-[11px]">Status Bekerja:</span>
+                            <span class="text-slate-900 font-bold" x-text="previewData.status_bekerja"></span>
                         </div>
                     </div>
 
@@ -1255,15 +1305,63 @@
                                 </div>
                                 <div>
                                     <span class="text-slate-500 block text-[11px]">Jenis Lantai Terluas:</span>
-                                    <span class="text-slate-800" x-text="previewData.keluarga.jenis_lantai"></span>
+                                    <span class="text-slate-800 font-bold" x-text="previewData.keluarga.jenis_lantai"></span>
                                 </div>
                                 <div>
                                     <span class="text-slate-500 block text-[11px]">Jenis Atap Terluas:</span>
-                                    <span class="text-slate-800" x-text="previewData.keluarga.jenis_atap"></span>
+                                    <span class="text-slate-800 font-bold" x-text="previewData.keluarga.jenis_atap"></span>
                                 </div>
                                 <div>
                                     <span class="text-slate-500 block text-[11px]">Wilayah Domisili:</span>
-                                    <span class="text-slate-800" x-text="previewData.keluarga.provinsi + ' / ' + previewData.keluarga.kabupaten_kota"></span>
+                                    <span class="text-slate-800 font-bold" x-text="previewData.keluarga.provinsi + ' / ' + previewData.keluarga.kabupaten_kota"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- Seluruh Variabel & Terjemahan Metadata Kamus BPS/DTSEN -->
+                    <template x-if="previewData.all_fields && previewData.all_fields.length > 0">
+                        <div class="space-y-2 pt-2 border-t border-slate-200" x-data="{ varSearch: '', showAllVars: false }">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-extrabold text-slate-800 text-xs flex items-center gap-1.5">
+                                    <i class="fi fi-rr-apps text-indigo-600"></i>
+                                    <span>Seluruh Variabel & Terjemahan Metadata (<span x-text="previewData.all_fields.length"></span> Variabel)</span>
+                                </h4>
+                                <button type="button" @click="showAllVars = !showAllVars" class="text-xs text-indigo-600 hover:text-indigo-800 font-bold flex items-center gap-1 cursor-pointer">
+                                    <span x-text="showAllVars ? 'Tutup Rincian' : 'Buka Rincian Lengkap'"></span>
+                                    <i class="fi" :class="showAllVars ? 'fi-rr-angle-small-up' : 'fi-rr-angle-small-down'"></i>
+                                </button>
+                            </div>
+
+                            <div x-show="showAllVars" x-transition class="space-y-2">
+                                <!-- Input Pencarian Variabel dalam Modal -->
+                                <div class="relative">
+                                    <i class="fi fi-rr-search text-slate-400 text-xs pointer-events-none" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%);"></i>
+                                    <input type="text" x-model="varSearch" placeholder="Cari nama variabel atau kode (misal: r101, jenis_kelamin, lantai)..." 
+                                           class="w-full text-xs bg-white border border-slate-300 rounded-lg pl-8 pr-3 py-1.5 outline-none focus:ring-2 focus:ring-indigo-500 font-medium">
+                                </div>
+
+                                <!-- List / Tabel Grid Variabel -->
+                                <div class="max-h-60 overflow-y-auto border border-slate-200 rounded-xl divide-y divide-slate-100 bg-white scrollbar-thin">
+                                    <template x-for="(f, fIdx) in previewData.all_fields.filter(item => !varSearch || item.key.toLowerCase().includes(varSearch.toLowerCase()) || item.label.toLowerCase().includes(varSearch.toLowerCase()) || String(item.raw_value).toLowerCase().includes(varSearch.toLowerCase()) || (item.translated_value && item.translated_value.toLowerCase().includes(varSearch.toLowerCase())))" :key="fIdx">
+                                        <div class="p-2.5 flex items-center justify-between gap-3 text-xs hover:bg-slate-50 transition-colors">
+                                            <div class="min-w-0 flex-1">
+                                                <div class="font-bold text-slate-800 truncate" x-text="f.label"></div>
+                                                <div class="text-[10px] font-mono text-slate-400 truncate" x-text="f.key"></div>
+                                            </div>
+                                            <div class="text-right shrink-0">
+                                                <template x-if="f.has_translation">
+                                                    <div class="space-y-0.5">
+                                                        <span class="px-2 py-0.5 rounded bg-blue-50 text-blue-800 font-bold text-[11px] border border-blue-200 inline-block" x-text="f.translated_value"></span>
+                                                        <div class="text-[10px] font-mono text-slate-500" x-text="'Kode Asli: ' + f.raw_value"></div>
+                                                    </div>
+                                                </template>
+                                                <template x-if="!f.has_translation">
+                                                    <span class="font-semibold text-slate-900" x-text="f.raw_value"></span>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    </template>
                                 </div>
                             </div>
                         </div>
@@ -1556,12 +1654,38 @@ function dtsenApp() {
         ? savedCols.filter(c => allColKeys.includes(c)) 
         : [];
 
+    try {
+        localStorage.removeItem('padu_show_translated_labels');
+        localStorage.removeItem('padu_show_translated_labels_v2');
+    } catch (e) {}
+
+    let initialShowTranslated = true;
+    try {
+        const stored = localStorage.getItem('padu_show_translated_labels_v3');
+        if (stored !== null) {
+            initialShowTranslated = (stored === 'true');
+        }
+    } catch (e) {}
+
     return {
         isMasked: false,
         showPreviewModal: false,
         showColumnModal: false,
         previewData: null,
         visibleCols: validSavedCols.length > 0 ? validSavedCols : [...allColKeys],
+        showTranslatedLabels: initialShowTranslated,
+        toggleTranslatorMode() {
+            this.showTranslatedLabels = !this.showTranslatedLabels;
+            try {
+                localStorage.setItem('padu_show_translated_labels_v3', this.showTranslatedLabels ? 'true' : 'false');
+            } catch (e) {}
+            window.dispatchEvent(new CustomEvent('padu-translator-changed', { detail: this.showTranslatedLabels }));
+        },
+        init() {
+            window.addEventListener('padu-translator-changed', (e) => {
+                this.showTranslatedLabels = !!e.detail;
+            });
+        },
 
         // State Filter Kolom Pivot Modal (Terpusat, Anti-Offscreen, & Pinned Footer)
         showFilterModal: false,
@@ -1696,6 +1820,9 @@ function dtsenApp() {
         },
 
         isColVisible(colKey) {
+            if (!this.visibleCols || !Array.isArray(this.visibleCols) || this.visibleCols.length === 0) {
+                return true;
+            }
             return this.visibleCols.includes(colKey);
         },
 

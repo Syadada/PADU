@@ -1300,6 +1300,32 @@ def run_duckdb_query():
 
     duck_file = os.path.join(os.path.dirname(db_path), 'dataset.duckdb')
     
+    # Auto-recovery: If dataset.duckdb is missing or empty, check if SQLite dtsen_individus has data
+    if not (os.path.exists(duck_file) and os.path.getsize(duck_file) > 1024):
+        try:
+            if os.path.exists(db_path):
+                import sqlite3
+                sq_c = sqlite3.connect(db_path)
+                sq_cur = sq_c.cursor()
+                sq_cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND (name='dtsen_individus' OR name='individus');")
+                tbl_row = sq_cur.fetchone()
+                if tbl_row:
+                    t_name = tbl_row[0]
+                    t_cnt = sq_cur.execute(f"SELECT COUNT(*) FROM {t_name};").fetchone()[0]
+                    if t_cnt > 0:
+                        sq_cur.execute(f"PRAGMA table_info({t_name});")
+                        col_names = [col[1] for col in sq_cur.fetchall()]
+                        all_rows = sq_cur.execute(f"SELECT * FROM {t_name};").fetchall()
+                        con_w = duckdb.connect(duck_file)
+                        col_defs = ", ".join([f'"{cn}" VARCHAR' for cn in col_names])
+                        con_w.execute(f"CREATE OR REPLACE TABLE individus ({col_defs});")
+                        placeholders = ", ".join(["?"] * len(col_names))
+                        con_w.executemany(f"INSERT INTO individus VALUES ({placeholders})", [[(str(v) if v is not None else None) for v in r] for r in all_rows])
+                        con_w.close()
+                sq_c.close()
+        except Exception:
+            pass
+
     if os.path.exists(duck_file) and os.path.getsize(duck_file) > 0:
         con = duckdb.connect(duck_file, read_only=True)
         table_ref = "individus"

@@ -1,7 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="space-y-6" x-data="dtsenDataPageApp({{ json_encode(array_keys($activeColumnsMap)) }})">
+<script>
+    window.PADU_ALL_COL_KEYS = @json(array_keys($activeColumnsMap));
+</script>
+<div class="space-y-6" x-data="dtsenDataPageApp()">
     
     <!-- Header Banner Modul -->
     <div class="p-5 sm:p-6 bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -46,6 +49,16 @@
                class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl border border-slate-300 shadow-xs transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
                 <i class="fi fi-rr-refresh"></i> <span>Reset Filter</span>
             </a>
+
+            <!-- Kosongkan Data / Hapus Data yang Ditampilkan -->
+            @if(($totalSystemRows ?? $totalRows) > 0)
+                <button type="button" 
+                        @click="showClearModal = true; window.dispatchEvent(new CustomEvent('open-clear-modal'))" 
+                        class="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 font-extrabold text-xs rounded-xl border border-rose-300 shadow-xs transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
+                        title="Kosongkan seluruh dataset yang sedang aktif ditampilkan dari sistem">
+                    <i class="fi fi-rr-trash"></i> <span>Kosongkan Data</span>
+                </button>
+            @endif
         </div>
     </div>
 
@@ -428,20 +441,44 @@
                             @endif
                         </div>
 
-                        <!-- Group 3: Variabel Lainnya / Custom -->
+                        <!-- Group 3: Variabel Kuesioner Mentah / Tambahan (Survei) -->
                         @if(!empty($activeExtraCols) && count($activeExtraCols) > 0)
-                            <div class="p-3 bg-purple-50/60 rounded-xl border border-purple-200 space-y-2">
-                                <h4 class="text-xs font-black uppercase text-purple-900 flex items-center gap-1.5 border-b border-purple-200 pb-1.5 justify-between">
-                                    <span class="flex items-center gap-1.5"><i class="fi fi-rr-thumbtack"></i> Variabel Dataset Tambahan / Kustom</span>
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-purple-100 text-purple-800 font-bold">{{ count($activeExtraCols) }} Kolom</span>
-                                </h4>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                                    @foreach($activeExtraCols as $cKey => $cTitle)
-                                        <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:bg-purple-100/60 cursor-pointer text-xs font-bold text-slate-800 transition-colors">
-                                            <input type="checkbox" id="toggle_col_{{ $cKey }}" name="toggle_col_{{ $cKey }}" aria-label="Tampilkan kolom {{ $cTitle }}" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-purple-600 rounded border-slate-300 focus:ring-purple-500">
-                                            <span class="truncate" title="{{ $cTitle }}">{{ $cTitle }}</span>
-                                        </label>
-                                    @endforeach
+                            <div class="p-3 bg-purple-50/60 rounded-xl border border-purple-200 space-y-2.5" x-data="{ showRawCols: false }">
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-purple-200 pb-2">
+                                    <div>
+                                        <h4 class="text-xs font-black uppercase text-purple-900 flex items-center gap-1.5">
+                                            <i class="fi fi-rr-boxes"></i> Variabel Kuesioner Mentah / Tambahan (Survei)
+                                        </h4>
+                                        <p class="text-[11px] text-purple-700 font-medium">
+                                            {{ count($activeExtraCols) }} kolom kode instrumen survei (misal: kode R801-R1207). Disembunyikan agar tampilan data inti tetap bersih.
+                                        </p>
+                                    </div>
+                                    <div class="flex items-center gap-2 shrink-0">
+                                        <button type="button" 
+                                                @click="showRawCols = !showRawCols" 
+                                                class="px-3 py-1.5 rounded-lg bg-purple-200 hover:bg-purple-300 text-purple-950 font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer">
+                                            <span x-text="showRawCols ? 'Sembunyikan Variabel Mentah ▲' : 'Buka & Pilih Variabel Mentah ({{ count($activeExtraCols) }}) ▼'"></span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div x-show="showRawCols" x-cloak class="space-y-2 pt-1">
+                                    <div class="flex items-center justify-between pb-1.5 border-b border-purple-100 text-xs">
+                                        <span class="text-[11px] text-slate-500 font-medium">Centang untuk menampilkan kolom kuesioner tertentu:</span>
+                                        <button type="button" 
+                                                @click="deselectAllExtraCols(@json(array_keys($activeExtraCols)))" 
+                                                class="px-2.5 py-1 rounded bg-slate-200 hover:bg-slate-300 text-slate-700 text-[11px] font-bold cursor-pointer transition-colors">
+                                            Hapus Semua Centang Mentah
+                                        </button>
+                                    </div>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-64 overflow-y-auto pr-1">
+                                        @foreach($activeExtraCols as $cKey => $cTitle)
+                                            <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:bg-purple-100/60 cursor-pointer text-xs font-bold text-slate-800 transition-colors">
+                                                <input type="checkbox" id="toggle_col_{{ $cKey }}" name="toggle_col_{{ $cKey }}" aria-label="Tampilkan kolom {{ $cTitle }}" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-purple-600 rounded border-slate-300 focus:ring-purple-500">
+                                                <span class="truncate" title="{{ $cTitle }}">{{ $cTitle }}</span>
+                                            </label>
+                                        @endforeach
+                                    </div>
                                 </div>
                             </div>
                         @endif
@@ -871,13 +908,24 @@
                                         @else
                                             @php
                                                 $rawVal = $row->$colKey ?? null;
-                                                if (is_numeric($rawVal) && strlen((string)$rawVal) < 15) {
-                                                    $displayVal = number_format((float)$rawVal, (floor((float)$rawVal) == (float)$rawVal ? 0 : 2), ',', '.');
-                                                } else {
-                                                    $displayVal = $rawVal ?: '-';
-                                                }
+                                                $translatedLabel = \App\Services\MetadataTranslatorService::translate($colKey, $rawVal, $row);
                                             @endphp
-                                            <span class="font-semibold text-slate-900">{{ $displayVal }}</span>
+                                            @if($translatedLabel !== null)
+                                                <span class="px-2 py-0.5 rounded-md bg-blue-50 text-blue-800 font-bold text-[11px] border border-blue-200 shadow-2xs inline-flex items-center gap-1.5 max-w-[280px] truncate" 
+                                                      title="Kode Asli: {{ $rawVal }} &bull; {{ $translatedLabel }}">
+                                                    <span class="truncate font-bold">{{ $translatedLabel }}</span>
+                                                    <span class="text-[10px] text-blue-500 font-mono font-normal shrink-0">({{ $rawVal }})</span>
+                                                </span>
+                                            @else
+                                                @php
+                                                    if (is_numeric($rawVal) && strlen((string)$rawVal) < 15) {
+                                                        $displayVal = number_format((float)$rawVal, (floor((float)$rawVal) == (float)$rawVal ? 0 : 2), ',', '.');
+                                                    } else {
+                                                        $displayVal = $rawVal ?: '-';
+                                                    }
+                                                @endphp
+                                                <span class="font-semibold text-slate-900">{{ $displayVal }}</span>
+                                            @endif
                                         @endif
                                     </td>
                                 @endforeach
@@ -1170,8 +1218,4 @@
     @endif
 
 </div>
-
-@push('scripts')
-<script src="{{ asset('js/data-page.js') }}"></script>
-@endpush
 @endsection

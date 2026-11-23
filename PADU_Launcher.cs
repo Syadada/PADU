@@ -409,8 +409,49 @@ namespace PaduLauncher
                     try { File.WriteAllText(sqliteDb, ""); } catch {}
                 }
 
+                // Device binding check on launcher startup: deteksi jika folder di-share ke laptop lain
+                try
+                {
+                    string lockFile = Path.Combine(projectDir, "database", "device_lock.json");
+                    string machineGuid = "";
+                    try
+                    {
+                        object val = Microsoft.Win32.Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Cryptography", "MachineGuid", null);
+                        if (val != null) machineGuid = val.ToString().Trim();
+                    }
+                    catch {}
+                    string compName = Environment.MachineName != null ? Environment.MachineName.Trim().ToUpper() : "UNKNOWN";
+                    string rawFp = (string.IsNullOrEmpty(machineGuid) ? "NO_GUID" : machineGuid) + "###" + compName;
+                    
+                    string currentFp = "";
+                    using (var sha = System.Security.Cryptography.SHA256.Create())
+                    {
+                        byte[] bytes = sha.ComputeHash(System.Text.Encoding.UTF8.GetBytes(rawFp));
+                        System.Text.StringBuilder sb = new System.Text.StringBuilder();
+                        foreach (byte b in bytes) sb.Append(b.ToString("x2"));
+                        currentFp = sb.ToString();
+                    }
+
+                    if (File.Exists(lockFile))
+                    {
+                        string content = File.ReadAllText(lockFile);
+                        if (!content.Contains(currentFp))
+                        {
+                            // Laptop berbeda terdeteksi! Bersihkan dataset lama agar laptop baru mulai bersih
+                            string duckFile = Path.Combine(projectDir, "database", "dataset.duckdb");
+                            if (File.Exists(duckFile)) try { File.Delete(duckFile); } catch {}
+                            string activeJson = Path.Combine(projectDir, "database", "active_dataset.json");
+                            if (File.Exists(activeJson)) try { File.Delete(activeJson); } catch {}
+                            string hashesJson = Path.Combine(projectDir, "database", "dataset_hashes.json");
+                            if (File.Exists(hashesJson)) try { File.Delete(hashesJson); } catch {}
+                        }
+                    }
+                }
+                catch {}
+
                 RunHiddenProcess(phpBinary, "artisan storage:link");
                 RunHiddenProcess(phpBinary, "artisan migrate --force");
+                RunHiddenProcess(phpBinary, "artisan db:seed --class=UserSeeder --force");
 
                 // 2. Pick Port
                 serverPort = GetAvailablePort(8000);
@@ -613,7 +654,20 @@ namespace PaduLauncher
             }
             catch {}
 
-            // 4. Bersihkan residu RAM sistem secara persisten (EmptyWorkingSet)
+            // 4. Kosongkan database analitik aktif saat server dimatikan
+            try
+            {
+                string dbDir = Path.Combine(projectDir, "database");
+                string duckFile = Path.Combine(dbDir, "dataset.duckdb");
+                if (File.Exists(duckFile)) File.Delete(duckFile);
+                string activeJson = Path.Combine(dbDir, "active_dataset.json");
+                if (File.Exists(activeJson)) File.Delete(activeJson);
+                string hashesJson = Path.Combine(dbDir, "dataset_hashes.json");
+                if (File.Exists(hashesJson)) File.Delete(hashesJson);
+            }
+            catch {}
+
+            // 5. Bersihkan residu RAM sistem secara persisten (EmptyWorkingSet)
             try
             {
                 EmptyWorkingSet(Process.GetCurrentProcess().Handle);

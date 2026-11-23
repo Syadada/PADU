@@ -401,7 +401,7 @@
 </head>
 <body class="force-reset-body">
 
-    <div class="force-reset-container" x-data="forceResetForm()">
+    <div class="force-reset-container" x-data="forceResetForm('{{ addslashes(old('name', $user->name)) }}')">
 
         <!-- Brand Monogram Header -->
         <div class="brand-header">
@@ -419,13 +419,13 @@
 
             <div style="text-align: center; margin-bottom: 16px;">
                 <div class="welcome-badge">
-                    <span>👋 Inisialisasi Keamanan Akun</span>
+                    <span>👋 Inisialisasi Akun Perangkat Baru</span>
                 </div>
                 <h1 style="font-size: 20px; font-weight: 900; color: #0f172a; margin: 0 0 6px 0; letter-spacing: -0.3px;">
-                    Buat Kata Sandi Baru Anda
+                    Setel Nama & Kata Sandi Baru
                 </h1>
                 <p style="font-size: 12px; color: #475569; margin: 0; line-height: 1.5;">
-                    Untuk melindungi data kependudukan, mari buat kata sandi pribadi Anda sebelum mulai bekerja.
+                    Silakan ubah nama administrator dan buat kata sandi pribadi Anda sebelum mulai bekerja di perangkat ini.
                 </p>
             </div>
 
@@ -466,6 +466,27 @@
             <form action="{{ route('auth.force-reset.process') }}" method="POST">
                 @csrf
 
+                <!-- Nama Lengkap / Administrator Baru -->
+                <div class="form-group">
+                    <div class="form-label">
+                        <span>Nama Lengkap / Administrator Baru</span>
+                        <span class="label-hint">Wajib diisi (min. 3 karakter)</span>
+                    </div>
+                    <div class="input-wrapper">
+                        <span class="input-icon">
+                            <i class="fi fi-rr-user"></i>
+                        </span>
+                        <input type="text" 
+                               id="name" 
+                               name="name" 
+                               x-model="name"
+                               required 
+                               autofocus
+                               placeholder="Contoh: Budi Santoso / Tim Analis Data" 
+                               class="form-input">
+                    </div>
+                </div>
+
                 <!-- Kata Sandi Baru -->
                 <div class="form-group">
                     <div class="form-label">
@@ -482,7 +503,6 @@
                                autocomplete="new-password"
                                x-model="password" 
                                required 
-                               autofocus
                                placeholder="Contoh: PaduAnalisis2026!" 
                                class="form-input">
                         <button type="button" 

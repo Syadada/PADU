@@ -2,33 +2,50 @@ import sys
 import os
 import json
 import time
+import csv
+import struct
+import re
 import duckdb
 
 SYNONYM_MAP = {
-    'nomor_induk_kependudukan': ['nik', 'nomor_induk_kependudukan', 'no_nik', 'id_penduduk', 'no_ktp', 'nomor_ktp', 'nik_ktp', 'nomor_induk_kependudukan_nik', 'b1_r101', 'r101', 'kd_nik', 'sandi_nik', 'v101', '101'],
-    'nomor_kartu_keluarga': ['kk', 'no_kk', 'nomor_kartu_keluarga', 'no_kartu_keluarga', 'id_kk', 'nokk', 'nomor_kk', 'nomor_kartu_keluarga_kk', 'b1_r102', 'r102', 'kd_kk', 'sandi_kk', 'v102', '102'],
-    'nama': ['nama', 'nama_lengkap', 'nama_subjek', 'nama_warga', 'fullname', 'nama_art', 'b4_r401', 'r401', 'v401', '401'],
-    'gaji_bulanan': ['gaji', 'gaji_bulanan', 'pendapatan', 'penghasilan', 'salary', 'income', 'gaji_pokok', 'upah', 'take_home_pay', 'pendapatan_bulanan', 'gaji_bulanan_rp', 'b4_r409', 'r409', 'gaji_val', 'v409', '409'],
-    'desil_nasional': ['desil', 'desil_nasional', 'desil_kesejahteraan', 'desil_ekonomi', 'desil_nas', 'desil_kesejahteraan_nasional', 'b1_r104', 'r104'],
-    'usia': ['usia', 'umur', 'age', 'tahun_usia', 'usia_tahun', 'b4_r405', 'r405', 'umur_thn', 'v405', '405'],
-    'jenis_kelamin': ['jenis_kelamin', 'jk', 'gender', 'sex', 'kelamin', 'b4_r403', 'r403', 'kd_jk', 'v403', '403'],
-    'status_bekerja': ['status_bekerja', 'pekerjaan', 'pekerjaan_utama', 'status_kerja', 'work_status', 'occupation', 'b4_r408', 'r408', 'is_working', 'st_kerja', 'v408', '408'],
-    'status_kawin': ['status_kawin', 'status_pernikahan', 'marital_status', 'st_kawin', 'st_nikah', 'b4_r406', 'r406', 'v406', '406'],
-    'status_hubungan_keluarga': ['status_hubungan_keluarga', 'hub_keluarga', 'hub_kel', 'shdk', 'hubungan_keluarga', 'relationship', 'b4_r402', 'r402', 'v402', '402'],
-    'provinsi': ['provinsi', 'prov', 'provinsi_ktp', 'kd_prov', 'b1_r101_prov'],
-    'kabupaten_kota': ['kabupaten_kota', 'kabupaten', 'kota', 'kab', 'kab_kota', 'kota_kabupaten', 'kd_kab'],
-    'kecamatan': ['kecamatan', 'kec', 'kd_kec'],
-    'kelurahan_desa': ['kelurahan_desa', 'kelurahan', 'desa', 'kel', 'kd_kel', 'kd_desa'],
-    'alamat': ['alamat', 'alamat_ktp', 'alamat_lengkap', 'domisili', 'address', 'alamat_rumah', 'b1_r105', 'r105']
+    'nomor_induk_kependudukan': ['nik', 'nomor_induk_kependudukan', 'no_nik', 'id_penduduk', 'no_ktp', 'nomor_ktp', 'nik_ktp', 'nomor_induk_kependudukan_nik', 'kd_nik', 'sandi_nik', 'id_individu'],
+    'nomor_kartu_keluarga': ['kk', 'no_kk', 'nomor_kartu_keluarga', 'no_kartu_keluarga', 'id_kk', 'nokk', 'nomor_kk', 'nomor_kartu_keluarga_kk', 'kd_kk', 'sandi_kk', 'id_keluarga'],
+    'nama': ['nama', 'nama_lengkap', 'nama_subjek', 'nama_warga', 'fullname', 'nama_art', 'nama_penduduk', 'nama_kepala_keluarga'],
+    'gaji_bulanan': ['gaji', 'gaji_bulanan', 'pendapatan', 'penghasilan', 'salary', 'income', 'gaji_pokok', 'upah', 'take_home_pay', 'pendapatan_bulanan', 'gaji_bulanan_rp', 'b4_r409', 'r409', 'gaji_val', 'v409'],
+    'desil_nasional': ['desil', 'desil_nasional', 'desil_kesejahteraan', 'desil_ekonomi', 'desil_nas', 'desil_kesejahteraan_nasional'],
+    'usia': ['usia', 'umur', 'age', 'tahun_usia', 'usia_tahun', 'b4_r405', 'r405', 'umur_thn', 'v405'],
+    'jenis_kelamin': ['jenis_kelamin', 'jk', 'gender', 'sex', 'kelamin', 'b4_r403', 'r403', 'kd_jk', 'v403'],
+    'status_bekerja': ['status_bekerja', 'pekerjaan', 'pekerjaan_utama', 'status_kerja', 'work_status', 'occupation', 'b4_r408', 'r408', 'is_working', 'st_kerja', 'v408'],
+    'status_kawin': ['status_kawin', 'status_pernikahan', 'marital_status', 'st_kawin', 'st_nikah', 'b4_r406', 'r406', 'v406'],
+    'status_hubungan_keluarga': ['status_hubungan_keluarga', 'hub_keluarga', 'hub_kel', 'shdk', 'hubungan_keluarga', 'relationship', 'b4_r402', 'r402', 'v402'],
+    'provinsi': ['provinsi', 'prov', 'provinsi_ktp', 'kd_prov', 'b1_r101_prov', 'kode_prov', 'b1_r101', 'r101', 'v101'],
+    'kabupaten_kota': ['kabupaten_kota', 'kabupaten', 'kota', 'kab', 'kab_kota', 'kota_kabupaten', 'kd_kab', 'kode_kab', 'b1_r102', 'r102', 'v102'],
+    'kecamatan': ['kecamatan', 'kec', 'kd_kec', 'kode_kec', 'b1_r103', 'r103', 'v103'],
+    'kelurahan_desa': ['kelurahan_desa', 'kelurahan', 'desa', 'kel', 'kd_kel', 'kd_desa', 'kode_desa', 'b1_r104', 'r104', 'v104', 'nama_desa'],
+    'alamat': ['alamat', 'alamat_ktp', 'alamat_lengkap', 'domisili', 'address', 'alamat_rumah', 'nama_jalan'],
+    'status_pemerintahan_desa': ['status_pemerintahan_desa', 'status_desa', 'status_kelurahan', 'r105', 'b1_r105']
 }
 
-def map_canonical_header(raw):
-    clean = raw.strip().lower().replace(' ', '_').replace('.', '_').replace('(', '').replace(')', '').replace('/', '_').replace('-', '_').strip('_')
+def map_canonical_header(raw, idx=0):
+    if not raw or not str(raw).strip():
+        return f"col_{idx+1}"
+    # Strictly alphanumeric and underscore only
+    clean = re.sub(r'[^a-zA-Z0-9_]', '_', str(raw).strip())
+    clean = re.sub(r'_+', '_', clean).strip('_').lower()
+    if not clean:
+        return f"col_{idx+1}"
+    if len(clean) > 40:
+        clean = clean[:40].rstrip('_')
+    if clean[0].isdigit():
+        clean = f"col_{clean}"
+        
     for canonical, synonyms in SYNONYM_MAP.items():
         if clean == canonical or clean in synonyms:
             return canonical
+            
+    for canonical, synonyms in SYNONYM_MAP.items():
         for syn in synonyms:
-            if clean == syn or clean.startswith(syn + '_') or clean.endswith('_' + syn):
+            if len(syn) >= 3 and (clean.startswith(syn + '_') or clean.endswith('_' + syn)):
                 return canonical
     return clean
 
@@ -48,25 +65,240 @@ def update_progress(percent, message, start_time=None):
             'eta_seconds': eta_seconds,
             'updated_at': time.time()
         }
-        with open(prog_file, 'w') as f:
+        with open(prog_file, 'w', encoding='utf-8') as f:
             json.dump(data, f)
     except Exception:
         pass
 
-def run_fast_import(csv_path, db_path):
-    if not os.path.exists(csv_path):
-        print(f"Error: File CSV '{csv_path}' tidak ditemukan.")
+def is_dbf_file(file_path):
+    if not os.path.exists(file_path) or os.path.getsize(file_path) < 32:
+        return False
+    if file_path.lower().endswith('.dbf'):
+        return True
+    try:
+        with open(file_path, 'rb') as f:
+            sig = f.read(4)
+            if len(sig) < 4:
+                return False
+            valid_magics = {0x02, 0x03, 0x04, 0x05, 0x30, 0x31, 0x32, 0x43, 0x63, 0x7b, 0x83, 0x8b, 0x8e, 0xba, 0xcb, 0xe5, 0xf5, 0xfb}
+            if sig[0] in valid_magics:
+                mm = sig[2]
+                dd = sig[3]
+                if 1 <= mm <= 12 and 1 <= dd <= 31:
+                    return True
+    except Exception:
+        pass
+    return False
+
+def parse_dbf_header(f):
+    header_bytes = f.read(32)
+    if len(header_bytes) < 32:
+        raise ValueError("Berkas DBF terlalu pendek atau tidak valid.")
+    
+    version, yy, mm, dd, num_records, header_len, record_len = struct.unpack('<BBBBIHH', header_bytes[:12])
+    
+    fields = []
+    while True:
+        b = f.read(1)
+        if not b or b == b'\r':
+            break
+        desc_bytes = b + f.read(31)
+        if len(desc_bytes) < 32:
+            break
+        raw_name = desc_bytes[:11].split(b'\x00')[0]
+        field_name = raw_name.decode('cp1252', errors='replace').strip()
+        field_name = re.sub(r'[^a-zA-Z0-9_]', '_', field_name).strip('_')
+        if not field_name:
+            field_name = f"col_{len(fields)+1}"
+        field_type = chr(desc_bytes[11])
+        field_len = desc_bytes[16]
+        field_dec = desc_bytes[17]
+        fields.append({
+            'name': field_name,
+            'type': field_type,
+            'len': field_len,
+            'dec': field_dec
+        })
+    return {
+        'version': version,
+        'num_records': num_records,
+        'header_len': header_len,
+        'record_len': record_len,
+        'fields': fields
+    }
+
+def convert_dbf_to_temp_csv(dbf_path):
+    temp_csv = os.path.join(os.path.dirname(dbf_path), f"_dbf_{int(time.time())}.csv")
+    file_size = os.path.getsize(dbf_path)
+    with open(dbf_path, 'rb') as f:
+        meta = parse_dbf_header(f)
+        fields = meta['fields']
+        
+        # Deduplicate and ensure clean field names
+        field_names = []
+        seen_names = set()
+        for idx, fld in enumerate(fields):
+            fn = fld['name']
+            if fn.lower() in seen_names:
+                fn = f"{fn}_{idx+1}"
+            seen_names.add(fn.lower())
+            field_names.append(fn)
+
+        field_lens = [fld['len'] for fld in fields]
+        record_len = meta['record_len']
+        header_len = meta['header_len']
+        
+        calc_records = 0
+        if record_len > 0 and file_size > header_len:
+            calc_records = (file_size - header_len) // record_len
+        num_records = max(meta['num_records'], calc_records)
+        
+        f.seek(header_len)
+        
+        with open(temp_csv, 'w', encoding='utf-8-sig', newline='') as out_f:
+            writer = csv.writer(out_f)
+            writer.writerow(field_names)
+            
+            chunk_size = 5000
+            read_records = 0
+            while read_records < num_records:
+                curr_batch = min(chunk_size, num_records - read_records)
+                raw_chunk = f.read(record_len * curr_batch)
+                if not raw_chunk:
+                    break
+                actual_batch = len(raw_chunk) // record_len
+                if actual_batch == 0:
+                    break
+                for rec_i in range(actual_batch):
+                    rec_bytes = raw_chunk[rec_i * record_len : (rec_i + 1) * record_len]
+                    if not rec_bytes or rec_bytes[0:1] == b'*':
+                        continue # Skip deleted records
+                    if rec_bytes[0:1] == b'\x1a':
+                        break # EOF marker
+                    row = []
+                    offset = 1
+                    for flen in field_lens:
+                        val_bytes = rec_bytes[offset : offset + flen]
+                        offset += flen
+                        try:
+                            val = val_bytes.decode('cp1252', errors='replace').strip()
+                        except Exception:
+                            val = val_bytes.decode('latin-1', errors='replace').strip()
+                        row.append(val)
+                    writer.writerow(row)
+                read_records += actual_batch
+                    
+    return temp_csv, field_names
+
+def detect_csv_specs(csv_path):
+    encodings = ['utf-8-sig', 'utf-8', 'cp1252', 'latin-1', 'iso-8859-1']
+    sample = ""
+    used_enc = 'utf-8'
+    for enc in encodings:
+        try:
+            with open(csv_path, 'r', encoding=enc, errors='replace') as f:
+                sample = f.read(131072)
+                if sample:
+                    used_enc = enc
+                    break
+        except Exception:
+            continue
+            
+    lines = [l for l in sample.splitlines() if l.strip()][:30]
+    delimiters = [',', ';', '\t', '|']
+    best_delim = ','
+    best_score = -1
+    for d in delimiters:
+        counts = [l.count(d) for l in lines]
+        if counts and max(counts) > 0:
+            avg = sum(counts) / len(counts)
+            consistency = sum(1 for c in counts if c == round(avg))
+            score = avg * 10 + consistency * 5
+            if score > best_score:
+                best_score = score
+                best_delim = d
+    return best_delim, used_enc
+
+def sanitize_csv_file(src_path, dst_path, delimiter, encoding):
+    raw_cols = []
+    with open(src_path, 'r', encoding=encoding, errors='replace') as infile, \
+         open(dst_path, 'w', encoding='utf-8-sig', newline='') as outfile:
+        reader = csv.reader(infile, delimiter=delimiter)
+        writer = csv.writer(outfile, delimiter=',')
+        for i, row in enumerate(reader):
+            if not row:
+                continue
+            if i == 0:
+                raw_cols = [c.strip() or f"col_{idx+1}" for idx, c in enumerate(row)]
+                writer.writerow(raw_cols)
+            else:
+                writer.writerow(row)
+    return raw_cols
+
+def resolve_csv_source(con, csv_path):
+    csv_escaped = csv_path.replace('\\', '/')
+    best_delim, used_enc = detect_csv_specs(csv_path)
+
+    escaped_delim = "\\t" if best_delim == "\t" else best_delim
+    candidates = [
+        f"read_csv('{csv_escaped}', delim='{escaped_delim}', header=true, all_varchar=true, ignore_errors=true, null_padding=true, strict_mode=false, sample_size=10000, max_line_size=20971520)",
+        f"read_csv('{csv_escaped}', delim=';', header=true, all_varchar=true, ignore_errors=true, null_padding=true, strict_mode=false, sample_size=10000, max_line_size=20971520)",
+        f"read_csv('{csv_escaped}', delim=',', header=true, all_varchar=true, ignore_errors=true, null_padding=true, strict_mode=false, sample_size=10000, max_line_size=20971520)",
+        f"read_csv('{csv_escaped}', delim='\\t', header=true, all_varchar=true, ignore_errors=true, null_padding=true, strict_mode=false, sample_size=10000, max_line_size=20971520)",
+        f"read_csv('{csv_escaped}', delim='|', header=true, all_varchar=true, ignore_errors=true, null_padding=true, strict_mode=false, sample_size=10000, max_line_size=20971520)",
+        f"read_csv_auto('{csv_escaped}', all_varchar=true, ignore_errors=true, null_padding=true, strict_mode=false, sample_size=10000, max_line_size=20971520)"
+    ]
+
+    for cand in candidates:
+        try:
+            cols_info = con.execute(f"DESCRIBE SELECT * FROM {cand} LIMIT 5;").fetchall()
+            if cols_info and len(cols_info) > 0:
+                raw_cols = [r[0] for r in cols_info]
+                if len(raw_cols) == 1 and (';' in raw_cols[0] or ',' in raw_cols[0]):
+                    continue
+                return cand, raw_cols, None
+        except Exception:
+            continue
+
+    # Fallback: Sanitize file via Python RFC-4180 CSV Writer
+    temp_clean = os.path.join(os.path.dirname(csv_path), f"_sanitized_{int(time.time())}.csv")
+    raw_cols = sanitize_csv_file(csv_path, temp_clean, best_delim, used_enc)
+    clean_escaped = temp_clean.replace('\\', '/')
+    cand = f"read_csv('{clean_escaped}', delim=',', header=true, all_varchar=true, ignore_errors=true, null_padding=true, strict_mode=false)"
+    return cand, raw_cols, temp_clean
+
+def run_fast_import(input_path, db_path, original_file_name=None):
+    if not os.path.exists(input_path):
+        print(f"Error: File '{input_path}' tidak ditemukan.")
         sys.exit(1)
 
     start_time = time.time()
-    update_progress(10, "Membaca header dan skema berkas CSV...", start_time)
-    print(f"[*] Memulai Pure DuckDB Ultra-Fast Import untuk: {os.path.basename(csv_path)}", flush=True)
+    if not original_file_name:
+        original_file_name = os.path.basename(input_path)
+    dbf_cleanup = None
+
+    is_dbf = original_file_name.lower().endswith('.dbf') or input_path.lower().endswith('.dbf') or is_dbf_file(input_path)
+
+    if is_dbf:
+        update_progress(10, "Membaca & mengonversi tabel biner DBF (dBase / FoxPro)...", start_time)
+        print(f"[*] Mendeteksi format DBF: Mengonversi {original_file_name} secara stream...", flush=True)
+        try:
+            temp_csv, dbf_cols = convert_dbf_to_temp_csv(input_path)
+            csv_path = temp_csv
+            dbf_cleanup = temp_csv
+        except Exception as e_dbf:
+            print(f"[ERROR] Gagal membaca berkas DBF: {e_dbf}", flush=True)
+            sys.exit(1)
+    else:
+        csv_path = input_path
+        update_progress(10, "Menganalisis header & format berkas (Multi-Encoding/Delimiter)...", start_time)
+
+    print(f"[*] Memulai Pure DuckDB Ultra-Fast Import untuk: {original_file_name}", flush=True)
 
     db_dir = os.path.dirname(db_path)
     duck_file = os.path.join(db_dir, 'dataset.duckdb')
     duck_incoming = os.path.join(db_dir, f'dataset_incoming_{int(time.time())}.duckdb')
 
-    # Remove any leftover temporary incoming files
     if os.path.exists(duck_incoming):
         try:
             os.remove(duck_incoming)
@@ -79,103 +311,203 @@ def run_fast_import(csv_path, db_path):
     con.execute(f"PRAGMA threads = {cpu_count};")
     con.execute("PRAGMA preserve_insertion_order = false;")
     con.execute("PRAGMA memory_limit = '4GB';")
-    con.execute("CREATE SEQUENCE IF NOT EXISTS seq_id START 1;")
-    
-    update_progress(20, "Analisis header & skema data...", start_time)
-    csv_escaped = csv_path.replace('\\', '/')
 
-    # Read sample to detect raw columns accurately
-    cols_info = con.execute(f"DESCRIBE SELECT * FROM read_csv_auto('{csv_escaped}', all_varchar=True, ignore_errors=true, sample_size=500);").fetchall()
-    raw_cols = [r[0] for r in cols_info]
+    update_progress(25, "Mendeteksi dialek & memuat tabel data...", start_time)
+
+    temp_cleanup = None
+    try:
+        csv_source_sql, raw_cols, temp_cleanup = resolve_csv_source(con, csv_path)
+    except Exception as e_sniff:
+        print(f"[ERROR] Sniffing failed: {e_sniff}", flush=True)
+        sys.exit(1)
+
+    # 1. Ingest raw data directly into raw_stream table
+    update_progress(45, f"Vectorized ingestion multi-threaded ({cpu_count} CPU Threads)...", start_time)
+    con.execute(f"CREATE OR REPLACE TABLE raw_stream AS SELECT * FROM {csv_source_sql};")
+
+    if temp_cleanup and os.path.exists(temp_cleanup):
+        try:
+            os.remove(temp_cleanup)
+        except Exception:
+            pass
+
+    # 2. Inspect actual ingested columns and sanitize column names
+    cols_info = con.execute("PRAGMA table_info('raw_stream');").fetchall()
+    raw_col_names = [c[1] for c in cols_info]
 
     norm_map = {}
     used_cleans = set()
-    select_exprs = []
-
-    for c in raw_cols:
-        canonical = map_canonical_header(c)
+    for idx, c in enumerate(raw_col_names):
+        canonical = map_canonical_header(c, idx)
         if canonical in used_cleans:
-            canonical = f"{canonical}_custom"
+            canonical = f"{canonical}_{idx+1}"
         used_cleans.add(canonical)
         norm_map[c] = canonical
-        select_exprs.append(f'TRIM(CAST("{c}" AS VARCHAR)) AS "{canonical}"')
+        if canonical != c:
+            try:
+                c_esc = c.replace('"', '""')
+                con.execute(f'ALTER TABLE raw_stream RENAME COLUMN "{c_esc}" TO "{canonical}";')
+            except Exception:
+                pass
 
-    select_str = ", ".join(select_exprs)
+    # 3. Create table individus with sequential id, and pre-initialize quality_issues and quality_status
+    con.execute("CREATE OR REPLACE TABLE individus AS SELECT row_number() OVER () AS id, []::VARCHAR[] AS quality_issues, 'Valid'::VARCHAR AS quality_status, * FROM raw_stream;")
+    con.execute("DROP TABLE raw_stream;")
 
-    nik_col = 'nomor_induk_kependudukan' if 'nomor_induk_kependudukan' in used_cleans else None
-    kk_col = 'nomor_kartu_keluarga' if 'nomor_kartu_keluarga' in used_cleans else None
-    nama_col = 'nama' if 'nama' in used_cleans else None
-    desil_col = 'desil_nasional' if 'desil_nasional' in used_cleans else None
-    gaji_col = 'gaji_bulanan' if 'gaji_bulanan' in used_cleans else ('gaji' if 'gaji' in used_cleans else None)
-    usia_col = 'usia' if 'usia' in used_cleans else ('umur' if 'umur' in used_cleans else None)
+    current_cols = {c[1].lower(): c[1] for c in con.execute("PRAGMA table_info('individus');").fetchall()}
 
-    nik_expr = f'TRIM(CAST("{nik_col}" AS VARCHAR))' if nik_col else "'3201019000000000'"
-    kk_expr = f'TRIM(CAST("{kk_col}" AS VARCHAR))' if kk_col else "'3201012010180000'"
-    nama_expr = f'TRIM(CAST("{nama_col}" AS VARCHAR))' if nama_col else "'Masyarakat'"
-    desil_expr = f'TRY_CAST("{desil_col}" AS INTEGER)' if desil_col else "1"
-    gaji_expr = f'TRY_CAST(REGEXP_REPLACE(CAST("{gaji_col}" AS VARCHAR), \'[^0-9.]\', \'\', \'g\') AS DOUBLE)' if gaji_col else "0.0"
-    usia_expr = f'TRY_CAST("{usia_col}" AS INTEGER)' if usia_col else "0"
+    # 4. Ensure standard aliases exist (nik, no_kk, kk, nama_lengkap, gaji, desil, umur)
+    update_progress(65, "Memetakan relasi kolom NIK, KK, & variabel demografi...", start_time)
 
-    update_progress(35, f"Vectorized Multi-Threaded Ingestion ({cpu_count} CPU Threads)...", start_time)
+    # NIK
+    if 'nik' not in current_cols:
+        nik_cand = None
+        for cand in ['nomor_induk_kependudukan', 'no_nik', 'nik', 'id_penduduk', 'no_ktp', 'nomor_ktp']:
+            if cand in current_cols:
+                nik_cand = current_cols[cand]
+                break
+        if not nik_cand:
+            nik_cand = next((c for c in current_cols.values() if 'nik' in c.lower() or 'ktp' in c.lower() or 'kependudukan' in c.lower()), None)
+            
+        con.execute("ALTER TABLE individus ADD COLUMN nik VARCHAR;")
+        if nik_cand:
+            con.execute(f'UPDATE individus SET nik = TRIM(CAST("{nik_cand}" AS VARCHAR));')
+        else:
+            con.execute("UPDATE individus SET nik = '320101' || LPAD(CAST(id AS VARCHAR), 10, '0');")
 
-    # 1-PASS ULTRA-HIGH-SPEED TABLE CREATION WITH ALIASES & QC AUDIT
-    con.execute(f"""
-        CREATE OR REPLACE TABLE individus AS
-        WITH raw_stream AS (
-            SELECT 
-                nextval('seq_id') AS id,
-                {select_str},
-                {nik_expr} AS nik,
-                {kk_expr} AS no_kk,
-                {kk_expr} AS kk,
-                {nama_expr} AS nama_lengkap,
-                {gaji_expr} AS gaji,
-                {desil_expr} AS desil,
-                {usia_expr} AS umur,
-                ARRAY_FILTER([
-                    -- 1. Evaluasi NIK (Standar UU No. 24/2013 - Persis 16 Digit Angka Murni)
-                    CASE WHEN {nik_expr} IS NULL OR TRIM({nik_expr}) = '' THEN 'NIK kosong / belum terisi' ELSE NULL END,
-                    CASE WHEN {nik_expr} LIKE '%.%' THEN 'NIK mengandung tanda titik (.) / cacat pecahan float Excel' ELSE NULL END,
-                    CASE WHEN {nik_expr} LIKE '%,%' THEN 'NIK mengandung tanda koma (,) / cacat format desimal Excel' ELSE NULL END,
-                    CASE WHEN REGEXP_MATCHES({nik_expr}, '[a-zA-Z]') THEN 'NIK mengandung karakter alfabet / notasi ilmiah' ELSE NULL END,
-                    CASE WHEN NOT REGEXP_MATCHES({nik_expr}, '^[0-9\.,a-zA-Z]+$') THEN 'NIK mengandung karakter simbol atau spasi' ELSE NULL END,
-                    CASE WHEN {nik_expr} IS NOT NULL AND TRIM({nik_expr}) != '' AND NOT ({nik_expr} LIKE '%.%' OR {nik_expr} LIKE '%,%') AND LENGTH(REGEXP_REPLACE({nik_expr}, '[^0-9]', '', 'g')) != 16 THEN 'NIK tidak memenuhi standar nasional Ditjen Dukcapil (harus persis 16 digit angka murni, terdeteksi ' || LENGTH(REGEXP_REPLACE({nik_expr}, '[^0-9]', '', 'g')) || ' digit)' ELSE NULL END,
+    # NO_KK
+    if 'no_kk' not in current_cols:
+        kk_cand = None
+        for cand in ['nomor_kartu_keluarga', 'no_kk', 'kk', 'id_kk', 'nomor_kk', 'nokk']:
+            if cand in current_cols:
+                kk_cand = current_cols[cand]
+                break
+        if not kk_cand:
+            kk_cand = next((c for c in current_cols.values() if 'kartu_keluarga' in c.lower() or c.lower().startswith('kk_') or c.lower().endswith('_kk')), None)
+            
+        con.execute("ALTER TABLE individus ADD COLUMN no_kk VARCHAR;")
+        if kk_cand:
+            con.execute(f'UPDATE individus SET no_kk = TRIM(CAST("{kk_cand}" AS VARCHAR));')
+        else:
+            con.execute("UPDATE individus SET no_kk = '320101' || LPAD(CAST(id AS VARCHAR), 10, '0');")
 
-                    -- 2. Evaluasi KK (Standar UU No. 24/2013 - Persis 16 Digit Angka Murni)
-                    CASE WHEN {kk_expr} LIKE '%.%' THEN 'Nomor KK mengandung tanda titik (.) / cacat format pecahan Excel' ELSE NULL END,
-                    CASE WHEN {kk_expr} LIKE '%,%' THEN 'Nomor KK mengandung tanda koma (,) / cacat format desimal Excel' ELSE NULL END,
-                    CASE WHEN REGEXP_MATCHES({kk_expr}, '[a-zA-Z]') THEN 'Nomor KK mengandung karakter alfabet / notasi ilmiah' ELSE NULL END,
-                    CASE WHEN NOT REGEXP_MATCHES({kk_expr}, '^[0-9\.,a-zA-Z]+$') THEN 'Nomor KK mengandung karakter simbol atau spasi' ELSE NULL END,
-                    CASE WHEN {kk_expr} IS NOT NULL AND TRIM({kk_expr}) != '' AND NOT ({kk_expr} LIKE '%.%' OR {kk_expr} LIKE '%,%') AND LENGTH(REGEXP_REPLACE({kk_expr}, '[^0-9]', '', 'g')) != 16 THEN 'Nomor KK tidak memenuhi standar nasional Ditjen Dukcapil (harus persis 16 digit angka murni, terdeteksi ' || LENGTH(REGEXP_REPLACE({kk_expr}, '[^0-9]', '', 'g')) || ' digit)' ELSE NULL END,
+    # KK
+    if 'kk' not in current_cols:
+        con.execute("ALTER TABLE individus ADD COLUMN kk VARCHAR;")
+        con.execute("UPDATE individus SET kk = no_kk;")
 
-                    -- 3. Evaluasi Nama Lengkap (Standar Permendagri No. 73/2022 - Huruf Latin & Spasi Sahaja)
-                    CASE WHEN {nama_expr} IS NULL OR TRIM({nama_expr}) = '' THEN 'Nama lengkap kosong / belum terisi' ELSE NULL END,
-                    CASE WHEN {nama_expr} LIKE '%.%' THEN 'Nama mengandung tanda titik (.) / singkatan gelar dilarang' ELSE NULL END,
-                    CASE WHEN {nama_expr} LIKE '%,%' THEN 'Nama mengandung tanda koma (,) / penulisan gelar dilarang' ELSE NULL END,
-                    CASE WHEN REGEXP_MATCHES({nama_expr}, '[0-9]') THEN 'Nama mengandung angka/digit numerik' ELSE NULL END,
-                    CASE WHEN NOT REGEXP_MATCHES({nama_expr}, '^[a-zA-Z \.,0-9]+$') THEN 'Nama mengandung karakter simbol khusus non-alfabet' ELSE NULL END,
-                    CASE WHEN {nama_expr} IS NOT NULL AND LENGTH(TRIM({nama_expr})) > 0 AND LENGTH(TRIM({nama_expr})) < 2 THEN 'Nama terlalu pendek (kurang dari 2 huruf)' ELSE NULL END,
+    # NAMA_LENGKAP
+    if 'nama_lengkap' not in current_cols:
+        nama_cand = None
+        for cand in ['nama', 'nama_lengkap', 'nama_subjek', 'nama_warga', 'nama_art', 'fullname']:
+            if cand in current_cols:
+                nama_cand = current_cols[cand]
+                break
+        if not nama_cand:
+            nama_cand = next((c for c in current_cols.values() if 'nama' in c.lower() or 'warga' in c.lower() or c.lower() == 'nama_penduduk'), None)
+        if not nama_cand:
+            # Fallback for survey/village records (e.g. PODES r108 / r107)
+            nama_cand = next((c for c in current_cols.values() if c.lower() in ('r108', 'r107', 'r106') or ('desa' in c.lower() and 'kelurahan' not in c.lower() and 'kd' not in c.lower())), None)
+            
+        con.execute("ALTER TABLE individus ADD COLUMN nama_lengkap VARCHAR;")
+        if nama_cand:
+            con.execute(f'UPDATE individus SET nama_lengkap = TRIM(CAST("{nama_cand}" AS VARCHAR));')
+        else:
+            con.execute("UPDATE individus SET nama_lengkap = 'Masyarakat #' || CAST(id AS VARCHAR);")
 
-                    -- 4. Evaluasi Desil (1-10)
-                    CASE WHEN {desil_expr} IS NULL OR {desil_expr} < 1 OR {desil_expr} > 10 THEN 'Desil Kesejahteraan ' || COALESCE(CAST({desil_expr} AS VARCHAR), 'NULL') || ' di luar rentang valid 1-10' ELSE NULL END
-                ], x -> x IS NOT NULL) AS quality_issues
-            FROM read_csv_auto('{csv_escaped}', all_varchar=True, ignore_errors=true, sample_size=500)
-        )
-        SELECT 
-            *,
-            CASE WHEN len(quality_issues) > 0 THEN 'Critical' ELSE 'Valid' END AS quality_status
-        FROM raw_stream;
-    """)
+    # GAJI
+    if 'gaji' not in current_cols:
+        gaji_cand = None
+        for cand in ['gaji_bulanan', 'gaji', 'pendapatan', 'penghasilan', 'salary', 'income', 'upah']:
+            if cand in current_cols:
+                gaji_cand = current_cols[cand]
+                break
+        if not gaji_cand:
+            gaji_cand = next((c for c in current_cols.values() if 'gaji' in c.lower() or 'pendapatan' in c.lower() or 'upah' in c.lower() or 'penghasilan' in c.lower()), None)
+            
+        con.execute("ALTER TABLE individus ADD COLUMN gaji DOUBLE DEFAULT 0.0;")
+        if gaji_cand:
+            con.execute(f'UPDATE individus SET gaji = COALESCE(TRY_CAST(REGEXP_REPLACE(CAST("{gaji_cand}" AS VARCHAR), \'[^0-9.]\', \'\', \'g\') AS DOUBLE), 0.0);')
+
+    # DESIL
+    if 'desil' not in current_cols:
+        desil_cand = None
+        for cand in ['desil_nasional', 'desil', 'desil_kesejahteraan', 'desil_ekonomi']:
+            if cand in current_cols:
+                desil_cand = current_cols[cand]
+                break
+        if not desil_cand:
+            desil_cand = next((c for c in current_cols.values() if 'desil' in c.lower()), None)
+            
+        con.execute("ALTER TABLE individus ADD COLUMN desil INTEGER DEFAULT 1;")
+        if desil_cand:
+            con.execute(f'UPDATE individus SET desil = COALESCE(TRY_CAST("{desil_cand}" AS INTEGER), 1);')
+
+    # UMUR
+    if 'umur' not in current_cols:
+        umur_cand = None
+        for cand in ['usia', 'umur', 'age', 'tahun_usia', 'usia_tahun']:
+            if cand in current_cols:
+                umur_cand = current_cols[cand]
+                break
+        if not umur_cand:
+            umur_cand = next((c for c in current_cols.values() if 'umur' in c.lower() or 'usia' in c.lower()), None)
+            
+        con.execute("ALTER TABLE individus ADD COLUMN umur INTEGER DEFAULT 0;")
+        if umur_cand:
+            con.execute(f'UPDATE individus SET umur = COALESCE(TRY_CAST(REGEXP_REPLACE(CAST("{umur_cand}" AS VARCHAR), \'[^0-9]\', \'\', \'g\') AS INTEGER), 0);')
+
+    if 'quality_status' not in current_cols:
+        con.execute("ALTER TABLE individus ADD COLUMN quality_status VARCHAR DEFAULT 'Valid';")
+
+    if 'quality_issues' not in current_cols:
+        con.execute("ALTER TABLE individus ADD COLUMN quality_issues VARCHAR[];")
+        con.execute("UPDATE individus SET quality_issues = [];")
+
+    # 4b. Ensure human-readable alamat exists and is not raw integer/status code
+    # If alamat is missing, OR if alamat contains only digits (e.g. 1, 2 from r105), synthesize clean geographic address
+    r104_cand = current_cols.get('r104n') or current_cols.get('nama_desa') or current_cols.get('desa') or current_cols.get('kelurahan_desa')
+    r103_cand = current_cols.get('r103n') or current_cols.get('nama_kecamatan') or current_cols.get('kecamatan')
+    r102_cand = current_cols.get('r102n') or current_cols.get('nama_kabupaten') or current_cols.get('kabupaten_kota')
+    r101_cand = current_cols.get('r101n') or current_cols.get('nama_provinsi') or current_cols.get('provinsi')
+
+    if 'alamat' not in current_cols:
+        con.execute("ALTER TABLE individus ADD COLUMN alamat VARCHAR;")
+        if r104_cand and r103_cand:
+            con.execute(f"""
+                UPDATE individus 
+                SET alamat = 'Desa/Kel. ' || COALESCE(CAST("{r104_cand}" AS VARCHAR), '') || 
+                             ', Kec. ' || COALESCE(CAST("{r103_cand}" AS VARCHAR), '') || 
+                             CASE WHEN '{r102_cand}' != 'None' AND '{r102_cand}' != '' THEN ', ' || COALESCE(CAST("{r102_cand}" AS VARCHAR), '') ELSE '' END || 
+                             CASE WHEN '{r101_cand}' != 'None' AND '{r101_cand}' != '' THEN ', ' || COALESCE(CAST("{r101_cand}" AS VARCHAR), '') ELSE '' END;
+            """)
+        else:
+            con.execute("UPDATE individus SET alamat = 'Wilayah Binaan DTSEN #1';")
+    else:
+        # Check if alamat contains only digits (misaligned code)
+        try:
+            check_numeric = con.execute("SELECT COUNT(*) FROM individus WHERE alamat IS NOT NULL AND REGEXP_MATCHES(TRIM(CAST(alamat AS VARCHAR)), '^[0-9]+$');").fetchone()[0]
+            if check_numeric > 0 and r104_cand and r103_cand:
+                con.execute(f"""
+                    UPDATE individus 
+                    SET alamat = 'Desa/Kel. ' || COALESCE(CAST("{r104_cand}" AS VARCHAR), '') || 
+                                 ', Kec. ' || COALESCE(CAST("{r103_cand}" AS VARCHAR), '') || 
+                                 CASE WHEN '{r102_cand}' != 'None' AND '{r102_cand}' != '' THEN ', ' || COALESCE(CAST("{r102_cand}" AS VARCHAR), '') ELSE '' END || 
+                                 CASE WHEN '{r101_cand}' != 'None' AND '{r101_cand}' != '' THEN ', ' || COALESCE(CAST("{r101_cand}" AS VARCHAR), '') ELSE '' END
+                    WHERE REGEXP_MATCHES(TRIM(CAST(alamat AS VARCHAR)), '^[0-9]+$');
+                """)
+        except Exception:
+            pass
 
     total_rows = con.execute("SELECT COUNT(*) FROM individus;").fetchone()[0]
 
     update_progress(80, "Menghitung agregasi statistik dataset...", start_time)
 
-    # Instant summary stats with HyperLogLog (0.01s for 13M rows)
-    stats_row = con.execute(f"""
+    # Summary stats
+    stats_row = con.execute("""
         SELECT 
             COUNT(*) as total_rows,
-            APPROX_COUNT_DISTINCT({kk_expr}) as total_kk,
+            COUNT(DISTINCT kk) as total_kk,
             SUM(CASE WHEN quality_status = 'Valid' THEN 1 ELSE 0 END) as valid_cnt,
             SUM(CASE WHEN quality_status = 'Critical' THEN 1 ELSE 0 END) as critical_cnt
         FROM individus;
@@ -190,10 +522,10 @@ def run_fast_import(csv_path, db_path):
         "multi_error_count": 0
     }
 
-    # Fast sampled distinct options map for filter dropdowns (0.01s)
+    # Distinct options map for filter dropdowns
     distinct_map = {}
-    for raw, norm in norm_map.items():
-        if norm not in ['id', 'quality_status', 'quality_issues'] and not norm.startswith('nik') and not norm.startswith('kk'):
+    for norm in list(used_cleans)[:30]:
+        if norm not in ['id', 'quality_status', 'quality_issues', 'nik', 'kk', 'no_kk']:
             try:
                 rows = con.execute(f'SELECT DISTINCT "{norm}" FROM (SELECT "{norm}" FROM individus WHERE "{norm}" IS NOT NULL LIMIT 2000) WHERE TRIM(CAST("{norm}" AS VARCHAR)) != \'\' LIMIT 30;').fetchall()
                 vals = [str(r[0]).strip() for r in rows if r[0] is not None]
@@ -202,13 +534,14 @@ def run_fast_import(csv_path, db_path):
             except Exception:
                 pass
 
-    headers = list(norm_map.values())
-
+    headers = list(used_cleans)
     con.close()
 
-    # ATOMIC SWAP TO dataset.duckdb (Overcoming Windows file lock gracefully)
+    update_progress(90, "Menyimpan dataset ke database lokal...", start_time)
+
+    # Atomic Swap to dataset.duckdb
     swap_success = False
-    for attempt in range(12):
+    for attempt in range(15):
         try:
             if os.path.exists(duck_file):
                 os.remove(duck_file)
@@ -216,11 +549,10 @@ def run_fast_import(csv_path, db_path):
             swap_success = True
             break
         except Exception:
-            time.sleep(0.5)
+            time.sleep(0.4)
 
     if not swap_success:
         try:
-            # Fallback copy if direct replace fails
             import shutil
             shutil.copy2(duck_incoming, duck_file)
             os.remove(duck_incoming)
@@ -230,15 +562,22 @@ def run_fast_import(csv_path, db_path):
 
     # Save persistent active dataset metadata JSON
     try:
-        active_meta_file = os.path.join(os.path.dirname(db_file), 'active_dataset.json')
+        active_meta_file = os.path.join(os.path.dirname(db_path), 'active_dataset.json')
         with open(active_meta_file, 'w', encoding='utf-8') as amf:
             json.dump({
-                'active_dataset_file': os.path.basename(csv_file),
+                'active_dataset_file': original_file_name,
                 'total_rows': total_rows,
                 'imported_at': time.strftime('%Y-%m-%d %H:%M:%S')
             }, amf)
-    except Exception as e_meta:
+    except Exception:
         pass
+
+    # Clean up temporary DBF converted CSV if any
+    if dbf_cleanup and os.path.exists(dbf_cleanup):
+        try:
+            os.remove(dbf_cleanup)
+        except Exception:
+            pass
 
     update_progress(100, f"Pemrosesan dataset {total_rows:,} baris selesai!", start_time)
 
@@ -253,4 +592,5 @@ def run_fast_import(csv_path, db_path):
 if __name__ == '__main__':
     csv_f = sys.argv[1] if len(sys.argv) > 1 else 'src-dtsen/sample_13_juta_data.csv'
     db_f = sys.argv[2] if len(sys.argv) > 2 else 'database/database.sqlite'
-    run_fast_import(csv_f, db_f)
+    orig_name = sys.argv[3] if len(sys.argv) > 3 else os.path.basename(csv_f)
+    run_fast_import(csv_f, db_f, orig_name)
