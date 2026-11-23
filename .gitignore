@@ -24,7 +24,7 @@
 !/storage/framework/views/.gitignore
 /storage/framework/cache/*
 !/storage/framework/cache/.gitignore
-/vendor
+# /vendor (bundled for zero-dependency 1-click clone execution)
 Homestead.json
 Homestead.yaml
 Thumbs.db
