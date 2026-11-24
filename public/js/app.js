@@ -390,9 +390,12 @@ function paduLayoutApp() {
 // =========================================================================
 // 2. MASTER DATA PAGE APPLICATION STATE (dtsenDataPageApp)
 // =========================================================================
-function dtsenDataPageApp(allColKeys = []) {
+function dtsenDataPageApp(allColKeys = [], focusColKeys = []) {
     if (!allColKeys || allColKeys.length === 0) {
         allColKeys = window.PADU_ALL_COL_KEYS || [];
+    }
+    if (!focusColKeys || focusColKeys.length === 0) {
+        focusColKeys = window.PADU_FOCUS_COLS || [];
     }
 
     let savedCols = null;
@@ -404,10 +407,18 @@ function dtsenDataPageApp(allColKeys = []) {
         ? savedCols.filter(c => allColKeys.includes(c))
         : [];
 
+    const hasFocus = Array.isArray(focusColKeys) && focusColKeys.length > 0;
+    const initialCols = hasFocus
+        ? focusColKeys.filter(c => allColKeys.includes(c))
+        : (validSavedCols.length > 0 ? validSavedCols : [...allColKeys]);
+
     return {
         showColumnModal: false,
         showRawExtraCols: false,
-        visibleCols: validSavedCols.length > 0 ? validSavedCols : [...allColKeys],
+        isFocusMode: hasFocus,
+        focusCols: hasFocus ? [...focusColKeys] : [],
+        allAvailableCols: [...allColKeys],
+        visibleCols: initialCols.length > 0 ? initialCols : [...allColKeys],
 
         // Atur Kolom Modal - Dropdown, Accordion & Filter State
         colModalSearch: '',

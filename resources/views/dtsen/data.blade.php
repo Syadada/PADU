@@ -3,8 +3,9 @@
 @section('content')
 <script>
     window.PADU_ALL_COL_KEYS = @json(array_keys($activeColumnsMap));
+    window.PADU_FOCUS_COLS = @json($aggregateInsight['focus_columns'] ?? []);
 </script>
-<div class="space-y-6" x-data="dtsenDataPageApp()">
+<div class="space-y-6" x-data="dtsenDataPageApp(window.PADU_ALL_COL_KEYS, window.PADU_FOCUS_COLS)">
     
     <!-- Header Banner Modul -->
     <div class="p-4 sm:p-5 bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-3 sm:gap-4">
@@ -277,7 +278,34 @@
                 @endif
             </div>
 
-            @if(!empty($nlqInfo) && !empty($nlqInfo['is_nlq']) && !empty($nlqInfo['tags']))
+            @if(!empty($aggregateInsight))
+                <div class="p-3.5 bg-slate-50 border border-slate-200/90 rounded-2xl flex flex-wrap items-center justify-between gap-3 shadow-2xs">
+                    <div class="flex flex-wrap items-center gap-2.5">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-900 text-white font-extrabold text-xs shadow-2xs">
+                            <i class="fi fi-rr-chart-pie-alt"></i> <span>Mode Analisis Wilayah</span>
+                        </span>
+                        <span class="text-xs text-slate-700 font-bold">
+                            Variabel: <span class="text-blue-700 font-extrabold">{{ $aggregateInsight['clean_target_label'] }}</span>
+                        </span>
+                        <span class="text-slate-300">&bull;</span>
+                        <span class="text-xs text-slate-600">
+                            Dimensi: <strong>{{ $aggregateInsight['dimension_label'] }}</strong>
+                        </span>
+                        <span class="px-2 py-0.5 rounded-lg text-[11px] font-bold bg-blue-50 text-blue-800 border border-blue-200">
+                            Fokus Kolom Aktif ({{ count($aggregateInsight['focus_columns']) }} Kolom Relevan)
+                        </span>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <button type="button" @click="resetCols()" class="px-2.5 py-1 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-xl text-xs font-bold transition-all shadow-2xs flex items-center gap-1 cursor-pointer" title="Buka dan tampilkan seluruh 200+ kolom tabel">
+                            <i class="fi fi-rr-expand"></i> <span>Buka Semua Kolom</span>
+                        </button>
+                        <a href="{{ route('dtsen.data', array_merge(request()->except('search'), ['page' => 1])) }}#tabel-data" 
+                           class="px-2.5 py-1 bg-white hover:bg-rose-50 text-rose-600 hover:text-rose-700 border border-rose-200 rounded-xl text-xs font-bold transition-all shadow-2xs flex items-center gap-1 cursor-pointer">
+                            <i class="fi fi-rr-cross-small"></i> <span>Hapus Analisis</span>
+                        </a>
+                    </div>
+                </div>
+            @elseif(!empty($nlqInfo) && !empty($nlqInfo['is_nlq']) && !empty($nlqInfo['tags']))
                 <div class="p-3.5 bg-gradient-to-r from-blue-50/90 via-indigo-50/80 to-purple-50/90 border border-indigo-200/90 rounded-2xl flex flex-wrap items-center justify-between gap-3 shadow-xs">
                     <div class="flex flex-wrap items-center gap-2">
                         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-xs shadow-xs">
@@ -1453,6 +1481,148 @@
                     {{ $records->links() }}
                 </div>
             </div>
+
+            @if(!empty($aggregateInsight))
+                <!-- SECTION RINGKASAN EKSEKUTIF & INSIGHT ANALITIK (HUMAN, CLEAN, DETERMINISTIK) -->
+                <div class="mt-6 pt-6 border-t border-slate-200 space-y-5">
+                    
+                    <!-- Header Insight -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-200/80 gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-800 flex items-center justify-center text-lg shrink-0 border border-slate-200">
+                                <i class="fi fi-rr-chart-histogram"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-slate-100 text-slate-700 border border-slate-200">
+                                        Rekapitulasi Wilayah
+                                    </span>
+                                    <span class="text-xs text-slate-400">&bull;</span>
+                                    <span class="text-xs font-semibold text-slate-500">Hasil Hitungan Komputasi OLAP</span>
+                                </div>
+                                <h3 class="text-base font-extrabold text-slate-900 mt-0.5">
+                                    {{ $aggregateInsight['clean_target_label'] }} menurut {{ $aggregateInsight['dimension_label'] }}
+                                </h3>
+                            </div>
+                        </div>
+
+                        <div class="text-xs text-slate-600 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl flex items-center gap-2 w-fit">
+                            <i class="fi fi-rr-database text-slate-400"></i>
+                            <span>Cakupan: <strong>{{ number_format($aggregateInsight['total_desa']) }}</strong> Wilayah Terdaftar</span>
+                        </div>
+                    </div>
+
+                    <!-- 4 Kotak Metrik Ringkasan Eksekutif -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                        
+                        <!-- Metrik 1: Total Akumulasi -->
+                        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                            <div class="text-xs font-bold text-slate-500 flex items-center justify-between">
+                                <span>{{ $aggregateInsight['agg_title'] }}</span>
+                                <i class="fi fi-rr-calculator text-slate-400"></i>
+                            </div>
+                            <div class="text-2xl font-black text-slate-900 tracking-tight font-mono">
+                                {{ $aggregateInsight['formatted_total'] }}
+                            </div>
+                            <div class="text-[11px] text-slate-500">
+                                Seluruh {{ strtolower($aggregateInsight['dimension_label']) }}
+                            </div>
+                        </div>
+
+                        <!-- Metrik 2: Konsentrasi Tertinggi (Top 1) -->
+                        <div class="p-4 rounded-xl bg-blue-50/50 border border-blue-200/80 space-y-1">
+                            <div class="text-xs font-bold text-blue-800 flex items-center justify-between">
+                                <span>Konsentrasi Tertinggi (Top 1)</span>
+                                <i class="fi fi-rr-trophy text-blue-600"></i>
+                            </div>
+                            <div class="text-base font-black text-blue-950 truncate" title="{{ $aggregateInsight['top_1']['name'] ?? '-' }}">
+                                {{ $aggregateInsight['top_1']['name'] ?? '-' }}
+                            </div>
+                            <div class="text-[11px] text-blue-700 flex items-center gap-1.5 font-medium">
+                                <strong class="font-mono text-xs">{{ $aggregateInsight['top_1']['formatted_value'] ?? 0 }}</strong>
+                                <span>({{ $aggregateInsight['top_1']['percent'] ?? 0 }}% dari total)</span>
+                            </div>
+                        </div>
+
+                        <!-- Metrik 3: Wilayah Terendah -->
+                        <div class="p-4 rounded-xl bg-amber-50/50 border border-amber-200/80 space-y-1">
+                            <div class="text-xs font-bold text-amber-800 flex items-center justify-between">
+                                <span>Catatan Terendah / Minimum</span>
+                                <i class="fi fi-rr-arrow-trend-down text-amber-600"></i>
+                            </div>
+                            <div class="text-base font-black text-amber-950 truncate" title="{{ $aggregateInsight['bottom_1']['name'] ?? '-' }}">
+                                {{ $aggregateInsight['bottom_1']['name'] ?? '-' }}
+                            </div>
+                            <div class="text-[11px] text-amber-700 font-medium">
+                                <strong class="font-mono text-xs">{{ $aggregateInsight['bottom_1']['formatted_value'] ?? 0 }}</strong> unit / jiwa
+                            </div>
+                        </div>
+
+                        <!-- Metrik 4: Rata-Rata per Wilayah -->
+                        <div class="p-4 rounded-xl bg-emerald-50/50 border border-emerald-200/80 space-y-1">
+                            <div class="text-xs font-bold text-emerald-800 flex items-center justify-between">
+                                <span>Rata-Rata per Wilayah</span>
+                                <i class="fi fi-rr-scale text-emerald-600"></i>
+                            </div>
+                            <div class="text-2xl font-black text-emerald-950 tracking-tight font-mono">
+                                {{ $aggregateInsight['formatted_average'] }}
+                            </div>
+                            <div class="text-[11px] text-emerald-700">
+                                Rerata per {{ strtolower($aggregateInsight['dimension_label']) }}
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Narasi Analitik (Humanized Narrative Text) -->
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 space-y-1.5">
+                        <div class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                            <i class="fi fi-rr-quote-right text-slate-500"></i>
+                            <span>Catatan Ringkasan Analisis:</span>
+                        </div>
+                        <p class="text-xs text-slate-700 leading-relaxed font-medium">
+                            {{ $aggregateInsight['human_narrative'] }}
+                        </p>
+                    </div>
+
+                    <!-- Mini Bar Komparasi Sebaran Antar Wilayah -->
+                    @if(!empty($aggregateInsight['breakdown']))
+                        <div class="space-y-3 pt-2">
+                            <div class="text-xs font-bold text-slate-700 flex items-center justify-between">
+                                <span class="flex items-center gap-1.5">
+                                    <i class="fi fi-rr-bars-progress text-slate-500"></i>
+                                    <span>Distribusi Komparasi Antar {{ $aggregateInsight['dimension_label'] }}</span>
+                                </span>
+                                <span class="text-[11px] text-slate-500 font-normal">Diurutkan berdasarkan kontribusi terbanyak</span>
+                            </div>
+
+                            <div class="space-y-2.5">
+                                @php
+                                    $topValForBar = $aggregateInsight['top_1']['value'] > 0 ? $aggregateInsight['top_1']['value'] : 1;
+                                @endphp
+                                @foreach(array_slice($aggregateInsight['breakdown'], 0, 8) as $bItem)
+                                    @php
+                                        $barWidth = round(($bItem['value'] / $topValForBar) * 100);
+                                    @endphp
+                                    <div class="space-y-1">
+                                        <div class="flex items-center justify-between text-xs">
+                                            <span class="font-bold text-slate-800">{{ $bItem['name'] }}</span>
+                                            <div class="flex items-center gap-2">
+                                                <span class="font-mono font-bold text-slate-900">{{ $bItem['formatted_value'] }}</span>
+                                                <span class="text-[10px] text-slate-500 font-mono">({{ $bItem['percent'] }}%)</span>
+                                            </div>
+                                        </div>
+                                        <div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+                                            <div class="h-full rounded-full transition-all duration-500 {{ $loop->first ? 'bg-blue-600' : 'bg-slate-400' }}" style="width: {{ max(2, $barWidth) }}%"></div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
+                </div>
+            @endif
 
         </div>
     @endif

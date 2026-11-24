@@ -941,6 +941,224 @@ def parse_semantic_nlq(search_str, existing_cols, table_ref):
     explanation = "Filter cerdas alami: " + ", ".join(tags)
     return final_sql, tags, explanation, nlq_order
 
+def parse_aggregate_insight(search_str, existing_cols, con, table_ref):
+    """
+    Menganalisis kueri analitik / agregasi (misal: 'agregat jumlah tki laki-laki per kabupaten').
+    Menghitung agregasi matematis via DuckDB OLAP, menghasilkan ringkasan eksekutif,
+    dan mengembalikan daftar kolom fokus (wilayah + variabel terkait).
+    """
+    if not search_str or len(search_str.strip()) < 3:
+        return None
+    
+    q_low = search_str.lower().strip()
+    
+    agg_triggers = ['agregat', 'agregasi', 'jumlah', 'total', 'rata-rata', 'rerata', 'sebaran', 'distribusi', 'rekap', 'rekapitulasi', 'banyaknya']
+    dim_triggers = ['kabupaten', 'kab', 'kota', 'kecamatan', 'kec', 'provinsi', 'prov', 'desa', 'kelurahan']
+    
+    has_agg = any(t in q_low for t in agg_triggers)
+    has_dim = 'per ' in q_low or any(t in q_low for t in dim_triggers)
+    
+    if not (has_agg and has_dim):
+        return None
+
+    # Identifikasi Dimensi (Grouping Column)
+    dim_col = None
+    dim_label = "Wilayah"
+    
+    if any(k in q_low for k in ['kabupaten', 'kab', 'kota']):
+        for cand in ['r102n', 'kabupaten', 'kabupaten_kota', 'nama_kabupaten', 'kdkab', 'r102']:
+            if cand in existing_cols:
+                dim_col = existing_cols[cand]
+                dim_label = "Kabupaten/Kota"
+                break
+    elif any(k in q_low for k in ['kecamatan', 'kec']):
+        for cand in ['r103n', 'kecamatan', 'nama_kecamatan', 'kdkec', 'r103']:
+            if cand in existing_cols:
+                dim_col = existing_cols[cand]
+                dim_label = "Kecamatan"
+                break
+    elif any(k in q_low for k in ['provinsi', 'prov']):
+        for cand in ['r101n', 'provinsi', 'nama_provinsi', 'kdprov', 'r101']:
+            if cand in existing_cols:
+                dim_col = existing_cols[cand]
+                dim_label = "Provinsi"
+                break
+    elif any(k in q_low for k in ['desa', 'kelurahan']):
+        for cand in ['r104n', 'desa', 'kelurahan', 'nama_desa', 'kddesa', 'r104']:
+            if cand in existing_cols:
+                dim_col = existing_cols[cand]
+                dim_label = "Desa/Kelurahan"
+                break
+
+    if not dim_col:
+        for cand in ['r102n', 'kabupaten', 'r103n', 'kecamatan', 'r101n', 'provinsi']:
+            if cand in existing_cols:
+                dim_col = existing_cols[cand]
+                dim_label = "Kabupaten/Kota" if '102' in cand or 'kab' in cand else ("Kecamatan" if '103' in cand or 'kec' in cand else "Provinsi")
+                break
+
+    if not dim_col:
+        return None
+
+    # Muat kamus variabel PODES
+    dict_labels = {}
+    dict_path = os.path.join(os.path.dirname(__file__), '..', 'storage', 'app', 'bast_metadata', 'podes_2021_dictionary.json')
+    if os.path.exists(dict_path):
+        try:
+            with open(dict_path, 'r', encoding='utf-8') as f:
+                dict_json = json.load(f)
+                dict_labels = dict_json.get('flat_labels', {})
+        except Exception:
+            pass
+
+    stopwords = {'agregat', 'agregasi', 'jumlah', 'total', 'rata-rata', 'rerata', 'sebaran', 'distribusi', 
+                 'rekap', 'rekapitulasi', 'banyaknya', 'per', 'kabupaten', 'kab', 'kota', 'kecamatan', 'kec', 
+                 'provinsi', 'prov', 'desa', 'kelurahan', 'dan', 'di', 'pada', 'yang', 'ada', 'cari', 'data'}
+    
+    tokens = [w for w in re.split(r'[^a-zA-Z0-9_-]+', q_low) if len(w) >= 2 and w not in stopwords]
+    
+    target_col = None
+    target_label = None
+
+    # Sinonim khusus TKI / PMI
+    if any(t in q_low for t in ['laki', 'pria', 'cowok']) and any(t in q_low for t in ['tki', 'pmi', 'migran']):
+        if 'r402b1' in existing_cols:
+            target_col = existing_cols['r402b1']
+            target_label = "Jumlah TKI Laki-Laki"
+    elif any(t in q_low for t in ['perempuan', 'wanita', 'cewek']) and any(t in q_low for t in ['tki', 'pmi', 'migran']):
+        if 'r402b2' in existing_cols:
+            target_col = existing_cols['r402b2']
+            target_label = "Jumlah TKI Perempuan"
+    elif any(t in q_low for t in ['tki', 'pmi', 'migran']):
+        if 'r402b1' in existing_cols:
+            target_col = existing_cols['r402b1']
+            target_label = "Jumlah TKI Laki-Laki"
+
+    # Pencarian target column berdasarkan kamus jika belum ketemu
+    if not target_col and tokens:
+        candidate_scores = {}
+        for col_k, orig_col in existing_cols.items():
+            if col_k in ['id', 'created_at', 'updated_at', 'quality_status', 'quality_issues', 'extra_attributes', 
+                         'r101', 'r101n', 'r102', 'r102n', 'r103', 'r103n', 'r104', 'r104n', 'nik', 'kk']:
+                continue
+            lbl = dict_labels.get(col_k, orig_col).lower()
+            score = sum(3 if t == col_k else (2 if re.search(r'\b' + re.escape(t) + r'\b', lbl) else (1 if t in lbl else 0)) for t in tokens)
+            if score > 0:
+                candidate_scores[orig_col] = (score, -len(lbl), dict_labels.get(col_k, orig_col))
+
+        if candidate_scores:
+            sorted_cands = sorted(candidate_scores.items(), key=lambda x: (x[1][0], x[1][1]), reverse=True)
+            target_col = sorted_cands[0][0]
+            target_label = sorted_cands[0][1][2]
+
+    if not target_col:
+        return None
+
+    clean_target_label = re.sub(r'^[A-Z0-9_]+\s*-\s*', '', target_label).strip()
+
+    is_avg = any(w in q_low for w in ['rata-rata', 'rerata', 'avg', 'rata'])
+    agg_fn = "AVG" if is_avg else "SUM"
+    agg_title = "Rata-Rata" if is_avg else "Total Akumulasi"
+
+    try:
+        num_expr = f'TRY_CAST(REGEXP_REPLACE(CAST("{target_col}" AS VARCHAR), \'[^0-9.]\', \'\', \'g\') AS DOUBLE)'
+        
+        query_sql = f"""
+            SELECT 
+                COALESCE(NULLIF(TRIM(CAST("{dim_col}" AS VARCHAR)), ''), 'Tidak Terdefinisi') AS dimensi,
+                ROUND({agg_fn}({num_expr}), 1) AS nilai_agregat,
+                COUNT(*) AS total_desa,
+                SUM(CASE WHEN {num_expr} > 0 THEN 1 ELSE 0 END) AS desa_dengan_data,
+                MAX({num_expr}) AS nilai_tertinggi
+            FROM {table_ref}
+            WHERE "{dim_col}" IS NOT NULL AND TRIM(CAST("{dim_col}" AS VARCHAR)) != ''
+            GROUP BY 1
+            ORDER BY nilai_agregat DESC, total_desa DESC;
+        """
+        rows = con.execute(query_sql).fetchall()
+        if not rows:
+            return None
+
+        grand_total = sum(r[1] or 0 for r in rows)
+        total_desa_all = sum(r[2] or 0 for r in rows)
+        total_desa_aktif = sum(r[3] or 0 for r in rows)
+
+        breakdown = []
+        for r in rows:
+            val = float(r[1] or 0)
+            pct = round((val / grand_total * 100), 1) if grand_total > 0 else 0
+            breakdown.append({
+                "name": str(r[0]),
+                "value": val,
+                "formatted_value": f"{val:,.0f}".replace(",", ".") if val.is_integer() else f"{val:,.1f}".replace(",", "."),
+                "percent": pct,
+                "desa_count": int(r[2]),
+                "desa_with_data": int(r[3]),
+                "max_value": float(r[4] or 0)
+            })
+
+        top_1 = breakdown[0] if breakdown else None
+        
+        non_zero_rows = [b for b in breakdown if b['value'] > 0]
+        bot_1 = non_zero_rows[-1] if len(non_zero_rows) > 1 else (breakdown[-1] if breakdown else None)
+
+        avg_val = round(grand_total / len(breakdown), 1) if breakdown else 0
+
+        if grand_total > 0:
+            narrative = (
+                f"Berdasarkan rekapitulasi data dari total {total_desa_all} desa/kelurahan terdaftar, "
+                f"total {clean_target_label} di seluruh wilayah adalah sebanyak {f'{grand_total:,.0f}'.replace(',', '.')} jiwa/unit. "
+                f"Konsentrasi terbesar berada di {dim_label} {top_1['name']} sebanyak {top_1['formatted_value']} "
+                f"({top_1['percent']}%), sementara catatan terendah berada di {dim_label} {bot_1['name']} "
+                f"dengan {bot_1['formatted_value']}."
+            )
+        else:
+            narrative = (
+                f"Berdasarkan rekapitulasi data pada {total_desa_all} desa/kelurahan, "
+                f"tidak tercatat adanya angka {clean_target_label} yang aktif pada wilayah yang diperiksa."
+            )
+
+        focus_cols = []
+        for w_col in ['r101n', 'provinsi', 'r102n', 'kabupaten', 'r103n', 'kecamatan', 'r104n', 'desa']:
+            if w_col in existing_cols and existing_cols[w_col] not in focus_cols:
+                focus_cols.append(existing_cols[w_col])
+        
+        if target_col not in focus_cols:
+            focus_cols.append(target_col)
+            
+        # Kolom pendukung di blok yang sama (misal R402A jika target R402B1)
+        prefix_cand = re.sub(r'[0-9]+$', '', target_col.lower())
+        if len(prefix_cand) >= 4:
+            for k, orig in existing_cols.items():
+                if k.startswith(prefix_cand) and orig not in focus_cols and len(focus_cols) < 8:
+                    focus_cols.append(orig)
+
+        return {
+            "is_aggregate": True,
+            "query": search_str,
+            "target_col": target_col,
+            "target_label": target_label,
+            "clean_target_label": clean_target_label,
+            "dimension_col": dim_col,
+            "dimension_label": dim_label,
+            "agg_type": agg_fn,
+            "agg_title": agg_title,
+            "grand_total": grand_total,
+            "formatted_total": f"{grand_total:,.0f}".replace(",", "."),
+            "total_entities": len(breakdown),
+            "total_desa": total_desa_all,
+            "desa_with_data": total_desa_aktif,
+            "top_1": top_1,
+            "bottom_1": bot_1,
+            "average": avg_val,
+            "formatted_average": f"{avg_val:,.1f}".replace(",", "."),
+            "breakdown": breakdown,
+            "human_narrative": narrative,
+            "focus_columns": focus_cols
+        }
+    except Exception:
+        return None
+
 def build_where_clause(con, table_ref, params):
     try:
         cols_info = con.execute(f"DESCRIBE {table_ref};").fetchall()
@@ -1040,25 +1258,47 @@ def build_where_clause(con, table_ref, params):
             actual_col = existing_cols[search_by]
             where_clauses.append(f'LOWER(CAST("{actual_col}" AS VARCHAR)) LIKE \'%{search_clean}%\'')
         else:
-            # Global 'all' search: first check Smart Semantic NLQ Parser
-            nlq_sql, nlq_tags, nlq_expl, nlq_order = parse_semantic_nlq(search, existing_cols, table_ref)
-            if nlq_tags or nlq_order:
-                if nlq_sql:
-                    where_clauses.append(f'({nlq_sql})')
+            # 1. Cek Kueri Analitik / Agregasi Otomatis (Tanpa LLM)
+            agg_insight = parse_aggregate_insight(search, existing_cols, con, table_ref)
+            if agg_insight:
+                t_col = agg_insight['target_col']
+                try:
+                    num_check = con.execute(f'SELECT COUNT(*) FROM {table_ref} WHERE TRY_CAST("{t_col}" AS DOUBLE) > 0;').fetchone()[0]
+                    if num_check > 0:
+                        where_clauses.append(f'TRY_CAST("{t_col}" AS DOUBLE) > 0')
+                    else:
+                        where_clauses.append(f'("{t_col}" IS NOT NULL AND TRIM(CAST("{t_col}" AS VARCHAR)) != \'\')')
+                except Exception:
+                    where_clauses.append(f'("{t_col}" IS NOT NULL AND TRIM(CAST("{t_col}" AS VARCHAR)) != \'\')')
+
                 nlq_info = {
                     "is_nlq": True,
-                    "tags": nlq_tags,
-                    "explanation": nlq_expl,
-                    "order_by": nlq_order
+                    "is_aggregate": True,
+                    "tags": ["Analisis Agregat", agg_insight["clean_target_label"], agg_insight["dimension_label"]],
+                    "explanation": f"Menampilkan data {agg_insight['clean_target_label']} menurut {agg_insight['dimension_label']}",
+                    "order_by": f'TRY_CAST("{t_col}" AS DOUBLE) DESC NULLS LAST',
+                    "aggregate_insight": agg_insight
                 }
-            elif len(search) == 16 and search.isdigit():
-                where_clauses.append(f'(CAST("{nik_col}" AS VARCHAR) = \'{search}\' OR CAST("{kk_col}" AS VARCHAR) = \'{search}\')')
             else:
-                skip_cols = {'id', 'quality_issues', 'extra_attributes', 'created_at', 'updated_at'}
-                searchable_cols = [col_orig for col_lower, col_orig in existing_cols.items() if col_lower not in skip_cols]
-                if searchable_cols:
-                    or_terms = [f'LOWER(CAST("{c}" AS VARCHAR)) LIKE \'%{search_clean}%\'' for c in searchable_cols]
-                    where_clauses.append('(' + ' OR '.join(or_terms) + ')')
+                # Global 'all' search: first check Smart Semantic NLQ Parser
+                nlq_sql, nlq_tags, nlq_expl, nlq_order = parse_semantic_nlq(search, existing_cols, table_ref)
+                if nlq_tags or nlq_order:
+                    if nlq_sql:
+                        where_clauses.append(f'({nlq_sql})')
+                    nlq_info = {
+                        "is_nlq": True,
+                        "tags": nlq_tags,
+                        "explanation": nlq_expl,
+                        "order_by": nlq_order
+                    }
+                elif len(search) == 16 and search.isdigit():
+                    where_clauses.append(f'(CAST("{nik_col}" AS VARCHAR) = \'{search}\' OR CAST("{kk_col}" AS VARCHAR) = \'{search}\')')
+                else:
+                    skip_cols = {'id', 'quality_issues', 'extra_attributes', 'created_at', 'updated_at'}
+                    searchable_cols = [col_orig for col_lower, col_orig in existing_cols.items() if col_lower not in skip_cols]
+                    if searchable_cols:
+                        or_terms = [f'LOWER(CAST("{c}" AS VARCHAR)) LIKE \'%{search_clean}%\'' for c in searchable_cols]
+                        where_clauses.append('(' + ' OR '.join(or_terms) + ')')
 
     # 1b. Bulk Search (NIK / KK)
     bulk_raw = params.get('bulk_search')
@@ -1388,7 +1628,9 @@ def run_duckdb_query():
             desil_col = existing_cols.get('desil_nasional', existing_cols.get('desil', None))
             num_desil = f'TRY_CAST("{desil_col}" AS INTEGER)' if desil_col else 'id'
 
-            if order_param in ('kk_asc', 'kk', 'per_kk', 'no_kk', 'nomor_kk', 'kk_sama') and kk_col:
+            if nlq_info and nlq_info.get('order_by') and ' ' in str(nlq_info['order_by']):
+                order_clause = f"{nlq_info['order_by']}, id ASC"
+            elif order_param in ('kk_asc', 'kk', 'per_kk', 'no_kk', 'nomor_kk', 'kk_sama') and kk_col:
                 order_clause = f'CAST("{kk_col}" AS VARCHAR) ASC, id ASC'
             elif order_param in ('kk_desc', 'no_kk_desc') and kk_col:
                 order_clause = f'CAST("{kk_col}" AS VARCHAR) DESC, id DESC'
@@ -1480,7 +1722,8 @@ def run_duckdb_query():
                 "stats": stats,
                 "issue_items": issue_items,
                 "db_columns": cols_list,
-                "nlq_info": nlq_info
+                "nlq_info": nlq_info,
+                "aggregate_insight": nlq_info.get("aggregate_insight", None)
             }
 
             print(f"[DUCKDB_PAGE_RESULT] {json.dumps(result)}", flush=True)

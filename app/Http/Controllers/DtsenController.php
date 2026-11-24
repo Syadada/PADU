@@ -268,6 +268,7 @@ class DtsenController extends Controller
         ];
 
         $nlqInfo = $duckPageData['nlq_info'] ?? null;
+        $aggregateInsight = $duckPageData['aggregate_insight'] ?? null;
         $totalSystemRows = (int)($duckPageData['total_system_rows'] ?? 0);
 
         $activeDatasetFile = null;
@@ -740,6 +741,7 @@ class DtsenController extends Controller
             'search',
             'searchBy',
             'nlqInfo',
+            'aggregateInsight',
             'bulkSearch',
             'bulkField',
             'perPage',
