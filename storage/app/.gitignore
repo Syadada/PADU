@@ -1,4 +1,6 @@
 *
 !private/
 !public/
+!bast_metadata/
+!bast_metadata/**
 !.gitignore

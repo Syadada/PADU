@@ -71,8 +71,10 @@ class DtsenImportService
             'kelurahan_desa' => ['kelurahan_desa', 'kelurahan', 'desa', 'kel', 'kd_kel', 'kd_desa'],
             'rt_ktp' => ['rt_ktp', 'rt', 'no_rt'],
             'rw_ktp' => ['rw_ktp', 'rw', 'no_rw'],
-            'alamat_ktp' => ['alamat_ktp', 'alamat', 'alamat_lengkap', 'domisili', 'address', 'alamat_rumah', 'nama_jalan'],
-            'status_pemerintahan_desa' => ['status_pemerintahan_desa', 'status_desa', 'status_kelurahan', 'b1_r105', 'r105'],
+            'alamat_ktp' => ['alamat_ktp', 'alamat_e_ktp', 'alamat_ktpel', 'alamat_identitas'],
+            'alamat' => ['alamat', 'alamat_lengkap', 'alamat_keluarga', 'alamat_rumah', 'nama_jalan', 'domisili', 'address'],
+            'status_daerah' => ['status_daerah', 'status_daerah_pencacahan', 'r105', 'b1_r105'],
+            'status_pemerintahan_desa' => ['status_pemerintahan_desa', 'status_desa', 'status_kelurahan', 'r301', 'b1_r301'],
             'pekerjaan_ktp' => ['pekerjaan_ktp', 'pekerjaan_ktp_elektronik', 'pekerjaan_ktpel'],
             'pendidikan_akhir_ktp' => ['pendidikan_akhir_ktp', 'pendidikan_ktp', 'ijazah_ktp'],
 
@@ -222,10 +224,21 @@ class DtsenImportService
     public static function normalizeHeaderKey(string $header): array
     {
         $hStr = trim((string)$header);
-        $cleaned = strtolower($hStr);
+        $baseStr = explode(',', $hStr)[0]; // Bersihkan akhiran tipe data DBF/ODS seperti ,C,25 atau ,N,1,0
+        $cleaned = strtolower($baseStr);
         $cleaned = str_replace([' ', '-', '.', '/', '\\', '(', ')'], '_', $cleaned);
         $cleanKey = preg_replace('/[^a-z0-9_]/', '', $cleaned);
         $cleanKey = preg_replace('/_+/', '_', trim($cleanKey, '_'));
+
+        // 1. Cek Kamus Resmi PODES 2021 (853 Variabel BPS)
+        $podesLabel = MetadataTranslatorService::getPodesLabel($cleanKey);
+        if ($podesLabel !== null) {
+            return [
+                'key' => $cleanKey,
+                'label' => $podesLabel,
+                'original' => $hStr
+            ];
+        }
 
         $synonymDictionary = self::getSynonymDictionary();
         $canonicalLabels = self::getCanonicalLabels();
@@ -242,7 +255,7 @@ class DtsenImportService
 
         return [
             'key' => $cleanKey,
-            'label' => ucwords(str_replace('_', ' ', $hStr)),
+            'label' => ucwords(str_replace(['_', '-'], ' ', $baseStr)),
             'original' => $hStr
         ];
     }

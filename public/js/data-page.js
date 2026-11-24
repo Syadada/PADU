@@ -408,11 +408,61 @@ function dtsenDataPageApp(allColKeys = []) {
         showColumnModal: false,
         showRawExtraCols: false,
         visibleCols: validSavedCols.length > 0 ? validSavedCols : [...allColKeys],
-        showTranslatedLabels: true,
 
-        toggleTranslatorMode() {
-            this.showTranslatedLabels = !this.showTranslatedLabels;
-            window.dispatchEvent(new CustomEvent('padu-translator-changed', { detail: this.showTranslatedLabels }));
+        // Atur Kolom Modal - Dropdown, Accordion & Filter State
+        colModalSearch: '',
+        selectedBlockFilter: 'all',
+        allBlocksExpanded: false,
+        expandedBlocks: {},
+
+        isBlockExpanded(blockKey, defaultState = false) {
+            if (this.colModalSearch && this.colModalSearch.trim().length > 0) return true;
+            if (this.selectedBlockFilter !== 'all') {
+                return this.selectedBlockFilter === blockKey;
+            }
+            if (this.expandedBlocks[blockKey] !== undefined) {
+                return !!this.expandedBlocks[blockKey];
+            }
+            return this.allBlocksExpanded || defaultState;
+        },
+
+        toggleBlock(blockKey, defaultState = false) {
+            const current = this.isBlockExpanded(blockKey, defaultState);
+            this.expandedBlocks[blockKey] = !current;
+        },
+
+        expandAllBlocks() {
+            this.allBlocksExpanded = true;
+            this.expandedBlocks = {};
+        },
+
+        collapseAllBlocks() {
+            this.allBlocksExpanded = false;
+            this.expandedBlocks = {};
+            this.selectedBlockFilter = 'all';
+        },
+
+        visibleCountInBlock(colKeys = []) {
+            if (!Array.isArray(colKeys) || colKeys.length === 0) return 0;
+            return colKeys.filter(k => this.isColVisible(k)).length;
+        },
+
+        selectAllInBlock(colKeys = []) {
+            if (!Array.isArray(colKeys) || colKeys.length === 0) return;
+            const set = new Set(this.visibleCols);
+            colKeys.forEach(k => set.add(k));
+            this.visibleCols = Array.from(set);
+            try { localStorage.setItem('padu_visible_columns', JSON.stringify(this.visibleCols)); } catch(e){}
+        },
+
+        deselectAllInBlock(colKeys = []) {
+            if (!Array.isArray(colKeys) || colKeys.length === 0) return;
+            const toRemove = new Set(colKeys);
+            const remaining = this.visibleCols.filter(k => !toRemove.has(k));
+            if (remaining.length > 0) {
+                this.visibleCols = remaining;
+            }
+            try { localStorage.setItem('padu_visible_columns', JSON.stringify(this.visibleCols)); } catch(e){}
         },
 
         openClearModal() {
@@ -421,9 +471,6 @@ function dtsenDataPageApp(allColKeys = []) {
         },
 
         init() {
-            window.addEventListener('padu-translator-changed', (e) => {
-                this.showTranslatedLabels = !!e.detail;
-            });
         },
 
         // State Bulk Search by NIK / KK Modal

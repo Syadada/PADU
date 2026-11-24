@@ -106,19 +106,64 @@ class DatasetIntegrityService
                 }
             }
         } elseif (in_array($ext, ['xlsx', 'xls'])) {
-            // Gunakan pembacaan ringan PHP/Python untuk XLSX
+            // Gunakan pembacaan langsung XML ZipArchive (Ultra cepat & kebal dari bug is_readable Windows)
             try {
-                $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReaderForFile($filePath);
-                $reader->setReadDataOnly(true);
-                $spreadsheet = $reader->load($filePath);
-                $sheet = $spreadsheet->getActiveSheet();
-                foreach ($sheet->getRowIterator(1, 1) as $row) {
-                    $cellIterator = $row->getCellIterator();
-                    $cellIterator->setIterateOnlyExistingCells(false);
-                    foreach ($cellIterator as $cell) {
-                        $val = trim((string)$cell->getValue());
-                        if ($val !== '') {
-                            $headers[] = $val;
+                if ($ext === 'xlsx' && class_exists('ZipArchive')) {
+                    $zip = new \ZipArchive();
+                    if ($zip->open($filePath) === true) {
+                        $sheetXml = $zip->getFromName('xl/worksheets/sheet1.xml');
+                        $stringsXml = $zip->getFromName('xl/sharedStrings.xml');
+                        $zip->close();
+
+                        $strings = [];
+                        if ($stringsXml) {
+                            $sXml = @simplexml_load_string($stringsXml);
+                            if ($sXml && isset($sXml->si)) {
+                                foreach ($sXml->si as $si) {
+                                    $tVal = '';
+                                    if (isset($si->t)) {
+                                        $tVal = (string)$si->t;
+                                    } elseif (isset($si->r)) {
+                                        foreach ($si->r as $r) {
+                                            $tVal .= (string)$r->t;
+                                        }
+                                    }
+                                    $strings[] = $tVal;
+                                }
+                            }
+                        }
+
+                        if ($sheetXml) {
+                            $shXml = @simplexml_load_string($sheetXml);
+                            if ($shXml && isset($shXml->sheetData->row[0])) {
+                                $firstRow = $shXml->sheetData->row[0];
+                                foreach ($firstRow->c as $c) {
+                                    $t = (string)$c['t'];
+                                    $val = (string)$c->v;
+                                    $hText = ($t === 's' && isset($strings[(int)$val])) ? $strings[(int)$val] : $val;
+                                    $hText = trim($hText, "\xEF\xBB\xBF \t\n\r\0\x0B\"");
+                                    if ($hText !== '') {
+                                        $headers[] = $hText;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                if (empty($headers)) {
+                    $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReaderForFile($filePath);
+                    $reader->setReadDataOnly(true);
+                    $spreadsheet = $reader->load($filePath);
+                    $sheet = $spreadsheet->getActiveSheet();
+                    foreach ($sheet->getRowIterator(1, 1) as $row) {
+                        $cellIterator = $row->getCellIterator();
+                        $cellIterator->setIterateOnlyExistingCells(false);
+                        foreach ($cellIterator as $cell) {
+                            $val = trim((string)$cell->getValue());
+                            if ($val !== '') {
+                                $headers[] = $val;
+                            }
                         }
                     }
                 }
@@ -173,11 +218,15 @@ class DatasetIntegrityService
         $headers = self::sniffFileHeaders($filePath);
         $matchedIndividu = 0;
         $matchedKeluarga = 0;
+        $matchedPodes = 0;
         $matchedIndividuList = [];
         $matchedKeluargaList = [];
 
         foreach ($headers as $h) {
             $norm = DtsenImportService::normalizeHeaderKey($h)['key'];
+            if (MetadataTranslatorService::getPodesLabel($norm) !== null || preg_match('/^r[0-9]+/i', $norm)) {
+                $matchedPodes++;
+            }
             if (isset($individuDict[$norm])) {
                 $matchedIndividu++;
                 $matchedIndividuList[$norm] = $individuDict[$norm];
@@ -193,7 +242,12 @@ class DatasetIntegrityService
         $scopeBadge = 'bg-slate-100 text-slate-700 border-slate-300';
         $scopeIcon = 'fi fi-rr-document';
 
-        if ($matchedIndividu > 0 && $matchedKeluarga > 0) {
+        if ($matchedPodes >= 5) {
+            $scope = 'podes';
+            $scopeLabel = 'Set Potensi Desa (PODES BPS)';
+            $scopeBadge = 'bg-teal-50 text-teal-700 border-teal-200';
+            $scopeIcon = 'fi fi-rr-building';
+        } elseif ($matchedIndividu > 0 && $matchedKeluarga > 0) {
             $scope = 'gabungan';
             $scopeLabel = 'Set Terpadu (Keduanya)';
             $scopeBadge = 'bg-indigo-50 text-indigo-700 border-indigo-200';

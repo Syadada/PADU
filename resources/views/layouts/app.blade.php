@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@flaticon/flaticon-uicons@3.3.1/css/all/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/tailwind.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}?v={{ @filemtime(public_path('css/app.css')) ?: '2.0' }}">
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
     <script src="{{ asset('js/app.js') }}?v={{ @filemtime(public_path('js/app.js')) ?: '2.5' }}"></script>
     <script defer src="{{ asset('js/alpine.min.js') }}"></script>
 </head>
@@ -39,8 +42,9 @@
         <div class="p-4 border-b border-slate-200 bg-white shrink-0">
             <div class="flex items-center justify-between gap-2">
                 <a href="{{ route('dtsen.data') }}" class="flex items-center gap-2.5 group min-w-0">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 flex items-center justify-center text-white font-black text-lg shadow-md shadow-blue-600/30 group-hover:scale-105 transition-all shrink-0">
-                        P
+                    <div class="rounded-xl flex items-center justify-center text-white font-black text-lg shadow-md group-hover:scale-105 transition-all shrink-0"
+                         style="width: 40px; height: 40px; min-width: 40px; min-height: 40px; background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);">
+                        <span class="text-white font-black text-lg leading-none">P</span>
                     </div>
                     <div class="min-w-0">
                         <div class="flex items-center gap-1.5">
@@ -269,6 +273,18 @@
                                 <i class="fi fi-rr-folder text-sm"></i> <span>Berkas</span>
                             @elseif(request()->routeIs('dtsen.activity-logs'))
                                 <i class="fi fi-rr-list-check text-sm"></i> <span>Log</span>
+                            @elseif(request()->routeIs('profile'))
+                                <i class="fi fi-rr-user text-sm"></i> <span>Profil & Keamanan</span>
+                            @elseif(request()->routeIs('admin.users'))
+                                <i class="fi fi-rr-users text-sm"></i> <span>Direktori Staf</span>
+                            @elseif(request()->routeIs('admin.two-factor*'))
+                                <i class="fi fi-rr-smartphone text-sm"></i> <span>Keamanan 2FA</span>
+                            @elseif(request()->routeIs('admin.audit-logs'))
+                                <i class="fi fi-rr-document-signed text-sm"></i> <span>Jejak Audit</span>
+                            @elseif(request()->routeIs('admin.backup'))
+                                <i class="fi fi-rr-compress text-sm"></i> <span>Pencadangan Sistem</span>
+                            @elseif(request()->routeIs('admin.metadata'))
+                                <i class="fi fi-rr-table text-sm"></i> <span>Metadata BAST</span>
                             @else
                                 <i class="fi fi-rr-apps text-sm"></i> <span>Modul</span>
                             @endif

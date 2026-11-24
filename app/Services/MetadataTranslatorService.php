@@ -8,6 +8,43 @@ class MetadataTranslatorService
 {
     private static ?array $cachedDictionary = null;
     private static ?array $aliasMap = null;
+    private static ?array $cachedPodesDictionary = null;
+
+    /**
+     * Dapatkan kamus metadata PODES 2021 resmi (853 variabel BPS)
+     */
+    public static function getPodesDictionary(): array
+    {
+        if (self::$cachedPodesDictionary !== null) {
+            return self::$cachedPodesDictionary;
+        }
+
+        $podesFile = storage_path('app/bast_metadata/podes_2021_dictionary.json');
+        if (file_exists($podesFile)) {
+            try {
+                $decoded = json_decode(file_get_contents($podesFile), true);
+                if (is_array($decoded)) {
+                    self::$cachedPodesDictionary = $decoded;
+                    return self::$cachedPodesDictionary;
+                }
+            } catch (\Throwable $e) {
+                Log::warning('[PODES] Gagal memuat podes_2021_dictionary.json: ' . $e->getMessage());
+            }
+        }
+
+        self::$cachedPodesDictionary = ['variables' => [], 'flat_labels' => []];
+        return self::$cachedPodesDictionary;
+    }
+
+    /**
+     * Dapatkan label manusiawi variabel PODES 2021 berdasarkan kode instrumen (misal: r803d -> "Jumlah Gereja Katolik")
+     */
+    public static function getPodesLabel(string $code): ?string
+    {
+        $clean = strtolower(trim(explode(',', $code)[0]));
+        $dict = self::getPodesDictionary();
+        return $dict['flat_labels'][$clean] ?? ($dict['variables'][$clean]['label'] ?? null);
+    }
 
     /**
      * Dapatkan kamus terjemahan kode lengkap dari active_rules.json (BAST Metadata DTSEN / BPS)
@@ -137,6 +174,18 @@ class MetadataTranslatorService
                 '2' => 'Bukan Penerima',
             ],
             'status_pemerintahan_desa' => [
+                '1' => 'Desa',
+                '2' => 'Kelurahan',
+                '01' => 'Desa',
+                '02' => 'Kelurahan',
+            ],
+            'r105' => [
+                '1' => 'Perkotaan',
+                '2' => 'Perdesaan',
+                '01' => 'Perkotaan',
+                '02' => 'Perdesaan',
+            ],
+            'r301' => [
                 '1' => 'Desa',
                 '2' => 'Kelurahan',
                 '01' => 'Desa',
@@ -420,7 +469,27 @@ class MetadataTranslatorService
             }
         }
 
-        // 3. Khusus Kolom Survei PODES / BPS (format r[nomor_kuesioner], misal r801_1, r802, r804a1, r1001a, r1201a, dll.)
+        // 3. Khusus Kolom Survei PODES / BPS (format r[nomor_kuesioner], misal r105, r301, r801_1, r803d, r1001a, dll.)
+        if (in_array($lowerCol, ['r105', 'status_daerah_saat_pencacahan', 'status_daerah'])) {
+            if ($valStr === '1' || $valStr === '01') return $includeCode ? 'Perkotaan (1)' : 'Perkotaan';
+            if ($valStr === '2' || $valStr === '02') return $includeCode ? 'Perdesaan (2)' : 'Perdesaan';
+        }
+
+        if (in_array($lowerCol, ['r301', 'status_pemerintahan', 'status_pemerintahan_desa'])) {
+            if ($valStr === '1' || $valStr === '01') return $includeCode ? 'Desa (1)' : 'Desa';
+            if ($valStr === '2' || $valStr === '02') return $includeCode ? 'Kelurahan (2)' : 'Kelurahan';
+        }
+
+        if (str_starts_with($lowerCol, 'r801')) {
+            if ($valStr === '1' || $valStr === '01') return $includeCode ? 'Ada (1)' : 'Ada';
+            if ($valStr === '2' || $valStr === '02') return $includeCode ? 'Tidak Ada (2)' : 'Tidak Ada';
+        }
+
+        if (str_starts_with($lowerCol, 'r803') && is_numeric($valStr)) {
+            $countUnit = (int)$valStr;
+            return $includeCode ? "{$countUnit} Unit ({$valStr})" : "{$countUnit} Unit";
+        }
+
         if (preg_match('/^r[0-9]+[a-z0-9_]*$/i', $lowerCol)) {
             // Standar binary coding BPS kuesioner desa
             if ($valStr === '1') {

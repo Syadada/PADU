@@ -348,8 +348,8 @@
                     <!-- Box Pengguna Terdeteksi -->
                     <div class="user-detect-box">
                         <div class="user-detect-info">
-                            <div class="user-avatar avatar-superadmin">
-                                <span>Admin</span>
+                            <div class="user-avatar shrink-0" :class="userInfo && userInfo.role === 'superadmin' ? 'avatar-superadmin' : 'avatar-operator'">
+                                <span x-text="userInfo && userInfo.name ? userInfo.name.trim().charAt(0).toUpperCase() : 'P'">P</span>
                             </div>
                             <div>
                                 <div class="user-name" x-text="userInfo ? userInfo.name : 'Administrator'"></div>

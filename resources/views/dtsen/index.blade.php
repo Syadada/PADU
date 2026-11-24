@@ -1379,6 +1379,7 @@
 
     <!-- MODAL POPUP FILTER PIVOT EXCEL (Terpusat, Anti-Offscreen, & Pinned Footer) -->
     <div x-show="showFilterModal" 
+         x-cloak
          x-transition:enter="transition ease-out duration-150"
          x-transition:enter-start="opacity-0"
          x-transition:enter-end="opacity-100"
@@ -1386,9 +1387,8 @@
          x-transition:leave-start="opacity-100"
          x-transition:leave-end="opacity-0"
          @keydown.escape.window="closeColumnFilter()"
-         class="padu-filter-overlay"
-         style="position: fixed; inset: 0; z-index: 99999; display: flex; align-items: center; justify-content: center; background-color: rgba(15, 23, 42, 0.65); padding: 1rem; backdrop-filter: blur(4px);" 
-         x-cloak>
+         class="padu-filter-overlay fixed inset-0 z-[99999] flex items-center justify-center bg-slate-900/65 p-4 backdrop-blur-xs"
+         style="display: none;">
         
         <!-- Backdrop Click to Close -->
         <div style="position: absolute; inset: 0;" @click="closeColumnFilter()"></div>

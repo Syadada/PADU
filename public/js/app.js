@@ -18,7 +18,7 @@ function paduLayoutApp() {
     try {
         localStorage.removeItem('padu_show_translated_labels');
         localStorage.removeItem('padu_show_translated_labels_v2');
-    } catch (e) {}
+    } catch (e) { }
 
     let initialShowTranslated = true;
     try {
@@ -26,21 +26,21 @@ function paduLayoutApp() {
         if (stored !== null) {
             initialShowTranslated = (stored === 'true');
         }
-    } catch (e) {}
+    } catch (e) { }
 
     return {
-        sidebarOpen: window.innerWidth >= 768 
-            ? (localStorage.getItem('padu_sidebar_open') !== 'false') 
+        sidebarOpen: window.innerWidth >= 768
+            ? (localStorage.getItem('padu_sidebar_open') !== 'false')
             : false,
         isMobile: window.innerWidth < 768,
         isMasked: localStorage.getItem('padu_is_masked') !== 'false',
         showTranslatedLabels: initialShowTranslated,
-        
+
         toggleTranslatorMode() {
             this.showTranslatedLabels = !this.showTranslatedLabels;
             try {
                 localStorage.setItem('padu_show_translated_labels_v3', this.showTranslatedLabels ? 'true' : 'false');
-            } catch (e) {}
+            } catch (e) { }
             window.dispatchEvent(new CustomEvent('padu-translator-changed', { detail: this.showTranslatedLabels }));
         },
 
@@ -50,7 +50,7 @@ function paduLayoutApp() {
         showLogModal: false,
         showImportProgressModal: false,
         previewData: null,
-        
+
         // Console Logs State
         logList: [],
         logFilter: 'ALL',
@@ -159,7 +159,7 @@ function paduLayoutApp() {
                         this.logList = data.logs;
                     }
                 }
-            } catch (e) {}
+            } catch (e) { }
         },
 
         async clearSystemLogs() {
@@ -175,7 +175,7 @@ function paduLayoutApp() {
                 if (res.ok) {
                     this.fetchLogs();
                 }
-            } catch (e) {}
+            } catch (e) { }
         },
 
         downloadSystemLogsTxt() {
@@ -338,7 +338,7 @@ function paduLayoutApp() {
                                 }
                             }
                         })
-                        .catch(() => {})
+                        .catch(() => { })
                         .finally(() => { isPollingActive = false; });
                 }
             }, 400);
@@ -398,21 +398,71 @@ function dtsenDataPageApp(allColKeys = []) {
     let savedCols = null;
     try {
         savedCols = JSON.parse(localStorage.getItem('padu_visible_columns'));
-    } catch (e) {}
+    } catch (e) { }
 
-    const validSavedCols = (savedCols && Array.isArray(savedCols)) 
-        ? savedCols.filter(c => allColKeys.includes(c)) 
+    const validSavedCols = (savedCols && Array.isArray(savedCols))
+        ? savedCols.filter(c => allColKeys.includes(c))
         : [];
 
     return {
         showColumnModal: false,
         showRawExtraCols: false,
         visibleCols: validSavedCols.length > 0 ? validSavedCols : [...allColKeys],
-        showTranslatedLabels: true,
 
-        toggleTranslatorMode() {
-            this.showTranslatedLabels = !this.showTranslatedLabels;
-            window.dispatchEvent(new CustomEvent('padu-translator-changed', { detail: this.showTranslatedLabels }));
+        // Atur Kolom Modal - Dropdown, Accordion & Filter State
+        colModalSearch: '',
+        selectedBlockFilter: 'all',
+        allBlocksExpanded: false,
+        expandedBlocks: {},
+
+        isBlockExpanded(blockKey, defaultState = false) {
+            if (this.colModalSearch && this.colModalSearch.trim().length > 0) return true;
+            if (this.selectedBlockFilter !== 'all') {
+                return this.selectedBlockFilter === blockKey;
+            }
+            if (this.expandedBlocks[blockKey] !== undefined) {
+                return !!this.expandedBlocks[blockKey];
+            }
+            return this.allBlocksExpanded || defaultState;
+        },
+
+        toggleBlock(blockKey, defaultState = false) {
+            const current = this.isBlockExpanded(blockKey, defaultState);
+            this.expandedBlocks[blockKey] = !current;
+        },
+
+        expandAllBlocks() {
+            this.allBlocksExpanded = true;
+            this.expandedBlocks = {};
+        },
+
+        collapseAllBlocks() {
+            this.allBlocksExpanded = false;
+            this.expandedBlocks = {};
+            this.selectedBlockFilter = 'all';
+        },
+
+        visibleCountInBlock(colKeys = []) {
+            if (!Array.isArray(colKeys) || colKeys.length === 0) return 0;
+            return colKeys.filter(k => this.isColVisible(k)).length;
+        },
+
+        selectAllInBlock(colKeys = []) {
+            if (!Array.isArray(colKeys) || colKeys.length === 0) return;
+            const set = new Set(this.visibleCols);
+            colKeys.forEach(k => set.add(k));
+            this.visibleCols = Array.from(set);
+            try { localStorage.setItem('padu_visible_columns', JSON.stringify(this.visibleCols)); } catch (e) { }
+        },
+
+        deselectAllInBlock(colKeys = []) {
+            if (!Array.isArray(colKeys) || colKeys.length === 0) return;
+            const toRemove = new Set(colKeys);
+            const remaining = this.visibleCols.filter(k => !toRemove.has(k));
+            if (remaining.length > 0) {
+                this.visibleCols = remaining;
+            }
+            try { localStorage.setItem('padu_visible_columns', JSON.stringify(this.visibleCols)); } catch (e) { }
         },
 
         openClearModal() {
@@ -421,9 +471,6 @@ function dtsenDataPageApp(allColKeys = []) {
         },
 
         init() {
-            window.addEventListener('padu-translator-changed', (e) => {
-                this.showTranslatedLabels = !!e.detail;
-            });
         },
 
         // State Bulk Search by NIK / KK Modal
@@ -586,7 +633,7 @@ function dtsenDataPageApp(allColKeys = []) {
             if (!this.activeFilterCol) return;
             const url = new URL(window.location.href);
             url.searchParams.delete(this.activeFilterCol);
-            
+
             const synonyms = {
                 'jenis_kelamin': ['gender', 'jk', 'sex'],
                 'usia': ['umur', 'age'],
@@ -630,7 +677,7 @@ function scrollToTableTop() {
     }
 }
 
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function (e) {
     const link = e.target.closest('a[href*="#tabel-data"]');
     if (link && document.getElementById('tabel-data')) {
         const el = document.getElementById('tabel-data');
@@ -640,7 +687,7 @@ document.addEventListener('click', function(e) {
     }
 });
 
-document.addEventListener('submit', function(e) {
+document.addEventListener('submit', function (e) {
     const form = e.target.closest('form[action*="#tabel-data"]');
     if (form && document.getElementById('tabel-data')) {
         const el = document.getElementById('tabel-data');
@@ -650,7 +697,7 @@ document.addEventListener('submit', function(e) {
     }
 });
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     if (window.location.hash.includes('tabel-data')) {
         const savedPos = sessionStorage.getItem('padu_table_top_pos');
         if (savedPos !== null) {
@@ -664,13 +711,13 @@ document.addEventListener('DOMContentLoaded', function() {
 // =========================================================================
 // 5. GLOBAL SESSION TIMEOUT & REQUEST INTERCEPTORS
 // =========================================================================
-(function() {
+(function () {
     const loginUrl = "/login?timeout=1";
 
     // 1. Intersep Fetch API Global (Tangani HTTP 401 Unauthorized / HTTP 419 Page Expired)
     if (window.fetch) {
         const rawFetch = window.fetch;
-        window.fetch = async function(...args) {
+        window.fetch = async function (...args) {
             try {
                 const response = await rawFetch.apply(this, args);
                 if (response.status === 401 || response.status === 419) {
@@ -687,8 +734,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // 2. Intersep XMLHttpRequest Global
     if (window.XMLHttpRequest) {
         const rawOpen = XMLHttpRequest.prototype.open;
-        XMLHttpRequest.prototype.open = function() {
-            this.addEventListener('load', function() {
+        XMLHttpRequest.prototype.open = function () {
+            this.addEventListener('load', function () {
                 if (this.status === 401 || this.status === 419) {
                     window.location.href = loginUrl;
                 }

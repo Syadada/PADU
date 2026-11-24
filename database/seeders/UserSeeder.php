@@ -23,7 +23,7 @@ class UserSeeder extends Seeder
                 'email' => 'padu@local.id',
                 'password' => Hash::make('PaduKalkulator1#'),
                 'role' => 'superadmin',
-                'first_login' => false,
+                'first_login' => true,
                 'failed_login_attempts' => 0,
                 'two_factor_enabled' => false,
             ]);

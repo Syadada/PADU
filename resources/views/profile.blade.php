@@ -60,7 +60,8 @@
             <!-- Kartu Identitas Profil -->
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-5">
                 <div class="flex items-center gap-4">
-                    <div class="w-16 h-16 rounded-2xl flex items-center justify-center font-black text-2xl shadow-inner {{ $user->isSuperAdmin() ? 'bg-amber-100 text-amber-800 border-2 border-amber-300' : 'bg-blue-100 text-blue-800 border-2 border-blue-300' }}">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center font-black text-2xl shadow-inner shrink-0 {{ $user->isSuperAdmin() ? 'bg-amber-100 text-amber-800 border-2 border-amber-300' : 'bg-blue-100 text-blue-800 border-2 border-blue-300' }}"
+                         style="width: 56px; height: 56px; min-width: 56px; min-height: 56px; flex-shrink: 0;">
                         {{ strtoupper(substr($user->name, 0, 1)) }}
                     </div>
                     <div>
@@ -105,63 +106,73 @@
             </div>
 
             <!-- Kartu Jalan Pintas / Quick Links (Akses Terhubung) -->
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-3">
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-2.5">
                 <h3 class="text-xs font-black uppercase tracking-wider text-slate-400">Jalan Pintas Administrasi</h3>
                 
                 @if(auth()->user()->isSuperAdmin())
-                    <a href="{{ route('admin.users') }}" class="flex items-center justify-between p-3 rounded-xl hover:bg-purple-50 hover:text-purple-900 border border-slate-100 transition-colors group">
-                        <div class="flex items-center gap-2.5">
-                            <span class="text-lg"><i class="fi fi-rr-users"></i></span>
+                    <a href="{{ route('admin.users') }}" class="flex items-center justify-between p-2.5 rounded-xl hover:bg-purple-50 hover:border-purple-200 border border-slate-100 transition-all group">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-sm shrink-0 group-hover:bg-purple-600 group-hover:text-white transition-all shadow-2xs" style="width: 36px; height: 36px; min-width: 36px;">
+                                <i class="fi fi-rr-users"></i>
+                            </div>
                             <div>
                                 <span class="block text-xs font-bold text-slate-800 group-hover:text-purple-900">Kelola Direktori Staf</span>
                                 <span class="text-[10px] text-slate-500">Tambah akun, edit, reset kata sandi staf</span>
                             </div>
                         </div>
-                        <span class="text-slate-400 group-hover:text-purple-600 font-bold">&rarr;</span>
+                        <span class="text-slate-400 group-hover:text-purple-600 font-bold transition-transform group-hover:translate-x-0.5">&rarr;</span>
                     </a>
 
-                    <a href="{{ route('admin.two-factor') }}" class="flex items-center justify-between p-3 rounded-xl hover:bg-blue-50 hover:text-blue-900 border border-slate-100 transition-colors group">
-                        <div class="flex items-center gap-2.5">
-                            <span class="text-lg"><i class="fi fi-rr-smartphone"></i></span>
+                    <a href="{{ route('admin.two-factor') }}" class="flex items-center justify-between p-2.5 rounded-xl hover:bg-blue-50 hover:border-blue-200 border border-slate-100 transition-all group">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center text-sm shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-2xs" style="width: 36px; height: 36px; min-width: 36px;">
+                                <i class="fi fi-rr-smartphone"></i>
+                            </div>
                             <div>
                                 <span class="block text-xs font-bold text-slate-800 group-hover:text-blue-900">Pengaturan 2FA TOTP</span>
                                 <span class="text-[10px] text-slate-500">Aplikasi Authenticator ponsel pintar</span>
                             </div>
                         </div>
-                        <span class="text-slate-400 group-hover:text-blue-600 font-bold">&rarr;</span>
+                        <span class="text-slate-400 group-hover:text-blue-600 font-bold transition-transform group-hover:translate-x-0.5">&rarr;</span>
                     </a>
 
-                    <a href="{{ route('admin.audit-logs') }}" class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-100 hover:text-slate-900 border border-slate-100 transition-colors group">
-                        <div class="flex items-center gap-2.5">
-                            <span class="text-lg"><i class="fi fi-rr-document-signed"></i></span>
+                    <a href="{{ route('admin.audit-logs') }}" class="flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-100 hover:border-slate-300 border border-slate-100 transition-all group">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center text-sm shrink-0 group-hover:bg-slate-800 group-hover:text-white transition-all shadow-2xs" style="width: 36px; height: 36px; min-width: 36px;">
+                                <i class="fi fi-rr-document-signed"></i>
+                            </div>
                             <div>
                                 <span class="block text-xs font-bold text-slate-800 group-hover:text-slate-900">Jejak Audit Forensik</span>
                                 <span class="text-[10px] text-slate-500">Pencatatan jejak audit aktivitas</span>
                             </div>
                         </div>
-                        <span class="text-slate-400 group-hover:text-slate-900 font-bold">&rarr;</span>
+                        <span class="text-slate-400 group-hover:text-slate-900 font-bold transition-transform group-hover:translate-x-0.5">&rarr;</span>
                     </a>
 
-                    <a href="{{ route('admin.backup') }}" class="flex items-center justify-between p-3 rounded-xl hover:bg-emerald-50 hover:text-emerald-900 border border-slate-100 transition-colors group">
-                        <div class="flex items-center gap-2.5">
-                            <span class="text-lg"><i class="fi fi-rr-compress"></i></span>
+                    <a href="{{ route('admin.backup') }}" class="flex items-center justify-between p-2.5 rounded-xl hover:bg-emerald-50 hover:border-emerald-200 border border-slate-100 transition-all group">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-all shadow-2xs" style="width: 36px; height: 36px; min-width: 36px;">
+                                <i class="fi fi-rr-compress"></i>
+                            </div>
                             <div>
                                 <span class="block text-xs font-bold text-slate-800 group-hover:text-emerald-900">Pencadangan Sistem AES-256</span>
                                 <span class="text-[10px] text-slate-500">Arsip Cadangan & Pemulihan Bencana DRP</span>
                             </div>
                         </div>
-                        <span class="text-slate-400 group-hover:text-emerald-600 font-bold">&rarr;</span>
+                        <span class="text-slate-400 group-hover:text-emerald-600 font-bold transition-transform group-hover:translate-x-0.5">&rarr;</span>
                     </a>
 
-                    <a href="{{ route('admin.metadata') }}" class="flex items-center justify-between p-3 rounded-xl hover:bg-amber-50 hover:text-amber-900 border border-slate-100 transition-colors group">
-                        <div class="flex items-center gap-2.5">
-                            <span class="text-lg"><i class="fi fi-rr-table"></i></span>
+                    <a href="{{ route('admin.metadata') }}" class="flex items-center justify-between p-2.5 rounded-xl hover:bg-amber-50 hover:border-amber-200 border border-slate-100 transition-all group">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-sm shrink-0 group-hover:bg-amber-600 group-hover:text-white transition-all shadow-2xs" style="width: 36px; height: 36px; min-width: 36px;">
+                                <i class="fi fi-rr-table"></i>
+                            </div>
                             <div>
                                 <span class="block text-xs font-bold text-slate-800 group-hover:text-amber-900">Metadata & Quality Check (BAST)</span>
                                 <span class="text-[10px] text-slate-500">Kamus Aturan BAST & Training Versi</span>
                             </div>
                         </div>
-                        <span class="text-slate-400 group-hover:text-amber-600 font-bold">&rarr;</span>
+                        <span class="text-slate-400 group-hover:text-amber-600 font-bold transition-transform group-hover:translate-x-0.5">&rarr;</span>
                     </a>
                 @else
                     <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-[11px] text-slate-600">

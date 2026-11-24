@@ -1,0 +1,2898 @@
+{
+  "metadata_info": {
+    "title": "Surat DTSEN Versi 3/2026 BPS-Bappenas [2026.07.10] B-531 01000 ES 2026.pdf",
+    "version": "3/2026",
+    "source": "BPS-Bappenas"
+  },
+  "datasets": {
+    "keluarga": {
+      "title": "Set Data Keluarga",
+      "sheet": "Set Data Keluarga",
+      "variables": [
+        {
+          "no": 1,
+          "key": "kode_provinsi",
+          "label": "Kode Provinsi",
+          "definition": "Kode provinsi pada DTSEN",
+          "datatype": "varchar(2)",
+          "keterangan": "2 digit kode provinsi DTSEN",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 2,
+          "key": "provinsi",
+          "label": "Provinsi",
+          "definition": "Nama provinsi",
+          "datatype": "varchar(100)",
+          "keterangan": "",
+          "rules": {
+            "required": false,
+            "max_length": 100,
+            "datatype": "varchar(100)",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 3,
+          "key": "kode_kabupaten_kota",
+          "label": "Kode Kabupaten/Kota",
+          "definition": "Kode kabupaten/kota pada DTSEN",
+          "datatype": "varchar(4)",
+          "keterangan": "4 digit kode kabupaten/kota DTSEN",
+          "rules": {
+            "required": false,
+            "max_length": 4,
+            "datatype": "varchar(4)",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 4,
+          "key": "kabupaten_kota",
+          "label": "Kabupaten/Kota",
+          "definition": "Nama kabupaten/kota",
+          "datatype": "varchar(100)",
+          "keterangan": "",
+          "rules": {
+            "required": false,
+            "max_length": 100,
+            "datatype": "varchar(100)",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 5,
+          "key": "kode_kecamatan",
+          "label": "Kode Kecamatan",
+          "definition": "Kode kecamatan pada DTSEN",
+          "datatype": "varchar(7)",
+          "keterangan": "7 digit kode kecamatan DTSEN",
+          "rules": {
+            "required": false,
+            "max_length": 7,
+            "datatype": "varchar(7)",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 6,
+          "key": "kecamatan",
+          "label": "Kecamatan",
+          "definition": "Nama kecamatan",
+          "datatype": "varchar(100)",
+          "keterangan": "",
+          "rules": {
+            "required": false,
+            "max_length": 100,
+            "datatype": "varchar(100)",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 7,
+          "key": "kode_kelurahan_desa",
+          "label": "Kode Kelurahan/Desa",
+          "definition": "Kode kelurahan/desa pada DTSEN",
+          "datatype": "varchar(10)",
+          "keterangan": "10 digit kode kelurahan/desa DTSEN",
+          "rules": {
+            "required": false,
+            "max_length": 10,
+            "datatype": "varchar(10)",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 8,
+          "key": "kelurahan_desa",
+          "label": "Kelurahan/Desa",
+          "definition": "Nama kelurahan/desa",
+          "datatype": "varchar(100)",
+          "keterangan": "",
+          "rules": {
+            "required": false,
+            "max_length": 100,
+            "datatype": "varchar(100)",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 9,
+          "key": "alamat",
+          "label": "Alamat",
+          "definition": "Alamat domisili",
+          "datatype": "varchar(500)",
+          "keterangan": "alamat lengkap domisili keluarga",
+          "rules": {
+            "required": false,
+            "max_length": 500,
+            "datatype": "varchar(500)",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 10,
+          "key": "nomor_kartu_keluarga",
+          "label": "Nomor Kartu Keluarga",
+          "definition": "Nomor kartu keluarga yang tercatat di Dukcapil",
+          "datatype": "varchar(16)",
+          "keterangan": "16 digit nomor kartu keluarga yang tercatat di Dukcapil",
+          "rules": {
+            "required": true,
+            "max_length": 16,
+            "datatype": "varchar(16)",
+            "allowed_codes": [],
+            "exact_length": 16,
+            "regex": "^[0-9]{16}$",
+            "error_type": "Critical"
+          }
+        },
+        {
+          "no": 11,
+          "key": "jumlah_anggota_keluarga",
+          "label": "Jumlah Anggota Keluarga",
+          "definition": "Jumlah anggota keluarga atau jumlah individu dalam keluarga",
+          "datatype": "int(4)",
+          "keterangan": "",
+          "rules": {
+            "required": false,
+            "max_length": 4,
+            "datatype": "int(4)",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 12,
+          "key": "nama_anggota_keluarga",
+          "label": "Nama Anggota Keluarga",
+          "definition": "Nama anggota keluarga yang berstatus sebagai kepala keluarga",
+          "datatype": "varchar(500)",
+          "keterangan": "",
+          "rules": {
+            "required": false,
+            "max_length": 500,
+            "datatype": "varchar(500)",
+            "allowed_codes": [],
+            "regex": "^[a-zA-Z\\s\\.\\,\\'\\-]+$",
+            "error_type": "Critical"
+          }
+        },
+        {
+          "no": 13,
+          "key": "desil_nasional",
+          "label": "Desil Nasional",
+          "definition": "Desil kesejahteraan keluarga level nasional",
+          "datatype": "int(2)",
+          "keterangan": "1 s.d. 10",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "int(2)",
+            "allowed_codes": [],
+            "range": [
+              1,
+              10
+            ],
+            "error_type": "Critical"
+          }
+        },
+        {
+          "no": 14,
+          "key": "desil_provinsi",
+          "label": "Desil Provinsi",
+          "definition": "Desil kesejahteraan keluarga level provinsi",
+          "datatype": "int(2)",
+          "keterangan": "1 s.d. 10",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "int(2)",
+            "allowed_codes": [],
+            "range": [
+              1,
+              10
+            ],
+            "error_type": "Critical"
+          }
+        },
+        {
+          "no": 15,
+          "key": "desil_kabupaten_kota",
+          "label": "Desil Kabupaten/Kota",
+          "definition": "Desil kesejahteraan keluarga level kabupaten/kota",
+          "datatype": "int(2)",
+          "keterangan": "1 s.d. 10",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "int(2)",
+            "allowed_codes": [],
+            "range": [
+              1,
+              10
+            ],
+            "error_type": "Critical"
+          }
+        },
+        {
+          "no": 16,
+          "key": "pbi_nas",
+          "label": "PBI Nasional",
+          "definition": "Status penerima bantuan iuran nasional",
+          "datatype": "",
+          "keterangan": "1. Penerima\n0. Tidak",
+          "rules": {
+            "required": false,
+            "max_length": null,
+            "datatype": "",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Penerima"
+              },
+              {
+                "code": "0",
+                "label": "Tidak"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 17,
+          "key": "pbi_pemda",
+          "label": "PBI Pemda",
+          "definition": "Status penerima bantuan iuran pemda",
+          "datatype": "",
+          "keterangan": "1. Penerima\n0. Tidak",
+          "rules": {
+            "required": false,
+            "max_length": null,
+            "datatype": "",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Penerima"
+              },
+              {
+                "code": "0",
+                "label": "Tidak"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 18,
+          "key": "id_pelanggan_pln",
+          "label": "ID Pelanggan PLN",
+          "definition": "Nomor ID pelanggan PLN dari rumah yang dihuni",
+          "datatype": "varchar",
+          "keterangan": "",
+          "rules": {
+            "required": false,
+            "max_length": null,
+            "datatype": "varchar",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 19,
+          "key": "status_kepemilikan_rumah",
+          "label": "Status Kepemilikan Rumah",
+          "definition": "Status kepemilikan rumah/bangunan tempat tinggal yang dihuni",
+          "datatype": "varchar(2)",
+          "keterangan": "1. Milik sendiri\n2. Kontrak/sewa\n3. Bebas sewa\n4. Dinas\n5. Lainnya",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Milik sendiri"
+              },
+              {
+                "code": "2",
+                "label": "Kontrak/sewa"
+              },
+              {
+                "code": "3",
+                "label": "Bebas sewa"
+              },
+              {
+                "code": "4",
+                "label": "Dinas"
+              },
+              {
+                "code": "5",
+                "label": "Lainnya"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 20,
+          "key": "jenis_lantai_terluas",
+          "label": "Jenis Lantai Terluas",
+          "definition": "Jenis lantai terluas dari rumah/bangunan tempat tinggal yang dihuni",
+          "datatype": "varchar(2)",
+          "keterangan": "01.Marmer/granit\n02.Keramik\n03.Parket/vinil/karpet\n04.Ubin/tegel/teraso\n05.Kayu/papan\n06.Semen/bata merah\n07.Bambu\n08.Tanah\n09.Lainnya\n10.Keramik/granit/marmer/ubin/tegel/teras",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [
+              {
+                "code": "01",
+                "label": "Marmer/granit"
+              },
+              {
+                "code": "02",
+                "label": "Keramik"
+              },
+              {
+                "code": "03",
+                "label": "Parket/vinil/karpet"
+              },
+              {
+                "code": "04",
+                "label": "Ubin/tegel/teraso"
+              },
+              {
+                "code": "05",
+                "label": "Kayu/papan"
+              },
+              {
+                "code": "06",
+                "label": "Semen/bata merah"
+              },
+              {
+                "code": "07",
+                "label": "Bambu"
+              },
+              {
+                "code": "08",
+                "label": "Tanah"
+              },
+              {
+                "code": "09",
+                "label": "Lainnya"
+              },
+              {
+                "code": "10",
+                "label": "Keramik/granit/marmer/ubin/tegel/teras"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 21,
+          "key": "luas_lantai",
+          "label": "Luas Lantai",
+          "definition": "Luas lantai rumah/bangunan tempat tinggal (m2)",
+          "datatype": "int(3)",
+          "keterangan": "0 s.d. 999",
+          "rules": {
+            "required": false,
+            "max_length": 3,
+            "datatype": "int(3)",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 22,
+          "key": "jenis_dinding_terluas",
+          "label": "Jenis Dinding Terluas",
+          "definition": "Jenis dinding terluas dari rumah/bangunan tempat tinggal yang dihuni",
+          "datatype": "varchar(2)",
+          "keterangan": "1. Tembok\n2. Plesteran anyamanbambu/kawat\n3. Kayu/papan/gypsum/GRC/calciboard\n4. Anyaman bambu\n5. Batang kayu\n6. Bambu\n7. Lainnya",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Tembok"
+              },
+              {
+                "code": "2",
+                "label": "Plesteran anyamanbambu/kawat"
+              },
+              {
+                "code": "3",
+                "label": "Kayu/papan/gypsum/GRC/calciboard"
+              },
+              {
+                "code": "4",
+                "label": "Anyaman bambu"
+              },
+              {
+                "code": "5",
+                "label": "Batang kayu"
+              },
+              {
+                "code": "6",
+                "label": "Bambu"
+              },
+              {
+                "code": "7",
+                "label": "Lainnya"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 23,
+          "key": "jenis_atap_terluas",
+          "label": "Jenis Atap Terluas",
+          "definition": "Jenis atap terluas dari rumah/bangunan tempat tinggal yang dihuni",
+          "datatype": "varchar(2)",
+          "keterangan": "1. Beton\n2. Genteng\n3. Seng\n4. Asbes\n5. Bambu\n6. Kayu/sirap\n7. Jerami/ijuk/daun-daunan/rumbia\n8. Lainnya\n9. Asbes/seng",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Beton"
+              },
+              {
+                "code": "2",
+                "label": "Genteng"
+              },
+              {
+                "code": "3",
+                "label": "Seng"
+              },
+              {
+                "code": "4",
+                "label": "Asbes"
+              },
+              {
+                "code": "5",
+                "label": "Bambu"
+              },
+              {
+                "code": "6",
+                "label": "Kayu/sirap"
+              },
+              {
+                "code": "7",
+                "label": "Jerami/ijuk/daun-daunan/rumbia"
+              },
+              {
+                "code": "8",
+                "label": "Lainnya"
+              },
+              {
+                "code": "9",
+                "label": "Asbes/seng"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 24,
+          "key": "sumber_air_minum_utama",
+          "label": "Sumber Air Minum Utama",
+          "definition": "Sumber air minum utama dari rumah/bangunan tempat tinggal yang dihuni",
+          "datatype": "varchar(2)",
+          "keterangan": "01. Air kemasan bermerk\n02. Air isi ulang\n03. Leding\n04. Sumur bor/pompa\n05. Sumur terlindung\n06. Sumur tak terlindung\n07. Mata air terlindung\n08. Mata air tak terlindung\n09. Air permukaan (sungai/danau/waduk/kolam/irigasi)\n10. Air hujan\n11. Lainnya\n12. Air kemasan/isi ulang",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [
+              {
+                "code": "01",
+                "label": "Air kemasan bermerk"
+              },
+              {
+                "code": "02",
+                "label": "Air isi ulang"
+              },
+              {
+                "code": "03",
+                "label": "Leding"
+              },
+              {
+                "code": "04",
+                "label": "Sumur bor/pompa"
+              },
+              {
+                "code": "05",
+                "label": "Sumur terlindung"
+              },
+              {
+                "code": "06",
+                "label": "Sumur tak terlindung"
+              },
+              {
+                "code": "07",
+                "label": "Mata air terlindung"
+              },
+              {
+                "code": "08",
+                "label": "Mata air tak terlindung"
+              },
+              {
+                "code": "09",
+                "label": "Air permukaan (sungai/danau/waduk/kolam/irigasi)"
+              },
+              {
+                "code": "10",
+                "label": "Air hujan"
+              },
+              {
+                "code": "11",
+                "label": "Lainnya"
+              },
+              {
+                "code": "12",
+                "label": "Air kemasan/isi ulang"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 25,
+          "key": "sumber_penerangan_utama",
+          "label": "Sumber Penerangan Utama",
+          "definition": "Sumber penerangan utama dari rumah/bangunan tempat tinggal yang dihuni",
+          "datatype": "varchar(2)",
+          "keterangan": "1. Listrik PLN dengan meteran\n2. Listrik PLN tanpa meteran\n3. Listrik non-PLN\n4. Bukan listrik",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Listrik PLN dengan meteran"
+              },
+              {
+                "code": "2",
+                "label": "Listrik PLN tanpa meteran"
+              },
+              {
+                "code": "3",
+                "label": "Listrik non-PLN"
+              },
+              {
+                "code": "4",
+                "label": "Bukan listrik"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 26,
+          "key": "daya_terpasang",
+          "label": "Daya Terpasang",
+          "definition": "Daya terpasang dari rumah/bangunan tempat tinggal yang dihuni",
+          "datatype": "varchar(2)",
+          "keterangan": "1. 450 watt\n2. 900 watt\n3. 1.300 watt\n4. 2.200 watt\n5. > 2.200 watt\n6. <= 900 watt\n7. > 900 watt",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "450 watt"
+              },
+              {
+                "code": "2",
+                "label": "900 watt"
+              },
+              {
+                "code": "3",
+                "label": "1.300 watt"
+              },
+              {
+                "code": "4",
+                "label": "2.200 watt"
+              },
+              {
+                "code": "5",
+                "label": "> 2.200 watt"
+              },
+              {
+                "code": "6",
+                "label": "<= 900 watt"
+              },
+              {
+                "code": "7",
+                "label": "> 900 watt"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 27,
+          "key": "bahan_bakar_utama_memasak",
+          "label": "Bahan Bakar Utama Memasak",
+          "definition": "Bahan bakar utama memasak dari rumah yang dihuni",
+          "datatype": "varchar(2)",
+          "keterangan": "00. Tidak memasak di rumah\n01. Listrik\n02. Gas elpiji5,5kg/blue gaz\n03. Gas elpiji 12 kg\n04. Gas elpiji 3 kg\n05. Gas kota/meteran PGN\n06. Biogas\n07. Minyak tanah\n08. Briket\n09. Arang\n10. Kayu bakar\n11. Lainnya\n12. Listrik/gas",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [
+              {
+                "code": "00",
+                "label": "Tidak memasak di rumah"
+              },
+              {
+                "code": "01",
+                "label": "Listrik"
+              },
+              {
+                "code": "02",
+                "label": "Gas elpiji5,5kg/blue gaz"
+              },
+              {
+                "code": "03",
+                "label": "Gas elpiji 12 kg"
+              },
+              {
+                "code": "04",
+                "label": "Gas elpiji 3 kg"
+              },
+              {
+                "code": "05",
+                "label": "Gas kota/meteran PGN"
+              },
+              {
+                "code": "06",
+                "label": "Biogas"
+              },
+              {
+                "code": "07",
+                "label": "Minyak tanah"
+              },
+              {
+                "code": "08",
+                "label": "Briket"
+              },
+              {
+                "code": "09",
+                "label": "Arang"
+              },
+              {
+                "code": "10",
+                "label": "Kayu bakar"
+              },
+              {
+                "code": "11",
+                "label": "Lainnya"
+              },
+              {
+                "code": "12",
+                "label": "Listrik/gas"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 28,
+          "key": "fasilitas_bab",
+          "label": "Fasilitas BAB",
+          "definition": "Fasilitas bab dari rumah yang dihuni",
+          "datatype": "varchar(2)",
+          "keterangan": "1. Ada, digunakan hanya Anggota Keluarga sendiri\n2. Ada, digunakan bersama Anggota Keluarga dari Keluarga tertentu\n3. Ada, di MCK komunal\n4. Ada, di MCK umum/siapapun menggunakan\n5. Ada, Anggota Keluarga tidak menggunakan\n6. Tidak ada fasilitas",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Ada, digunakan hanya Anggota Keluarga sendiri"
+              },
+              {
+                "code": "2",
+                "label": "Ada, digunakan bersama Anggota Keluarga dari Keluarga tertentu"
+              },
+              {
+                "code": "3",
+                "label": "Ada, di MCK komunal"
+              },
+              {
+                "code": "4",
+                "label": "Ada, di MCK umum/siapapun menggunakan"
+              },
+              {
+                "code": "5",
+                "label": "Ada, Anggota Keluarga tidak menggunakan"
+              },
+              {
+                "code": "6",
+                "label": "Tidak ada fasilitas"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 29,
+          "key": "jenis_kloset",
+          "label": "Jenis Kloset",
+          "definition": "Jenis kloset yang digunakan dari rumah yang dihuni",
+          "datatype": "varchar(2)",
+          "keterangan": "1. Leher angsa\n2. Plengsengan dengan tutup\n3. Plengsengan tanpa tutup\n4. Cemplung/cubluk",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Leher angsa"
+              },
+              {
+                "code": "2",
+                "label": "Plengsengan dengan tutup"
+              },
+              {
+                "code": "3",
+                "label": "Plengsengan tanpa tutup"
+              },
+              {
+                "code": "4",
+                "label": "Cemplung/cubluk"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 30,
+          "key": "pembuangan_akhir_tinja",
+          "label": "Pembuangan Akhir Tinja",
+          "definition": "Jenis pembuangan akhir tinja yang digunakan dari rumah yang dihuni",
+          "datatype": "varchar(2)",
+          "keterangan": "1. Tangki septik\n2. IPAL\n3. Kolam/sawah/sungai/danau/laut\n4. Lubang tanah\n5. Pantai/tanah lapang/kebun\n6. Lainnya\n7. Tanpa tangki septik",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Tangki septik"
+              },
+              {
+                "code": "2",
+                "label": "IPAL"
+              },
+              {
+                "code": "3",
+                "label": "Kolam/sawah/sungai/danau/laut"
+              },
+              {
+                "code": "4",
+                "label": "Lubang tanah"
+              },
+              {
+                "code": "5",
+                "label": "Pantai/tanah lapang/kebun"
+              },
+              {
+                "code": "6",
+                "label": "Lainnya"
+              },
+              {
+                "code": "7",
+                "label": "Tanpa tangki septik"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 31,
+          "key": "kepemilikan_aset",
+          "label": "Kepemilikan Aset",
+          "definition": "Status kepemilkan aset",
+          "datatype": "int(1)",
+          "keterangan": "1. Ya memiliki aset\n2. Tidak memiliki aset",
+          "rules": {
+            "required": false,
+            "max_length": 1,
+            "datatype": "int(1)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Ya memiliki aset"
+              },
+              {
+                "code": "2",
+                "label": "Tidak memiliki aset"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 32,
+          "key": "aset_bergerak_tabung_gas",
+          "label": "Aset Bergerak Tabung Gas",
+          "definition": "Kepemilikan aset bergerak tabung gas minimal 5,5kg",
+          "datatype": "int(1)",
+          "keterangan": "1. Ya\n2. Tidak",
+          "rules": {
+            "required": false,
+            "max_length": 1,
+            "datatype": "int(1)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Ya"
+              },
+              {
+                "code": "2",
+                "label": "Tidak"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 33,
+          "key": "aset_bergerak_lemari_es",
+          "label": "Aset Bergerak Lemari Es",
+          "definition": "Kepemilikan aset bergerak lemari es atau kulkas",
+          "datatype": "int(1)",
+          "keterangan": "1. Ya\n2. Tidak",
+          "rules": {
+            "required": false,
+            "max_length": 1,
+            "datatype": "int(1)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Ya"
+              },
+              {
+                "code": "2",
+                "label": "Tidak"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 34,
+          "key": "aset_bergerak_ac",
+          "label": "Aset Bergerak AC",
+          "definition": "Kepemilikan aset bergerak AC (Air Conditioner)",
+          "datatype": "int(1)",
+          "keterangan": "1. Ya\n2. Tidak",
+          "rules": {
+            "required": false,
+            "max_length": 1,
+            "datatype": "int(1)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Ya"
+              },
+              {
+                "code": "2",
+                "label": "Tidak"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 35,
+          "key": "aset_bergerak_pemanas_air",
+          "label": "Aset Bergerak Pemanas Air",
+          "definition": "Kepemilikan aset bergerak pemanas air (Water Heater) untuk mandi",
+          "datatype": "int(1)",
+          "keterangan": "1. Ya\n2. Tidak",
+          "rules": {
+            "required": false,
+            "max_length": 1,
+            "datatype": "int(1)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Ya"
+              },
+              {
+                "code": "2",
+                "label": "Tidak"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 36,
+          "key": "aset_bergerak_telepon_rumah",
+          "label": "Aset Bergerak Telepon Rumah",
+          "definition": "Kepemilikan aset bergerak telepon rumah atau PSTN",
+          "datatype": "int(1)",
+          "keterangan": "1. Ya\n2. Tidak",
+          "rules": {
+            "required": false,
+            "max_length": 1,
+            "datatype": "int(1)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Ya"
+              },
+              {
+                "code": "2",
+                "label": "Tidak"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 37,
+          "key": "aset_bergerak_tv_datar",
+          "label": "Aset Bergerak TV Datar",
+          "definition": "Kepemilikan aset bergerak televisi datar",
+          "datatype": "int(1)",
+          "keterangan": "1. Ya\n2. Tidak",
+          "rules": {
+            "required": false,
+            "max_length": 1,
+            "datatype": "int(1)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Ya"
+              },
+              {
+                "code": "2",
+                "label": "Tidak"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 38,
+          "key": "aset_bergerak_emas_perhiasan",
+          "label": "Aset Bergerak Emas Perhiasan",
+          "definition": "Kepemilikan aset bergerak perhiasan emas",
+          "datatype": "int(1)",
+          "keterangan": "1. Ya\n2. Tidak",
+          "rules": {
+            "required": false,
+            "max_length": 1,
+            "datatype": "int(1)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Ya"
+              },
+              {
+                "code": "2",
+                "label": "Tidak"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 39,
+          "key": "aset_bergerak_komputer_laptop_tablet",
+          "label": "Aset Bergerak Komputer Laptop Tablet",
+          "definition": "Kepemilikan aset bergerak komputer/PC atau laptop atau tablet",
+          "datatype": "int(1)",
+          "keterangan": "1. Ya\n2. Tidak",
+          "rules": {
+            "required": false,
+            "max_length": 1,
+            "datatype": "int(1)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Ya"
+              },
+              {
+                "code": "2",
+                "label": "Tidak"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 40,
+          "key": "aset_bergerak_sepeda_motor",
+          "label": "Aset Bergerak Sepeda Motor",
+          "definition": "Kepemilikan aset bergerak sepeda motor",
+          "datatype": "int(1)",
+          "keterangan": "1. Ya\n2. Tidak",
+          "rules": {
+            "required": false,
+            "max_length": 1,
+            "datatype": "int(1)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Ya"
+              },
+              {
+                "code": "2",
+                "label": "Tidak"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 41,
+          "key": "aset_bergerak_sepeda",
+          "label": "Aset Bergerak Sepeda",
+          "definition": "Kepemilikan aset bergerak sepeda",
+          "datatype": "int(1)",
+          "keterangan": "1. Ya\n2. Tidak",
+          "rules": {
+            "required": false,
+            "max_length": 1,
+            "datatype": "int(1)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Ya"
+              },
+              {
+                "code": "2",
+                "label": "Tidak"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 42,
+          "key": "aset_bergerak_mobil",
+          "label": "Aset Bergerak Mobil",
+          "definition": "Kepemilikan aset bergerak mobil",
+          "datatype": "int(1)",
+          "keterangan": "1. Ya\n2. Tidak",
+          "rules": {
+            "required": false,
+            "max_length": 1,
+            "datatype": "int(1)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Ya"
+              },
+              {
+                "code": "2",
+                "label": "Tidak"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 43,
+          "key": "aset_bergerak_perahu",
+          "label": "Aset Bergerak Perahu",
+          "definition": "Kepemilikan aset bergerak perahu",
+          "datatype": "int(1)",
+          "keterangan": "1. Ya\n2. Tidak",
+          "rules": {
+            "required": false,
+            "max_length": 1,
+            "datatype": "int(1)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Ya"
+              },
+              {
+                "code": "2",
+                "label": "Tidak"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 44,
+          "key": "aset_bergerak_kapal_perahu_motor",
+          "label": "Aset Bergerak Kapal Perahu Motor",
+          "definition": "Kepemilikan aset bergerak kapal atau perahu motor",
+          "datatype": "int(1)",
+          "keterangan": "1. Ya\n2. Tidak",
+          "rules": {
+            "required": false,
+            "max_length": 1,
+            "datatype": "int(1)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Ya"
+              },
+              {
+                "code": "2",
+                "label": "Tidak"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 45,
+          "key": "aset_bergerak_smartphone",
+          "label": "Aset Bergerak Smartphone",
+          "definition": "Kepemilikan aset bergerak smartphone",
+          "datatype": "int(1)",
+          "keterangan": "1. Ya\n2. Tidak",
+          "rules": {
+            "required": false,
+            "max_length": 1,
+            "datatype": "int(1)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Ya"
+              },
+              {
+                "code": "2",
+                "label": "Tidak"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 46,
+          "key": "aset_tidak_bergerak_lahan_lainnya",
+          "label": "Aset Tidak Bergerak Lahan Lainnya",
+          "definition": "Kepemilikan aset tidak bergerak lahan selain yang dihuni",
+          "datatype": "int(1)",
+          "keterangan": "1. Ya\n2. Tidak",
+          "rules": {
+            "required": false,
+            "max_length": 1,
+            "datatype": "int(1)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Ya"
+              },
+              {
+                "code": "2",
+                "label": "Tidak"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 47,
+          "key": "aset_tidak_bergerak_rumah_lainnya",
+          "label": "Aset Tidak Bergerak Rumah Lainnya",
+          "definition": "Kepemilikan aset tidak bergerak rumah selain yang dihuni",
+          "datatype": "int(1)",
+          "keterangan": "1. Ya\n2. Tidak",
+          "rules": {
+            "required": false,
+            "max_length": 1,
+            "datatype": "int(1)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Ya"
+              },
+              {
+                "code": "2",
+                "label": "Tidak"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 48,
+          "key": "jumlah_ternak_sapi",
+          "label": "Jumlah Ternak Sapi",
+          "definition": "Jumlah kepemilikan ternak sapi",
+          "datatype": "int(3)",
+          "keterangan": "0 s.d. 999",
+          "rules": {
+            "required": false,
+            "max_length": 3,
+            "datatype": "int(3)",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 49,
+          "key": "jumlah_ternak_kerbau",
+          "label": "Jumlah Ternak Kerbau",
+          "definition": "Jumlah kepemilikan ternak kerbau",
+          "datatype": "int(3)",
+          "keterangan": "0 s.d. 999",
+          "rules": {
+            "required": false,
+            "max_length": 3,
+            "datatype": "int(3)",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 50,
+          "key": "jumlah_ternak_kuda",
+          "label": "Jumlah Ternak Kuda",
+          "definition": "Jumlah kepemilikan ternak kuda",
+          "datatype": "int(3)",
+          "keterangan": "0 s.d. 999",
+          "rules": {
+            "required": false,
+            "max_length": 3,
+            "datatype": "int(3)",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 51,
+          "key": "jumlah_ternak_babi",
+          "label": "Jumlah Ternak Babi",
+          "definition": "Jumlah kepemilikan ternak babi",
+          "datatype": "int(3)",
+          "keterangan": "0 s.d. 999",
+          "rules": {
+            "required": false,
+            "max_length": 3,
+            "datatype": "int(3)",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 52,
+          "key": "jumlah_ternak_kambing_domba",
+          "label": "Jumlah Ternak Kambing Domba",
+          "definition": "Jumlah kepemilikan ternak kambing atau domba",
+          "datatype": "int(3)",
+          "keterangan": "0 s.d. 999",
+          "rules": {
+            "required": false,
+            "max_length": 3,
+            "datatype": "int(3)",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        }
+      ]
+    },
+    "anggota_keluarga": {
+      "title": "Set Data Anggota Keluarga",
+      "sheet": "Set Data Anggota Keluarga",
+      "variables": [
+        {
+          "no": 1,
+          "key": "nomor_induk_kependudukan",
+          "label": "Nomor Induk Kependudukan",
+          "definition": "Nomor induk kependudukan yang tercatat di Dukcapil",
+          "datatype": "varchar(16)",
+          "keterangan": "16 digit nomor induk kependudukan yang tercatat di Dukcapil",
+          "rules": {
+            "required": true,
+            "max_length": 16,
+            "datatype": "varchar(16)",
+            "allowed_codes": [],
+            "exact_length": 16,
+            "regex": "^[0-9]{16}$",
+            "error_type": "Critical"
+          }
+        },
+        {
+          "no": 2,
+          "key": "nomor_kartu_keluarga",
+          "label": "Nomor Kartu Keluarga",
+          "definition": "Nomor kartu keluarga yang tercatat di Dukcapil",
+          "datatype": "varchar(16)",
+          "keterangan": "16 digit nomor kartu keluarga yang tercatat di Dukcapil",
+          "rules": {
+            "required": true,
+            "max_length": 16,
+            "datatype": "varchar(16)",
+            "allowed_codes": [],
+            "exact_length": 16,
+            "regex": "^[0-9]{16}$",
+            "error_type": "Critical"
+          }
+        },
+        {
+          "no": 3,
+          "key": "nama",
+          "label": "Nama",
+          "definition": "Nama lengkap yang tercatat di Dukcapil",
+          "datatype": "varchar(500)",
+          "keterangan": "",
+          "rules": {
+            "required": true,
+            "max_length": 500,
+            "datatype": "varchar(500)",
+            "allowed_codes": [],
+            "regex": "^[a-zA-Z\\s\\.\\,\\'\\-]+$",
+            "error_type": "Critical"
+          }
+        },
+        {
+          "no": 4,
+          "key": "tanggal_lahir",
+          "label": "Tanggal Lahir",
+          "definition": "Tanggal lahir yang tercatat di Dukcapil",
+          "datatype": "datetime(yyyy-mm-dd)",
+          "keterangan": "",
+          "rules": {
+            "required": false,
+            "max_length": null,
+            "datatype": "datetime(yyyy-mm-dd)",
+            "allowed_codes": [],
+            "format": "date",
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 5,
+          "key": "jenis_kelamin",
+          "label": "Jenis Kelamin",
+          "definition": "Jenis kelamin individu",
+          "datatype": "varchar(1)",
+          "keterangan": "1. Laki-laki\n2. Perempuan",
+          "rules": {
+            "required": false,
+            "max_length": 1,
+            "datatype": "varchar(1)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Laki-laki"
+              },
+              {
+                "code": "2",
+                "label": "Perempuan"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 6,
+          "key": "status_hubungan_keluarga",
+          "label": "Status Hubungan Keluarga",
+          "definition": "Status hubungan anggota keluarga terhadap kepala keluarga",
+          "datatype": "varchar(2)",
+          "keterangan": "1. Kepala keluarga\n2. Suami\n3. Istri\n4. Anak\n5. Menantu\n6. Cucu\n7. Orang tua\n8. Mertua\n9. Famili lain\n10. Pembantu\n11. Lainnya",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Kepala keluarga"
+              },
+              {
+                "code": "2",
+                "label": "Suami"
+              },
+              {
+                "code": "3",
+                "label": "Istri"
+              },
+              {
+                "code": "4",
+                "label": "Anak"
+              },
+              {
+                "code": "5",
+                "label": "Menantu"
+              },
+              {
+                "code": "6",
+                "label": "Cucu"
+              },
+              {
+                "code": "7",
+                "label": "Orang tua"
+              },
+              {
+                "code": "8",
+                "label": "Mertua"
+              },
+              {
+                "code": "9",
+                "label": "Famili lain"
+              },
+              {
+                "code": "10",
+                "label": "Pembantu"
+              },
+              {
+                "code": "11",
+                "label": "Lainnya"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 7,
+          "key": "pbi_nas",
+          "label": "PBI Nasional",
+          "definition": "Status penerima bantuan iuran nasional",
+          "datatype": "",
+          "keterangan": "1. Penerima\n0. Tidak",
+          "rules": {
+            "required": false,
+            "max_length": null,
+            "datatype": "",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Penerima"
+              },
+              {
+                "code": "0",
+                "label": "Tidak"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 8,
+          "key": "pbi_pemda",
+          "label": "PBI Pemda",
+          "definition": "Status penerima bantuan iuran pemda",
+          "datatype": "",
+          "keterangan": "1. Penerima\n0. Tidak",
+          "rules": {
+            "required": false,
+            "max_length": null,
+            "datatype": "",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Penerima"
+              },
+              {
+                "code": "0",
+                "label": "Tidak"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 9,
+          "key": "status_kawin",
+          "label": "Status Kawin",
+          "definition": "Status perkawinan individu",
+          "datatype": "varchar(2)",
+          "keterangan": "1. Belum kawin\n2. Kawin/nikah\n3. Cerai hidup\n4. Cerai mati",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Belum kawin"
+              },
+              {
+                "code": "2",
+                "label": "Kawin/nikah"
+              },
+              {
+                "code": "3",
+                "label": "Cerai hidup"
+              },
+              {
+                "code": "4",
+                "label": "Cerai mati"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 10,
+          "key": "partisipasi_sekolah",
+          "label": "Partisipasi Sekolah",
+          "definition": "Status pertisipasi sekolah",
+          "datatype": "varchar(2)",
+          "keterangan": "1. Tidak/belum pernah sekolah\n2. Masih sekolah\n3. Tidak bersekolah lagi",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Tidak/belum pernah sekolah"
+              },
+              {
+                "code": "2",
+                "label": "Masih sekolah"
+              },
+              {
+                "code": "3",
+                "label": "Tidak bersekolah lagi"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 11,
+          "key": "jenjang_tertinggi_yang_diduduki",
+          "label": "Jenjang Tertinggi yang Diduduki",
+          "definition": "Jenjang dan jenis pendidikan tertinggi yang pernah/sedang diduduki",
+          "datatype": "varchar(2)",
+          "keterangan": "01. Paket A\n02. SDLB\n03. SD\n04. MI\n05. SPM/PDF Ula\n06. Paket B\n07. SMP LB\n08. SMP\n09. MTs\n10. SPM/PDF Wustha\n11. Paket C\n12. SMLB\n13. SMA\n14. MA\n15. SMK\n16. MAK\n17. SPM/PDF Ulya\n18. D1/D2/D3\n19. D4/S1\n20. Profesi\n21. S2\n22. S3",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [
+              {
+                "code": "01",
+                "label": "Paket A"
+              },
+              {
+                "code": "02",
+                "label": "SDLB"
+              },
+              {
+                "code": "03",
+                "label": "SD"
+              },
+              {
+                "code": "04",
+                "label": "MI"
+              },
+              {
+                "code": "05",
+                "label": "SPM/PDF Ula"
+              },
+              {
+                "code": "06",
+                "label": "Paket B"
+              },
+              {
+                "code": "07",
+                "label": "SMP LB"
+              },
+              {
+                "code": "08",
+                "label": "SMP"
+              },
+              {
+                "code": "09",
+                "label": "MTs"
+              },
+              {
+                "code": "10",
+                "label": "SPM/PDF Wustha"
+              },
+              {
+                "code": "11",
+                "label": "Paket C"
+              },
+              {
+                "code": "12",
+                "label": "SMLB"
+              },
+              {
+                "code": "13",
+                "label": "SMA"
+              },
+              {
+                "code": "14",
+                "label": "MA"
+              },
+              {
+                "code": "15",
+                "label": "SMK"
+              },
+              {
+                "code": "16",
+                "label": "MAK"
+              },
+              {
+                "code": "17",
+                "label": "SPM/PDF Ulya"
+              },
+              {
+                "code": "18",
+                "label": "D1/D2/D3"
+              },
+              {
+                "code": "19",
+                "label": "D4/S1"
+              },
+              {
+                "code": "20",
+                "label": "Profesi"
+              },
+              {
+                "code": "21",
+                "label": "S2"
+              },
+              {
+                "code": "22",
+                "label": "S3"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 12,
+          "key": "kelas_tertinggi_yang_diduduki",
+          "label": "Kelas Tertinggi yang Diduduki",
+          "definition": "Kelas tertinggi yang pernah/sedang diduduki",
+          "datatype": "varchar(2)",
+          "keterangan": "1 s.d. 8",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 13,
+          "key": "ijazah_tertinggi_yang_dimiliki",
+          "label": "Ijazah Tertinggi yang Dimiliki",
+          "definition": "Ijazah/STTB tertinggi yang dimiliki",
+          "datatype": "varchar(2)",
+          "keterangan": "01. Paket A\n02. SDLB\n03. SD\n04. MI\n05. SPM/PDF Ula\n06. Paket B\n07. SMP LB\n08. SMP\n09. MTs\n10. SPM/PDF Wustha\n11. Paket C\n12. SMLB\n13. SMA\n14. MA\n15. SMK\n16. MAK\n17. SPM/PDF Ulya\n18. D1/D2/D3\n19. D4/S1\n20. Profesi\n21. S2\n22. S3\n23. Tidak Punya Ijazah SD",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [
+              {
+                "code": "01",
+                "label": "Paket A"
+              },
+              {
+                "code": "02",
+                "label": "SDLB"
+              },
+              {
+                "code": "03",
+                "label": "SD"
+              },
+              {
+                "code": "04",
+                "label": "MI"
+              },
+              {
+                "code": "05",
+                "label": "SPM/PDF Ula"
+              },
+              {
+                "code": "06",
+                "label": "Paket B"
+              },
+              {
+                "code": "07",
+                "label": "SMP LB"
+              },
+              {
+                "code": "08",
+                "label": "SMP"
+              },
+              {
+                "code": "09",
+                "label": "MTs"
+              },
+              {
+                "code": "10",
+                "label": "SPM/PDF Wustha"
+              },
+              {
+                "code": "11",
+                "label": "Paket C"
+              },
+              {
+                "code": "12",
+                "label": "SMLB"
+              },
+              {
+                "code": "13",
+                "label": "SMA"
+              },
+              {
+                "code": "14",
+                "label": "MA"
+              },
+              {
+                "code": "15",
+                "label": "SMK"
+              },
+              {
+                "code": "16",
+                "label": "MAK"
+              },
+              {
+                "code": "17",
+                "label": "SPM/PDF Ulya"
+              },
+              {
+                "code": "18",
+                "label": "D1/D2/D3"
+              },
+              {
+                "code": "19",
+                "label": "D4/S1"
+              },
+              {
+                "code": "20",
+                "label": "Profesi"
+              },
+              {
+                "code": "21",
+                "label": "S2"
+              },
+              {
+                "code": "22",
+                "label": "S3"
+              },
+              {
+                "code": "23",
+                "label": "Tidak Punya Ijazah SD"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 14,
+          "key": "status_bekerja",
+          "label": "Status Bekerja",
+          "definition": "Status bekerja/membantu bekerja",
+          "datatype": "varchar(2)",
+          "keterangan": "1. Ya\n2. Tidak",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Ya"
+              },
+              {
+                "code": "2",
+                "label": "Tidak"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 15,
+          "key": "lapangan_usaha_dari_pekerjaan_utama",
+          "label": "Lapangan Usaha dari Pekerjaan Utama",
+          "definition": "Lapangan usaha dari pekerjaan utama",
+          "datatype": "varchar(2)",
+          "keterangan": "01. Pertanian tanaman pangan dan palawija\n02. Hortikultura\n03. Perkebunan\n04. Perikanan\n05. Peternakan\n06. Kehutanan & pertanian lainnya\n07. Pertambangan/penggalian\n08. Industri pengolahan\n09. Pengadaan listrik, gas, uap/air panas, dan udara dingin\n10. Pengelolaan air, pengelolaan air limbah, pengelolaan dan daur ulang sampah, dan aktivitas remediasi\n11. Konstruksi\n12. Perdagangan besar dan eceran, reparasidan perawatan mobil dan sepeda motor\n13. Pengangkutan dan pergudangan\n14. Penyediaan akomodasi & makan minum\n15. Informasi & komunikasi\n16. Keuangan & asuransi\n17. Real estate\n18. Aktivitas profesional, ilmiah, dan teknis\n19. Aktivitas penyewaan dan sewa guna tanpa hak opsi, ketenagakerjaan, agen perjalanan,dan penunjang usaha lainnya\n20. Administrasi pemerintahan, pertahanan, danjaminan sosial wajib\n21. Pendidikan\n22. Aktivitas kesehatan manusia dan aktivitas sosial\n23. Kesenian, hiburan, dan rekreasi\n24. Aktivitas jasa lainnya\n25. Aktivitas keluarga sebagai pemberi kerja\n26. Aktivitas badan internasional dan badan ekstra internasional lainnya",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [
+              {
+                "code": "01",
+                "label": "Pertanian tanaman pangan dan palawija"
+              },
+              {
+                "code": "02",
+                "label": "Hortikultura"
+              },
+              {
+                "code": "03",
+                "label": "Perkebunan"
+              },
+              {
+                "code": "04",
+                "label": "Perikanan"
+              },
+              {
+                "code": "05",
+                "label": "Peternakan"
+              },
+              {
+                "code": "06",
+                "label": "Kehutanan & pertanian lainnya"
+              },
+              {
+                "code": "07",
+                "label": "Pertambangan/penggalian"
+              },
+              {
+                "code": "08",
+                "label": "Industri pengolahan"
+              },
+              {
+                "code": "09",
+                "label": "Pengadaan listrik, gas, uap/air panas, dan udara dingin"
+              },
+              {
+                "code": "10",
+                "label": "Pengelolaan air, pengelolaan air limbah, pengelolaan dan daur ulang sampah, dan aktivitas remediasi"
+              },
+              {
+                "code": "11",
+                "label": "Konstruksi"
+              },
+              {
+                "code": "12",
+                "label": "Perdagangan besar dan eceran, reparasidan perawatan mobil dan sepeda motor"
+              },
+              {
+                "code": "13",
+                "label": "Pengangkutan dan pergudangan"
+              },
+              {
+                "code": "14",
+                "label": "Penyediaan akomodasi & makan minum"
+              },
+              {
+                "code": "15",
+                "label": "Informasi & komunikasi"
+              },
+              {
+                "code": "16",
+                "label": "Keuangan & asuransi"
+              },
+              {
+                "code": "17",
+                "label": "Real estate"
+              },
+              {
+                "code": "18",
+                "label": "Aktivitas profesional, ilmiah, dan teknis"
+              },
+              {
+                "code": "19",
+                "label": "Aktivitas penyewaan dan sewa guna tanpa hak opsi, ketenagakerjaan, agen perjalanan,dan penunjang usaha lainnya"
+              },
+              {
+                "code": "20",
+                "label": "Administrasi pemerintahan, pertahanan, danjaminan sosial wajib"
+              },
+              {
+                "code": "21",
+                "label": "Pendidikan"
+              },
+              {
+                "code": "22",
+                "label": "Aktivitas kesehatan manusia dan aktivitas sosial"
+              },
+              {
+                "code": "23",
+                "label": "Kesenian, hiburan, dan rekreasi"
+              },
+              {
+                "code": "24",
+                "label": "Aktivitas jasa lainnya"
+              },
+              {
+                "code": "25",
+                "label": "Aktivitas keluarga sebagai pemberi kerja"
+              },
+              {
+                "code": "26",
+                "label": "Aktivitas badan internasional dan badan ekstra internasional lainnya"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 16,
+          "key": "status_dalam_pekerjaan_utama",
+          "label": "Status Dalam Pekerjaan Utama",
+          "definition": "Status/kedudukan dalam pekerjaan utama",
+          "datatype": "varchar(2)",
+          "keterangan": "1. Berusaha sendiri\n2. Berusaha dibantu buruh tidak tetap/tidak dibayar\n3. Berusaha dibantu buruh tetap/buruh dibayar\n4. Buruh/karyawan/pegawai swasta\n5. PNS/TNI/Polri/ BUMN/BUMD/pejabat negara\n6. Pekerja bebas pertanian\n7. Pekerja bebas non pertanian\n8. Pekerja keluarga/tidak dibayar",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Berusaha sendiri"
+              },
+              {
+                "code": "2",
+                "label": "Berusaha dibantu buruh tidak tetap/tidak dibayar"
+              },
+              {
+                "code": "3",
+                "label": "Berusaha dibantu buruh tetap/buruh dibayar"
+              },
+              {
+                "code": "4",
+                "label": "Buruh/karyawan/pegawai swasta"
+              },
+              {
+                "code": "5",
+                "label": "PNS/TNI/Polri/ BUMN/BUMD/pejabat negara"
+              },
+              {
+                "code": "6",
+                "label": "Pekerja bebas pertanian"
+              },
+              {
+                "code": "7",
+                "label": "Pekerja bebas non pertanian"
+              },
+              {
+                "code": "8",
+                "label": "Pekerja keluarga/tidak dibayar"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 17,
+          "key": "kepemilikan_usaha",
+          "label": "Kepemilikan Usaha",
+          "definition": "Kepemilikan usaha sendiri/bersama",
+          "datatype": "varchar(2)",
+          "keterangan": "1. Ya\n2. Tidak",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Ya"
+              },
+              {
+                "code": "2",
+                "label": "Tidak"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 18,
+          "key": "jumlah_usaha",
+          "label": "Jumlah Usaha",
+          "definition": "Jumlah usaha yang dimiliki sendiri/bersama",
+          "datatype": "int(3)",
+          "keterangan": "",
+          "rules": {
+            "required": false,
+            "max_length": 3,
+            "datatype": "int(3)",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 19,
+          "key": "lapangan_usaha_dari_usaha_utama",
+          "label": "Lapangan Usaha dari Usaha Utama",
+          "definition": "Lapangan usaha dari usaha utama",
+          "datatype": "varchar(2)",
+          "keterangan": "01. Pertanian tanaman padi & palawija\n02. Hortikultura\n03. Perkebunan\n04. Perikanan\n05. Peternakan\n06. Kehutanan & pertanian lainnya\n07. Pertambangan/penggalian\n08. Industri pengolahan\n09. Pengadaan listrik, gas, uap/air panas, dan udara dingin\n10. Pengelolaan air, pengelolaan air limbah, pengelolaan dan daur ulang sampah, dan aktivitas remediasi\n11. Konstruksi\n12. Perdagangan besar dan eceran, reparasidan perawatan mobil dan sepeda motor\n13. Pengangkutan dan pergudangan\n14. Penyediaan akomodasi & makan minum\n15. Informasi & komunikasi\n16. Keuangan & asuransi\n17. Real estate\n18. Aktivitas profesional, ilmiah, dan teknis\n19. Aktivitas penyewaan dan sewa guna tanpa hak opsi, ketenagakerjaan, agen perjalanan,dan penunjang usaha lainnya\n20. Administrasi pemerintahan, pertahanan, danjaminan sosial wajib\n21. Pendidikan\n22. Aktivitas kesehatan manusia dan aktivitas sosial\n23. Kesenian, hiburan, dan rekreasi\n24. Aktivitas jasa lainnya\n25. Aktivitas keluarga sebagai pemberi kerja\n26. Aktivitas badan internasional dan badan ekstra internasional lainnya",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [
+              {
+                "code": "01",
+                "label": "Pertanian tanaman padi & palawija"
+              },
+              {
+                "code": "02",
+                "label": "Hortikultura"
+              },
+              {
+                "code": "03",
+                "label": "Perkebunan"
+              },
+              {
+                "code": "04",
+                "label": "Perikanan"
+              },
+              {
+                "code": "05",
+                "label": "Peternakan"
+              },
+              {
+                "code": "06",
+                "label": "Kehutanan & pertanian lainnya"
+              },
+              {
+                "code": "07",
+                "label": "Pertambangan/penggalian"
+              },
+              {
+                "code": "08",
+                "label": "Industri pengolahan"
+              },
+              {
+                "code": "09",
+                "label": "Pengadaan listrik, gas, uap/air panas, dan udara dingin"
+              },
+              {
+                "code": "10",
+                "label": "Pengelolaan air, pengelolaan air limbah, pengelolaan dan daur ulang sampah, dan aktivitas remediasi"
+              },
+              {
+                "code": "11",
+                "label": "Konstruksi"
+              },
+              {
+                "code": "12",
+                "label": "Perdagangan besar dan eceran, reparasidan perawatan mobil dan sepeda motor"
+              },
+              {
+                "code": "13",
+                "label": "Pengangkutan dan pergudangan"
+              },
+              {
+                "code": "14",
+                "label": "Penyediaan akomodasi & makan minum"
+              },
+              {
+                "code": "15",
+                "label": "Informasi & komunikasi"
+              },
+              {
+                "code": "16",
+                "label": "Keuangan & asuransi"
+              },
+              {
+                "code": "17",
+                "label": "Real estate"
+              },
+              {
+                "code": "18",
+                "label": "Aktivitas profesional, ilmiah, dan teknis"
+              },
+              {
+                "code": "19",
+                "label": "Aktivitas penyewaan dan sewa guna tanpa hak opsi, ketenagakerjaan, agen perjalanan,dan penunjang usaha lainnya"
+              },
+              {
+                "code": "20",
+                "label": "Administrasi pemerintahan, pertahanan, danjaminan sosial wajib"
+              },
+              {
+                "code": "21",
+                "label": "Pendidikan"
+              },
+              {
+                "code": "22",
+                "label": "Aktivitas kesehatan manusia dan aktivitas sosial"
+              },
+              {
+                "code": "23",
+                "label": "Kesenian, hiburan, dan rekreasi"
+              },
+              {
+                "code": "24",
+                "label": "Aktivitas jasa lainnya"
+              },
+              {
+                "code": "25",
+                "label": "Aktivitas keluarga sebagai pemberi kerja"
+              },
+              {
+                "code": "26",
+                "label": "Aktivitas badan internasional dan badan ekstra internasional lainnya"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 20,
+          "key": "jumlah_pekerja_yang_dibayar_dari_usaha_utama",
+          "label": "Jumlah Pekerja yang Dibayar dari Usaha Utama",
+          "definition": "Jumlah pekerja yang dibayar dari usaha utama",
+          "datatype": "int(3)",
+          "keterangan": "",
+          "rules": {
+            "required": false,
+            "max_length": 3,
+            "datatype": "int(3)",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 21,
+          "key": "jumlah_pekerja_yang_tidak_dibayar_dari_usaha_utama",
+          "label": "Jumlah Pekerja yang Tidak Dibayar dari Usaha Utama",
+          "definition": "Jumlah pekerja yang tidak dibayar dari usaha utama",
+          "datatype": "int(3)",
+          "keterangan": "",
+          "rules": {
+            "required": false,
+            "max_length": 3,
+            "datatype": "int(3)",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 22,
+          "key": "omzet_usaha_utama",
+          "label": "Omzet Usaha Utama",
+          "definition": "Omzet dari usaha utama perbulan (Rupiah)",
+          "datatype": "varchar(2)",
+          "keterangan": "1. < 5 Juta (ultra mikro)\n2. 5-<15 Juta (ultra mikro)\n3. 15-<25 Juta (ultra mikro)\n4. 25-<167 Juta (mikro)\n5. 167 -< 1.250 Juta (kecil)\n6. 1.250 -< 4.167 Juta (menengah)\n7. ≥ 4.167 Juta (besar)",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "< 5 Juta (ultra mikro)"
+              },
+              {
+                "code": "2",
+                "label": "5-<15 Juta (ultra mikro)"
+              },
+              {
+                "code": "3",
+                "label": "15-<25 Juta (ultra mikro)"
+              },
+              {
+                "code": "4",
+                "label": "25-<167 Juta (mikro)"
+              },
+              {
+                "code": "5",
+                "label": "167 -< 1.250 Juta (kecil)"
+              },
+              {
+                "code": "6",
+                "label": "1.250 -< 4.167 Juta (menengah)"
+              },
+              {
+                "code": "7",
+                "label": "≥ 4.167 Juta (besar)"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 23,
+          "key": "kondisi_gizi",
+          "label": "Kondisi Gizi",
+          "definition": "Kondisi gizi anak hasil pemeriksaan dengan mengacu pada catatan/buku kontrol",
+          "datatype": "varchar(2)",
+          "keterangan": "1. Kurang gizi (Wasting)\n2. Kerdil (Stunting)\n3. Tidak ada catatan\n8. Tidak tahu",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Kurang gizi (Wasting)"
+              },
+              {
+                "code": "2",
+                "label": "Kerdil (Stunting)"
+              },
+              {
+                "code": "3",
+                "label": "Tidak ada catatan"
+              },
+              {
+                "code": "8",
+                "label": "Tidak tahu"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 24,
+          "key": "penglihatan",
+          "label": "Penglihatan",
+          "definition": "Kesulitan/gangguan penglihatan meskipun menggunakan alat bantu melihat?",
+          "datatype": "varchar(2)",
+          "keterangan": "1. Ya, sama sekali tidak bisa\n2. Ya, banyak kesulitan dan membutuhkan bantuan\n3. Ya, sedikit kesulitan, tapi tidak membutuhkan bantuan\n4. Tidak mengalami kesulitan",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Ya, sama sekali tidak bisa"
+              },
+              {
+                "code": "2",
+                "label": "Ya, banyak kesulitan dan membutuhkan bantuan"
+              },
+              {
+                "code": "3",
+                "label": "Ya, sedikit kesulitan, tapi tidak membutuhkan bantuan"
+              },
+              {
+                "code": "4",
+                "label": "Tidak mengalami kesulitan"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 25,
+          "key": "pendengaran",
+          "label": "Pendengaran",
+          "definition": "Kesulitan/gangguan pendengaran meskipun menggunakan alat bantu dengar",
+          "datatype": "varchar(2)",
+          "keterangan": "1. Ya, sama sekali tidak bisa\n2. Ya, banyak kesulitan dan membutuhkan bantuan\n3. Ya, sedikit kesulitan, tapi tidak membutuhkan bantuan\n4. Tidak mengalami kesulitan",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Ya, sama sekali tidak bisa"
+              },
+              {
+                "code": "2",
+                "label": "Ya, banyak kesulitan dan membutuhkan bantuan"
+              },
+              {
+                "code": "3",
+                "label": "Ya, sedikit kesulitan, tapi tidak membutuhkan bantuan"
+              },
+              {
+                "code": "4",
+                "label": "Tidak mengalami kesulitan"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 26,
+          "key": "berjalan_atau_naik_tangga",
+          "label": "Berjalan atau Naik Tangga",
+          "definition": "Kesulitan/gangguan berjalan atau naik tangga",
+          "datatype": "varchar(2)",
+          "keterangan": "1. Ya, sama sekali tidak bisa\n2. Ya, banyak kesulitan dan membutuhkan bantuan\n3. Ya, sedikit kesulitan, tapi tidak membutuhkan bantuan\n4. Tidak mengalami kesulitan",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Ya, sama sekali tidak bisa"
+              },
+              {
+                "code": "2",
+                "label": "Ya, banyak kesulitan dan membutuhkan bantuan"
+              },
+              {
+                "code": "3",
+                "label": "Ya, sedikit kesulitan, tapi tidak membutuhkan bantuan"
+              },
+              {
+                "code": "4",
+                "label": "Tidak mengalami kesulitan"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 27,
+          "key": "menggunakan_tangan_jari",
+          "label": "Menggunakan Tangan Jari",
+          "definition": "Kesulitan/gangguan menggerakkan/menggunakan tangan/ jari",
+          "datatype": "varchar(2)",
+          "keterangan": "1. Ya, sama sekali tidak bisa\n2. Ya, banyak kesulitan dan membutuhkan bantuan\n3. Ya, sedikit kesulitan, tapi tidak membutuhkan bantuan\n4. Tidak mengalami kesulitan",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Ya, sama sekali tidak bisa"
+              },
+              {
+                "code": "2",
+                "label": "Ya, banyak kesulitan dan membutuhkan bantuan"
+              },
+              {
+                "code": "3",
+                "label": "Ya, sedikit kesulitan, tapi tidak membutuhkan bantuan"
+              },
+              {
+                "code": "4",
+                "label": "Tidak mengalami kesulitan"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 28,
+          "key": "belajar_kemampuan_intelektual",
+          "label": "Belajar Kemampuan Intelektual",
+          "definition": "Dibandingkan dengan yang sebaya, individu mengalami kesulitan/gangguan dalam belajar atau kemampuan intelektual",
+          "datatype": "varchar(2)",
+          "keterangan": "1. Ya, sama sekali tidak bisa\n2. Ya, banyak kesulitan dan membutuhkan bantuan\n3. Ya, sedikit kesulitan, tapi tidak membutuhkan bantuan\n4. Tidak mengalami kesulitan",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Ya, sama sekali tidak bisa"
+              },
+              {
+                "code": "2",
+                "label": "Ya, banyak kesulitan dan membutuhkan bantuan"
+              },
+              {
+                "code": "3",
+                "label": "Ya, sedikit kesulitan, tapi tidak membutuhkan bantuan"
+              },
+              {
+                "code": "4",
+                "label": "Tidak mengalami kesulitan"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 29,
+          "key": "pengendalian_perilaku",
+          "label": "Pengendalian Perilaku",
+          "definition": "Dibandingkan dengan yang sebaya, individu mengalami kesulitan/gangguan mengendalikan perilaku",
+          "datatype": "varchar(2)",
+          "keterangan": "1. Ya, sama sekali tidak bisa\n2. Ya, banyak kesulitan dan membutuhkan bantuan\n3. Ya, sedikit kesulitan, tapi tidak membutuhkan bantuan\n4. Tidak mengalami kesulitan",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Ya, sama sekali tidak bisa"
+              },
+              {
+                "code": "2",
+                "label": "Ya, banyak kesulitan dan membutuhkan bantuan"
+              },
+              {
+                "code": "3",
+                "label": "Ya, sedikit kesulitan, tapi tidak membutuhkan bantuan"
+              },
+              {
+                "code": "4",
+                "label": "Tidak mengalami kesulitan"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 30,
+          "key": "berbicara_komunikasi",
+          "label": "Berbicara Komunikasi",
+          "definition": "Kesulitan/gangguan berbicara/berkomunikasi",
+          "datatype": "varchar(2)",
+          "keterangan": "1. Ya, sama sekali tidak bisa\n2. Ya, banyak kesulitan dan membutuhkan bantuan\n3. Ya, sedikit kesulitan, tapi tidak membutuhkan bantuan\n4. Tidak mengalami kesulitan",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Ya, sama sekali tidak bisa"
+              },
+              {
+                "code": "2",
+                "label": "Ya, banyak kesulitan dan membutuhkan bantuan"
+              },
+              {
+                "code": "3",
+                "label": "Ya, sedikit kesulitan, tapi tidak membutuhkan bantuan"
+              },
+              {
+                "code": "4",
+                "label": "Tidak mengalami kesulitan"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 31,
+          "key": "mengurus_diri",
+          "label": "Mengurus Diri",
+          "definition": "Kesulitan/gangguan untuk mengurus diri sendiri? (mandi, makan, berpakaian, BAK, BAB)",
+          "datatype": "varchar(2)",
+          "keterangan": "1. Ya, sama sekali tidak bisa\n2. Ya, banyak kesulitan dan membutuhkan bantuan\n3. Ya, sedikit kesulitan, tapi tidak membutuhkan bantuan\n4. Tidak mengalami kesulitan",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Ya, sama sekali tidak bisa"
+              },
+              {
+                "code": "2",
+                "label": "Ya, banyak kesulitan dan membutuhkan bantuan"
+              },
+              {
+                "code": "3",
+                "label": "Ya, sedikit kesulitan, tapi tidak membutuhkan bantuan"
+              },
+              {
+                "code": "4",
+                "label": "Tidak mengalami kesulitan"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 32,
+          "key": "mengingat_berkonsentrasi",
+          "label": "Mengingat Berkonsentrasi",
+          "definition": "Kesulitan/gangguan mengingat/berkonsentrasi",
+          "datatype": "varchar(2)",
+          "keterangan": "1. Ya, sama sekali tidak bisa\n2. Ya, banyak kesulitan dan membutuhkan bantuan\n3. Ya, sedikit kesulitan, tapi tidak membutuhkan bantuan\n4. Tidak mengalami kesulitan",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Ya, sama sekali tidak bisa"
+              },
+              {
+                "code": "2",
+                "label": "Ya, banyak kesulitan dan membutuhkan bantuan"
+              },
+              {
+                "code": "3",
+                "label": "Ya, sedikit kesulitan, tapi tidak membutuhkan bantuan"
+              },
+              {
+                "code": "4",
+                "label": "Tidak mengalami kesulitan"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 33,
+          "key": "kesedihan_depresi",
+          "label": "Kesedihan Depresi",
+          "definition": "Gangguan kesedihan depresi",
+          "datatype": "varchar(2)",
+          "keterangan": "1. Sangat sering\n2. Sering\n3. Jarang\n4. Tidak pernah",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [
+              {
+                "code": "1",
+                "label": "Sangat sering"
+              },
+              {
+                "code": "2",
+                "label": "Sering"
+              },
+              {
+                "code": "3",
+                "label": "Jarang"
+              },
+              {
+                "code": "4",
+                "label": "Tidak pernah"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 34,
+          "key": "penyakit_kronis",
+          "label": "Penyakit Kronis",
+          "definition": "Keluhan kesehatan kronis/menahun",
+          "datatype": "varchar(2)",
+          "keterangan": "01. Tidak Ada\n02. Hipertensi (darah tinggi)\n03. Rematik\n04. Asma\n05. Masalah jantung\n06. Diabetes (kencing manis)\n07. Tuberculosis (TBC)\n08. Stroke\n09. Kanker atau tumor ganas\n10. Gagal ginjal\n11. Haemophilia\n12. HIV/AIDS\n13. Kolesterol\n14. Sirosis Hati\n15. Thalasemia\n16. Leukimia\n17. Alzheimer\n18. Lainnya",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [
+              {
+                "code": "01",
+                "label": "Tidak Ada"
+              },
+              {
+                "code": "02",
+                "label": "Hipertensi (darah tinggi)"
+              },
+              {
+                "code": "03",
+                "label": "Rematik"
+              },
+              {
+                "code": "04",
+                "label": "Asma"
+              },
+              {
+                "code": "05",
+                "label": "Masalah jantung"
+              },
+              {
+                "code": "06",
+                "label": "Diabetes (kencing manis)"
+              },
+              {
+                "code": "07",
+                "label": "Tuberculosis (TBC)"
+              },
+              {
+                "code": "08",
+                "label": "Stroke"
+              },
+              {
+                "code": "09",
+                "label": "Kanker atau tumor ganas"
+              },
+              {
+                "code": "10",
+                "label": "Gagal ginjal"
+              },
+              {
+                "code": "11",
+                "label": "Haemophilia"
+              },
+              {
+                "code": "12",
+                "label": "HIV/AIDS"
+              },
+              {
+                "code": "13",
+                "label": "Kolesterol"
+              },
+              {
+                "code": "14",
+                "label": "Sirosis Hati"
+              },
+              {
+                "code": "15",
+                "label": "Thalasemia"
+              },
+              {
+                "code": "16",
+                "label": "Leukimia"
+              },
+              {
+                "code": "17",
+                "label": "Alzheimer"
+              },
+              {
+                "code": "18",
+                "label": "Lainnya"
+              }
+            ],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 35,
+          "key": "kode_provinsi_ktp",
+          "label": "Kode Provinsi (KTP)",
+          "definition": "Kode provinsi yang tercatat di Dukcapil",
+          "datatype": "varchar(2)",
+          "keterangan": "2 digit kode provinsi yang tercatat di Dukcapil",
+          "rules": {
+            "required": false,
+            "max_length": 2,
+            "datatype": "varchar(2)",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 36,
+          "key": "provinsi_ktp",
+          "label": "Provinsi (KTP)",
+          "definition": "Nama provinsi yang tercatat di Dukcapil",
+          "datatype": "varchar(100)",
+          "keterangan": "",
+          "rules": {
+            "required": false,
+            "max_length": 100,
+            "datatype": "varchar(100)",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 37,
+          "key": "kode_kabupaten_kota_ktp",
+          "label": "Kode Kabupaten/Kota (KTP)",
+          "definition": "Kode kabupaten/kota yang tercatat di Dukcapil",
+          "datatype": "varchar(4)",
+          "keterangan": "4 digit kode kabupaten/kota yang tercatat di Dukcapil",
+          "rules": {
+            "required": false,
+            "max_length": 4,
+            "datatype": "varchar(4)",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 38,
+          "key": "kabupaten_kota_ktp",
+          "label": "Kabupaten/Kota (KTP)",
+          "definition": "Nama kabupaten/kota yang tercatat di Dukcapil",
+          "datatype": "varchar(100)",
+          "keterangan": "",
+          "rules": {
+            "required": false,
+            "max_length": 100,
+            "datatype": "varchar(100)",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 39,
+          "key": "kode_kecamatan_ktp",
+          "label": "Kode Kecamatan (KTP)",
+          "definition": "Kode kecamatan yang tercatat di Dukcapil",
+          "datatype": "varchar(7)",
+          "keterangan": "7 digit kode kecamatan yang tercatat di Dukcapil",
+          "rules": {
+            "required": false,
+            "max_length": 7,
+            "datatype": "varchar(7)",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 40,
+          "key": "kecamatan_ktp",
+          "label": "Kecamatan (KTP)",
+          "definition": "Nama kecamatan yang tercatat di Dukcapil",
+          "datatype": "varchar(100)",
+          "keterangan": "",
+          "rules": {
+            "required": false,
+            "max_length": 100,
+            "datatype": "varchar(100)",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 41,
+          "key": "kode_kelurahan_desa_ktp",
+          "label": "Kode Kelurahan/Desa (KTP)",
+          "definition": "Kode kelurahan/desa yang tercatat di Dukcapil",
+          "datatype": "varchar(10)",
+          "keterangan": "10 digit kode kelurahan/desa yang tercatat di Dukcapil",
+          "rules": {
+            "required": false,
+            "max_length": 10,
+            "datatype": "varchar(10)",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 42,
+          "key": "kelurahan_desa_ktp",
+          "label": "Kelurahan/Desa (KTP)",
+          "definition": "Nama kelurahan/desa yang tercatat di Dukcapil",
+          "datatype": "varchar(100)",
+          "keterangan": "",
+          "rules": {
+            "required": false,
+            "max_length": 100,
+            "datatype": "varchar(100)",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 43,
+          "key": "rt_ktp",
+          "label": "RT (KTP)",
+          "definition": "RT yang tercatat di Dukcapil",
+          "datatype": "varchar(5)",
+          "keterangan": "",
+          "rules": {
+            "required": false,
+            "max_length": 5,
+            "datatype": "varchar(5)",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 44,
+          "key": "rw_ktp",
+          "label": "RW (KTP)",
+          "definition": "RW yang tercatat di Dukcapil",
+          "datatype": "varchar(5)",
+          "keterangan": "",
+          "rules": {
+            "required": false,
+            "max_length": 5,
+            "datatype": "varchar(5)",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 45,
+          "key": "dusun_ktp",
+          "label": "Dusun (KTP)",
+          "definition": "Dusun yang tercatat di Dukcapil",
+          "datatype": "varchar(100)",
+          "keterangan": "",
+          "rules": {
+            "required": false,
+            "max_length": 100,
+            "datatype": "varchar(100)",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 46,
+          "key": "alamat_ktp",
+          "label": "Alamat (KTP)",
+          "definition": "Alamat yang tercatat di Dukcapil",
+          "datatype": "varchar(500)",
+          "keterangan": "",
+          "rules": {
+            "required": false,
+            "max_length": 500,
+            "datatype": "varchar(500)",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 47,
+          "key": "pekerjaan_ktp",
+          "label": "Pekerjaan (KTP)",
+          "definition": "Pekerjaan yang tercatat di Dukcapil",
+          "datatype": "varchar(500)",
+          "keterangan": "",
+          "rules": {
+            "required": false,
+            "max_length": 500,
+            "datatype": "varchar(500)",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        },
+        {
+          "no": 48,
+          "key": "pendidikan_akhir_ktp",
+          "label": "Pendidikan Akhir (KTP)",
+          "definition": "Pendidikan terakhir yang tercatat di Dukcapil",
+          "datatype": "varchar(100)",
+          "keterangan": "",
+          "rules": {
+            "required": false,
+            "max_length": 100,
+            "datatype": "varchar(100)",
+            "allowed_codes": [],
+            "error_type": "Warning"
+          }
+        }
+      ]
+    }
+  },
+  "total_variables": 100,
+  "total_keluarga_vars": 52,
+  "total_anggota_vars": 48,
+  "parsed_at": "2026-10-07 09:10:00"
+}

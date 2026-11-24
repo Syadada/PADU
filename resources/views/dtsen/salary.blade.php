@@ -274,7 +274,7 @@
             </div>
 
             <!-- MODAL POPUP ATUR HEADER FILTER DI ATAS (DARI SELURUH HEADER DATASET) -->
-            <div x-show="showFilterModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs p-3 sm:p-6 flex items-center justify-center">
+            <div x-show="showFilterModal" x-cloak style="display: none;" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs p-3 sm:p-6 flex items-center justify-center">
                 <div @click.away="showFilterModal = false" class="bg-white rounded-2xl max-w-4xl w-full p-5 sm:p-6 space-y-4 shadow-2xl border border-slate-200 my-auto flex flex-col max-h-[88vh]">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-3 shrink-0">
                         <h3 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
@@ -360,7 +360,7 @@
             </div>
 
             <!-- MODAL POPUP ATUR KOLOM TABEL (UNTUK TABEL BAWAH) -->
-            <div x-show="showColumnModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs p-3 sm:p-6 flex items-center justify-center">
+            <div x-show="showColumnModal" x-cloak style="display: none;" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs p-3 sm:p-6 flex items-center justify-center">
                 <div @click.away="showColumnModal = false" class="bg-white rounded-2xl max-w-4xl w-full p-5 sm:p-6 space-y-4 shadow-2xl border border-slate-200 my-auto flex flex-col max-h-[88vh]">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-3 shrink-0">
                         <h3 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">

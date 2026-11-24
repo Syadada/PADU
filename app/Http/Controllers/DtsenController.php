@@ -138,7 +138,7 @@ class DtsenController extends Controller
      */
     public static function getAllOfficialVariables()
     {
-        return array_merge(
+        $base = array_merge(
             ['quality_status' => 'QC Status (Quality Check)'],
             self::getOfficialIndividuVariables(),
             self::getOfficialKeluargaVariables(),
@@ -148,6 +148,13 @@ class DtsenController extends Controller
                 'usia' => 'Usia (Tahun)',
             ]
         );
+
+        $podesDict = \App\Services\MetadataTranslatorService::getPodesDictionary();
+        if (!empty($podesDict['flat_labels'])) {
+            $base = array_merge($base, $podesDict['flat_labels']);
+        }
+
+        return $base;
     }
 
     /**
@@ -342,7 +349,6 @@ class DtsenController extends Controller
             $systemAliases = [
                 'id', 'created_at', 'updated_at', 'extra_attributes', 'quality_status', 'quality_issues', 
                 'nik', 'no_kk', 'kk', 'nama_lengkap', 'gaji', 'desil', 'umur',
-                'r101n', 'r102n', 'r103n', 'r104n',
                 'provinsi_nama', 'kabupaten_nama', 'kecamatan_nama', 'kelurahan_nama', 'desa_nama',
                 'nama_provinsi', 'nama_kabupaten', 'nama_kecamatan', 'nama_desa', 'nama_kelurahan',
                 'prov_nama', 'kab_nama', 'kec_nama', 'des_nama',
@@ -353,14 +359,19 @@ class DtsenController extends Controller
             if (!empty($duckDbCols)) {
                 foreach ($duckDbCols as $k => $v) {
                     $colKey = is_int($k) ? strtolower(trim((string)$v)) : strtolower(trim((string)$k));
-                    if (in_array($colKey, $systemAliases)) {
+                    if (empty($colKey) || in_array($colKey, $systemAliases)) {
                         continue;
                     }
                     if (isset($masterDict[$colKey])) {
                         $activeColumnsMap[$colKey] = $masterDict[$colKey];
                     } else {
-                        $label = (is_string($v) && !is_numeric($k)) ? $v : ucwords(str_replace(['_', '-'], ' ', $colKey));
-                        $activeColumnsMap[$colKey] = $label;
+                        $podesLbl = \App\Services\MetadataTranslatorService::getPodesLabel($colKey);
+                        if ($podesLbl !== null) {
+                            $activeColumnsMap[$colKey] = $podesLbl;
+                        } else {
+                            $label = (is_string($v) && !is_numeric($k) && !empty($v)) ? $v : ucwords(str_replace(['_', '-'], ' ', $colKey));
+                            $activeColumnsMap[$colKey] = $label ?: "Kolom " . $colKey;
+                        }
                     }
                 }
             }
@@ -370,50 +381,140 @@ class DtsenController extends Controller
             }
         }
 
-        // Evaluasi Lingkup Set Data yang Aktif (Set Individu vs Set Keluarga vs Gabungan Keduanya)
+        // Evaluasi Lingkup Set Data yang Aktif (PODES vs Individu vs Keluarga vs Gabungan Keduanya)
+        $podesDictData = \App\Services\MetadataTranslatorService::getPodesDictionary();
+        $podesVars = $podesDictData['variables'] ?? [];
+
+        $matchedPodesActive = 0;
+        foreach ($activeColumnsMap as $colK => $colTitle) {
+            $cLower = strtolower($colK);
+            if (isset($podesVars[$cLower]) || preg_match('/^r[0-9]+/i', $cLower)) {
+                $matchedPodesActive++;
+            }
+        }
+
+        $isPodesDataset = ($matchedPodesActive >= 2);
+        $podesCategoryGroups = [];
+
         $matchedIndividuActive = 0;
         $matchedKeluargaActive = 0;
         $activeIndividuCols = [];
         $activeKeluargaCols = [];
         $activeExtraCols = [];
 
-        foreach ($activeColumnsMap as $colK => $colTitle) {
-            $norm = DtsenImportService::normalizeHeaderKey($colK)['key'];
-            if (isset($allIndividuDict[$norm]) || isset($allIndividuDict[$colK])) {
-                $matchedIndividuActive++;
-                $activeIndividuCols[$colK] = $colTitle;
-            } elseif (isset($allKeluargaDict[$norm]) || isset($allKeluargaDict[$colK])) {
-                $matchedKeluargaActive++;
-                $activeKeluargaCols[$colK] = $colTitle;
-            } else {
-                $activeExtraCols[$colK] = $colTitle;
-            }
-        }
+        if ($isPodesDataset) {
+            $activeDatasetScope = 'podes';
+            $activeDatasetScopeLabel = 'Set Potensi Desa (PODES BPS)';
+            $activeDatasetScopeBadge = 'bg-teal-50 text-teal-700 border-teal-200';
+            $activeDatasetScopeIcon = 'fi fi-rr-building';
+            $activeDatasetScopeDesc = 'Dataset aktif memuat survei Potensi Desa (PODES) BPS - Mencakup data geografi, sarana prasarana, pemerintahan, dan fasilitas desa.';
 
-        if ($matchedIndividuActive > 0 && $matchedKeluargaActive > 0) {
-            $activeDatasetScope = 'gabungan';
-            $activeDatasetScopeLabel = 'Set Terpadu (Keduanya)';
-            $activeDatasetScopeBadge = 'bg-indigo-50 text-indigo-700 border-indigo-200';
-            $activeDatasetScopeIcon = 'fi fi-rr-apps';
-            $activeDatasetScopeDesc = 'Dataset aktif memuat kombinasi data Anggota Keluarga (Individu) dan Rumah Tangga (Keluarga).';
-        } elseif ($matchedIndividuActive > 0 && $matchedKeluargaActive === 0) {
-            $activeDatasetScope = 'individu';
-            $activeDatasetScopeLabel = 'Set Anggota Keluarga (Individu)';
-            $activeDatasetScopeBadge = 'bg-blue-50 text-blue-700 border-blue-200';
-            $activeDatasetScopeIcon = 'fi fi-rr-user';
-            $activeDatasetScopeDesc = 'Dataset aktif berfokus pada data Anggota Keluarga / Individu (NIK, Nama, Pekerjaan, Gaji, dll.).';
-        } elseif ($matchedIndividuActive === 0 && $matchedKeluargaActive > 0) {
-            $activeDatasetScope = 'keluarga';
-            $activeDatasetScopeLabel = 'Set Rumah Tangga (Keluarga)';
-            $activeDatasetScopeBadge = 'bg-emerald-50 text-emerald-700 border-emerald-200';
-            $activeDatasetScopeIcon = 'fi fi-rr-home';
-            $activeDatasetScopeDesc = 'Dataset aktif berfokus pada data Rumah Tangga / Keluarga (No. KK, Desil, Alamat, Fasilitas Hunian, dll.).';
+            $blockMetaMap = [
+                'Blok I: Keterangan Tempat / Geografi' => ['icon' => 'fi fi-rr-map-marker', 'color' => 'wilayah', 'title' => 'Blok I: Keterangan Geografi & Wilayah Desa'],
+                'Blok III: Kependudukan & Pemerintahan' => ['icon' => 'fi fi-rr-building', 'color' => 'pemerintahan', 'title' => 'Blok III: Pemerintahan Desa, Aparatur & SLS'],
+                'Blok IV: Perumahan & Lingkungan Hidup' => ['icon' => 'fi fi-rr-home', 'color' => 'infrastruktur', 'title' => 'Blok IV: Perumahan & Lingkungan Hidup'],
+                'Blok V: Bencana Alam & Mitigasi' => ['icon' => 'fi fi-rr-shield-exclamation', 'color' => 'bencana_ekonomi', 'title' => 'Blok V: Bencana Alam & Mitigasi'],
+                'Blok VI: Pendidikan & Kesehatan' => ['icon' => 'fi fi-rr-graduation-cap', 'color' => 'sosial_agama', 'title' => 'Blok VI: Pendidikan & Kesehatan'],
+                'Blok VII: Sosial Budaya' => ['icon' => 'fi fi-rr-users-alt', 'color' => 'sosial_agama', 'title' => 'Blok VII: Sosial Budaya'],
+                'Blok VIII: Agama, Tempat Ibadah & Olahraga' => ['icon' => 'fi fi-rr-heart', 'color' => 'sosial_agama', 'title' => 'Blok VIII: Agama, Tempat Ibadah & Olahraga'],
+                'Blok IX: Pertanian & Penggunaan Lahan' => ['icon' => 'fi fi-rr-leaf', 'color' => 'infrastruktur', 'title' => 'Blok IX: Pertanian & Penggunaan Lahan'],
+                'Blok X: Angkutan, Komunikasi & Informasi' => ['icon' => 'fi fi-rr-signal-alt-2', 'color' => 'infrastruktur', 'title' => 'Blok X: Angkutan, Komunikasi & Informasi'],
+                'Blok XII: Keamanan & Kamtibmas' => ['icon' => 'fi fi-rr-shield-check', 'color' => 'bencana_ekonomi', 'title' => 'Blok XII: Keamanan & Kamtibmas'],
+                'Blok XIII: Konflik & Perkelahian Massal' => ['icon' => 'fi fi-rr-triangle-warning', 'color' => 'bencana_ekonomi', 'title' => 'Blok XIII: Konflik & Perkelahian Massal'],
+                'Blok XIV: Keuangan & Aset Desa' => ['icon' => 'fi fi-rr-coins', 'color' => 'wilayah', 'title' => 'Blok XIV: Keuangan & Aset Desa'],
+                'Blok XV: Aparatur Pemerintah Desa' => ['icon' => 'fi fi-rr-user-tie', 'color' => 'pemerintahan', 'title' => 'Blok XV: Aparatur Pemerintah Desa'],
+                'Blok XVI: Keterangan Tambahan' => ['icon' => 'fi fi-rr-document-signed', 'color' => 'lainnya', 'title' => 'Blok XVI: Keterangan Tambahan'],
+            ];
+
+            foreach ($blockMetaMap as $bName => $bMeta) {
+                $podesCategoryGroups[$bName] = [
+                    'title' => $bMeta['title'],
+                    'icon' => $bMeta['icon'],
+                    'color_key' => $bMeta['color'],
+                    'cols' => []
+                ];
+            }
+            $podesCategoryGroups['lainnya'] = [
+                'title' => 'Variabel Survei PODES Tambahan',
+                'icon' => 'fi fi-rr-boxes',
+                'color_key' => 'lainnya',
+                'cols' => []
+            ];
+
+            foreach ($activeColumnsMap as $colK => $colTitle) {
+                $cLower = strtolower($colK);
+                $assignedBlock = null;
+
+                if (in_array($cLower, ['provinsi', 'kabupaten_kota', 'kecamatan', 'kelurahan_desa', 'r101', 'r101n', 'r102', 'r102n', 'r103', 'r103n', 'r104', 'r104n', 'r105', 'status_daerah', 'alamat']) || (str_starts_with($cLower, 'r10') && !str_starts_with($cLower, 'r100'))) {
+                    $assignedBlock = 'Blok I: Keterangan Tempat / Geografi';
+                } elseif (in_array($cLower, ['status_pemerintahan_desa', 'r301'])) {
+                    $assignedBlock = 'Blok III: Kependudukan & Pemerintahan';
+                } elseif (isset($podesVars[$cLower]['block']) && isset($podesCategoryGroups[$podesVars[$cLower]['block']])) {
+                    $assignedBlock = $podesVars[$cLower]['block'];
+                } elseif (str_starts_with($cLower, 'r3')) {
+                    $assignedBlock = 'Blok III: Kependudukan & Pemerintahan';
+                } elseif (str_starts_with($cLower, 'r4')) {
+                    $assignedBlock = 'Blok IV: Perumahan & Lingkungan Hidup';
+                } elseif (str_starts_with($cLower, 'r5')) {
+                    $assignedBlock = 'Blok IV: Perumahan & Lingkungan Hidup';
+                } elseif (str_starts_with($cLower, 'r6')) {
+                    $assignedBlock = 'Blok V: Bencana Alam & Mitigasi';
+                } elseif (str_starts_with($cLower, 'r7')) {
+                    $assignedBlock = 'Blok VI: Pendidikan & Kesehatan';
+                } elseif (str_starts_with($cLower, 'r8')) {
+                    $assignedBlock = 'Blok VIII: Agama, Tempat Ibadah & Olahraga';
+                } elseif (str_starts_with($cLower, 'r9') || str_starts_with($cLower, 'r10')) {
+                    $assignedBlock = 'Blok X: Angkutan, Komunikasi & Informasi';
+                }
+
+                if ($assignedBlock && isset($podesCategoryGroups[$assignedBlock])) {
+                    $podesCategoryGroups[$assignedBlock]['cols'][$colK] = $colTitle;
+                } else {
+                    $podesCategoryGroups['lainnya']['cols'][$colK] = $colTitle;
+                }
+            }
         } else {
-            $activeDatasetScope = 'kustom';
-            $activeDatasetScopeLabel = 'Set Data Kustom';
-            $activeDatasetScopeBadge = 'bg-slate-100 text-slate-700 border-slate-300';
-            $activeDatasetScopeIcon = 'fi fi-rr-document';
-            $activeDatasetScopeDesc = 'Dataset aktif memuat variabel kustom.';
+            foreach ($activeColumnsMap as $colK => $colTitle) {
+                $norm = DtsenImportService::normalizeHeaderKey($colK)['key'];
+                if ($colK === 'alamat' || $norm === 'alamat') {
+                    $matchedKeluargaActive++;
+                    $activeKeluargaCols[$colK] = $colTitle;
+                } elseif (isset($allIndividuDict[$norm]) || isset($allIndividuDict[$colK])) {
+                    $matchedIndividuActive++;
+                    $activeIndividuCols[$colK] = $colTitle;
+                } elseif (isset($allKeluargaDict[$norm]) || isset($allKeluargaDict[$colK])) {
+                    $matchedKeluargaActive++;
+                    $activeKeluargaCols[$colK] = $colTitle;
+                } else {
+                    $activeExtraCols[$colK] = $colTitle;
+                }
+            }
+
+            if ($matchedIndividuActive > 0 && $matchedKeluargaActive > 0) {
+                $activeDatasetScope = 'gabungan';
+                $activeDatasetScopeLabel = 'Set Terpadu (Keduanya)';
+                $activeDatasetScopeBadge = 'bg-indigo-50 text-indigo-700 border-indigo-200';
+                $activeDatasetScopeIcon = 'fi fi-rr-apps';
+                $activeDatasetScopeDesc = 'Dataset aktif memuat kombinasi data Anggota Keluarga (Individu) dan Rumah Tangga (Keluarga).';
+            } elseif ($matchedIndividuActive > 0 && $matchedKeluargaActive === 0) {
+                $activeDatasetScope = 'individu';
+                $activeDatasetScopeLabel = 'Set Anggota Keluarga (Individu)';
+                $activeDatasetScopeBadge = 'bg-blue-50 text-blue-700 border-blue-200';
+                $activeDatasetScopeIcon = 'fi fi-rr-user';
+                $activeDatasetScopeDesc = 'Dataset aktif berfokus pada data Anggota Keluarga / Individu (NIK, Nama, Pekerjaan, Gaji, dll.).';
+            } elseif ($matchedIndividuActive === 0 && $matchedKeluargaActive > 0) {
+                $activeDatasetScope = 'keluarga';
+                $activeDatasetScopeLabel = 'Set Rumah Tangga (Keluarga)';
+                $activeDatasetScopeBadge = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+                $activeDatasetScopeIcon = 'fi fi-rr-home';
+                $activeDatasetScopeDesc = 'Dataset aktif berfokus pada data Rumah Tangga / Keluarga (No. KK, Desil, Alamat, Fasilitas Hunian, dll.).';
+            } else {
+                $activeDatasetScope = 'kustom';
+                $activeDatasetScopeLabel = 'Set Data Kustom';
+                $activeDatasetScopeBadge = 'bg-slate-100 text-slate-700 border-slate-300';
+                $activeDatasetScopeIcon = 'fi fi-rr-document';
+                $activeDatasetScopeDesc = 'Dataset aktif memuat variabel kustom.';
+            }
         }
 
         // Scan folder src-export di root folder project
@@ -690,7 +791,9 @@ class DtsenController extends Controller
             'activeDatasetScopeDesc',
             'activeIndividuCols',
             'activeKeluargaCols',
-            'activeExtraCols'
+            'activeExtraCols',
+            'isPodesDataset',
+            'podesCategoryGroups'
         );
 
         return $viewData;

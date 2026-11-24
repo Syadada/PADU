@@ -5,6 +5,8 @@ import time
 import csv
 import struct
 import re
+import zipfile
+import xml.etree.ElementTree as ET
 import duckdb
 
 SYNONYM_MAP = {
@@ -21,16 +23,22 @@ SYNONYM_MAP = {
     'provinsi': ['provinsi', 'prov', 'provinsi_ktp', 'kd_prov', 'b1_r101_prov', 'kode_prov', 'b1_r101', 'r101', 'v101'],
     'kabupaten_kota': ['kabupaten_kota', 'kabupaten', 'kota', 'kab', 'kab_kota', 'kota_kabupaten', 'kd_kab', 'kode_kab', 'b1_r102', 'r102', 'v102'],
     'kecamatan': ['kecamatan', 'kec', 'kd_kec', 'kode_kec', 'b1_r103', 'r103', 'v103'],
-    'kelurahan_desa': ['kelurahan_desa', 'kelurahan', 'desa', 'kel', 'kd_kel', 'kd_desa', 'kode_desa', 'b1_r104', 'r104', 'v104', 'nama_desa'],
+    'kelurahan_desa': ['kelurahan_desa', 'kelurahan', 'desa', 'kel', 'kd_kel', 'kd_desa', 'kode_desa', 'b1_r104', 'r104', 'v104'],
     'alamat': ['alamat', 'alamat_ktp', 'alamat_lengkap', 'domisili', 'address', 'alamat_rumah', 'nama_jalan'],
-    'status_pemerintahan_desa': ['status_pemerintahan_desa', 'status_desa', 'status_kelurahan', 'r105', 'b1_r105']
+    'status_daerah': ['status_daerah', 'status_daerah_pencacahan', 'r105', 'b1_r105'],
+    'status_pemerintahan_desa': ['status_pemerintahan_desa', 'status_desa', 'status_kelurahan', 'r301', 'b1_r301']
 }
 
 def map_canonical_header(raw, idx=0):
     if not raw or not str(raw).strip():
         return f"col_{idx+1}"
+    
+    raw_str = str(raw).strip()
+    # Strip DBF/FoxPro/ODS type precision suffixes like ",C,2" or ",N,1,0" or ",N,19,17"
+    base = raw_str.split(',')[0].strip()
+    
     # Strictly alphanumeric and underscore only
-    clean = re.sub(r'[^a-zA-Z0-9_]', '_', str(raw).strip())
+    clean = re.sub(r'[^a-zA-Z0-9_]', '_', base)
     clean = re.sub(r'_+', '_', clean).strip('_').lower()
     if not clean:
         return f"col_{idx+1}"
@@ -46,6 +54,9 @@ def map_canonical_header(raw, idx=0):
     for canonical, synonyms in SYNONYM_MAP.items():
         for syn in synonyms:
             if len(syn) >= 3 and (clean.startswith(syn + '_') or clean.endswith('_' + syn)):
+                # Khusus PODES: pertahankan r101n - r104n sebagai companion name columns
+                if clean in ['r101n', 'r102n', 'r103n', 'r104n']:
+                    return clean
                 return canonical
     return clean
 
@@ -69,6 +80,72 @@ def update_progress(percent, message, start_time=None):
             json.dump(data, f)
     except Exception:
         pass
+
+def is_ods_source(file_path):
+    if not os.path.exists(file_path):
+        return False
+    if os.path.isdir(file_path):
+        return os.path.exists(os.path.join(file_path, 'content.xml'))
+    if file_path.lower().endswith('.ods'):
+        return True
+    try:
+        if zipfile.is_zipfile(file_path):
+            with zipfile.ZipFile(file_path, 'r') as z:
+                return 'content.xml' in z.namelist()
+    except Exception:
+        pass
+    return False
+
+def convert_ods_to_temp_csv(source_path):
+    dir_target = os.path.dirname(source_path) if os.path.isfile(source_path) else source_path
+    temp_csv = os.path.join(dir_target, f"_ods_{int(time.time())}.csv")
+    ns = {'table': 'urn:oasis:names:tc:opendocument:xmlns:table:1.0', 'text': 'urn:oasis:names:tc:opendocument:xmlns:text:1.0'}
+    t_ns = ns['table']
+    rep_attr = '{' + t_ns + '}number-columns-repeated'
+    
+    content_xml_bytes = None
+    if os.path.isdir(source_path):
+        c_path = os.path.join(source_path, 'content.xml')
+        with open(c_path, 'rb') as f:
+            content_xml_bytes = f.read()
+    else:
+        with zipfile.ZipFile(source_path, 'r') as z:
+            content_xml_bytes = z.read('content.xml')
+            
+    root = ET.fromstring(content_xml_bytes)
+    rows = []
+    for row in root.findall('.//table:table-row', ns):
+        r_data = []
+        for cell in row.findall('.//table:table-cell', ns):
+            rep = int(cell.attrib.get(rep_attr, 1))
+            text_elems = cell.findall('.//text:p', ns)
+            val = ''.join([t.text for t in text_elems if t.text])
+            if rep > 1 and rep < 50:
+                for _ in range(rep):
+                    r_data.append(val)
+            else:
+                r_data.append(val)
+        if any(r_data):
+            rows.append(r_data)
+            
+    if not rows:
+        raise ValueError("Tabel ODS / content.xml kosong atau tidak terbaca.")
+        
+    # Pangkas kolom kosong di ujung kanan (trailing empty columns)
+    header_row = rows[0]
+    last_non_empty = len(header_row) - 1
+    while last_non_empty >= 0 and not str(header_row[last_non_empty]).strip():
+        last_non_empty -= 1
+    valid_cols_count = last_non_empty + 1
+    if valid_cols_count > 0:
+        rows = [r[:valid_cols_count] for r in rows]
+
+    with open(temp_csv, 'w', encoding='utf-8-sig', newline='') as f:
+        writer = csv.writer(f)
+        for r in rows:
+            writer.writerow(r)
+            
+    return temp_csv, rows[0]
 
 def is_dbf_file(file_path):
     if not os.path.exists(file_path) or os.path.getsize(file_path) < 32:
@@ -277,9 +354,20 @@ def run_fast_import(input_path, db_path, original_file_name=None):
         original_file_name = os.path.basename(input_path)
     dbf_cleanup = None
 
-    is_dbf = original_file_name.lower().endswith('.dbf') or input_path.lower().endswith('.dbf') or is_dbf_file(input_path)
+    is_ods = is_ods_source(input_path) or original_file_name.lower().endswith('.ods')
+    is_dbf = not is_ods and (original_file_name.lower().endswith('.dbf') or input_path.lower().endswith('.dbf') or is_dbf_file(input_path))
 
-    if is_dbf:
+    if is_ods:
+        update_progress(10, "Membaca & mengonversi tabel OpenDocument (ODS / content.xml)...", start_time)
+        print(f"[*] Mendeteksi format ODS / Koleksi XML: Mengonversi {original_file_name} ke CSV...", flush=True)
+        try:
+            temp_csv, ods_cols = convert_ods_to_temp_csv(input_path)
+            csv_path = temp_csv
+            dbf_cleanup = temp_csv
+        except Exception as e_ods:
+            print(f"[ERROR] Gagal membaca tabel ODS: {e_ods}", flush=True)
+            sys.exit(1)
+    elif is_dbf:
         update_progress(10, "Membaca & mengonversi tabel biner DBF (dBase / FoxPro)...", start_time)
         print(f"[*] Mendeteksi format DBF: Mengonversi {original_file_name} secara stream...", flush=True)
         try:
@@ -349,6 +437,19 @@ def run_fast_import(input_path, db_path, original_file_name=None):
                 con.execute(f'ALTER TABLE raw_stream RENAME COLUMN "{c_esc}" TO "{canonical}";')
             except Exception:
                 pass
+
+    # Drop any ghost columns that have no real header and are entirely NULL/empty
+    active_cols_after_rename = [c[1] for c in con.execute("PRAGMA table_info('raw_stream');").fetchall()]
+    for c in active_cols_after_rename:
+        if re.match(r'^(col_\d+|column\d+)$', c, re.I):
+            non_null_cnt = con.execute(f'SELECT COUNT(*) FROM raw_stream WHERE "{c}" IS NOT NULL AND TRIM(CAST("{c}" AS VARCHAR)) != \'\';').fetchone()[0]
+            if non_null_cnt == 0:
+                try:
+                    con.execute(f'ALTER TABLE raw_stream DROP COLUMN "{c}";')
+                    if c in used_cleans:
+                        used_cleans.remove(c)
+                except Exception:
+                    pass
 
     # 3. Create table individus with sequential id, and pre-initialize quality_issues and quality_status
     con.execute("CREATE OR REPLACE TABLE individus AS SELECT row_number() OVER () AS id, []::VARCHAR[] AS quality_issues, 'Valid'::VARCHAR AS quality_status, * FROM raw_stream;")
@@ -534,7 +635,7 @@ def run_fast_import(input_path, db_path, original_file_name=None):
             except Exception:
                 pass
 
-    headers = list(used_cleans)
+    headers = [c[1] for c in con.execute("PRAGMA table_info('individus');").fetchall() if c[1] not in ['id', 'quality_issues', 'quality_status']]
     con.close()
 
     update_progress(90, "Menyimpan dataset ke database lokal...", start_time)

@@ -7,31 +7,33 @@
 <div class="space-y-6" x-data="dtsenDataPageApp()">
     
     <!-- Header Banner Modul -->
-    <div class="p-5 sm:p-6 bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="p-4 sm:p-5 bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-3 sm:gap-4">
         <div class="flex flex-wrap items-center gap-2">
-            <span class="p-2 rounded-xl bg-blue-50 text-blue-600 text-lg font-bold flex items-center justify-center"><i class="{{ $activeDatasetScopeIcon ?? 'fi fi-rr-table' }}"></i></span>
+            <span class="p-2 rounded-xl bg-blue-50 text-blue-600 text-lg font-bold flex items-center justify-center shrink-0">
+                <i class="{{ $activeDatasetScopeIcon ?? 'fi fi-rr-table' }}"></i>
+            </span>
             <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">
                 Tabel Master Data Terpadu
             </h2>
-            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold border flex items-center gap-1 {{ $activeDatasetScopeBadge ?? 'bg-indigo-50 text-indigo-700 border-indigo-200' }}">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold border flex items-center gap-1 shrink-0 {{ $activeDatasetScopeBadge ?? 'bg-indigo-50 text-indigo-700 border-indigo-200' }}">
                 <i class="{{ $activeDatasetScopeIcon ?? 'fi fi-rr-apps' }}"></i> {{ $activeDatasetScopeLabel ?? 'Set Terpadu (Keduanya)' }}
             </span>
-            <span class="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-800 text-xs font-bold font-mono border border-slate-200">
+            <span class="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-800 text-xs font-bold font-mono border border-slate-200 shrink-0">
                 {{ number_format($records->total()) }} Baris
             </span>
         </div>
 
-        <div class="flex flex-wrap items-center gap-2 shrink-0">
+        <div class="flex flex-wrap items-center gap-1.5 sm:gap-2 shrink-0 justify-start lg:justify-end">
             <!-- Atur Kolom -->
             <button type="button" 
                     @click="showColumnModal = true" 
-                    class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl border border-slate-300 shadow-xs transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
-                <i class="fi fi-rr-settings-sliders"></i> <span>Atur Kolom ( <span x-text="visibleCols.length"></span>/{{ count($activeColumnsMap) }} )</span>
+                    class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl border border-slate-300 shadow-xs transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
+                <i class="fi fi-rr-settings-sliders"></i> <span>Atur Kolom (<span x-text="visibleCols.length"></span>/{{ count($activeColumnsMap) }})</span>
             </button>
             
             <!-- Unduh Hasil Pencarian (.CSV) -->
             <a href="{{ route('dtsen.export-search', request()->all()) }}" 
-               class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
+               class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
                title="Unduh hasil pencarian dan filter ke berkas CSV">
                 <i class="fi fi-rr-file-download text-sm"></i> <span>Unduh Hasil (.CSV)</span>
             </a>
@@ -39,14 +41,14 @@
             <!-- Ekspor Data Modal Trigger (.ZIP) -->
             <button type="button" 
                     @click="showExportModal = true" 
-                    class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl border border-slate-300 shadow-xs transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
+                    class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl border border-slate-300 shadow-xs transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
                     @if($totalRows === 0) disabled title="Belum ada data untuk diekspor" @endif>
                 <i class="fi fi-rr-upload"></i> <span>Ekspor Paket (.ZIP)</span>
             </button>
 
             <!-- Reset Filter -->
             <a href="{{ route('dtsen.data') }}" 
-               class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl border border-slate-300 shadow-xs transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
+               class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl border border-slate-300 shadow-xs transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
                 <i class="fi fi-rr-refresh"></i> <span>Reset Filter</span>
             </a>
 
@@ -54,7 +56,7 @@
             @if(($totalSystemRows ?? $totalRows) > 0)
                 <button type="button" 
                         @click="showClearModal = true; window.dispatchEvent(new CustomEvent('open-clear-modal'))" 
-                        class="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 font-extrabold text-xs rounded-xl border border-rose-300 shadow-xs transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
+                        class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 font-extrabold text-xs rounded-xl border border-rose-300 shadow-xs transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
                         title="Kosongkan seluruh dataset yang sedang aktif ditampilkan dari sistem">
                     <i class="fi fi-rr-trash"></i> <span>Kosongkan Data</span>
                 </button>
@@ -396,91 +398,324 @@
                         <button type="button" @click="showColumnModal = false" class="text-slate-400 hover:text-slate-700 font-extrabold text-lg p-1 cursor-pointer">&times;</button>
                     </div>
 
-                    <div class="space-y-4 overflow-y-auto pr-2 flex-1 scrollbar-thin max-h-[60vh]">
-                        <!-- Group 1: Set Data Anggota Keluarga (Individu) -->
-                        <div class="p-3 bg-blue-50/60 rounded-xl border border-blue-200 space-y-2">
-                            <h4 class="text-xs font-black uppercase text-blue-900 flex items-center gap-1.5 border-b border-blue-200 pb-1.5 justify-between">
-                                <span class="flex items-center gap-1.5"><i class="fi fi-rr-user"></i> Set Data Anggota Keluarga / Individu</span>
-                                <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-blue-100 text-blue-800 font-bold">{{ count($activeIndividuCols ?? []) }} Kolom Aktif</span>
-                            </h4>
-                            @if(!empty($activeIndividuCols) && count($activeIndividuCols) > 0)
-                                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                                    @foreach($activeIndividuCols as $cKey => $cTitle)
-                                        <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:bg-blue-100/60 cursor-pointer text-xs font-bold text-slate-800 transition-colors">
-                                            <input type="checkbox" id="toggle_col_{{ $cKey }}" name="toggle_col_{{ $cKey }}" aria-label="Tampilkan kolom {{ $cTitle }}" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
-                                            <span class="truncate" title="{{ $cTitle }}">{{ $cTitle }}</span>
-                                        </label>
+                    <!-- Dropdown Filter Kategori & Quick Toolbar (Anti-Scroll Down) -->
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/90 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 shrink-0">
+                        <div class="flex items-center gap-2 flex-1 min-w-0">
+                            <label for="podesBlockSelect" class="text-xs font-black text-slate-700 whitespace-nowrap flex items-center gap-1.5 shrink-0">
+                                <i class="fi fi-rr-filter text-blue-600"></i> Pilih Dropdown Kategori:
+                            </label>
+                            <select id="podesBlockSelect" 
+                                    x-model="selectedBlockFilter" 
+                                    class="w-full sm:w-auto flex-1 px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-bold text-slate-800 outline-none focus:ring-2 focus:ring-blue-500 shadow-2xs cursor-pointer truncate">
+                                <option value="all">-- Semua Kategori / Blok ({{ count($activeColumnsMap) }} Kolom) --</option>
+                                @if($isPodesDataset ?? false)
+                                    @foreach($podesCategoryGroups as $gKey => $gData)
+                                        @if(!empty($gData['cols']) && count($gData['cols']) > 0)
+                                            <option value="{{ $gKey }}">{{ $gData['title'] }} ({{ count($gData['cols']) }} Kolom)</option>
+                                        @endif
                                     @endforeach
-                                </div>
-                            @else
-                                <div class="p-3 bg-white/80 rounded-lg border border-dashed border-blue-200 text-slate-500 text-xs flex items-center gap-2 font-medium">
-                                    <i class="fi fi-rr-info text-blue-600"></i> Berkas dataset aktif tidak memuat variabel Set Individu (berfokus pada Set Rumah Tangga).
-                                </div>
-                            @endif
+                                @else
+                                    <option value="individu">Set Data Anggota Keluarga / Individu ({{ count($activeIndividuCols ?? []) }} Kolom)</option>
+                                    <option value="keluarga">Set Data Keluarga / Rumah Tangga ({{ count($activeKeluargaCols ?? []) }} Kolom)</option>
+                                    @if(!empty($activeExtraCols) && count($activeExtraCols) > 0)
+                                        <option value="extra">Variabel Tambahan / Survei ({{ count($activeExtraCols) }} Kolom)</option>
+                                    @endif
+                                @endif
+                            </select>
                         </div>
 
-                        <!-- Group 2: Set Data Keluarga -->
-                        <div class="p-3 bg-emerald-50/60 rounded-xl border border-emerald-200 space-y-2">
-                            <h4 class="text-xs font-black uppercase text-emerald-900 flex items-center gap-1.5 border-b border-emerald-200 pb-1.5 justify-between">
-                                <span class="flex items-center gap-1.5"><i class="fi fi-rr-home"></i> Set Data Keluarga / Rumah Tangga</span>
-                                <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-100 text-emerald-800 font-bold">{{ count($activeKeluargaCols ?? []) }} Kolom Aktif</span>
-                            </h4>
-                            @if(!empty($activeKeluargaCols) && count($activeKeluargaCols) > 0)
-                                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                                    @foreach($activeKeluargaCols as $cKey => $cTitle)
-                                        <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:bg-emerald-100/60 cursor-pointer text-xs font-bold text-slate-800 transition-colors">
-                                            <input type="checkbox" id="toggle_col_{{ $cKey }}" name="toggle_col_{{ $cKey }}" aria-label="Tampilkan kolom {{ $cTitle }}" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500">
-                                            <span class="truncate" title="{{ $cTitle }}">{{ $cTitle }}</span>
-                                        </label>
-                                    @endforeach
-                                </div>
-                            @else
-                                <div class="p-3 bg-white/80 rounded-lg border border-dashed border-emerald-200 text-slate-500 text-xs flex items-center gap-2 font-medium">
-                                    <i class="fi fi-rr-info text-emerald-600"></i> Berkas dataset aktif tidak memuat variabel Set Keluarga (berfokus pada Set Anggota Keluarga / Individu).
-                                </div>
-                            @endif
-                        </div>
+                        <!-- Quick Search & Toggle Actions -->
+                        <div class="flex items-center gap-2 shrink-0">
+                            <div class="relative w-44 sm:w-56">
+                                <i class="fi fi-rr-search text-slate-400 text-xs pointer-events-none" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%);"></i>
+                                <input type="text" 
+                                       x-model="colModalSearch" 
+                                       placeholder="Cari nama kolom..." 
+                                       style="padding-left: 28px !important; padding-right: 24px !important;" 
+                                       class="w-full py-1.5 text-xs bg-white border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+                                <button type="button" 
+                                        x-show="colModalSearch" 
+                                        @click="colModalSearch = ''" 
+                                        class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-bold cursor-pointer">&times;</button>
+                            </div>
 
-                        <!-- Group 3: Variabel Kuesioner Mentah / Tambahan (Survei) -->
-                        @if(!empty($activeExtraCols) && count($activeExtraCols) > 0)
-                            <div class="p-3 bg-purple-50/60 rounded-xl border border-purple-200 space-y-2.5" x-data="{ showRawCols: false }">
-                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-purple-200 pb-2">
-                                    <div>
-                                        <h4 class="text-xs font-black uppercase text-purple-900 flex items-center gap-1.5">
-                                            <i class="fi fi-rr-boxes"></i> Variabel Kuesioner Mentah / Tambahan (Survei)
+                            <button type="button" 
+                                    @click="allBlocksExpanded ? collapseAllBlocks() : expandAllBlocks()" 
+                                    class="px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold transition-colors flex items-center gap-1 cursor-pointer whitespace-nowrap shadow-2xs">
+                                <i class="fi fi-rr-expand text-blue-600" :class="allBlocksExpanded ? 'rotate-180' : ''"></i>
+                                <span x-text="allBlocksExpanded ? 'Tutup Semua' : 'Buka Semua'"></span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 overflow-y-auto pr-2 flex-1 scrollbar-thin max-h-[60vh]">
+                        @if($isPodesDataset ?? false)
+                            <!-- PODES CATEGORY GROUPS (Resmi BPS Potensi Desa 2021) DENGAN DROPDOWN ACCORDION -->
+                            @php
+                                $groupColors = [
+                                    'wilayah' => ['bg' => 'bg-teal-50/70', 'border' => 'border-teal-200', 'text' => 'text-teal-900', 'badge' => 'bg-teal-100 text-teal-800', 'check' => 'text-teal-600 focus:ring-teal-500'],
+                                    'pemerintahan' => ['bg' => 'bg-blue-50/70', 'border' => 'border-blue-200', 'text' => 'text-blue-900', 'badge' => 'bg-blue-100 text-blue-800', 'check' => 'text-blue-600 focus:ring-blue-500'],
+                                    'sosial_agama' => ['bg' => 'bg-emerald-50/70', 'border' => 'border-emerald-200', 'text' => 'text-emerald-900', 'badge' => 'bg-emerald-100 text-emerald-800', 'check' => 'text-emerald-600 focus:ring-emerald-500'],
+                                    'infrastruktur' => ['bg' => 'bg-indigo-50/70', 'border' => 'border-indigo-200', 'text' => 'text-indigo-900', 'badge' => 'bg-indigo-100 text-indigo-800', 'check' => 'text-indigo-600 focus:ring-indigo-500'],
+                                    'bencana_ekonomi' => ['bg' => 'bg-amber-50/70', 'border' => 'border-amber-200', 'text' => 'text-amber-900', 'badge' => 'bg-amber-100 text-amber-800', 'check' => 'text-amber-600 focus:ring-amber-500'],
+                                    'lainnya' => ['bg' => 'bg-purple-50/70', 'border' => 'border-purple-200', 'text' => 'text-purple-900', 'badge' => 'bg-purple-100 text-purple-800', 'check' => 'text-purple-600 focus:ring-purple-500'],
+                                ];
+                            @endphp
+
+                            @foreach($podesCategoryGroups as $gKey => $gData)
+                                @if(!empty($gData['cols']) && count($gData['cols']) > 0)
+                                    @php
+                                        $colorName = $gData['color_key'] ?? $gKey;
+                                        $cStyle = $groupColors[$colorName] ?? $groupColors['lainnya'];
+                                        $colKeysJson = json_encode(array_keys($gData['cols']));
+                                        $isFirstBlock = ($loop->first);
+                                    @endphp
+                                    <div x-show="selectedBlockFilter === 'all' || selectedBlockFilter === '{{ $gKey }}'"
+                                         class="rounded-xl border {{ $cStyle['border'] }} overflow-hidden transition-all shadow-2xs">
+                                        
+                                        <!-- Clickable Dropdown Accordion Header -->
+                                        <div @click="toggleBlock('{{ $gKey }}', {{ $isFirstBlock ? 'true' : 'false' }})" 
+                                             class="p-3 {{ $cStyle['bg'] }} flex items-center justify-between cursor-pointer select-none hover:brightness-95 transition-all">
+                                            <div class="flex items-center gap-2 min-w-0">
+                                                <span class="w-6 h-6 rounded-lg bg-white/80 flex items-center justify-center text-xs {{ $cStyle['text'] }} shadow-2xs shrink-0">
+                                                    <i class="{{ $gData['icon'] ?? 'fi fi-rr-folder' }}"></i>
+                                                </span>
+                                                <h4 class="text-xs font-black uppercase {{ $cStyle['text'] }} truncate">
+                                                    {{ $gData['title'] }}
+                                                </h4>
+                                                <span class="px-2 py-0.5 rounded text-[10px] font-mono {{ $cStyle['badge'] }} font-bold shrink-0">
+                                                    {{ count($gData['cols']) }} Kolom
+                                                </span>
+                                            </div>
+
+                                            <div class="flex items-center gap-2 shrink-0">
+                                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white text-slate-700 shadow-2xs border border-slate-200"
+                                                      x-text="visibleCountInBlock({{ $colKeysJson }}) + ' / {{ count($gData['cols']) }} Aktif'">
+                                                </span>
+
+                                                <div class="w-6 h-6 rounded-lg bg-white/80 flex items-center justify-center text-slate-600 transition-transform duration-200"
+                                                     :class="isBlockExpanded('{{ $gKey }}', {{ $isFirstBlock ? 'true' : 'false' }}) ? 'rotate-180' : ''">
+                                                    <i class="fi fi-rr-angle-small-down text-sm"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Collapsible Dropdown Body -->
+                                        <div x-show="isBlockExpanded('{{ $gKey }}', {{ $isFirstBlock ? 'true' : 'false' }})" 
+                                             x-cloak
+                                             class="p-3 bg-white space-y-2 border-t {{ $cStyle['border'] }}">
+                                            <!-- Quick Actions per Block -->
+                                            <div class="flex items-center justify-between pb-1.5 border-b border-slate-100 text-[11px]">
+                                                <span class="text-slate-500 font-medium">Klik kotak untuk menampilkan atau menyembunyikan kolom:</span>
+                                                <div class="flex items-center gap-2">
+                                                    <button type="button" @click.stop="selectAllInBlock({{ $colKeysJson }})" class="px-2.5 py-0.5 rounded bg-blue-50 text-blue-700 hover:bg-blue-100 font-bold transition-colors cursor-pointer text-[10px]">
+                                                        <i class="fi fi-rr-check"></i> Pilih Semua ({{ count($gData['cols']) }})
+                                                    </button>
+                                                    <button type="button" @click.stop="deselectAllInBlock({{ $colKeysJson }})" class="px-2.5 py-0.5 rounded bg-slate-100 text-slate-600 hover:bg-slate-200 font-bold transition-colors cursor-pointer text-[10px]">
+                                                        <i class="fi fi-rr-cross-small"></i> Kosongkan Blok
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <!-- Checkbox Grid -->
+                                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                                                @foreach($gData['cols'] as $cKey => $cTitle)
+                                                    @php
+                                                        $searchLower = strtolower($cTitle . ' ' . $cKey);
+                                                    @endphp
+                                                    <label x-show="!colModalSearch || '{{ addslashes($searchLower) }}'.includes(colModalSearch.toLowerCase())"
+                                                           class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-blue-300 cursor-pointer text-xs font-bold text-slate-800 transition-all shadow-2xs">
+                                                        <input type="checkbox" id="toggle_col_{{ $cKey }}" name="toggle_col_{{ $cKey }}" aria-label="Tampilkan kolom {{ $cTitle }}" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 {{ $cStyle['check'] }} rounded border-slate-300">
+                                                        <span class="truncate" title="{{ $cTitle }}">{{ $cTitle }}</span>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            @endforeach
+                        @else
+                            <!-- Group 1: Set Data Anggota Keluarga (Individu) dengan Dropdown Accordion -->
+                            <div x-show="selectedBlockFilter === 'all' || selectedBlockFilter === 'individu'"
+                                 class="rounded-xl border border-blue-200 overflow-hidden transition-all shadow-2xs">
+                                <div @click="toggleBlock('individu', true)" 
+                                     class="p-3 bg-blue-50/60 flex items-center justify-between cursor-pointer select-none hover:brightness-95 transition-all">
+                                    <div class="flex items-center gap-2 min-w-0">
+                                        <span class="w-6 h-6 rounded-lg bg-white/80 flex items-center justify-center text-xs text-blue-900 shadow-2xs shrink-0">
+                                            <i class="fi fi-rr-user"></i>
+                                        </span>
+                                        <h4 class="text-xs font-black uppercase text-blue-900 truncate">
+                                            Set Data Anggota Keluarga / Individu
                                         </h4>
-                                        <p class="text-[11px] text-purple-700 font-medium">
-                                            {{ count($activeExtraCols) }} kolom kode instrumen survei (misal: kode R801-R1207). Disembunyikan agar tampilan data inti tetap bersih.
-                                        </p>
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-blue-100 text-blue-800 font-bold shrink-0">
+                                            {{ count($activeIndividuCols ?? []) }} Kolom
+                                        </span>
                                     </div>
+
                                     <div class="flex items-center gap-2 shrink-0">
-                                        <button type="button" 
-                                                @click="showRawCols = !showRawCols" 
-                                                class="px-3 py-1.5 rounded-lg bg-purple-200 hover:bg-purple-300 text-purple-950 font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer">
-                                            <span x-text="showRawCols ? 'Sembunyikan Variabel Mentah ▲' : 'Buka & Pilih Variabel Mentah ({{ count($activeExtraCols) }}) ▼'"></span>
-                                        </button>
+                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white text-slate-700 shadow-2xs border border-slate-200"
+                                              x-text="visibleCountInBlock(@json(array_keys($activeIndividuCols ?? []))) + ' / {{ count($activeIndividuCols ?? []) }} Aktif'">
+                                        </span>
+
+                                        <div class="w-6 h-6 rounded-lg bg-white/80 flex items-center justify-center text-slate-600 transition-transform duration-200"
+                                             :class="isBlockExpanded('individu', true) ? 'rotate-180' : ''">
+                                            <i class="fi fi-rr-angle-small-down text-sm"></i>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div x-show="showRawCols" x-cloak class="space-y-2 pt-1">
-                                    <div class="flex items-center justify-between pb-1.5 border-b border-purple-100 text-xs">
-                                        <span class="text-[11px] text-slate-500 font-medium">Centang untuk menampilkan kolom kuesioner tertentu:</span>
-                                        <button type="button" 
-                                                @click="deselectAllExtraCols(@json(array_keys($activeExtraCols)))" 
-                                                class="px-2.5 py-1 rounded bg-slate-200 hover:bg-slate-300 text-slate-700 text-[11px] font-bold cursor-pointer transition-colors">
-                                            Hapus Semua Centang Mentah
-                                        </button>
-                                    </div>
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-64 overflow-y-auto pr-1">
-                                        @foreach($activeExtraCols as $cKey => $cTitle)
-                                            <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:bg-purple-100/60 cursor-pointer text-xs font-bold text-slate-800 transition-colors">
-                                                <input type="checkbox" id="toggle_col_{{ $cKey }}" name="toggle_col_{{ $cKey }}" aria-label="Tampilkan kolom {{ $cTitle }}" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-purple-600 rounded border-slate-300 focus:ring-purple-500">
-                                                <span class="truncate" title="{{ $cTitle }}">{{ $cTitle }}</span>
-                                            </label>
-                                        @endforeach
-                                    </div>
+                                <div x-show="isBlockExpanded('individu', true)" x-cloak class="p-3 bg-white space-y-2 border-t border-blue-200">
+                                    @if(!empty($activeIndividuCols) && count($activeIndividuCols) > 0)
+                                        <div class="flex items-center justify-between pb-1.5 border-b border-slate-100 text-[11px]">
+                                            <span class="text-slate-500 font-medium">Klik kotak untuk menampilkan atau menyembunyikan kolom:</span>
+                                            <div class="flex items-center gap-2">
+                                                <button type="button" @click.stop="selectAllInBlock(@json(array_keys($activeIndividuCols)))" class="px-2.5 py-0.5 rounded bg-blue-50 text-blue-700 hover:bg-blue-100 font-bold transition-colors cursor-pointer text-[10px]">
+                                                    <i class="fi fi-rr-check"></i> Pilih Semua ({{ count($activeIndividuCols) }})
+                                                </button>
+                                                <button type="button" @click.stop="deselectAllInBlock(@json(array_keys($activeIndividuCols)))" class="px-2.5 py-0.5 rounded bg-slate-100 text-slate-600 hover:bg-slate-200 font-bold transition-colors cursor-pointer text-[10px]">
+                                                    <i class="fi fi-rr-cross-small"></i> Kosongkan
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                                            @foreach($activeIndividuCols as $cKey => $cTitle)
+                                                @php
+                                                    $searchLower = strtolower($cTitle . ' ' . $cKey);
+                                                @endphp
+                                                <label x-show="!colModalSearch || '{{ addslashes($searchLower) }}'.includes(colModalSearch.toLowerCase())"
+                                                       class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:bg-blue-100/60 cursor-pointer text-xs font-bold text-slate-800 transition-colors shadow-2xs">
+                                                    <input type="checkbox" id="toggle_col_{{ $cKey }}" name="toggle_col_{{ $cKey }}" aria-label="Tampilkan kolom {{ $cTitle }}" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                                                    <span class="truncate" title="{{ $cTitle }}">{{ $cTitle }}</span>
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                    @else
+                                        <div class="p-3 bg-slate-50 rounded-lg border border-dashed border-blue-200 text-slate-500 text-xs flex items-center gap-2 font-medium">
+                                            <i class="fi fi-rr-info text-blue-600"></i> Berkas dataset aktif tidak memuat variabel Set Individu (berfokus pada Set Rumah Tangga).
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
+
+                            <!-- Group 2: Set Data Keluarga dengan Dropdown Accordion -->
+                            <div x-show="selectedBlockFilter === 'all' || selectedBlockFilter === 'keluarga'"
+                                 class="rounded-xl border border-emerald-200 overflow-hidden transition-all shadow-2xs">
+                                <div @click="toggleBlock('keluarga', true)" 
+                                     class="p-3 bg-emerald-50/60 flex items-center justify-between cursor-pointer select-none hover:brightness-95 transition-all">
+                                    <div class="flex items-center gap-2 min-w-0">
+                                        <span class="w-6 h-6 rounded-lg bg-white/80 flex items-center justify-center text-xs text-emerald-900 shadow-2xs shrink-0">
+                                            <i class="fi fi-rr-home"></i>
+                                        </span>
+                                        <h4 class="text-xs font-black uppercase text-emerald-900 truncate">
+                                            Set Data Keluarga / Rumah Tangga
+                                        </h4>
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-100 text-emerald-800 font-bold shrink-0">
+                                            {{ count($activeKeluargaCols ?? []) }} Kolom
+                                        </span>
+                                    </div>
+
+                                    <div class="flex items-center gap-2 shrink-0">
+                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white text-slate-700 shadow-2xs border border-slate-200"
+                                              x-text="visibleCountInBlock(@json(array_keys($activeKeluargaCols ?? []))) + ' / {{ count($activeKeluargaCols ?? []) }} Aktif'">
+                                        </span>
+
+                                        <div class="w-6 h-6 rounded-lg bg-white/80 flex items-center justify-center text-slate-600 transition-transform duration-200"
+                                             :class="isBlockExpanded('keluarga', true) ? 'rotate-180' : ''">
+                                            <i class="fi fi-rr-angle-small-down text-sm"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div x-show="isBlockExpanded('keluarga', true)" x-cloak class="p-3 bg-white space-y-2 border-t border-emerald-200">
+                                    @if(!empty($activeKeluargaCols) && count($activeKeluargaCols) > 0)
+                                        <div class="flex items-center justify-between pb-1.5 border-b border-slate-100 text-[11px]">
+                                            <span class="text-slate-500 font-medium">Klik kotak untuk menampilkan atau menyembunyikan kolom:</span>
+                                            <div class="flex items-center gap-2">
+                                                <button type="button" @click.stop="selectAllInBlock(@json(array_keys($activeKeluargaCols)))" class="px-2.5 py-0.5 rounded bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-bold transition-colors cursor-pointer text-[10px]">
+                                                    <i class="fi fi-rr-check"></i> Pilih Semua ({{ count($activeKeluargaCols) }})
+                                                </button>
+                                                <button type="button" @click.stop="deselectAllInBlock(@json(array_keys($activeKeluargaCols)))" class="px-2.5 py-0.5 rounded bg-slate-100 text-slate-600 hover:bg-slate-200 font-bold transition-colors cursor-pointer text-[10px]">
+                                                    <i class="fi fi-rr-cross-small"></i> Kosongkan
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                                            @foreach($activeKeluargaCols as $cKey => $cTitle)
+                                                @php
+                                                    $searchLower = strtolower($cTitle . ' ' . $cKey);
+                                                @endphp
+                                                <label x-show="!colModalSearch || '{{ addslashes($searchLower) }}'.includes(colModalSearch.toLowerCase())"
+                                                       class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:bg-emerald-100/60 cursor-pointer text-xs font-bold text-slate-800 transition-colors shadow-2xs">
+                                                    <input type="checkbox" id="toggle_col_{{ $cKey }}" name="toggle_col_{{ $cKey }}" aria-label="Tampilkan kolom {{ $cTitle }}" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500">
+                                                    <span class="truncate" title="{{ $cTitle }}">{{ $cTitle }}</span>
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                    @else
+                                        <div class="p-3 bg-slate-50 rounded-lg border border-dashed border-emerald-200 text-slate-500 text-xs flex items-center gap-2 font-medium">
+                                            <i class="fi fi-rr-info text-emerald-600"></i> Berkas dataset aktif tidak memuat variabel Set Keluarga (berfokus pada Set Anggota Keluarga / Individu).
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <!-- Group 3: Variabel Kuesioner Mentah / Tambahan dengan Dropdown Accordion -->
+                            @if(!empty($activeExtraCols) && count($activeExtraCols) > 0)
+                                <div x-show="selectedBlockFilter === 'all' || selectedBlockFilter === 'extra'"
+                                     class="rounded-xl border border-purple-200 overflow-hidden transition-all shadow-2xs">
+                                    <div @click="toggleBlock('extra', false)" 
+                                         class="p-3 bg-purple-50/60 flex items-center justify-between cursor-pointer select-none hover:brightness-95 transition-all">
+                                        <div class="flex items-center gap-2 min-w-0">
+                                            <span class="w-6 h-6 rounded-lg bg-white/80 flex items-center justify-center text-xs text-purple-900 shadow-2xs shrink-0">
+                                                <i class="fi fi-rr-boxes"></i>
+                                            </span>
+                                            <h4 class="text-xs font-black uppercase text-purple-900 truncate">
+                                                Variabel Kuesioner Mentah / Tambahan (Survei)
+                                            </h4>
+                                            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-purple-100 text-purple-800 font-bold shrink-0">
+                                                {{ count($activeExtraCols) }} Kolom
+                                            </span>
+                                        </div>
+
+                                        <div class="flex items-center gap-2 shrink-0">
+                                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white text-slate-700 shadow-2xs border border-slate-200"
+                                                  x-text="visibleCountInBlock(@json(array_keys($activeExtraCols))) + ' / {{ count($activeExtraCols) }} Aktif'">
+                                            </span>
+
+                                            <div class="w-6 h-6 rounded-lg bg-white/80 flex items-center justify-center text-slate-600 transition-transform duration-200"
+                                                 :class="isBlockExpanded('extra', false) ? 'rotate-180' : ''">
+                                                <i class="fi fi-rr-angle-small-down text-sm"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div x-show="isBlockExpanded('extra', false)" x-cloak class="p-3 bg-white space-y-2 border-t border-purple-200">
+                                        <div class="flex items-center justify-between pb-1.5 border-b border-purple-100 text-xs">
+                                            <span class="text-[11px] text-slate-500 font-medium">Centang untuk menampilkan kolom kuesioner tertentu:</span>
+                                            <div class="flex items-center gap-2">
+                                                <button type="button" @click.stop="selectAllInBlock(@json(array_keys($activeExtraCols)))" class="px-2.5 py-0.5 rounded bg-purple-50 text-purple-700 hover:bg-purple-100 font-bold transition-colors cursor-pointer text-[10px]">
+                                                    <i class="fi fi-rr-check"></i> Pilih Semua ({{ count($activeExtraCols) }})
+                                                </button>
+                                                <button type="button" @click.stop="deselectAllInBlock(@json(array_keys($activeExtraCols)))" class="px-2.5 py-0.5 rounded bg-slate-100 text-slate-600 hover:bg-slate-200 font-bold transition-colors cursor-pointer text-[10px]">
+                                                    <i class="fi fi-rr-cross-small"></i> Kosongkan
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-64 overflow-y-auto pr-1">
+                                            @foreach($activeExtraCols as $cKey => $cTitle)
+                                                @php
+                                                    $searchLower = strtolower($cTitle . ' ' . $cKey);
+                                                @endphp
+                                                <label x-show="!colModalSearch || '{{ addslashes($searchLower) }}'.includes(colModalSearch.toLowerCase())"
+                                                       class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:bg-purple-100/60 cursor-pointer text-xs font-bold text-slate-800 transition-colors shadow-2xs">
+                                                    <input type="checkbox" id="toggle_col_{{ $cKey }}" name="toggle_col_{{ $cKey }}" aria-label="Tampilkan kolom {{ $cTitle }}" :checked="isColVisible('{{ $cKey }}')" @change="toggleCol('{{ $cKey }}')" class="w-4 h-4 text-purple-600 rounded border-slate-300 focus:ring-purple-500">
+                                                    <span class="truncate" title="{{ $cTitle }}">{{ $cTitle }}</span>
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
                         @endif
                     </div>
 
@@ -497,6 +732,7 @@
 
             <!-- Modal Filter Kolom Pivot Terpusat (Anti-Offscreen, 520px Max Width, & Pinned Footer) -->
             <div x-show="showFilterModal" 
+                 x-cloak
                  x-transition:enter="transition ease-out duration-150"
                  x-transition:enter-start="opacity-0"
                  x-transition:enter-end="opacity-100"
@@ -504,9 +740,8 @@
                  x-transition:leave-start="opacity-100"
                  x-transition:leave-end="opacity-0"
                  @keydown.escape.window="closeColumnFilter()"
-                 class="padu-filter-overlay"
-                 style="position: fixed; inset: 0; z-index: 99999; display: flex; align-items: center; justify-content: center; background-color: rgba(15, 23, 42, 0.65); padding: 1rem; backdrop-filter: blur(4px);" 
-                 x-cloak>
+                 class="padu-filter-overlay fixed inset-0 z-[99999] flex items-center justify-center bg-slate-900/65 p-4 backdrop-blur-xs"
+                 style="display: none;">
                 
                 <!-- Backdrop Click to Close -->
                 <div style="position: absolute; inset: 0;" @click="closeColumnFilter()"></div>
@@ -840,14 +1075,18 @@
                                         $filterType = 'identity';
                                     }
                                 @endphp
+                                @if(empty($colKey)) @continue @endif
+                                @php
+                                    $safeColTitle = !empty($colTitle) ? $colTitle : ucwords(str_replace(['_', '-'], ' ', $colKey));
+                                @endphp
                                 <th x-show="isColVisible('{{ $colKey }}')" class="px-4 py-3 text-xs font-bold text-slate-700 tracking-wider whitespace-nowrap relative group bg-slate-100">
                                     <div class="flex items-center justify-between gap-2">
-                                        <span class="{{ count($initialSelectedArr) > 0 ? 'text-blue-700 font-extrabold' : '' }}">{{ $colTitle }}</span>
+                                        <span class="{{ count($initialSelectedArr) > 0 ? 'text-blue-700 font-extrabold' : '' }}">{{ $safeColTitle }}</span>
 
                                         <button type="button" 
-                                                @click="openColumnFilter('{{ $colKey }}', '{{ addslashes($colTitle) }}', '{{ $filterType }}', {{ json_encode($importColumnDistinctValues[$colKey] ?? []) }}, {{ json_encode($initialSelectedArr) }})" 
+                                                @click="openColumnFilter('{{ $colKey }}', '{{ addslashes($safeColTitle) }}', '{{ $filterType }}', {{ json_encode($importColumnDistinctValues[$colKey] ?? []) }}, {{ json_encode($initialSelectedArr) }})" 
                                                 class="h-5 min-w-[20px] px-1 rounded transition-all flex items-center justify-center gap-0.5 cursor-pointer {{ count($initialSelectedArr) > 0 ? 'bg-blue-600 text-white font-extrabold text-[10px] shadow-sm' : 'text-slate-400 hover:bg-slate-200 hover:text-slate-700' }}"
-                                                title="Filter Kolom {{ $colTitle }}">
+                                                title="Filter Kolom {{ $safeColTitle }}">
                                             <i class="fi fi-rr-angle-small-down text-[11px] leading-none"></i>
                                             @if(count($initialSelectedArr) > 0)
                                                 <span class="text-[10px] font-black bg-white text-blue-900 px-1 py-0.2 rounded-full">{{ count($initialSelectedArr) }}</span>
@@ -871,20 +1110,21 @@
                                         $tooltipStr = !empty($errList) ? implode(' | ', $errList) : '';
                                     @endphp
                                     @if($row->quality_status === 'Valid' && $errCount === 0)
-                                        <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px] whitespace-nowrap flex items-center gap-1"><i class="fi fi-rr-check"></i> Valid</span>
+                                        <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px] whitespace-nowrap inline-flex w-fit items-center gap-1"><i class="fi fi-rr-check"></i> Valid</span>
                                     @elseif($errCount >= 3)
-                                        <span class="px-2.5 py-0.5 rounded-full bg-rose-600 text-white font-black text-[10px] whitespace-nowrap shadow-xs flex items-center gap-1" title="{{ $tooltipStr }}"><i class="fi fi-rr-cross-circle"></i> {{ $errCount }} EROR TERDETEKSI</span>
+                                        <span class="px-2.5 py-0.5 rounded-full bg-rose-600 text-white font-black text-[10px] whitespace-nowrap shadow-xs inline-flex w-fit items-center gap-1" title="{{ $tooltipStr }}"><i class="fi fi-rr-cross-circle"></i> {{ $errCount }} EROR TERDETEKSI</span>
                                     @elseif($errCount == 2)
-                                        <span class="px-2.5 py-0.5 rounded-full bg-rose-500 text-white font-bold text-[10px] whitespace-nowrap flex items-center gap-1" title="{{ $tooltipStr }}"><i class="fi fi-rr-cross-circle"></i> 2 EROR</span>
+                                        <span class="px-2.5 py-0.5 rounded-full bg-rose-500 text-white font-bold text-[10px] whitespace-nowrap inline-flex w-fit items-center gap-1" title="{{ $tooltipStr }}"><i class="fi fi-rr-cross-circle"></i> 2 EROR</span>
                                     @elseif($row->quality_status === 'Warning')
-                                        <span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold text-[10px] whitespace-nowrap flex items-center gap-1" title="{{ $tooltipStr }}"><i class="fi fi-rr-triangle-warning"></i> Warning (1 Eror)</span>
+                                        <span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold text-[10px] whitespace-nowrap inline-flex w-fit items-center gap-1" title="{{ $tooltipStr }}"><i class="fi fi-rr-triangle-warning"></i> Warning (1 Eror)</span>
                                     @else
-                                        <span class="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 font-bold text-[10px] whitespace-nowrap flex items-center gap-1" title="{{ $tooltipStr }}"><i class="fi fi-rr-cross-circle"></i> Critical (1 Eror)</span>
+                                        <span class="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 font-bold text-[10px] whitespace-nowrap inline-flex w-fit items-center gap-1" title="{{ $tooltipStr }}"><i class="fi fi-rr-cross-circle"></i> Critical (1 Eror)</span>
                                     @endif
                                 </td>
 
                                 <!-- Dynamic Cell Values -->
                                 @foreach($activeColumnsMap as $colKey => $colTitle)
+                                    @if(empty($colKey)) @continue @endif
                                     <td x-show="isColVisible('{{ $colKey }}')" class="px-4 py-3 text-xs text-slate-800 whitespace-nowrap">
                                         @if($colKey === 'nomor_induk_kependudukan' || $colKey === 'nik')
                                             <span class="font-mono font-bold text-slate-900">
